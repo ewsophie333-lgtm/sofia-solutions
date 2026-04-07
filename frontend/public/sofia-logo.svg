@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 96" role="img" aria-labelledby="title desc">
+  <title id="title">Sofia Solutions</title>
+  <desc id="desc">Logo con fondo transparente para Sofia Solutions</desc>
+  <defs>
+    <linearGradient id="sofiaGlow" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#9b6bff" />
+      <stop offset="100%" stop-color="#29d3c2" />
+    </linearGradient>
+  </defs>
+  <g fill="none" fill-rule="evenodd">
+    <path
+      d="M36 14c12.15 0 22 9.85 22 22v1H44v-1a8 8 0 0 0-8-8H28a8 8 0 0 0 0 16h8c12.15 0 22 9.85 22 22s-9.85 22-22 22h-8C15.85 88 6 78.15 6 66v-2h14v2a8 8 0 0 0 8 8h8a8 8 0 1 0 0-16h-8C15.85 58 6 48.15 6 36s9.85-22 22-22h8Z"
+      fill="url(#sofiaGlow)"
+    />
+    <path
+      d="M78 75V31h14v44H78Zm7-50a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z"
+      fill="#E9F0FF"
+    />
+    <path
+      d="M122 75c-15.46 0-27-9.67-27-22.5S106.54 30 122 30s27 9.67 27 22.5S137.46 75 122 75Zm0-13c7.31 0 13-4.13 13-9.5s-5.69-9.5-13-9.5-13 4.13-13 9.5 5.69 9.5 13 9.5Z"
+      fill="#E9F0FF"
+    />
+    <path
+      d="M158 75V31h14v5.1C175.2 32.22 180.48 30 186 30c13.25 0 20 8.34 20 21.33V75h-14V53.4c0-6.17-2.78-10.4-9.06-10.4-5.81 0-10.94 4.27-10.94 11.53V75h-14Z"
+      fill="#E9F0FF"
+    />
+    <path
+      d="M236 75c-14.52 0-24-7.3-24-18.06 0-11.28 9.9-17.44 25.72-17.44 2.6 0 5.44.2 8.28.54-.48-5.13-3.67-8.04-10.44-8.04-5.52 0-10.98 1.72-16.12 4.6V24.58C225.6 21.83 231.67 20 238.8 20 255.2 20 260 29.52 260 42.2V75h-13.02v-4.4C243.78 73.53 240.1 75 236 75Zm4.3-10.1c3.03 0 5.9-1.04 7.7-2.7v-8.2a38.8 38.8 0 0 0-6.24-.48c-7.28 0-11.76 1.88-11.76 5.86 0 3.44 3.14 5.52 10.3 5.52Z"
+      fill="#E9F0FF"
+    />
+    <path
+      d="M272 75V13h14v62h-14Z"
+      fill="#E9F0FF"
+    />
+    <text x="78" y="18" fill="#8FA3C9" font-family="Poppins, Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="5">
+      SOFIA SOLUTIONS
+    </text>
+  </g>
+</svg>

@@ -1,0 +1,46 @@
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import cookieParser from "cookie-parser";
+import swaggerUi from "swagger-ui-express";
+import YAML from "yamljs";
+import path from "path";
+import { env } from "./config/env";
+import { requestLogger } from "./middleware/requestLogger";
+import { attackDetection } from "./middleware/attackDetection";
+import { errorHandler } from "./middleware/errorHandler";
+import routes from "./routes";
+import { metrics } from "./config/prometheus";
+
+const openapiDocument = YAML.load(path.join(process.cwd(), "src", "docs", "openapi.yaml"));
+
+export const app = express();
+
+app.use(
+  cors({
+    origin: env.CORS_ORIGIN,
+    credentials: true
+  })
+);
+app.use(
+  helmet({
+    contentSecurityPolicy: false
+  })
+);
+app.use(cookieParser());
+app.use(express.json());
+app.use(requestLogger);
+app.use(attackDetection);
+
+app.get("/health", (_req, res) => {
+  res.json({ status: "ok", mode: env.APP_MODE });
+});
+
+app.get("/metrics", async (_req, res) => {
+  res.setHeader("Content-Type", metrics.registry.contentType);
+  res.end(await metrics.registry.metrics());
+});
+
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(openapiDocument));
+app.use("/api", routes);
+app.use(errorHandler);
