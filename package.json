@@ -1,0 +1,38 @@
+{
+  "name": "sofia-solutions",
+  "private": true,
+  "version": "2.0.0",
+  "workspaces": [
+    "frontend",
+    "sofia-backend"
+  ],
+  "scripts": {
+    "dev:frontend": "cmd /c \"cd frontend && npm run dev\"",
+    "build:frontend": "npm --prefix frontend run build",
+    "dev:backend": "cmd /c \"cd sofia-backend && npm run dev\"",
+    "dev:backend:vuln": "cmd /V /C \"set APP_MODE=vulnerable&& cd sofia-backend && npm run dev\"",
+    "dev:backend:secure": "cmd /V /C \"set APP_MODE=secure&& cd sofia-backend && npm run dev\"",
+    "build:backend": "npm --prefix sofia-backend run build",
+    "dev": "concurrently -n frontend,backend -c cyan,green \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:vuln": "concurrently -n frontend,backend -c cyan,green \"npm run dev:frontend\" \"npm run dev:backend:vuln\"",
+    "dev:secure": "concurrently -n frontend,backend -c cyan,green \"npm run dev:frontend\" \"npm run dev:backend:secure\"",
+    "build": "npm run build:frontend && npm run build:backend",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
+    "docker:rebuild": "docker compose up -d --build",
+    "attack:sqli:vuln": "npm --prefix sofia-backend run attack:sqli:vuln",
+    "attack:sqli:secure": "npm --prefix sofia-backend run attack:sqli:secure",
+    "attack:xss:vuln": "npm --prefix sofia-backend run attack:xss:vuln",
+    "attack:xss:secure": "npm --prefix sofia-backend run attack:xss:secure",
+    "attack:traversal:vuln": "npm --prefix sofia-backend run attack:traversal:vuln",
+    "attack:traversal:secure": "npm --prefix sofia-backend run attack:traversal:secure",
+    "attack:payment:vuln": "npm --prefix sofia-backend run attack:payment:vuln",
+    "attack:payment:secure": "npm --prefix sofia-backend run attack:payment:secure",
+    "attack:all:vuln": "npm run attack:sqli:vuln && npm run attack:xss:vuln && npm run attack:traversal:vuln && npm run attack:payment:vuln",
+    "attack:all:secure": "npm run attack:sqli:secure && npm run attack:xss:secure && npm run attack:traversal:secure && npm run attack:payment:secure"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

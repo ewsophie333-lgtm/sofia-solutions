@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  CLIENT
+}
+
+model User {
+  id           Int             @id @default(autoincrement())
+  email        String          @unique
+  passwordHash String
+  role         Role            @default(CLIENT)
+  createdAt    DateTime        @default(now())
+  tickets      Ticket[]
+  messages     TicketMessage[]
+  payments     Payment[]
+}
+
+model Service {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  price       Float
+  active      Boolean  @default(true)
+}
+
+model Ticket {
+  id        Int             @id @default(autoincrement())
+  userId    Int
+  subject   String
+  status    String
+  priority  String
+  createdAt DateTime        @default(now())
+  user      User            @relation(fields: [userId], references: [id])
+  messages  TicketMessage[]
+}
+
+model TicketMessage {
+  id        Int      @id @default(autoincrement())
+  ticketId  Int
+  senderId  Int
+  content   String
+  createdAt DateTime @default(now())
+  ticket    Ticket   @relation(fields: [ticketId], references: [id])
+  sender    User     @relation(fields: [senderId], references: [id])
+}
+
+model Payment {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  amount        Float
+  currency      String
+  status        String
+  last4         String
+  brand         String
+  transactionId String   @unique
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id])
+}
+
+model SecurityEvent {
+  id        Int      @id @default(autoincrement())
+  type      String
+  severity  String
+  sourceIp  String
+  endpoint  String
+  payload   String
+  action    String
+  timestamp DateTime @default(now())
+  metadata  String?
+}

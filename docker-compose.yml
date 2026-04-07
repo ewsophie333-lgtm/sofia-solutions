@@ -1,0 +1,57 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./sofia-backend
+      dockerfile: docker/Dockerfile
+    environment:
+      NODE_ENV: production
+      PORT: 8001
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/sofia_solutions
+      APP_MODE: ${APP_MODE:-secure}
+      CORS_ORIGIN: http://localhost:8000
+      JWT_ACCESS_SECRET: change_me_access
+      JWT_REFRESH_SECRET: change_me_refresh
+      JWT_ACCESS_EXPIRES_IN: 15m
+      JWT_REFRESH_EXPIRES_IN: 7d
+      COOKIE_SECURE: false
+      PROMETHEUS_PREFIX: sofia_
+      RATE_LIMIT_WINDOW_MS: 900000
+      RATE_LIMIT_MAX: 10
+      ADMIN_EMAIL: admin@sofia.local
+      ADMIN_PASSWORD: Admin123!
+    ports:
+      - "8001:8001"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sofia_solutions
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./sofia-backend/docker/prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - backend
+
+volumes:
+  postgres-data:

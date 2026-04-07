@@ -1,0 +1,41 @@
+openapi: 3.0.3
+info:
+  title: Sofia Solutions API
+  version: 1.0.0
+  description: API académica con modos vulnerable y secure.
+servers:
+  - url: http://localhost:8001
+paths:
+  /api/auth/login:
+    post:
+      summary: Inicia sesión
+  /api/auth/register:
+    post:
+      summary: Registra usuario
+  /api/services:
+    get:
+      summary: Lista servicios
+    post:
+      summary: Crea servicio
+  /api/payments/checkout:
+    post:
+      summary: Ejecuta checkout simulado
+  /api/payments/history:
+    get:
+      summary: Historial de pagos
+  /api/tickets:
+    get:
+      summary: Lista tickets
+    post:
+      summary: Crea ticket
+  /api/tickets/{id}/messages:
+    get:
+      summary: Lista mensajes del ticket
+    post:
+      summary: Crea mensaje del ticket
+  /api/admin/overview:
+    get:
+      summary: Resumen administrativo
+  /metrics:
+    get:
+      summary: Métricas Prometheus
