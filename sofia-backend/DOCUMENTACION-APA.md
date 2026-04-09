@@ -29,7 +29,7 @@ La presente memoria describe el diseno y desarrollo de *Sofia Solutions*, una pl
 
 La caracteristica diferencial del proyecto consiste en la coexistencia de dos modos operativos: `vulnerable` y `secure`. Ambos comparten la misma base funcional, pero difieren en la forma de tratar autenticacion, sesiones, pagos, validacion de entradas y deteccion de ataques. Esta aproximacion permite demostrar de forma practica el impacto de las malas practicas de seguridad y compararlas con implementaciones endurecidas basadas en controles modernos.
 
-Desde el punto de vista tecnico, el frontend se implementa con React y TypeScript, mientras que el backend se desarrolla con Express, TypeScript, Prisma y PostgreSQL. Se incorporan metricas compatibles con Prometheus, logging estructurado con Winston, documentacion OpenAPI y despliegue opcional mediante Docker Compose. El resultado es un entorno adecuado tanto para defensa oral como para aprendizaje practico de conceptos relacionados con administracion de sistemas, desarrollo de APIs y seguridad aplicada.
+Desde el punto de vista tecnico, el frontend se materializa como una landing corporativa servida desde el monorepo y basada en el build visual original del preview seleccionado, mientras que el backend se desarrolla con Express, TypeScript, Prisma y PostgreSQL. Se incorporan metricas compatibles con Prometheus, logging estructurado con Winston, documentacion OpenAPI y despliegue opcional mediante Docker Compose. El resultado es un entorno adecuado tanto para defensa oral como para aprendizaje practico de conceptos relacionados con administracion de sistemas, desarrollo de APIs y seguridad aplicada.
 
 **Palabras clave:** ASIR, ciberseguridad, React, Express, Prisma, PostgreSQL, JWT, Docker, observabilidad.
 
@@ -39,7 +39,7 @@ This report describes the design and development of *Sofia Solutions*, a full st
 
 The most distinctive aspect of the project is the coexistence of two operational modes: `vulnerable` and `secure`. Both share the same functional base, but differ in how they handle authentication, sessions, payments, input validation, and attack detection. This approach enables practical demonstration of insecure practices and direct comparison with hardened implementations based on modern security controls.
 
-From a technical perspective, the frontend is implemented using React and TypeScript, while the backend is built with Express, TypeScript, Prisma, and PostgreSQL. Prometheus-compatible metrics, Winston structured logging, OpenAPI documentation, and optional Docker Compose deployment are included. The result is a platform suitable for oral defense, technical documentation, and hands-on learning in systems administration, API development, and applied cybersecurity.
+From a technical perspective, the frontend is delivered as a corporate landing based on the original visual preview build, while the backend is built with Express, TypeScript, Prisma, and PostgreSQL. Prometheus-compatible metrics, Winston structured logging, OpenAPI documentation, and optional Docker Compose deployment are included. The result is a platform suitable for oral defense, technical documentation, and hands-on learning in systems administration, API development, and applied cybersecurity.
 
 ## Indice
 
@@ -90,7 +90,7 @@ Desarrollar una plataforma full stack orientada a la demostracion academica de c
 
 ### 3.2 Objetivos especificos
 
-1. Crear un frontend moderno, editable y desacoplado.
+1. Integrar un frontend corporativo con alta fidelidad visual respecto al diseno de referencia.
 2. Desarrollar un backend modular en Express y TypeScript.
 3. Implementar un modelo de datos en Prisma sobre PostgreSQL.
 4. Integrar autenticacion, pagos, tickets y panel administrativo.
@@ -104,14 +104,69 @@ Desarrollar una plataforma full stack orientada a la demostracion academica de c
 
 El proyecto cubre:
 
-- landing corporativa editable
-- panel principal 2026
+- landing corporativa replicada a partir del preview de referencia
 - API REST con rutas de autenticacion, servicios, pagos, tickets y administracion
 - deteccion de patrones SQLi, XSS y path traversal
 - metricas Prometheus
 - logging estructurado
 - documentacion Swagger
 - despliegue local y mediante Docker Compose
+- personalizacion local del branding, incluyendo logo transparente sobredimensionado sobre el build original
+
+## 8.1 Flujo del login seguro e inseguro
+
+El sistema incorpora una pantalla de autenticacion propia en el frontend accesible desde `/login`, con dos variantes separadas:
+
+- `/login-secure`
+- `/login/vulnerable`
+
+La razon de esta separacion es pedagogica. El usuario puede enviar el mismo tipo de payload contra ambos flujos y observar diferencias medibles tanto en interfaz como en respuesta del backend.
+
+### Diagrama de flujo del login dual
+
+```mermaid
+flowchart TD
+    A[Usuario abre /login] --> B{Seleccion de modo}
+    B -->|Secure| C[POST /api/v2/auth/login]
+    B -->|Vulnerable| D[POST /api/v1/auth/login]
+    C --> E[Resolver modo por peticion]
+    D --> E2[Resolver modo por peticion]
+    E --> F[attackDetection bloquea patrones]
+    F -->|Ataque detectado| G[403 + evento + metrica]
+    F -->|Entrada valida| H[Rate limit + Zod estricto]
+    H --> I[bcrypt + sesion aleatoria + cookies seguras]
+    E2 --> J[attackDetection registra pero permite]
+    J --> K[Sin rate limit efectivo + validacion laxa]
+    K --> L[MD5 / bypass SQLi simulado / reflexion XSS]
+    I --> M[Login seguro completado]
+    L --> N[Login vulnerable completado]
+```
+
+### Diferencias clave
+
+1. En modo seguro, un payload malicioso no alcanza la capa de autenticacion.
+2. En modo vulnerable, el payload puede atravesar validacion y activar ramas inseguras creadas de forma intencional para demostracion.
+3. El frontend vulnerable puede reflejar contenido HTML devuelto por la API para escenificar riesgo XSS, mientras que el flujo seguro no lo interpreta.
+
+## 11.1 Flujo de scripts de ataque
+
+Los scripts de pruebas automatizadas se ejecutan desde la raiz del monorepo y redirigen a la carpeta del backend.
+
+```mermaid
+flowchart LR
+    A[npm run attack:sqli:vuln] --> B[tests/attack-sqli.ts]
+    C[npm run attack:xss:vuln] --> D[tests/attack-xss.ts]
+    E[npm run attack:payment:secure] --> F[tests/attack-payment.ts]
+    B --> G[/api/v1/auth/login]
+    D --> G
+    F --> H[/api/v2/auth/login]
+    H --> I[/api/payments/checkout]
+```
+
+Cada script se documenta con detalle en:
+
+- `ATTACK-SCRIPTS.md`
+- `SECURE-LOGIN-EXPLAINED.md`
 
 ### 4.2 Limitaciones
 
@@ -341,7 +396,7 @@ El objetivo no es introducir vulnerabilidades por descuido, sino hacerlo de form
 
 ```mermaid
 flowchart TD
-    A[POST /api/auth/login] --> B{APP_MODE}
+    A[POST /api/v1/auth/login] --> B{APP_MODE}
     B -->|vulnerable| C[MD5 + sin rate limit]
     B -->|secure| D[bcrypt + rate limit]
     C --> E[Cookie menos estricta]
@@ -372,13 +427,15 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    A[auth.routes.ts] --> B[validate]
-    B --> C[authRateLimiter]
-    C --> D[auth.controller.login]
-    D --> E[verifyPassword]
-    E --> F[signAccessToken]
-    F --> G[applyAuthCookies]
-    G --> H[Response]
+    A[auth.routes.ts] --> B[demoModeResolver]
+    B --> C[validate]
+    C --> D[authRateLimiter]
+    D --> E[auth.controller.login]
+    E --> F{Modo por peticion}
+    F -->|secure| G[bcrypt + JWT + cookies seguras]
+    F -->|vulnerable| H[MD5 demo + bypass SQLi/XSS reflejado]
+    G --> I[Response]
+    H --> I
 ```
 
 ### 11.3 Flujo de codigo para deteccion de ataques
@@ -390,7 +447,7 @@ flowchart TD
     C --> D{Coincide patron?}
     D -->|No| E[next()]
     D -->|Si| F[logSecurityEvent]
-    F --> G{APP_MODE}
+    F --> G[getRequestMode]
     G -->|vulnerable| H[console.warn + next()]
     G -->|secure| I[metrics + notifySoc + 403]
 ```
@@ -402,6 +459,43 @@ La observabilidad se resuelve mediante:
 - Winston para logs estructurados
 - Prometheus para metricas
 - SecurityEvent para persistencia de incidentes
+
+### 11.5 Flujo de datos del login dual
+
+```mermaid
+sequenceDiagram
+    participant U as Usuario
+    participant F as Frontend /login
+    participant M as demoModeResolver
+    participant S as Middleware seguridad
+    participant C as Auth Controller
+    participant DB as PostgreSQL
+    U->>F: Selecciona secure o vulnerable
+    F->>M: POST /api/v1/auth/login or /api/v2/auth/login + x-demo-mode
+    M->>S: req.demoMode
+    S-->>F: 403 si detecta patron y el modo es secure
+    S->>C: next() si procede
+    C->>DB: Buscar usuario / validar hash
+    DB-->>C: Datos del usuario
+    C-->>F: JSON + cookies
+```
+
+### 11.6 Flujo de scripts de ataque y evidencia
+
+1. El operador ejecuta un script `npm run attack:*`.
+2. El script construye el payload en `tests/*.ts`.
+3. Se envia la peticion HTTP a `localhost:8001`.
+4. El backend resuelve el modo real de la peticion.
+5. En vulnerable, el evento se permite para demostrar el fallo.
+6. En secure, el request queda bloqueado y se registra evidencia.
+
+Este planteamiento permite relacionar directamente:
+
+- codigo del script
+- endpoint objetivo
+- middleware atravesado
+- comportamiento final
+- metrica o evento generado
 
 ## 12. Base de datos y modelo relacional
 
@@ -600,3 +694,5 @@ Zod. (2024). *Zod documentation*. https://zod.dev/
 - captura de logs
 - captura de la tabla `payments`
 - captura de la tabla `security_events`
+
+

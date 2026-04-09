@@ -1,9 +1,12 @@
 const baseUrl = process.env.TEST_BASE_URL ?? "http://localhost:8001";
 
 async function main() {
-  const response = await fetch(`${baseUrl}/api/auth/login`, {
+  const response = await fetch(`${baseUrl}/api/v2/auth/login`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "x-demo-mode": "secure"
+    },
     body: JSON.stringify({
       email: "admin@sofia.local' OR 1=1 --",
       password: "test"
@@ -21,3 +24,5 @@ main().catch((error) => {
   console.error(error);
   process.exit(1);
 });
+
+

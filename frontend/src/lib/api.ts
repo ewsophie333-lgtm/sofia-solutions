@@ -19,10 +19,12 @@ export type AdminOverview = {
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8001";
 
 export async function fetchOverview(): Promise<AdminOverview> {
+  const token = localStorage.getItem("sofia_token_v1");
   const response = await fetch(`${API_URL}/api/admin/overview`, {
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   });
 

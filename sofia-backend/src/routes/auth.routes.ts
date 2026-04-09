@@ -13,13 +13,20 @@ const registerSchema = z.object({
   role: z.enum(["CLIENT", "ADMIN"]).optional()
 });
 
-const loginSchema = z.object({
+const secureLoginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1)
 });
 
+const vulnerableLoginSchema = z.object({
+  email: z.string().min(1),
+  password: z.string().min(1)
+});
+
 router.post("/register", validate(registerSchema), asyncHandler(register));
-router.post("/login", authRateLimiter as never, validate(loginSchema), asyncHandler(login));
+router.post("/login", authRateLimiter, validate(secureLoginSchema), asyncHandler(login));
+router.post("/login/secure", authRateLimiter, validate(secureLoginSchema), asyncHandler(login));
+router.post("/login/vulnerable", authRateLimiter, validate(vulnerableLoginSchema), asyncHandler(login));
 router.post("/refresh", asyncHandler(refresh));
 router.post("/logout", asyncHandler(logout));
 
