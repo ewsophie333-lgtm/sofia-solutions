@@ -1,12 +1,16 @@
 const mode = process.argv[2] ?? "secure";
 const baseUrl = process.env.TEST_BASE_URL ?? "http://localhost:8001";
 const adminEmail = process.env.TEST_EMAIL ?? "admin@sofia.local";
-const adminPassword = process.env.TEST_PASSWORD ?? "Admin123!";
+const adminPassword = process.env.TEST_PASSWORD ?? "SofiaAdmin2026!";
 
 async function login() {
-  const response = await fetch(`${baseUrl}/api/auth/login`, {
+  const endpoint = mode === "secure" ? "/api/v2/auth/login" : "/api/v1/auth/login";
+  const response = await fetch(`${baseUrl}${endpoint}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "x-demo-mode": mode
+    },
     body: JSON.stringify({
       email: adminEmail,
       password: adminPassword
@@ -27,7 +31,8 @@ async function main() {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`
+      Authorization: `Bearer ${accessToken}`,
+      "x-demo-mode": mode
     },
     body: JSON.stringify({
       serviceId: 1,
@@ -66,3 +71,5 @@ main().catch((error) => {
   console.error(error);
   process.exit(1);
 });
+
+

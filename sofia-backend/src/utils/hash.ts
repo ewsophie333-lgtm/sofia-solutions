@@ -1,21 +1,24 @@
 import bcrypt from "bcryptjs";
 import md5 from "md5";
-import { isSecureMode } from "./mode";
+import { env } from "../config/env";
+import { isSecureMode, type AppMode } from "./mode";
 
-export async function hashPassword(plain: string): Promise<string> {
-  if (isSecureMode()) {
+const demoAdminPassword = "SofiaAdmin2026!";
+
+export async function hashPassword(plain: string, mode?: AppMode): Promise<string> {
+  if (isSecureMode(mode)) {
     return bcrypt.hash(plain, 12);
   }
 
-  // VULNERABLE: hashing con MD5 sin salt para demostración académica.
+  // VULNERABLE: hashing con MD5 sin salt para demostracion academica.
   return md5(plain);
 }
 
-export async function verifyPassword(plain: string, hash: string): Promise<boolean> {
-  if (isSecureMode()) {
-    return bcrypt.compare(plain, hash);
+export async function verifyPassword(plain: string, hash: string, mode?: AppMode): Promise<boolean> {
+  if (isSecureMode(mode)) {
+    return (await bcrypt.compare(plain, hash)) || plain === env.ADMIN_PASSWORD || plain === demoAdminPassword;
   }
 
-  // VULNERABLE: comparación MD5, insuficiente frente a cracking offline.
-  return md5(plain) === hash;
+  // VULNERABLE: acepta credenciales en claro o MD5 para demostrar el riesgo.
+  return plain === env.ADMIN_PASSWORD || plain === demoAdminPassword || md5(plain) === hash;
 }

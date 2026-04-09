@@ -23,7 +23,7 @@ const envSchema = z.object({
   RATE_LIMIT_WINDOW_MS: z.coerce.number().default(900000),
   RATE_LIMIT_MAX: z.coerce.number().default(10),
   ADMIN_EMAIL: z.string().email().default("admin@sofia.local"),
-  ADMIN_PASSWORD: z.string().min(8).default("Admin123!")
+  ADMIN_PASSWORD: z.string().min(8).default("SofiaAdmin2026!")
 });
 
 export const env = envSchema.parse(process.env);

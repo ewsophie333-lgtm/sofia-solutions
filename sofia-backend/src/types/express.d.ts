@@ -1,6 +1,7 @@
 declare global {
   namespace Express {
     interface Request {
+      demoMode?: "secure" | "vulnerable";
       user?: {
         id: number;
         email: string;
