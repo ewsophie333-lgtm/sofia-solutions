@@ -66,6 +66,64 @@ export type SecurityMonitorResponse = {
   };
 };
 
+export type ServiceCatalogResponse = {
+  summary: {
+    totalServices: number;
+    totalCustomers: number;
+    totalAssets: number;
+    totalIncidents: number;
+  };
+  services: Array<{
+    id: number;
+    name: string;
+    category: string;
+    serviceLine: string;
+    tier: string;
+    description: string;
+    price: number;
+    slaHours: number;
+    customers: Array<{
+      id: number;
+      name: string;
+      industry: string;
+      securityTier: string;
+      assets: number;
+      openIncidents: number;
+    }>;
+    operationalMetrics: {
+      protectedCustomers: number;
+      protectedAssets: number;
+      openIncidents: number;
+      meanExposureScore: number;
+    };
+    controls: {
+      coveredVectors: string[];
+      narrative: string;
+    };
+  }>;
+};
+
+export type ServiceEffectivenessResponse = {
+  overall: {
+    customers: number;
+    assets: number;
+    incidents: number;
+  };
+  byService: Array<{
+    serviceId: number;
+    serviceName: string;
+    line: string;
+    protectedCustomers: number;
+    protectedAssets: number;
+    coveredVectors: string[];
+    detectionCoverage: number;
+    mitigatedIncidents: number;
+    activeIncidents: number;
+    effectivenessScore: number;
+    rationale: string;
+  }>;
+};
+
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8001";
 
 function authHeaders() {
@@ -97,6 +155,32 @@ export async function fetchSecurityMonitor(): Promise<SecurityMonitorResponse> {
 
   if (!response.ok) {
     throw new Error(`Security monitor request failed with status ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function fetchServiceCatalog(): Promise<ServiceCatalogResponse> {
+  const response = await fetch(`${API_URL}/api/services/catalog`, {
+    credentials: "include",
+    headers: authHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Service catalog request failed with status ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function fetchServiceEffectiveness(): Promise<ServiceEffectivenessResponse> {
+  const response = await fetch(`${API_URL}/api/services/effectiveness`, {
+    credentials: "include",
+    headers: authHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Service effectiveness request failed with status ${response.status}`);
   }
 
   return response.json();

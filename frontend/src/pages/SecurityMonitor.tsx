@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Logo from "../components/Logo";
-import { fetchSecurityMonitor, type SecurityMonitorResponse } from "../lib/api";
+import {
+  fetchSecurityMonitor,
+  fetchServiceEffectiveness,
+  type SecurityMonitorResponse,
+  type ServiceEffectivenessResponse,
+} from "../lib/api";
 
 const fallbackMonitor: SecurityMonitorResponse = {
   header: {
@@ -38,6 +43,15 @@ const fallbackMonitor: SecurityMonitorResponse = {
     totalAssets: 0,
     totalEvents: 0,
   },
+};
+
+const fallbackEffectiveness: ServiceEffectivenessResponse = {
+  overall: {
+    customers: 3,
+    assets: 6,
+    incidents: 6,
+  },
+  byService: [],
 };
 
 const worldMapPaths = [
@@ -99,11 +113,16 @@ function severityTone(value: string) {
 
 export default function SecurityMonitor() {
   const [monitor, setMonitor] = useState<SecurityMonitorResponse>(fallbackMonitor);
+  const [effectiveness, setEffectiveness] = useState<ServiceEffectivenessResponse>(fallbackEffectiveness);
 
   useEffect(() => {
     fetchSecurityMonitor()
       .then(setMonitor)
       .catch(() => setMonitor(fallbackMonitor));
+
+    fetchServiceEffectiveness()
+      .then(setEffectiveness)
+      .catch(() => setEffectiveness(fallbackEffectiveness));
   }, []);
 
   const lowSeries = monitor.eventTrend.map((point) => point.low);
@@ -464,6 +483,61 @@ export default function SecurityMonitor() {
                   <div className="soc-service-meta">
                     <span>SLA {service.slaHours}h</span>
                     <span>{service.price.toLocaleString("es-ES")} EUR</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </article>
+        </section>
+
+        <section className="soc-bottom-grid soc-bottom-grid-extended">
+          <article className="soc-panel">
+            <div className="soc-panel-head">
+              <div>
+                <p className="soc-panel-kicker">Defense posture</p>
+                <h2>Service effectiveness matrix</h2>
+              </div>
+            </div>
+
+            <div className="soc-incident-table compact">
+              <div className="soc-table-head">
+                <span>Service</span>
+                <span>Coverage</span>
+                <span>Mitigated</span>
+                <span>Active</span>
+                <span>Score</span>
+              </div>
+              {effectiveness.byService.map((service) => (
+                <div key={service.serviceId} className="soc-table-row">
+                  <span>{service.serviceName}</span>
+                  <span>{service.detectionCoverage} vectors</span>
+                  <span>{service.mitigatedIncidents}</span>
+                  <span>{service.activeIncidents}</span>
+                  <span className={`soc-severity ${service.effectivenessScore < 50 ? "critical" : service.effectivenessScore < 80 ? "warning" : "healthy"}`}>
+                    {service.effectivenessScore}%
+                  </span>
+                </div>
+              ))}
+            </div>
+          </article>
+
+          <article className="soc-panel">
+            <div className="soc-panel-head">
+              <div>
+                <p className="soc-panel-kicker">Coverage rationale</p>
+                <h2>Why each service exists</h2>
+              </div>
+            </div>
+
+            <div className="soc-service-grid">
+              {effectiveness.byService.map((service) => (
+                <article key={`rationale-${service.serviceId}`} className="soc-service-card">
+                  <span>{service.line}</span>
+                  <strong>{service.serviceName}</strong>
+                  <small>{service.coveredVectors.join(", ")}</small>
+                  <div className="soc-service-meta">
+                    <span>{service.protectedAssets} assets</span>
+                    <span>{service.protectedCustomers} customers</span>
                   </div>
                 </article>
               ))}

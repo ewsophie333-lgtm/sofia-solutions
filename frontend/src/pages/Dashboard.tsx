@@ -1,6 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchOverview, type AdminOverview } from "../lib/api";
+import {
+  fetchOverview,
+  fetchServiceCatalog,
+  fetchServiceEffectiveness,
+  type AdminOverview,
+  type ServiceCatalogResponse,
+  type ServiceEffectivenessResponse,
+} from "../lib/api";
 import Logo from "../components/Logo";
 
 const fallbackOverview: AdminOverview = {
@@ -23,20 +30,67 @@ const fallbackOverview: AdminOverview = {
   securityEvents: [],
 };
 
+const fallbackCatalog: ServiceCatalogResponse = {
+  summary: {
+    totalServices: 4,
+    totalCustomers: 3,
+    totalAssets: 6,
+    totalIncidents: 6,
+  },
+  services: [],
+};
+
+const fallbackEffectiveness: ServiceEffectivenessResponse = {
+  overall: {
+    customers: 3,
+    assets: 6,
+    incidents: 6,
+  },
+  byService: [],
+};
+
 function formatCurrency(value: number) {
   return value.toLocaleString("es-ES");
 }
 
+function riskTone(risk: string) {
+  if (risk === "HIGH") return "critical";
+  if (risk === "MEDIUM") return "warning";
+  return "healthy";
+}
+
 export default function Dashboard() {
   const [overview, setOverview] = useState<AdminOverview>(fallbackOverview);
+  const [catalog, setCatalog] = useState<ServiceCatalogResponse>(fallbackCatalog);
+  const [effectiveness, setEffectiveness] = useState<ServiceEffectivenessResponse>(fallbackEffectiveness);
 
   useEffect(() => {
     fetchOverview()
       .then(setOverview)
       .catch(() => setOverview(fallbackOverview));
+
+    fetchServiceCatalog()
+      .then(setCatalog)
+      .catch(() => setCatalog(fallbackCatalog));
+
+    fetchServiceEffectiveness()
+      .then(setEffectiveness)
+      .catch(() => setEffectiveness(fallbackEffectiveness));
   }, []);
 
   const maxServicePrice = Math.max(...overview.services.map((service) => service.price), 1);
+  const serviceCards = useMemo(
+    () =>
+      catalog.services.map((service) => {
+        const score = effectiveness.byService.find((item) => item.serviceId === service.id);
+        return {
+          ...service,
+          score: score?.effectivenessScore ?? 0,
+          activeIncidents: score?.activeIncidents ?? service.operationalMetrics.openIncidents,
+        };
+      }),
+    [catalog.services, effectiveness.byService],
+  );
 
   return (
     <main className="dashboard-shell">
@@ -52,9 +106,9 @@ export default function Dashboard() {
       <section className="dashboard-hero">
         <div className="dashboard-hero-copy">
           <p className="dashboard-kicker">Panel principal {overview.year}</p>
-          <h1>Operación segura para Sofia Solutions</h1>
+          <h1>Operacion segura para Sofia Solutions</h1>
           <p>
-            Visibilidad centralizada de servicios, tickets, pagos y eventos de seguridad en un solo panel.
+            Catalogo de servicios, cobertura defensiva y exposicion operativa conectados a la API del backend.
           </p>
           <div className="dashboard-hero-stats">
             <div>
@@ -62,12 +116,16 @@ export default function Dashboard() {
               <strong>{formatCurrency(overview.revenue)} EUR</strong>
             </div>
             <div>
-              <span>Logins seguros</span>
-              <strong>{overview.secureLogins}</strong>
+              <span>Clientes cubiertos</span>
+              <strong>{catalog.summary.totalCustomers}</strong>
             </div>
             <div>
-              <span>Ataques bloqueados</span>
-              <strong>{overview.blockedAttacks}</strong>
+              <span>Activos protegidos</span>
+              <strong>{catalog.summary.totalAssets}</strong>
+            </div>
+            <div>
+              <span>Incidentes activos</span>
+              <strong>{catalog.summary.totalIncidents}</strong>
             </div>
           </div>
         </div>
@@ -75,7 +133,7 @@ export default function Dashboard() {
         <div className="dashboard-hero-visual">
           <div className="dashboard-ring">
             <strong>2026</strong>
-            <span>Panel operativo</span>
+            <span>Service posture</span>
           </div>
           <div className="dashboard-bars" aria-label="Actividad de servicios">
             {overview.services.map((service) => {
@@ -95,8 +153,8 @@ export default function Dashboard() {
 
       <section className="dashboard-grid">
         <article className="dashboard-card">
-          <span>Ingresos</span>
-          <strong>{formatCurrency(overview.revenue)} EUR</strong>
+          <span>Servicios unicos</span>
+          <strong>{catalog.summary.totalServices}</strong>
         </article>
         <article className="dashboard-card">
           <span>Logins seguros</span>
@@ -114,14 +172,29 @@ export default function Dashboard() {
 
       <section className="dashboard-section">
         <div className="dashboard-section-head">
-          <h2>Servicios</h2>
-          <p>Catálogo activo y métricas de coste.</p>
+          <h2>Arquitectura de servicios</h2>
+          <p>Servicios operativos conectados a clientes, activos y vectores de ataque.</p>
         </div>
-        <div className="dashboard-list dashboard-services">
-          {overview.services.map((service) => (
-            <article key={service.id} className="dashboard-item">
-              <strong>{service.name}</strong>
-              <span>{service.price.toLocaleString("es-ES")} EUR</span>
+        <div className="dashboard-service-cards">
+          {serviceCards.map((service) => (
+            <article key={service.id} className="dashboard-service-card">
+              <div className="dashboard-service-topline">
+                <span>{service.category}</span>
+                <strong>{service.name}</strong>
+                <small>{service.serviceLine} · {service.tier}</small>
+              </div>
+              <p>{service.description}</p>
+              <div className="dashboard-service-metrics">
+                <span>SLA {service.slaHours}h</span>
+                <span>{formatCurrency(service.price)} EUR</span>
+                <span>{service.operationalMetrics.protectedAssets} activos</span>
+                <span>{service.score}% eficacia</span>
+              </div>
+              <div className="dashboard-service-vectors">
+                {service.controls.coveredVectors.map((vector) => (
+                  <span key={vector}>{vector}</span>
+                ))}
+              </div>
             </article>
           ))}
         </div>
@@ -129,8 +202,65 @@ export default function Dashboard() {
 
       <section className="dashboard-section">
         <div className="dashboard-section-head">
+          <h2>Efectividad defensiva</h2>
+          <p>Relacion directa entre ataques cubiertos, activos y estado operativo.</p>
+        </div>
+        <div className="dashboard-list dashboard-effectiveness-grid">
+          {effectiveness.byService.map((service) => (
+            <article key={service.serviceId} className="dashboard-effectiveness-card">
+              <div className="dashboard-effectiveness-head">
+                <strong>{service.serviceName}</strong>
+                <span className={`dashboard-pill ${service.effectivenessScore < 50 ? "critical" : service.effectivenessScore < 80 ? "warning" : "healthy"}`}>
+                  {service.effectivenessScore}%
+                </span>
+              </div>
+              <div className="dashboard-effectiveness-row">
+                <span>Cobertura</span>
+                <strong>{service.detectionCoverage} vectores</strong>
+              </div>
+              <div className="dashboard-effectiveness-row">
+                <span>Mitigados</span>
+                <strong>{service.mitigatedIncidents}</strong>
+              </div>
+              <div className="dashboard-effectiveness-row">
+                <span>Activos</span>
+                <strong>{service.activeIncidents}</strong>
+              </div>
+              <p>{service.rationale}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="dashboard-section">
+        <div className="dashboard-section-head">
+          <h2>Clientes y riesgo residual</h2>
+          <p>Visibilidad de tenantes protegidos y carga de incidentes por servicio principal.</p>
+        </div>
+        <div className="dashboard-list dashboard-customer-grid">
+          {catalog.services.flatMap((service) =>
+            service.customers.map((customer) => (
+              <article key={`${service.id}-${customer.id}`} className="dashboard-item dashboard-customer-item">
+                <div>
+                  <strong>{customer.name}</strong>
+                  <span>{service.name} · {customer.industry}</span>
+                </div>
+                <div className="dashboard-customer-meta">
+                  <span>{customer.assets} activos</span>
+                  <span className={`dashboard-pill ${riskTone(customer.openIncidents > 1 ? "HIGH" : customer.openIncidents === 1 ? "MEDIUM" : "LOW")}`}>
+                    {customer.openIncidents} incidentes
+                  </span>
+                </div>
+              </article>
+            )),
+          )}
+        </div>
+      </section>
+
+      <section className="dashboard-section">
+        <div className="dashboard-section-head">
           <h2>Tickets recientes</h2>
-          <p>Últimos casos operativos en curso.</p>
+          <p>Ultimos casos operativos en curso.</p>
         </div>
         <div className="dashboard-list">
           {overview.recentTickets.map((ticket) => (
@@ -152,7 +282,7 @@ export default function Dashboard() {
         {overview.securityEvents.length === 0 ? (
           <div className="dashboard-empty">
             <strong>Sin ataques detectados</strong>
-            <p>El monitor permanece vacío hasta que se registren eventos reales o pruebas de laboratorio.</p>
+            <p>El monitor permanece vacio hasta que se registren eventos reales o pruebas de laboratorio.</p>
           </div>
         ) : (
           <div className="dashboard-list">
