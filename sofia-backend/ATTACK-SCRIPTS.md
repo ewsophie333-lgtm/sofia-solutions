@@ -121,10 +121,31 @@ sequenceDiagram
     end
 ```
 
+### Fuerza bruta
+
+- `npm run attack:bruteforce:vuln`
+  Repite intentos fallidos de login contra el flujo vulnerable. No debe bloquear por rate limit.
+
+- `npm run attack:bruteforce:secure`
+  Repite intentos fallidos contra el flujo seguro. Debe quedar bloqueado por controles del login seguro, bien por CSRF, por deteccion preventiva o por rate limit.
+
+### Validacion de servicios
+
+- `npm run services:validate`
+  Comprueba que el catalogo y la efectividad de los servicios se calculan desde datos reales de clientes, activos e incidentes.
+
+- `npm run services:matrix:vuln`
+  Lanza una matriz resumida de ataques sobre el sistema vulnerable y muestra despues la foto de efectividad de servicios.
+
+- `npm run services:matrix:secure`
+  Repite la matriz anterior en seguro para comparar bloqueo y cobertura.
+
 ## Ejecucion agrupada
 
 - `npm run attack:all:vuln`
 - `npm run attack:all:secure`
+- `npm run attack:defense:vuln`
+- `npm run attack:defense:secure`
 
 Estos comandos encadenan todos los scripts de la bateria.
 
@@ -157,6 +178,14 @@ Estos comandos encadenan todos los scripts de la bateria.
 - Deteccion de ataques: [attackDetection.ts](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/src/middleware/attackDetection.ts)
 
 ## Relacion con la interfaz web
+
+Los scripts de servicios se apoyan en los nuevos endpoints:
+
+- `GET /api/services`
+- `GET /api/services/catalog`
+- `GET /api/services/effectiveness`
+
+Esto permite justificar en la memoria que los servicios ofrecidos no son estaticos, sino capacidades operativas respaldadas por datos del backend.
 
 La web expone una pantalla propia en:
 

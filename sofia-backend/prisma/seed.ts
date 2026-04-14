@@ -20,6 +20,7 @@ async function main() {
   await prisma.ticket.deleteMany();
   await prisma.payment.deleteMany();
   await prisma.securityEvent.deleteMany();
+  await prisma.service.deleteMany();
 
   await prisma.user.upsert({
     where: { email: process.env.ADMIN_EMAIL ?? "admin@sofia.local" },
@@ -86,7 +87,6 @@ async function main() {
         slaHours: 6,
       },
     ],
-    skipDuplicates: true,
   });
 
   const [admin, client] = await Promise.all([

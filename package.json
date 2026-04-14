@@ -29,8 +29,15 @@
     "attack:traversal:secure": "npm --prefix sofia-backend run attack:traversal:secure",
     "attack:payment:vuln": "npm --prefix sofia-backend run attack:payment:vuln",
     "attack:payment:secure": "npm --prefix sofia-backend run attack:payment:secure",
+    "attack:bruteforce:vuln": "npm --prefix sofia-backend run attack:bruteforce:vuln",
+    "attack:bruteforce:secure": "npm --prefix sofia-backend run attack:bruteforce:secure",
+    "services:validate": "npm --prefix sofia-backend run services:validate",
+    "services:matrix:vuln": "npm --prefix sofia-backend run services:matrix:vuln",
+    "services:matrix:secure": "npm --prefix sofia-backend run services:matrix:secure",
     "attack:all:vuln": "npm run attack:sqli:vuln && npm run attack:xss:vuln && npm run attack:traversal:vuln && npm run attack:payment:vuln",
-    "attack:all:secure": "npm run attack:sqli:secure && npm run attack:xss:secure && npm run attack:traversal:secure && npm run attack:payment:secure"
+    "attack:all:secure": "npm run attack:sqli:secure && npm run attack:xss:secure && npm run attack:traversal:secure && npm run attack:payment:secure",
+    "attack:defense:vuln": "npm --prefix sofia-backend run attack:defense:vuln",
+    "attack:defense:secure": "npm --prefix sofia-backend run attack:defense:secure"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

@@ -95,6 +95,9 @@ Si no existe `.env`, el backend toma valores por defecto desde `.env.example`.
 - `POST /api/v2/auth/refresh`
 - `POST /api/v2/auth/logout`
 - `GET /api/services`
+- `GET /api/services/catalog`
+- `GET /api/services/effectiveness`
+- `GET /api/services/:id`
 - `POST /api/services`
 - `POST /api/payments/checkout`
 - `GET /api/payments/history`
@@ -114,6 +117,26 @@ El backend incluye ahora entidades para hacer el monitor mas creible:
 - `Customer`
 - `Asset`
 - `Incident`
+
+## Logica del catalogo de servicios
+
+El catalogo ya no es una lista estatica. Cada servicio se conecta con:
+
+- clientes (`Customer`)
+- activos (`Asset`)
+- incidentes (`Incident`)
+- vectores de ataque cubiertos
+- efectividad operativa
+
+Esto permite justificar el valor academico del sistema:
+
+- la capa de negocio define el servicio
+- la capa operativa produce telemetria e incidentes
+- la capa de seguridad demuestra que ataques cubre o mitiga cada servicio
+
+Referencia ampliada:
+
+- [SERVICE-ARCHITECTURE.md](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/SERVICE-ARCHITECTURE.md)
 
 Uso practico:
 
