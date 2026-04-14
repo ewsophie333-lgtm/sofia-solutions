@@ -80,6 +80,63 @@ Eso levanta:
 - el logo se sobreescribe localmente por un SVG transparente mas grande
 - el backend y su documentacion siguen siendo editables y academicos
 - el login en `/login` se ha reemplazado por una vista propia con modo seguro e inseguro
+- el SOC monitor en `/admin/security-monitor` ya consume datos del backend en vez de arrays mock
+
+## Verificacion visual
+
+Actualmente existen **dos familias visuales** en el frontend:
+
+- ` / `
+  usa el bundle original del preview de Readdy para conservar la fidelidad visual casi exacta respecto a la referencia.
+- `/login`, `/login-secure`, `/dashboard` y `/admin/security-monitor`
+  usan pantallas React propias, conectadas al backend local y al flujo academico de seguridad.
+
+Esto explica por que algunas pantallas se ven "demasiado parecidas" al original y otras muestran los cambios funcionales y de marca pedidos durante el desarrollo.
+
+Si se quiere una experiencia completamente uniforme, hay dos caminos validos:
+
+- migrar todas las pantallas del preview a componentes React editables
+- o servir mas rutas directamente desde el bundle original y limitar los cambios a overrides de branding y datos
+
+El estado actual prioriza:
+
+- home con maxima fidelidad visual
+- login dual real
+- dashboard y SOC monitor conectados a la API local
+
+## SOC realista
+
+El backend ahora modela:
+
+- clientes protegidos
+- activos monitorizados
+- incidentes correlacionados
+- cartera de servicios operativos
+
+Endpoint principal del monitor:
+
+- `GET /api/admin/security-monitor`
+
+Ese endpoint alimenta:
+
+- KPIs de eventos, incidentes, salud y activos
+- paises origen
+- tendencia SIEM
+- vectores de ataque
+- feed de incidentes
+- exposicion por cliente
+- portfolio de servicios con SLA
+
+## Endpoints de visualizacion
+
+- Home: `http://localhost:8000/`
+- Login vulnerable: `http://localhost:8000/login`
+- Login seguro: `http://localhost:8000/login-secure`
+- Dashboard: `http://localhost:8000/dashboard`
+- SOC monitor: `http://localhost:8000/admin/security-monitor`
+- API backend: `http://localhost:8001`
+- Swagger: `http://localhost:8001/docs`
+- Metricas: `http://localhost:8001/metrics`
 
 ## Documentacion de ataques y login
 
