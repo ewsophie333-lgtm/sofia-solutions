@@ -98,6 +98,10 @@ Desarrollar una plataforma full stack orientada a la demostracion academica de c
 6. Permitir conmutar entre `APP_MODE=vulnerable` y `APP_MODE=secure`.
 7. Documentar la solucion con suficiente profundidad para memoria y defensa.
 
+### 3.3 Objetivo funcional del catalogo de servicios
+
+El proyecto no pretende mostrar un catalogo comercial vacio. Un objetivo adicional es que los servicios ofertados tengan coherencia tecnica y puedan justificarse dentro del sistema. Para ello, cada servicio se vincula a clientes, activos, incidentes, SLA y vectores de ataque cubiertos.
+
 ## 4. Alcance y limitaciones
 
 ### 4.1 Alcance
@@ -126,6 +130,49 @@ Como resultado, el sistema no es una SPA visualmente uniforme al 100%. Existen d
 2. pantallas locales orientadas a funcionalidad academica
 
 Esta decision debe explicarse en memoria y defensa como una eleccion tecnica consciente, no como un fallo de maquetacion.
+
+## 7.1 Logica del catalogo de servicios
+
+Para que la empresa ficticia tenga credibilidad academica, el catalogo de servicios se ha unido al dominio de seguridad. La relacion implementada es la siguiente:
+
+1. `Service` representa la capacidad operativa ofertada.
+2. `Customer` representa la organizacion protegida.
+3. `Asset` representa la infraestructura gestionada.
+4. `Incident` representa la evidencia operativa del valor del servicio.
+
+Con esta estructura, servicios como `SOC 24/7`, `Pentesting Premium`, `IR Retainer` y `Cloud Security Hardening` dejan de ser textos comerciales y pasan a generar efectos medibles en el sistema.
+
+## 7.2 Clasificacion de servicios
+
+### Preventivos
+
+- Pentesting Premium
+- Cloud Security Hardening
+
+Reducen superficie de ataque y ayudan a prevenir explotacion de fallos.
+
+### Detectivos
+
+- SOC 24/7
+
+Recolectan telemetria, correlacionan eventos y mejoran tiempo de deteccion.
+
+### Reactivos
+
+- IR Retainer
+
+Permiten contener, investigar y recuperar ante incidentes.
+
+## 7.3 Endpoints funcionales de servicios
+
+Para soportar esta parte se han implementado los endpoints:
+
+- `GET /api/services`
+- `GET /api/services/catalog`
+- `GET /api/services/effectiveness`
+- `GET /api/services/:id`
+
+Estos endpoints devuelven datos derivados de clientes, activos e incidentes reales sembrados en la base.
 
 ## 8.1 Flujo del login seguro e inseguro
 
@@ -178,6 +225,41 @@ flowchart LR
 ```
 
 Cada script se documenta con detalle en:
+
+## 11.2 Relacion entre ataques y servicios
+
+Cada ataque de la bateria se utiliza tambien para justificar la utilidad del catalogo de servicios:
+
+- SQL Injection
+  relacionado con `Pentesting Premium` y revisiones preventivas.
+- XSS
+  relacionado con `Pentesting Premium`.
+- Brute Force y Credential Abuse
+  relacionados con `SOC 24/7` e `IR Retainer`.
+- Malware
+  relacionado con `SOC 24/7` e `IR Retainer`.
+- Manipulacion de pagos
+  relacionado con controles de backend y reforzado de arquitectura.
+
+Esta correlacion permite defender que los servicios ofertados responden a riesgos concretos y no son elementos decorativos.
+
+## 11.3 Scripts de validacion de servicios
+
+Se han preparado comandos adicionales para demostrar la logica del catalogo:
+
+- `npm run services:validate`
+- `npm run services:matrix:vuln`
+- `npm run services:matrix:secure`
+- `npm run attack:bruteforce:vuln`
+- `npm run attack:bruteforce:secure`
+- `npm run attack:defense:vuln`
+- `npm run attack:defense:secure`
+
+Estos comandos permiten enseñar en tiempo real:
+
+- que ataques prosperan o se bloquean
+- que servicios se asocian a cada vector
+- que efectividad calcula la API para cada servicio
 
 - `ATTACK-SCRIPTS.md`
 - `SECURE-LOGIN-EXPLAINED.md`

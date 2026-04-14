@@ -25,8 +25,15 @@
     "attack:traversal:secure": "tsx tests/attack-traversal.ts secure",
     "attack:payment:vuln": "tsx tests/attack-payment.ts vulnerable",
     "attack:payment:secure": "tsx tests/attack-payment.ts secure",
+    "attack:bruteforce:vuln": "tsx tests/attack-bruteforce.ts vulnerable",
+    "attack:bruteforce:secure": "tsx tests/attack-bruteforce.ts secure",
+    "services:validate": "tsx tests/validate-services.ts",
+    "services:matrix:vuln": "tsx tests/attack-service-matrix.ts vulnerable",
+    "services:matrix:secure": "tsx tests/attack-service-matrix.ts secure",
     "attack:all:vuln": "npm run attack:sqli:vuln && npm run attack:xss:vuln && npm run attack:traversal:vuln && npm run attack:payment:vuln",
-    "attack:all:secure": "npm run attack:sqli:secure && npm run attack:xss:secure && npm run attack:traversal:secure && npm run attack:payment:secure"
+    "attack:all:secure": "npm run attack:sqli:secure && npm run attack:xss:secure && npm run attack:traversal:secure && npm run attack:payment:secure",
+    "attack:defense:vuln": "npm run attack:bruteforce:vuln && npm run services:matrix:vuln",
+    "attack:defense:secure": "npm run attack:bruteforce:secure && npm run services:matrix:secure"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

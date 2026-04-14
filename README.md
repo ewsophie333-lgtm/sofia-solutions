@@ -127,6 +127,27 @@ Ese endpoint alimenta:
 - exposicion por cliente
 - portfolio de servicios con SLA
 
+## Logica de servicios
+
+Los servicios ya no funcionan solo como un catalogo visual. El backend expone:
+
+- `GET /api/services`
+- `GET /api/services/catalog`
+- `GET /api/services/effectiveness`
+- `GET /api/services/:id`
+
+Con esos endpoints, cada servicio queda relacionado con:
+
+- clientes protegidos
+- activos monitorizados
+- incidentes abiertos o contenidos
+- vectores de ataque cubiertos
+- nivel de efectividad operativa
+
+Documentacion especifica:
+
+- [SERVICE-ARCHITECTURE.md](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/SERVICE-ARCHITECTURE.md)
+
 ## Endpoints de visualizacion
 
 - Home: `http://localhost:8000/`
@@ -137,6 +158,16 @@ Ese endpoint alimenta:
 - API backend: `http://localhost:8001`
 - Swagger: `http://localhost:8001/docs`
 - Metricas: `http://localhost:8001/metrics`
+
+## Scripts de validacion
+
+- `npm run services:validate`
+- `npm run services:matrix:vuln`
+- `npm run services:matrix:secure`
+- `npm run attack:bruteforce:vuln`
+- `npm run attack:bruteforce:secure`
+- `npm run attack:defense:vuln`
+- `npm run attack:defense:secure`
 
 ## Documentacion de ataques y login
 
