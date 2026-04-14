@@ -440,6 +440,26 @@ img {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.dashboard-service-cards,
+.dashboard-effectiveness-grid,
+.dashboard-customer-grid {
+  display: grid;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.dashboard-service-cards {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.dashboard-effectiveness-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.dashboard-customer-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .dashboard-item {
   display: flex;
   align-items: center;
@@ -448,6 +468,106 @@ img {
   padding: 14px 16px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.04);
+}
+
+.dashboard-service-card,
+.dashboard-effectiveness-card {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dashboard-service-topline span,
+.dashboard-service-topline small,
+.dashboard-effectiveness-card p,
+.dashboard-customer-item span {
+  color: #cbd5e1;
+}
+
+.dashboard-service-topline {
+  display: grid;
+  gap: 6px;
+}
+
+.dashboard-service-topline span {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.75rem;
+}
+
+.dashboard-service-topline strong,
+.dashboard-effectiveness-head strong {
+  font-size: 1.1rem;
+}
+
+.dashboard-service-card p,
+.dashboard-effectiveness-card p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.dashboard-service-metrics,
+.dashboard-service-vectors,
+.dashboard-effectiveness-row,
+.dashboard-customer-meta,
+.dashboard-effectiveness-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dashboard-service-metrics span,
+.dashboard-service-vectors span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 0.8rem;
+}
+
+.dashboard-service-vectors {
+  justify-content: flex-start;
+}
+
+.dashboard-effectiveness-row span {
+  color: #cbd5e1;
+}
+
+.dashboard-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.dashboard-pill.critical {
+  color: #ffd7d7;
+  background: rgba(239, 68, 68, 0.16);
+}
+
+.dashboard-pill.warning {
+  color: #fde9b0;
+  background: rgba(245, 158, 11, 0.16);
+}
+
+.dashboard-pill.healthy {
+  color: #d1fae5;
+  background: rgba(16, 185, 129, 0.16);
+}
+
+.dashboard-customer-item {
+  align-items: start;
 }
 
 .dashboard-empty {
@@ -478,6 +598,12 @@ img {
   }
 
   .dashboard-services {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-service-cards,
+  .dashboard-effectiveness-grid,
+  .dashboard-customer-grid {
     grid-template-columns: 1fr;
   }
 }
