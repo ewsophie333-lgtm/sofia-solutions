@@ -62,17 +62,13 @@ function riskTone(risk: string) {
 export default function Dashboard() {
   const [overview, setOverview] = useState<AdminOverview>(fallbackOverview);
   const [catalog, setCatalog] = useState<ServiceCatalogResponse>(fallbackCatalog);
-  const [effectiveness, setEffectiveness] = useState<ServiceEffectivenessResponse>(fallbackEffectiveness);
+  const [effectiveness, setEffectiveness] = useState<ServiceEffectivenessResponse>(
+    fallbackEffectiveness,
+  );
 
   useEffect(() => {
-    fetchOverview()
-      .then(setOverview)
-      .catch(() => setOverview(fallbackOverview));
-
-    fetchServiceCatalog()
-      .then(setCatalog)
-      .catch(() => setCatalog(fallbackCatalog));
-
+    fetchOverview().then(setOverview).catch(() => setOverview(fallbackOverview));
+    fetchServiceCatalog().then(setCatalog).catch(() => setCatalog(fallbackCatalog));
     fetchServiceEffectiveness()
       .then(setEffectiveness)
       .catch(() => setEffectiveness(fallbackEffectiveness));
@@ -98,9 +94,14 @@ export default function Dashboard() {
         <div className="dashboard-brand">
           <Logo className="dashboard-logo-lockup" />
         </div>
-        <Link className="dashboard-back" to="/">
-          Volver al inicio
-        </Link>
+        <div className="dashboard-actions">
+          <Link className="dashboard-back" to="/admin/security-monitor">
+            Abrir SOC
+          </Link>
+          <Link className="dashboard-back is-secondary" to="/">
+            Volver al inicio
+          </Link>
+        </div>
       </header>
 
       <section className="dashboard-hero">
@@ -108,7 +109,8 @@ export default function Dashboard() {
           <p className="dashboard-kicker">Panel principal {overview.year}</p>
           <h1>Operacion segura para Sofia Solutions</h1>
           <p>
-            Catalogo de servicios, cobertura defensiva y exposicion operativa conectados a la API del backend.
+            Catalogo de servicios, cobertura defensiva y exposicion operativa conectados a la
+            misma plataforma que alimenta el dashboard y el SOC.
           </p>
           <div className="dashboard-hero-stats">
             <div>
@@ -133,7 +135,7 @@ export default function Dashboard() {
         <div className="dashboard-hero-visual">
           <div className="dashboard-ring">
             <strong>2026</strong>
-            <span>Service posture</span>
+            <span>Unified service posture</span>
           </div>
           <div className="dashboard-bars" aria-label="Actividad de servicios">
             {overview.services.map((service) => {
@@ -210,7 +212,15 @@ export default function Dashboard() {
             <article key={service.serviceId} className="dashboard-effectiveness-card">
               <div className="dashboard-effectiveness-head">
                 <strong>{service.serviceName}</strong>
-                <span className={`dashboard-pill ${service.effectivenessScore < 50 ? "critical" : service.effectivenessScore < 80 ? "warning" : "healthy"}`}>
+                <span
+                  className={`dashboard-pill ${
+                    service.effectivenessScore < 50
+                      ? "critical"
+                      : service.effectivenessScore < 80
+                        ? "warning"
+                        : "healthy"
+                  }`}
+                >
                   {service.effectivenessScore}%
                 </span>
               </div>
@@ -240,14 +250,27 @@ export default function Dashboard() {
         <div className="dashboard-list dashboard-customer-grid">
           {catalog.services.flatMap((service) =>
             service.customers.map((customer) => (
-              <article key={`${service.id}-${customer.id}`} className="dashboard-item dashboard-customer-item">
+              <article
+                key={`${service.id}-${customer.id}`}
+                className="dashboard-item dashboard-customer-item"
+              >
                 <div>
                   <strong>{customer.name}</strong>
                   <span>{service.name} · {customer.industry}</span>
                 </div>
                 <div className="dashboard-customer-meta">
                   <span>{customer.assets} activos</span>
-                  <span className={`dashboard-pill ${riskTone(customer.openIncidents > 1 ? "HIGH" : customer.openIncidents === 1 ? "MEDIUM" : "LOW")}`}>
+                  <span
+                    className={`dashboard-pill ${
+                      riskTone(
+                        customer.openIncidents > 1
+                          ? "HIGH"
+                          : customer.openIncidents === 1
+                            ? "MEDIUM"
+                            : "LOW",
+                      )
+                    }`}
+                  >
                     {customer.openIncidents} incidentes
                   </span>
                 </div>
@@ -282,7 +305,10 @@ export default function Dashboard() {
         {overview.securityEvents.length === 0 ? (
           <div className="dashboard-empty">
             <strong>Sin ataques detectados</strong>
-            <p>El monitor permanece vacio hasta que se registren eventos reales o pruebas de laboratorio.</p>
+            <p>
+              El monitor permanece vacio hasta que se registren eventos reales o pruebas de
+              laboratorio.
+            </p>
           </div>
         ) : (
           <div className="dashboard-list">
