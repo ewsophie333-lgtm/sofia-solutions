@@ -113,6 +113,20 @@ El proyecto cubre:
 - despliegue local y mediante Docker Compose
 - personalizacion local del branding, incluyendo logo transparente sobredimensionado sobre el build original
 
+### 4.2 Limitacion visual relevante
+
+Durante la evolucion del proyecto se adopto una solucion hibrida para equilibrar fidelidad visual y editabilidad:
+
+- la home publica se mantiene apoyada sobre el build del preview original para conservar el aspecto de referencia
+- el login, dashboard y monitor SOC se implementan como pantallas React propias para poder integrarlas con el backend local
+
+Como resultado, el sistema no es una SPA visualmente uniforme al 100%. Existen dos familias visuales:
+
+1. pantallas basadas en preview original
+2. pantallas locales orientadas a funcionalidad academica
+
+Esta decision debe explicarse en memoria y defensa como una eleccion tecnica consciente, no como un fallo de maquetacion.
+
 ## 8.1 Flujo del login seguro e inseguro
 
 El sistema incorpora una pantalla de autenticacion propia en el frontend accesible desde `/login`, con dos variantes separadas:

@@ -28,6 +28,13 @@ Backend academico de Sofia Solutions con dos modos de ejecucion:
 
 El frontend visible en `http://localhost:8000` se sirve desde el monorepo raiz. La home conserva el preview visual original, mientras que las rutas `/login` y `/login-secure` usan una interfaz React comun con dos implementaciones de autenticacion por debajo. El backend queda desacoplado y expone su API en `8001`, documentacion Swagger en `/docs` y metricas en `/metrics`.
 
+La consecuencia directa es que hoy conviven dos tipos de pantalla:
+
+- paginas servidas con fidelidad casi exacta desde el preview original
+- paginas React locales conectadas a datos y seguridad reales
+
+Esto es intencional en el estado actual del proyecto y debe explicarse en la defensa para evitar interpretarlo como una inconsistencia accidental.
+
 ## Login dual
 
 Se han anadido dos rutas diferenciadas para demostracion:
@@ -96,7 +103,50 @@ Si no existe `.env`, el backend toma valores por defecto desde `.env.example`.
 - `GET /api/tickets/:id/messages`
 - `POST /api/tickets/:id/messages`
 - `GET /api/admin/overview`
+- `GET /api/admin/security-monitor`
 - `GET /api/admin/security-events`
 - `GET /metrics`
+
+## Modelo SOC
+
+El backend incluye ahora entidades para hacer el monitor mas creible:
+
+- `Customer`
+- `Asset`
+- `Incident`
+
+Uso practico:
+
+- `Customer` representa tenants o clientes protegidos
+- `Asset` representa firewall, VPN, WAF, aplicaciones y consolas EDR
+- `Incident` representa detecciones correlacionadas con severidad, vector, estado, IP origen y pais origen
+
+El endpoint `GET /api/admin/security-monitor` agrega esos datos y devuelve:
+
+- resumen de eventos e incidentes
+- top attacking countries
+- tendencia por severidad
+- top attack vectors
+- incident timeline
+- distribucion por superficie de ataque
+- exposicion por cliente
+- portfolio de servicios con categoria, tier y SLA
+
+## Verificacion operativa
+
+Pantallas:
+
+- `http://localhost:8000/`
+- `http://localhost:8000/login`
+- `http://localhost:8000/login-secure`
+- `http://localhost:8000/dashboard`
+- `http://localhost:8000/admin/security-monitor`
+
+API:
+
+- `GET /health`
+- `GET /api/admin/overview`
+- `GET /api/admin/security-monitor`
+- `GET /api/admin/security-events`
 
 
