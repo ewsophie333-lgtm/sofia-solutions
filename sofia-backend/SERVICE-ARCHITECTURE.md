@@ -1,146 +1,182 @@
-# SERVICE-ARCHITECTURE
+# Arquitectura funcional de servicios
 
 ## Objetivo
 
-Este documento justifica por que el catalogo de servicios de Sofia Solutions tiene sentido tecnico dentro del proyecto y como se relaciona con el monitor SOC, los activos, los clientes y los ataques demostrados.
+Este documento explica por qué el catálogo de servicios de Sofia Solutions tiene sentido dentro del proyecto y cómo se conecta con:
+
+- el monitor SOC;
+- la base de datos;
+- los clientes y activos;
+- los incidentes;
+- los ataques demostrados.
+
+El catálogo no se plantea como una lista estética o comercial. Se plantea como una capa de negocio que da contexto al resto del sistema.
 
 ## Idea central
 
-Los servicios no se modelan como tarjetas comerciales aisladas. Cada servicio representa una capacidad operativa que afecta a:
+Cada servicio ofrecido por Sofia Solutions representa una capacidad operativa. Eso significa que un servicio debe poder responder a preguntas como:
 
-- clientes protegidos
-- activos gestionados
-- incidentes monitorizados
-- cobertura de vectores de ataque
-- SLA y nivel de respuesta
+- qué protege;
+- a quién protege;
+- qué riesgos ayuda a reducir;
+- qué evidencias genera;
+- cómo se refleja en el SOC y en el dashboard.
 
-## Estructura funcional
+## Servicios modelados
 
-### 1. Servicios preventivos
+### 1. SOC 24/7
 
-- Pentesting Premium
-- Cloud Security Hardening
+Servicio orientado a:
 
-Finalidad:
+- monitorización continua;
+- detección de actividad anómala;
+- correlación de eventos;
+- seguimiento de incidentes.
 
-- reducir superficie de ataque
-- encontrar fallos antes de explotacion
-- disminuir exposicion en activos y configuraciones
+Se relaciona especialmente con:
 
-Vectores asociados:
+- `SecurityEvent`
+- `Incident`
+- `Asset`
+- monitor SOC
+- Grafana
 
-- SQL Injection
-- XSS
-- Path Traversal
-- Reconnaissance
-- Cloud Misconfiguration
+### 2. Pentesting Premium
 
-### 2. Servicios de deteccion
+Servicio preventivo orientado a:
 
-- SOC 24/7
+- descubrir vulnerabilidades antes de explotación;
+- evaluar exposición web;
+- validar controles de entrada y salida.
 
-Finalidad:
+Se relaciona con ataques como:
 
-- recolectar telemetria
-- correlacionar eventos
-- detectar abuso de credenciales, phishing, malware y actividad anomala
+- SQL Injection;
+- XSS;
+- path traversal.
 
-Vectores asociados:
+### 3. IR Retainer
 
-- Brute Force
-- Phishing
-- Malware
-- Credential Abuse
-- SQL Injection
+Servicio reactivo orientado a:
 
-### 3. Servicios de respuesta
+- contención;
+- investigación;
+- priorización de incidentes críticos;
+- reducción del tiempo de respuesta.
 
-- IR Retainer
+Se relaciona con:
 
-Finalidad:
+- incidentes activos;
+- tickets;
+- estado operativo;
+- vectores críticos.
 
-- contener incidentes
-- reducir impacto
-- acelerar investigacion y recuperacion
+### 4. Cloud Security Hardening
 
-Vectores asociados:
+Servicio de endurecimiento orientado a:
 
-- Malware
-- Credential Abuse
-- Phishing
-- Brute Force
+- reducir configuraciones inseguras;
+- limitar abuso de superficie expuesta;
+- validar que la lógica sensible permanezca del lado servidor.
 
-## Relacion con el modelo de datos
+Se relaciona con:
+
+- activos protegidos;
+- configuración segura;
+- manipulación de pagos;
+- traversal y otros fallos de exposición.
+
+## Relación con el modelo de datos
 
 ### `Service`
 
-Define la oferta operativa:
+Define la oferta:
 
-- nombre
-- categoria
-- tier
-- SLA
-- precio
+- nombre;
+- categoría;
+- tier;
+- SLA;
+- precio;
+- descripción funcional.
 
 ### `Customer`
 
-Representa la organizacion protegida y referencia su servicio principal.
+Representa una organización protegida por uno o varios servicios.
 
 ### `Asset`
 
 Representa infraestructura real bajo cobertura:
 
-- firewalls
-- WAF
-- VPN
-- mail gateways
-- aplicaciones
-- consolas EDR
+- firewall;
+- WAF;
+- VPN;
+- mail gateway;
+- aplicación;
+- consola EDR;
+- nodo cloud.
 
 ### `Incident`
 
-Representa la salida operativa del SOC y la evidencia de que un servicio tiene utilidad real.
+Representa evidencia operativa del valor del servicio:
 
-## Logica implementada
+- severidad;
+- vector;
+- estado;
+- activo afectado;
+- país de origen;
+- IP origen.
 
-El backend expone:
+## Relación con el SOC
+
+El monitor SOC necesita que el dominio de negocio tenga sentido. Si solo existieran usuarios y servicios sin activos ni incidentes, el panel sería decorativo.
+
+Con el modelo actual:
+
+- los clientes aportan contexto empresarial;
+- los activos aportan superficie protegida;
+- los incidentes aportan señal operativa;
+- los servicios justifican por qué esa protección existe.
+
+## Endpoints que lo sostienen
 
 - `GET /api/services`
-  devuelve servicios enriquecidos con clientes protegidos, activos, riesgo y vectores cubiertos.
-
 - `GET /api/services/catalog`
-  devuelve el catalogo detallado con narrativa operativa y metricas por servicio.
-
 - `GET /api/services/effectiveness`
-  calcula efectividad, incidentes mitigados, cobertura y justificacion por linea de servicio.
-
 - `GET /api/services/:id`
-  devuelve detalle de un servicio concreto.
+- `GET /api/admin/overview`
+- `GET /api/admin/security-monitor`
 
-## Justificacion academica para TFG
+## Relación entre ataques y servicios
 
-En una memoria de ASIR, esta parte se puede defender asi:
-
-1. El catalogo comercial sirve como capa de negocio del sistema.
-2. El monitor SOC representa la capa operativa.
-3. Los ataques demostrados representan la capa de riesgo.
-4. La API une esas tres capas mediante datos persistidos y endpoints verificables.
-
-En consecuencia, el proyecto no enseña solo una web corporativa o una API, sino una plataforma con coherencia entre negocio, seguridad y operacion.
-
-## Ataques y servicios relacionados
-
-| Ataque | Servicio con mayor relacion | Motivo |
+| Ataque | Servicio principal relacionado | Justificación |
 |---|---|---|
-| SQL Injection | Pentesting Premium | descubre y reduce vectores explotables antes de produccion |
-| XSS | Pentesting Premium | valida entrada, salida y sanitizacion |
-| Brute Force | SOC 24/7 | detecta repeticion, abuso de identidad y patrones de acceso |
-| Credential Abuse | SOC 24/7 / IR Retainer | detecta y contiene uso fraudulento de credenciales |
-| Malware | SOC 24/7 / IR Retainer | correlaciona alertas EDR y activa respuesta |
-| Path Traversal | Cloud Security Hardening / Pentesting | revisa hardening, rutas y permisos |
-| Manipulacion de pagos | Cloud Security Hardening / revisiones seguras | obliga a validar del lado servidor |
+| SQL Injection | Pentesting Premium | detecta fallos de validación y exposición |
+| XSS | Pentesting Premium | revisa entradas, salidas y reflexión de payloads |
+| Fuerza bruta | SOC 24/7 | detecta abuso de identidad y repetición de intentos |
+| Credential Abuse | SOC 24/7 / IR Retainer | correlación y respuesta operativa |
+| Malware | SOC 24/7 / IR Retainer | visibilidad e intervención |
+| Path Traversal | Cloud Security Hardening | endurecimiento de rutas y permisos |
+| Manipulación de pagos | Cloud Security Hardening | refuerzo de lógica de servidor |
 
-## Comandos de demostracion
+## Cómo defenderlo en la memoria
+
+La forma correcta de explicarlo en el TFG es esta:
+
+1. el catálogo representa la capa de negocio;
+2. los clientes y activos representan la capa de operación;
+3. los ataques representan la capa de riesgo;
+4. el SOC y Grafana representan la capa de observabilidad;
+5. la API une esas capas mediante datos persistidos y endpoints verificables.
+
+Así el proyecto no se reduce a:
+
+- una web bonita;
+- una API aislada;
+- o un panel con datos inventados.
+
+Pasa a ser una plataforma coherente entre negocio, seguridad, red, base de datos y operación.
+
+## Comandos útiles
 
 - `npm run services:validate`
 - `npm run services:matrix:vuln`

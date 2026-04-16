@@ -1,8 +1,8 @@
 services:
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: frontend-php/Dockerfile
     ports:
       - "8000:80"
     depends_on:
@@ -46,12 +46,24 @@ services:
 
   prometheus:
     image: prom/prometheus
-    ports:
-      - "9090:9090"
     volumes:
       - ./sofia-backend/docker/prometheus.yml:/etc/prometheus/prometheus.yml
     depends_on:
       - backend
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: false
+    volumes:
+      - ./sofia-backend/docker/grafana/provisioning:/etc/grafana/provisioning
+      - ./sofia-backend/docker/grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - prometheus
 
 volumes:
   postgres-data:

@@ -15,7 +15,7 @@ const fallbackCatalog: ServiceCatalogResponse = {
       id: 1,
       name: "SOC 24/7",
       category: "Managed detection",
-      serviceLine: "Detection & response",
+      serviceLine: "Detection and response",
       tier: "Enterprise",
       description: "Monitorizacion continua, correlacion de eventos y respuesta operativa.",
       price: 2499,
@@ -74,27 +74,6 @@ const fallbackCatalog: ServiceCatalogResponse = {
         narrative: "Runbooks de respuesta, liderazgo tecnico y recuperacion asistida.",
       },
     },
-    {
-      id: 4,
-      name: "Cloud Security Hardening",
-      category: "Security posture",
-      serviceLine: "Posture",
-      tier: "Core",
-      description: "Endurecimiento cloud, revisiones IAM y control de configuraciones criticas.",
-      price: 2100,
-      slaHours: 8,
-      customers: [],
-      operationalMetrics: {
-        protectedCustomers: 3,
-        protectedAssets: 5,
-        openIncidents: 0,
-        meanExposureScore: 24,
-      },
-      controls: {
-        coveredVectors: ["IAM abuse", "Public exposure", "Config drift"],
-        narrative: "Base de postura segura para workloads, identidades y networking.",
-      },
-    },
   ],
 };
 
@@ -110,11 +89,16 @@ export default function Home() {
     fetchServiceCatalog().then(setCatalog).catch(() => setCatalog(fallbackCatalog));
   }, []);
 
-  const highlightedServices = useMemo(() => catalog.services.slice(0, 4), [catalog.services]);
+  const featuredServices = useMemo(() => catalog.services.slice(0, 3), [catalog.services]);
 
   return (
     <main className="home-shell">
-      <div className="home-background" aria-hidden="true" />
+      <div className="home-background" aria-hidden="true">
+        <div className="home-line home-line-left" />
+        <div className="home-line home-line-center" />
+        <div className="home-line home-line-right" />
+        <div className="home-grid-glow" />
+      </div>
 
       <header className="home-header">
         <Link to="/" className="home-brand">
@@ -123,40 +107,27 @@ export default function Home() {
 
         <nav className="home-nav">
           <a href="#services">Servicios</a>
-          <a href="#coverage">Cobertura</a>
-          <a href="#operations">Operacion</a>
-          <a href="#contact">Contacto</a>
+          <Link to="/dashboard">Dashboard</Link>
+          <Link to="/admin/security-monitor">SOC</Link>
+          <Link to="/login">Login</Link>
         </nav>
-
-        <div className="home-header-actions">
-          <Link className="home-header-link" to="/login">
-            Acceder
-          </Link>
-          <Link className="home-header-cta" to="/dashboard">
-            Ver plataforma
-          </Link>
-        </div>
       </header>
 
       <section className="home-hero">
-        <div className="home-hero-copy">
-          <div className="home-badge-row">
-            <span className="home-badge">24/7/365</span>
-            <span className="home-badge">SOC + servicios IT</span>
-          </div>
-
-          <h1>Soluciones integrales de ciberseguridad y servicios IT para entornos que no pueden fallar.</h1>
-          <p>
-            Sofia Solutions combina SOC operativo, hardening, pentesting y respuesta a incidentes
-            sobre una unica plataforma conectada al backend academico del proyecto.
+        <div className="home-hero-content">
+          <p className="home-hero-number">24/7/365</p>
+          <p className="home-hero-lead">
+            Soluciones integrales de ciberseguridad y servicios IT para empresas que no pueden
+            permitirse el lujo de ser vulnerables. SOC, pentesting, cloud security y respuesta
+            operativa en una sola plataforma.
           </p>
 
           <div className="home-hero-actions">
             <Link className="home-primary-cta" to="/login">
-              Solicitar acceso
+              Solicitar Demo
             </Link>
             <a className="home-secondary-cta" href="#services">
-              Ver servicios
+              Ver Servicios
             </a>
           </div>
 
@@ -168,79 +139,41 @@ export default function Home() {
             <span>NIST FRAMEWORK</span>
           </div>
         </div>
+      </section>
 
-        <div className="home-hero-visual">
-          <div className="home-hero-orbit">
-            <div className="home-orbit-core">
-              <strong>2026</strong>
-              <span>Unified security platform</span>
-            </div>
+      <section className="home-lower-panel" id="services">
+        <div className="home-lower-head">
+          <div>
+            <p className="home-section-kicker">Servicios destacados</p>
+            <h2>Cobertura real conectada al dashboard y al monitor SOC</h2>
           </div>
-
-          <div className="home-hero-sidecards">
+          <div className="home-kpi-row">
             <article>
-              <span>Clientes protegidos</span>
+              <span>Clientes</span>
               <strong>{catalog.summary.totalCustomers}</strong>
             </article>
             <article>
-              <span>Activos monitorizados</span>
+              <span>Activos</span>
               <strong>{catalog.summary.totalAssets}</strong>
             </article>
             <article>
-              <span>Servicios activos</span>
+              <span>Servicios</span>
               <strong>{catalog.summary.totalServices}</strong>
             </article>
           </div>
         </div>
-      </section>
-
-      <section className="home-kpi-grid" id="coverage">
-        <article className="home-kpi-card">
-          <span>Total services</span>
-          <strong>{catalog.summary.totalServices}</strong>
-          <small>Oferta conectada a clientes, activos y defensa.</small>
-        </article>
-        <article className="home-kpi-card">
-          <span>Protected customers</span>
-          <strong>{catalog.summary.totalCustomers}</strong>
-          <small>Tenants con cobertura continua y visibilidad operativa.</small>
-        </article>
-        <article className="home-kpi-card">
-          <span>Protected assets</span>
-          <strong>{catalog.summary.totalAssets}</strong>
-          <small>Superficie monitorizada en cloud, endpoints y acceso.</small>
-        </article>
-        <article className="home-kpi-card">
-          <span>Open incidents</span>
-          <strong>{catalog.summary.totalIncidents}</strong>
-          <small>Relacion directa con el monitor SOC y los flujos de respuesta.</small>
-        </article>
-      </section>
-
-      <section className="home-section" id="services">
-        <div className="home-section-head">
-          <div>
-            <p className="home-section-kicker">Servicios</p>
-            <h2>Un catalogo que tiene impacto real en el sistema</h2>
-          </div>
-          <p>
-            Cada servicio se refleja en clientes, activos, incidentes, tickets y metrica operativa.
-          </p>
-        </div>
 
         <div className="home-service-grid">
-          {highlightedServices.map((service) => (
+          {featuredServices.map((service) => (
             <article key={service.id} className="home-service-card">
               <div className="home-service-topline">
                 <span>{service.category}</span>
                 <strong>{service.name}</strong>
-                <small>{service.serviceLine} · {service.tier}</small>
               </div>
               <p>{service.description}</p>
-              <div className="home-service-metrics">
+              <div className="home-service-meta">
                 <span>SLA {service.slaHours}h</span>
                 <span>{formatCurrency(service.price)} EUR</span>
-                <span>{service.operationalMetrics.protectedAssets} activos</span>
               </div>
               <div className="home-service-vectors">
                 {service.controls.coveredVectors.map((vector) => (
@@ -249,71 +182,6 @@ export default function Home() {
               </div>
             </article>
           ))}
-        </div>
-      </section>
-
-      <section className="home-section">
-        <div className="home-operations-grid" id="operations">
-          <article className="home-panel">
-            <p className="home-section-kicker">Operacion</p>
-            <h2>De la deteccion a la remediacion sin cambiar de plataforma</h2>
-            <div className="home-flow-list">
-              <div>
-                <strong>01. Ingesta y normalizacion</strong>
-                <p>Eventos, telemetria, activos y tickets comparten el mismo backend.</p>
-              </div>
-              <div>
-                <strong>02. Correlacion y priorizacion</strong>
-                <p>El SOC clasifica, agrupa y asigna incidentes segun criticidad y cobertura.</p>
-              </div>
-              <div>
-                <strong>03. Respuesta y seguimiento</strong>
-                <p>La misma capa de negocio alimenta dashboard, monitor y validacion de defensas.</p>
-              </div>
-            </div>
-          </article>
-
-          <article className="home-panel">
-            <p className="home-section-kicker">Casos de uso</p>
-            <h2>Servicios pensados para un TFG con narrativa tecnica solida</h2>
-            <div className="home-usecase-list">
-              <div>
-                <span>SOC 24/7</span>
-                <p>Explica telemetria, eventos, alertado y monitorizacion continua.</p>
-              </div>
-              <div>
-                <span>Pentesting Premium</span>
-                <p>Justifica validacion ofensiva y pruebas de ataque controladas.</p>
-              </div>
-              <div>
-                <span>IR Retainer</span>
-                <p>Conecta incidentes, contencion, escalado y tiempos de respuesta.</p>
-              </div>
-              <div>
-                <span>Cloud Security Hardening</span>
-                <p>Relaciona activos, configuraciones y reduccion de superficie expuesta.</p>
-              </div>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section className="home-section home-cta-band" id="contact">
-        <div>
-          <p className="home-section-kicker">Plataforma</p>
-          <h2>Una sola experiencia para login, dashboard y monitor SOC.</h2>
-          <p>
-            La home, el acceso y la operacion comparten ya el mismo frontend React y el mismo
-            backend de servicios.
-          </p>
-        </div>
-        <div className="home-cta-actions">
-          <Link className="home-primary-cta" to="/login">
-            Iniciar sesion
-          </Link>
-          <Link className="home-secondary-cta" to="/admin/security-monitor">
-            Abrir SOC monitor
-          </Link>
         </div>
       </section>
     </main>
