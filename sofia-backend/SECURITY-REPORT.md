@@ -1,50 +1,19 @@
-# SECURITY-REPORT
+# Informe de seguridad
 
-## Resumen
+## Objetivo
 
-Este proyecto mantiene dos comportamientos de seguridad en paralelo con finalidad academica:
+Este informe resume qué vulnerabilidades se introducen de forma intencional en la versión académica vulnerable y cómo se corrigen o mitigan en la versión segura.
 
-- `v1` o flujo vulnerable
-- `v2` o flujo seguro
+El objetivo no es construir una aplicación insegura por error, sino disponer de un entorno controlado para:
 
-Ambos comparten base de datos, dominio funcional y rutas equivalentes, pero aplican controles distintos para que la comparativa sea observable.
+- demostrar fallos comunes;
+- observar su impacto;
+- comparar su corrección;
+- relacionar seguridad, monitorización y respuesta.
 
-## Vulnerabilidades intencionales
+## Enfoque dual
 
-1. Hashing debil en `src/utils/hash.ts`
-   En modo vulnerable se permite un esquema de hashing debil para ilustrar el riesgo de credenciales expuestas y cracking offline.
-
-2. Ausencia de rate limit en `src/middleware/rateLimit.ts`
-   El login vulnerable no frena intentos repetidos y facilita demostraciones de brute force.
-
-3. Cookies y sesion debiles en `src/controllers/auth.controller.ts`
-   En modo vulnerable las cookies no endurecen el almacenamiento de sesion con los mismos flags que el modo seguro.
-
-4. Validacion insuficiente de importes en `src/controllers/payments.controller.ts`
-   El flujo vulnerable permite manipular valores que en modo seguro deben quedar controlados por el servidor.
-
-5. IDS pasivo en `src/middleware/attackDetection.ts`
-   En modo vulnerable determinados patrones se registran pero no se bloquean, para evidenciar la diferencia con un bloqueo preventivo.
-
-6. Diferencias visibles solo en comportamiento
-   `/login` y `/login-secure` intentan verse iguales. La diferencia se manifiesta en:
-   - almacenamiento de token
-   - CSRF
-   - rate limit
-   - mensajes de error
-   - bloqueo de payloads
-
-## Correccion en modo seguro
-
-- `bcrypt` con coste 12
-- rate limit de autenticacion
-- cookies `HttpOnly`, `Secure` y `SameSite=Strict`
-- validacion fuerte de password y CSRF
-- validacion del precio desde base de datos
-- bloqueo `403` ante payloads detectados
-- registro y metricas de seguridad para SOC
-
-## Endpoints comparativos
+El proyecto mantiene dos familias de endpoints:
 
 Vulnerable:
 
@@ -61,14 +30,98 @@ Seguro:
 - `POST /api/v2/auth/refresh`
 - `POST /api/v2/auth/logout`
 
-## Demostracion recomendada
+Ambos flujos comparten el mismo dominio funcional, pero no los mismos controles.
 
-1. Iniciar sesion por `/login` y comprobar el flujo vulnerable.
-2. Repetir el mismo escenario en `/login-secure`.
-3. Ejecutar los scripts de ataque.
-4. Verificar diferencias en:
-   - estado HTTP
-   - cookies
-   - `localStorage`
-   - metricas
-   - panel SOC
+## Vulnerabilidades intencionales
+
+## 1. Autenticación más débil
+
+En la versión vulnerable se mantiene un comportamiento de autenticación más laxo para poder demostrar:
+
+- hashing débil;
+- validación menos rigurosa;
+- bypass académico en escenarios concretos.
+
+En la versión segura:
+
+- se endurece el hashing;
+- se reduce la tolerancia a entradas manipuladas;
+- desaparecen las ramas de bypass didáctico.
+
+## 2. Rate limiting insuficiente
+
+La versión vulnerable permite ataques repetitivos con mayor facilidad, lo que facilita:
+
+- brute force;
+- credential stuffing académico;
+- automatización intensiva.
+
+La versión segura aplica limitación de intentos.
+
+## 3. Gestión de sesión menos protegida
+
+La versión vulnerable usa una política de sesión más expuesta para poder explicar:
+
+- riesgo de robo o reutilización;
+- diferencia entre almacenamiento accesible desde cliente y almacenamiento endurecido.
+
+La versión segura:
+
+- endurece cookies;
+- reduce exposición del token;
+- mejora el control de sesión.
+
+## 4. Validación de pagos insuficiente
+
+En el flujo vulnerable el valor monetario puede depender del cliente.
+
+En el flujo seguro:
+
+- el importe se recalcula o valida desde el servidor;
+- el cliente no decide el precio final.
+
+## 5. IDS pasivo frente a IDS preventivo
+
+En el flujo vulnerable:
+
+- se detectan patrones;
+- pero no siempre se bloquea la petición.
+
+En el flujo seguro:
+
+- se detecta;
+- se registra;
+- se bloquea;
+- se deja evidencia para SOC y Grafana.
+
+## Tabla comparativa
+
+| Dimensión | Vulnerable | Seguro |
+|---|---|---|
+| SQLi/XSS/traversal | Puede dejar pasar | Bloquea |
+| Fuerza bruta | Más fácil | Limitada |
+| Hashing | Débil | Endurecido |
+| Sesión | Menos protegida | Más protegida |
+| Pago | Riesgo de manipulación | Validación de servidor |
+| Evidencia | Parcial | Completa |
+
+## Cómo demostrarlo
+
+Secuencia práctica:
+
+1. abrir `http://localhost:8000/login`;
+2. abrir `http://localhost:8000/login-secure`;
+3. lanzar scripts de ataque;
+4. comparar códigos HTTP;
+5. revisar el SOC en `http://localhost:8000/admin/security-monitor`;
+6. revisar Grafana en `http://localhost:3000`.
+
+## Conclusión
+
+La principal enseñanza de este informe es que la seguridad no depende de un solo mecanismo. La diferencia entre el modo vulnerable y el seguro aparece en varias capas:
+
+- autenticación;
+- validación;
+- detección;
+- persistencia;
+- observabilidad.

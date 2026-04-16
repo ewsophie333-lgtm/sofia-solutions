@@ -1,175 +1,238 @@
 # Sofia Backend
 
-Backend academico de Sofia Solutions con dos modos de ejecucion:
+Backend académico de `Sofia Solutions`, orientado a un proyecto de ASIX centrado en:
 
-- `APP_MODE=vulnerable`
-- `APP_MODE=secure`
+- seguridad ofensiva y defensiva;
+- despliegue de servicios;
+- scripting y automatización;
+- contenedorización con Docker;
+- bases de datos relacionales;
+- visualización de eventos e incidentes.
 
-## Stack
+El backend da servicio al frontend corporativo publicado en `http://localhost:8000` y expone una API REST en `http://localhost:8001`.
+
+## Rol dentro del proyecto
+
+Este backend no se limita a autenticar usuarios o devolver datos de catálogo. Su función es sostener una plataforma completa con:
+
+- login vulnerable y login seguro;
+- catálogo de servicios con lógica operativa;
+- datos de clientes, activos e incidentes;
+- tickets y pagos simulados;
+- eventos de seguridad;
+- métricas internas para Grafana;
+- panel SOC con datos coherentes para la defensa del proyecto.
+
+## Enfoque ASIX
+
+El valor del backend para ASIX está en que permite demostrar competencias de:
+
+- administración de servicios en red;
+- exposición y securización de APIs;
+- diseño y explotación de bases de datos;
+- despliegue y orquestación con Docker Compose;
+- automatización en Windows y Linux;
+- monitorización y observabilidad;
+- análisis comparativo entre configuraciones inseguras y endurecidas.
+
+## Stack técnico
 
 - Node.js 20+
 - Express + TypeScript
-- Prisma + PostgreSQL 15
-- JWT + bcryptjs / MD5
+- Prisma ORM
+- PostgreSQL 15
+- JWT + bcryptjs / MD5 académico
 - Zod
-- Helmet, CORS, cookies, rate limit
-- Prometheus `/metrics`
 - Winston
-- Swagger `/docs`
+- Swagger/OpenAPI
+- Prometheus como fuente interna de métricas
+- Grafana como capa visible de visualización técnica
 
-## Puertos
+## Servicios y puertos
 
-- Frontend corporativo: `8000`
-- Backend: `8001`
+- frontend corporativo: `http://localhost:8000`
+- backend API: `http://localhost:8001`
+- Swagger: `http://localhost:8001/docs`
+- healthcheck: `http://localhost:8001/health`
+- métricas internas: `http://localhost:8001/metrics`
 - PostgreSQL: `5432`
-- Prometheus: `9090`
+- Grafana: `http://localhost:3000`
 
-## Integracion con frontend
+Prometheus sigue existiendo como recolector interno para Grafana, pero ya no forma parte de la capa visible principal del proyecto.
 
-El frontend visible en `http://localhost:8000` se sirve desde el monorepo raiz. La home conserva el preview visual original, mientras que las rutas `/login` y `/login-secure` usan una interfaz React comun con dos implementaciones de autenticacion por debajo. El backend queda desacoplado y expone su API en `8001`, documentacion Swagger en `/docs` y metricas en `/metrics`.
+## Endpoints principales
 
-La consecuencia directa es que hoy conviven dos tipos de pantalla:
-
-- paginas servidas con fidelidad casi exacta desde el preview original
-- paginas React locales conectadas a datos y seguridad reales
-
-Esto es intencional en el estado actual del proyecto y debe explicarse en la defensa para evitar interpretarlo como una inconsistencia accidental.
-
-## Login dual
-
-Se han anadido dos rutas diferenciadas para demostracion:
-
-- `POST /api/v2/auth/login`
-- `POST /api/v1/auth/login`
-
-La pantalla asociada queda en:
-
-- `http://localhost:8000/login`
-- `http://localhost:8000/login-secure`
-- `http://localhost:8000/login/vulnerable`
-
-El flujo vulnerable permite:
-
-- bypass SQLi simulado
-- validacion laxa
-- ausencia de rate limit
-- reflexion controlada de payload XSS para demostracion
-
-El flujo seguro aplica:
-
-- deteccion y bloqueo
-- validacion estricta
-- rate limit
-- sesion menos expuesta
-
-Documentacion adicional:
-
-- [ATTACK-SCRIPTS.md](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/ATTACK-SCRIPTS.md)
-- [SECURE-LOGIN-EXPLAINED.md](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/SECURE-LOGIN-EXPLAINED.md)
-
-## Puesta en marcha
-
-1. Opcional: copiar `.env.example` a `.env`
-2. Si vas a usar base real, configurar `DATABASE_URL`
-3. Ejecutar:
-
-```bash
-npm install
-npm run prisma:generate
-npm run prisma:migrate
-npm run prisma:seed
-npm run dev
-```
-
-Si no existe `.env`, el backend toma valores por defecto desde `.env.example`.
-
-## Endpoints
+Autenticación vulnerable:
 
 - `POST /api/v1/auth/login`
 - `POST /api/v1/auth/register`
 - `POST /api/v1/auth/refresh`
 - `POST /api/v1/auth/logout`
+
+Autenticación segura:
+
 - `GET /api/v2/auth/csrf`
 - `POST /api/v2/auth/login`
 - `POST /api/v2/auth/register`
 - `POST /api/v2/auth/refresh`
 - `POST /api/v2/auth/logout`
+
+Servicios y negocio:
+
 - `GET /api/services`
 - `GET /api/services/catalog`
 - `GET /api/services/effectiveness`
 - `GET /api/services/:id`
 - `POST /api/services`
+
+Monitorización y administración:
+
+- `GET /api/admin/overview`
+- `GET /api/admin/security-monitor`
+- `GET /api/admin/security-events`
+
+Otros módulos:
+
 - `POST /api/payments/checkout`
 - `GET /api/payments/history`
 - `GET /api/tickets`
 - `POST /api/tickets`
 - `GET /api/tickets/:id/messages`
 - `POST /api/tickets/:id/messages`
-- `GET /api/admin/overview`
-- `GET /api/admin/security-monitor`
-- `GET /api/admin/security-events`
 - `GET /metrics`
 
-## Modelo SOC
+## Modos de funcionamiento
 
-El backend incluye ahora entidades para hacer el monitor mas creible:
+El proyecto puede trabajar en dos modos:
 
+- `APP_MODE=vulnerable`
+- `APP_MODE=secure`
+
+La comparación entre ambos no se basa en dos aplicaciones distintas, sino en dos comportamientos diferenciados sobre el mismo dominio funcional. Eso permite defender mejor el proyecto: la lógica de negocio es la misma, pero cambia la forma de protegerla.
+
+### Modo vulnerable
+
+Se usa con finalidad didáctica para mostrar fallos como:
+
+- ausencia de rate limiting efectivo;
+- hashing débil o comportamiento de autenticación laxo;
+- validaciones insuficientes;
+- detección pasiva de ataques;
+- posibilidad de abuso por SQLi, XSS o fuerza bruta en escenarios de demostración.
+
+### Modo seguro
+
+Aplica controles más realistas:
+
+- rate limit;
+- validación estricta;
+- bloqueo de payloads maliciosos;
+- bcrypt;
+- cookies más seguras;
+- eventos de seguridad persistidos;
+- métricas y trazabilidad.
+
+## Arquitectura funcional
+
+El backend se organiza para reflejar una arquitectura profesional y mantenible:
+
+- `config/`: variables de entorno, base de datos, Prometheus
+- `controllers/`: lógica de negocio
+- `routes/`: exposición de endpoints
+- `middleware/`: autenticación, detección de ataques, rate limiting, logging
+- `services/`: lógica de apoyo y agregación
+- `utils/`: helpers y utilidades
+- `prisma/`: modelo relacional, seeds y migraciones
+- `tests/`: scripts de ataque y validación
+
+## Base de datos y dominio
+
+Las entidades principales del modelo son:
+
+- `User`
+- `Service`
 - `Customer`
 - `Asset`
 - `Incident`
+- `Ticket`
+- `TicketMessage`
+- `Payment`
+- `SecurityEvent`
 
-## Logica del catalogo de servicios
+Esta estructura permite que el catálogo de servicios tenga sentido real dentro del proyecto:
 
-El catalogo ya no es una lista estatica. Cada servicio se conecta con:
+- un cliente contrata servicios;
+- esos servicios protegen activos;
+- los activos generan incidentes y eventos;
+- los incidentes alimentan el SOC;
+- los scripts de ataque permiten comprobar qué controles resisten o fallan.
 
-- clientes (`Customer`)
-- activos (`Asset`)
-- incidentes (`Incident`)
-- vectores de ataque cubiertos
-- efectividad operativa
+## Puesta en marcha
 
-Esto permite justificar el valor academico del sistema:
+### Con Docker Compose
 
-- la capa de negocio define el servicio
-- la capa operativa produce telemetria e incidentes
-- la capa de seguridad demuestra que ataques cubre o mitiga cada servicio
+Desde la raíz del monorepo:
 
-Referencia ampliada:
+```bash
+docker compose up -d
+```
 
+Modo vulnerable:
+
+```bash
+set APP_MODE=vulnerable
+docker compose up -d
+```
+
+### Con scripts de automatización
+
+Windows:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/start-stack.ps1
+powershell -ExecutionPolicy Bypass -File scripts/start-stack.ps1 -Mode vulnerable -Rebuild
+```
+
+Linux:
+
+```bash
+sh ./scripts/start-stack.sh
+sh ./scripts/start-stack.sh vulnerable --build
+```
+
+## Scripts de ataque y validación
+
+Los scripts sirven para demostrar que:
+
+- el modo vulnerable permite determinados abusos;
+- el modo seguro los bloquea o reduce;
+- la lógica de servicios y el SOC responden a esos vectores.
+
+Comandos útiles:
+
+- `npm run attack:sqli:vuln`
+- `npm run attack:sqli:secure`
+- `npm run attack:xss:vuln`
+- `npm run attack:xss:secure`
+- `npm run attack:traversal:vuln`
+- `npm run attack:traversal:secure`
+- `npm run attack:payment:vuln`
+- `npm run attack:payment:secure`
+- `npm run attack:bruteforce:vuln`
+- `npm run attack:bruteforce:secure`
+- `npm run services:validate`
+- `npm run services:matrix:vuln`
+- `npm run services:matrix:secure`
+
+## Qué documentación consultar
+
+- [ATTACK-SCRIPTS.md](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/ATTACK-SCRIPTS.md)
+- [SECURE-LOGIN-EXPLAINED.md](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/SECURE-LOGIN-EXPLAINED.md)
 - [SERVICE-ARCHITECTURE.md](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/SERVICE-ARCHITECTURE.md)
+- [SECURITY-REPORT.md](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/SECURITY-REPORT.md)
+- [DOCUMENTACION-APA.md](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/DOCUMENTACION-APA.md)
 
-Uso practico:
+## Credenciales de demostración
 
-- `Customer` representa tenants o clientes protegidos
-- `Asset` representa firewall, VPN, WAF, aplicaciones y consolas EDR
-- `Incident` representa detecciones correlacionadas con severidad, vector, estado, IP origen y pais origen
-
-El endpoint `GET /api/admin/security-monitor` agrega esos datos y devuelve:
-
-- resumen de eventos e incidentes
-- top attacking countries
-- tendencia por severidad
-- top attack vectors
-- incident timeline
-- distribucion por superficie de ataque
-- exposicion por cliente
-- portfolio de servicios con categoria, tier y SLA
-
-## Verificacion operativa
-
-Pantallas:
-
-- `http://localhost:8000/`
-- `http://localhost:8000/login`
-- `http://localhost:8000/login-secure`
-- `http://localhost:8000/dashboard`
-- `http://localhost:8000/admin/security-monitor`
-
-API:
-
-- `GET /health`
-- `GET /api/admin/overview`
-- `GET /api/admin/security-monitor`
-- `GET /api/admin/security-events`
-
-
+- usuario: `admin@sofia.local`
+- contraseña: `SofiaAdmin2026!`

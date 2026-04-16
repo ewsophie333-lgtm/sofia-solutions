@@ -1,427 +1,93 @@
-# Memoria tecnica en formato APA
+# Documentación técnica académica
 
-## Portada
+## 1. Introducción
 
-**Titulo del proyecto:**  
-Diseno e implementacion de una plataforma web full stack para demostracion academica de ciberseguridad ofensiva y defensiva en Sofia Solutions
+Sofia Solutions es un proyecto académico orientado a ASIX que simula una empresa de servicios IT y ciberseguridad. La solución combina:
 
-**Ciclo formativo:**  
-Administracion de Sistemas Informaticos en Red (ASIR)
+- un frontend corporativo servido en web;
+- un backend API con lógica de negocio y seguridad;
+- una base de datos relacional;
+- un monitor SOC corporativo;
+- una capa técnica de visualización con Grafana;
+- una batería de scripts para demostrar ataques y mitigaciones.
 
-**Autor:**  
-[Nombre del alumno]
+El objetivo no es solo construir una web funcional. El objetivo es demostrar cómo se despliega, securiza, monitoriza y documenta una plataforma completa.
 
-**Centro educativo:**  
-[Nombre del centro]
+## 2. Justificación para ASIX
 
-**Curso academico:**  
-2025-2026
+Este proyecto encaja con un enfoque ASIX porque obliga a trabajar sobre:
 
-**Tutor academico:**  
-[Nombre del tutor]
+- servicios de red;
+- despliegue de aplicaciones;
+- administración de bases de datos;
+- seguridad y alta disponibilidad;
+- scripting y automatización;
+- monitorización;
+- documentación técnica.
 
-**Fecha de entrega:**  
-[Fecha]
+Por tanto, el valor principal no está en la maquetación aislada de páginas, sino en la integración entre sistemas, seguridad y operación.
 
-## Resumen
+## 3. Arquitectura general
 
-La presente memoria describe el diseno y desarrollo de *Sofia Solutions*, una plataforma web full stack orientada a fines academicos dentro del ciclo de Administracion de Sistemas Informaticos en Red (ASIR). La solucion simula la actividad de una empresa ficticia especializada en servicios IT y ciberseguridad, integrando una web corporativa, un panel principal de operacion y una API REST con persistencia de datos, autenticacion y mecanismos de observabilidad.
+La arquitectura visible del proyecto queda organizada así:
 
-La caracteristica diferencial del proyecto consiste en la coexistencia de dos modos operativos: `vulnerable` y `secure`. Ambos comparten la misma base funcional, pero difieren en la forma de tratar autenticacion, sesiones, pagos, validacion de entradas y deteccion de ataques. Esta aproximacion permite demostrar de forma practica el impacto de las malas practicas de seguridad y compararlas con implementaciones endurecidas basadas en controles modernos.
+- `frontend-php/`: capa web corporativa servida por Apache/PHP;
+- `sofia-backend/`: API REST construida con Express y TypeScript;
+- `postgres`: persistencia relacional;
+- `grafana`: visualización técnica;
+- `prometheus`: recolector interno para Grafana;
+- `docker-compose.yml`: orquestación completa del entorno.
 
-Desde el punto de vista tecnico, el frontend se materializa como una landing corporativa servida desde el monorepo y basada en el build visual original del preview seleccionado, mientras que el backend se desarrolla con Express, TypeScript, Prisma y PostgreSQL. Se incorporan metricas compatibles con Prometheus, logging estructurado con Winston, documentacion OpenAPI y despliegue opcional mediante Docker Compose. El resultado es un entorno adecuado tanto para defensa oral como para aprendizaje practico de conceptos relacionados con administracion de sistemas, desarrollo de APIs y seguridad aplicada.
+## 4. Arquitectura de red y servicios
 
-**Palabras clave:** ASIR, ciberseguridad, React, Express, Prisma, PostgreSQL, JWT, Docker, observabilidad.
+### Servicios expuestos
 
-## Abstract
+- `http://localhost:8000` → frontend corporativo
+- `http://localhost:8001` → backend API
+- `http://localhost:8001/docs` → Swagger
+- `http://localhost:8001/health` → healthcheck
+- `http://localhost:3000` → Grafana
 
-This report describes the design and development of *Sofia Solutions*, a full stack web platform created for academic purposes within the ASIR vocational program. The solution simulates the activity of a fictional IT and cybersecurity company and integrates a corporate website, an operational dashboard, and a REST API with persistence, authentication, and observability mechanisms.
+### Servicios internos
 
-The most distinctive aspect of the project is the coexistence of two operational modes: `vulnerable` and `secure`. Both share the same functional base, but differ in how they handle authentication, sessions, payments, input validation, and attack detection. This approach enables practical demonstration of insecure practices and direct comparison with hardened implementations based on modern security controls.
+- `postgres:5432`
+- `prometheus` como fuente interna de métricas
 
-From a technical perspective, the frontend is delivered as a corporate landing based on the original visual preview build, while the backend is built with Express, TypeScript, Prisma, and PostgreSQL. Prometheus-compatible metrics, Winston structured logging, OpenAPI documentation, and optional Docker Compose deployment are included. The result is a platform suitable for oral defense, technical documentation, and hands-on learning in systems administration, API development, and applied cybersecurity.
+La decisión de dejar Prometheus como componente interno responde a un criterio práctico: para una defensa o demostración resulta más profesional enseñar el SOC y Grafana como paneles visibles, manteniendo Prometheus como pieza de infraestructura.
 
-## Indice
+## 5. Frontend corporativo
 
-1. Introduccion  
-2. Justificacion del proyecto  
-3. Objetivos  
-4. Alcance y limitaciones  
-5. Metodologia y plan de trabajo  
-6. Arquitectura general  
-7. Analisis funcional  
-8. Desarrollo del frontend  
-9. Desarrollo del backend  
-10. Seguridad comparativa: modo vulnerable y modo seguro  
-11. Flujo de datos, flujo de codigo y observabilidad  
-12. Base de datos y modelo relacional  
-13. Despliegue, contenedorizacion y puertos  
-14. Pruebas realizadas  
-15. Planificacion temporal y recursos  
-16. Presupuesto estimado  
-17. Resultados, conclusiones y trabajo futuro  
-18. Referencias  
-19. Anexos  
+El frontend visible se ha planteado con una estética empresarial limpia y profesional. Las rutas principales son:
 
-## 1. Introduccion
-
-La realidad actual de los servicios digitales exige que un administrador de sistemas no solo conozca infraestructuras, redes y sistemas operativos, sino tambien conceptos de desarrollo seguro, exposicion de APIs, registro de eventos, monitorizacion y gestion de incidentes. En entornos empresariales, la linea que separa la administracion de sistemas del desarrollo backend es cada vez mas difusa, especialmente en escenarios cloud, DevOps y plataformas internas.
-
-Partiendo de esa premisa, este proyecto busca construir una aplicacion didactica que no se limite a ser funcional, sino que permita estudiar el efecto de distintas decisiones de seguridad sobre un mismo sistema. En lugar de desarrollar una plataforma puramente empresarial, se ha optado por una plataforma comparativa. El backend puede ejecutarse en modo vulnerable o en modo seguro, mostrando con claridad que controles faltan, que riesgos aparecen y como se corrigen.
-
-## 2. Justificacion del proyecto
-
-La eleccion del proyecto se justifica por tres motivos principales:
-
-1. **Relevancia tecnica.**  
-   Las APIs REST, la autenticacion con tokens, la observabilidad y la proteccion ante ataques forman parte del dia a dia de cualquier infraestructura moderna.
-
-2. **Valor academico.**  
-   La existencia de dos modos de seguridad convierte la aplicacion en un laboratorio controlado donde se puede demostrar teoria con resultados visibles.
-
-3. **Relacion con ASIR.**  
-   El proyecto integra competencias de administracion de sistemas, bases de datos, redes, despliegue, seguridad, monitorizacion y documentacion.
-
-## 3. Objetivos
-
-### 3.1 Objetivo general
-
-Desarrollar una plataforma full stack orientada a la demostracion academica de ciberseguridad aplicada, capaz de mostrar diferencias reales entre una implementacion API vulnerable y otra segura.
-
-### 3.2 Objetivos especificos
-
-1. Integrar un frontend corporativo con alta fidelidad visual respecto al diseno de referencia.
-2. Desarrollar un backend modular en Express y TypeScript.
-3. Implementar un modelo de datos en Prisma sobre PostgreSQL.
-4. Integrar autenticacion, pagos, tickets y panel administrativo.
-5. Incorporar metricas, logs y trazabilidad de eventos de seguridad.
-6. Permitir conmutar entre `APP_MODE=vulnerable` y `APP_MODE=secure`.
-7. Documentar la solucion con suficiente profundidad para memoria y defensa.
-
-### 3.3 Objetivo funcional del catalogo de servicios
-
-El proyecto no pretende mostrar un catalogo comercial vacio. Un objetivo adicional es que los servicios ofertados tengan coherencia tecnica y puedan justificarse dentro del sistema. Para ello, cada servicio se vincula a clientes, activos, incidentes, SLA y vectores de ataque cubiertos.
-
-## 4. Alcance y limitaciones
-
-### 4.1 Alcance
-
-El proyecto cubre:
-
-- landing corporativa replicada a partir del preview de referencia
-- API REST con rutas de autenticacion, servicios, pagos, tickets y administracion
-- deteccion de patrones SQLi, XSS y path traversal
-- metricas Prometheus
-- logging estructurado
-- documentacion Swagger
-- despliegue local y mediante Docker Compose
-- personalizacion local del branding, incluyendo logo transparente sobredimensionado sobre el build original
-
-### 4.2 Limitacion visual relevante
-
-Durante la evolucion del proyecto se adopto una solucion hibrida para equilibrar fidelidad visual y editabilidad:
-
-- la home publica se mantiene apoyada sobre el build del preview original para conservar el aspecto de referencia
-- el login, dashboard y monitor SOC se implementan como pantallas React propias para poder integrarlas con el backend local
-
-Como resultado, el sistema no es una SPA visualmente uniforme al 100%. Existen dos familias visuales:
-
-1. pantallas basadas en preview original
-2. pantallas locales orientadas a funcionalidad academica
-
-Esta decision debe explicarse en memoria y defensa como una eleccion tecnica consciente, no como un fallo de maquetacion.
-
-## 7.1 Logica del catalogo de servicios
-
-Para que la empresa ficticia tenga credibilidad academica, el catalogo de servicios se ha unido al dominio de seguridad. La relacion implementada es la siguiente:
-
-1. `Service` representa la capacidad operativa ofertada.
-2. `Customer` representa la organizacion protegida.
-3. `Asset` representa la infraestructura gestionada.
-4. `Incident` representa la evidencia operativa del valor del servicio.
-
-Con esta estructura, servicios como `SOC 24/7`, `Pentesting Premium`, `IR Retainer` y `Cloud Security Hardening` dejan de ser textos comerciales y pasan a generar efectos medibles en el sistema.
-
-## 7.2 Clasificacion de servicios
-
-### Preventivos
-
-- Pentesting Premium
-- Cloud Security Hardening
-
-Reducen superficie de ataque y ayudan a prevenir explotacion de fallos.
-
-### Detectivos
-
-- SOC 24/7
-
-Recolectan telemetria, correlacionan eventos y mejoran tiempo de deteccion.
-
-### Reactivos
-
-- IR Retainer
-
-Permiten contener, investigar y recuperar ante incidentes.
-
-## 7.3 Endpoints funcionales de servicios
-
-Para soportar esta parte se han implementado los endpoints:
-
-- `GET /api/services`
-- `GET /api/services/catalog`
-- `GET /api/services/effectiveness`
-- `GET /api/services/:id`
-
-Estos endpoints devuelven datos derivados de clientes, activos e incidentes reales sembrados en la base.
-
-## 8.1 Flujo del login seguro e inseguro
-
-El sistema incorpora una pantalla de autenticacion propia en el frontend accesible desde `/login`, con dos variantes separadas:
-
+- `/`
+- `/login`
 - `/login-secure`
-- `/login/vulnerable`
+- `/dashboard`
+- `/admin/security-monitor`
 
-La razon de esta separacion es pedagogica. El usuario puede enviar el mismo tipo de payload contra ambos flujos y observar diferencias medibles tanto en interfaz como en respuesta del backend.
+### Objetivo visual
 
-### Diagrama de flujo del login dual
+La interfaz debe transmitir:
 
-```mermaid
-flowchart TD
-    A[Usuario abre /login] --> B{Seleccion de modo}
-    B -->|Secure| C[POST /api/v2/auth/login]
-    B -->|Vulnerable| D[POST /api/v1/auth/login]
-    C --> E[Resolver modo por peticion]
-    D --> E2[Resolver modo por peticion]
-    E --> F[attackDetection bloquea patrones]
-    F -->|Ataque detectado| G[403 + evento + metrica]
-    F -->|Entrada valida| H[Rate limit + Zod estricto]
-    H --> I[bcrypt + sesion aleatoria + cookies seguras]
-    E2 --> J[attackDetection registra pero permite]
-    J --> K[Sin rate limit efectivo + validacion laxa]
-    K --> L[MD5 / bypass SQLi simulado / reflexion XSS]
-    I --> M[Login seguro completado]
-    L --> N[Login vulnerable completado]
-```
+- marca corporativa;
+- profesionalidad;
+- claridad;
+- confianza;
+- coherencia con una empresa de servicios de seguridad.
 
-### Diferencias clave
+### Objetivo funcional
 
-1. En modo seguro, un payload malicioso no alcanza la capa de autenticacion.
-2. En modo vulnerable, el payload puede atravesar validacion y activar ramas inseguras creadas de forma intencional para demostracion.
-3. El frontend vulnerable puede reflejar contenido HTML devuelto por la API para escenificar riesgo XSS, mientras que el flujo seguro no lo interpreta.
+El frontend no se limita a presentar formularios:
 
-## 11.1 Flujo de scripts de ataque
+- muestra la propuesta de valor de la empresa;
+- permite autenticación en modo vulnerable y seguro;
+- consume el dashboard de negocio;
+- muestra un monitor SOC entendible;
+- da contexto a los servicios ofrecidos.
 
-Los scripts de pruebas automatizadas se ejecutan desde la raiz del monorepo y redirigen a la carpeta del backend.
+## 6. Backend y organización del código
 
-```mermaid
-flowchart LR
-    A[npm run attack:sqli:vuln] --> B[tests/attack-sqli.ts]
-    C[npm run attack:xss:vuln] --> D[tests/attack-xss.ts]
-    E[npm run attack:payment:secure] --> F[tests/attack-payment.ts]
-    B --> G[/api/v1/auth/login]
-    D --> G
-    F --> H[/api/v2/auth/login]
-    H --> I[/api/payments/checkout]
-```
-
-Cada script se documenta con detalle en:
-
-## 11.2 Relacion entre ataques y servicios
-
-Cada ataque de la bateria se utiliza tambien para justificar la utilidad del catalogo de servicios:
-
-- SQL Injection
-  relacionado con `Pentesting Premium` y revisiones preventivas.
-- XSS
-  relacionado con `Pentesting Premium`.
-- Brute Force y Credential Abuse
-  relacionados con `SOC 24/7` e `IR Retainer`.
-- Malware
-  relacionado con `SOC 24/7` e `IR Retainer`.
-- Manipulacion de pagos
-  relacionado con controles de backend y reforzado de arquitectura.
-
-Esta correlacion permite defender que los servicios ofertados responden a riesgos concretos y no son elementos decorativos.
-
-## 11.3 Scripts de validacion de servicios
-
-Se han preparado comandos adicionales para demostrar la logica del catalogo:
-
-- `npm run services:validate`
-- `npm run services:matrix:vuln`
-- `npm run services:matrix:secure`
-- `npm run attack:bruteforce:vuln`
-- `npm run attack:bruteforce:secure`
-- `npm run attack:defense:vuln`
-- `npm run attack:defense:secure`
-
-Estos comandos permiten enseñar en tiempo real:
-
-- que ataques prosperan o se bloquean
-- que servicios se asocian a cada vector
-- que efectividad calcula la API para cada servicio
-
-- `ATTACK-SCRIPTS.md`
-- `SECURE-LOGIN-EXPLAINED.md`
-
-### 4.2 Limitaciones
-
-- los pagos son simulados, no se integran con Stripe real
-- no se almacenan tarjetas reales
-- el sistema no esta pensado para produccion
-- las pruebas de seguridad incluidas son demostrativas, no sustituyen a una auditoria profesional
-
-## 5. Metodologia y plan de trabajo
-
-La metodologia seguida ha sido incremental y basada en iteraciones:
-
-1. Definicion de requisitos.
-2. Modelado de entidades y flujos.
-3. Implementacion del backend base.
-4. Integracion de seguridad dual.
-5. Construccion del frontend editable.
-6. Integracion de observabilidad.
-7. Preparacion de Docker y documentacion.
-
-### 5.1 Diagrama del ciclo de trabajo
-
-```mermaid
-flowchart LR
-    A[Analisis] --> B[Modelado]
-    B --> C[Backend]
-    C --> D[Frontend]
-    D --> E[Seguridad]
-    E --> F[Observabilidad]
-    F --> G[Docker y docs]
-    G --> H[Verificacion final]
-```
-
-## 6. Arquitectura general
-
-El sistema adopta una arquitectura cliente-servidor desacoplada:
-
-- el frontend representa la interfaz de usuario y consume la API
-- el backend expone servicios REST, aplica reglas de negocio y accede a la base de datos
-- PostgreSQL persiste la informacion
-- Prometheus recoge metricas
-
-### 6.1 Arquitectura de alto nivel
-
-```mermaid
-flowchart LR
-    U[Usuario] --> F[Frontend React]
-    F --> A[API Express]
-    A --> P[Prisma ORM]
-    P --> D[(PostgreSQL)]
-    A --> M[/Metrics/]
-    A --> L[Winston Logs]
-    A --> S[Security Events]
-    C[Docker Compose] --> A
-    C --> D
-    C --> R[Prometheus]
-```
-
-### 6.2 Arquitectura interna del backend
-
-```mermaid
-flowchart TD
-    RQ[Request] --> MW1[requestLogger]
-    MW1 --> MW2[attackDetection]
-    MW2 --> MW3[auth y validate]
-    MW3 --> CT[Controllers]
-    CT --> SV[Services]
-    SV --> PR[Prisma]
-    PR --> DB[(PostgreSQL)]
-    CT --> RS[Response]
-```
-
-## 7. Analisis funcional
-
-### 7.1 Modulos funcionales
-
-1. **Autenticacion**
-2. **Catalogo de servicios**
-3. **Pagos**
-4. **Tickets**
-5. **Administracion**
-6. **Seguridad y monitorizacion**
-
-### 7.2 Casos de uso principales
-
-```mermaid
-flowchart TD
-    A[Cliente] --> B[Registrarse]
-    A --> C[Iniciar sesion]
-    A --> D[Consultar servicios]
-    A --> E[Crear ticket]
-    A --> F[Realizar pago]
-    G[Administrador] --> H[Ver panel]
-    G --> I[Gestionar catalogo]
-    G --> J[Revisar eventos]
-```
-
-## 8. Desarrollo del frontend
-
-### 8.1 Objetivo del frontend
-
-El frontend se ha disenado para ofrecer dos experiencias complementarias:
-
-- una pagina corporativa moderna y editable
-- un panel operativo que centraliza datos de negocio y seguridad
-
-### 8.2 Tecnologias utilizadas
-
-- React 19
-- TypeScript
-- React Router
-- Vite
-- CSS modular propio
-
-### 8.3 Rutas implementadas
-
-- `/` para la landing
-- `/dashboard` para el panel principal
-
-### 8.4 Flujo de datos del frontend
-
-```mermaid
-flowchart TD
-    A[Usuario abre /dashboard] --> B[Componente Dashboard]
-    B --> C[fetchOverview]
-    C --> D{API responde}
-    D -->|Si| E[Estado con datos reales]
-    D -->|No| F[Estado fallback local]
-    E --> G[Render de tarjetas y listas]
-    F --> G
-```
-
-### 8.5 Flujo de codigo del frontend
-
-```mermaid
-flowchart LR
-    A[main.tsx] --> B[BrowserRouter]
-    B --> C[App.tsx]
-    C --> D[LandingPage]
-    C --> E[DashboardPage]
-    E --> F[lib/api.ts]
-    F --> G[GET /api/admin/overview]
-```
-
-### 8.6 Decisiones visuales
-
-Se ha optado por una interfaz con:
-
-- tipografia Poppins + Inter
-- fondos con gradientes y capas translúcidas
-- tarjetas para modularidad visual
-- logo SVG sin fondo blanco
-- panel principal con enfasis en 2026
-
-## 9. Desarrollo del backend
-
-### 9.1 Organizacion del codigo
-
-El backend se ha separado en carpetas para mejorar mantenibilidad:
+El backend se distribuye por capas para mantener claridad y mantenibilidad:
 
 - `config/`
 - `controllers/`
@@ -429,366 +95,204 @@ El backend se ha separado en carpetas para mejorar mantenibilidad:
 - `middleware/`
 - `services/`
 - `utils/`
-- `docs/`
+- `prisma/`
+- `tests/`
 
-### 9.2 Flujo general de ejecucion del backend
+Esta estructura permite separar:
 
-```mermaid
-sequenceDiagram
-    participant U as Usuario
-    participant API as Express
-    participant MW as Middleware
-    participant CT as Controller
-    participant PR as Prisma
-    participant DB as PostgreSQL
+- entrada HTTP;
+- validación;
+- seguridad;
+- lógica de negocio;
+- acceso a datos;
+- automatización de pruebas.
 
-    U->>API: HTTP Request
-    API->>MW: Logging + deteccion + validacion
-    MW->>CT: Request validada
-    CT->>PR: Consulta o escritura
-    PR->>DB: SQL
-    DB-->>PR: Resultado
-    PR-->>CT: Datos
-    CT-->>API: JSON Response
-    API-->>U: HTTP Response
-```
+## 7. Base de datos y modelo relacional
 
-### 9.3 Autenticacion
+El modelo se ha diseñado para que el proyecto tenga coherencia operativa y no solo comercial.
 
-El backend utiliza JWT para acceso y refresh. En modo seguro se endurecen las cookies y el hashing. En modo vulnerable se mantienen decisiones inseguras para comparacion.
-
-### 9.4 Pagos
-
-El modulo de pagos no procesa tarjetas reales. Se simula una transaccion para centrarse en el control del `amount`, trazabilidad y persistencia.
-
-### 9.5 Tickets
-
-El sistema de tickets permite modelar un flujo de soporte tecnico, habitual en empresas IT. Se ha incluido la entidad `TicketMessage` para representar conversaciones reales entre cliente y soporte.
-
-## 10. Seguridad comparativa: modo vulnerable y modo seguro
-
-### 10.1 Fundamento pedagogico
-
-El objetivo no es introducir vulnerabilidades por descuido, sino hacerlo de forma controlada y documentada para estudiar:
-
-- la diferencia entre control inexistente y control correcto
-- el rastro que deja cada ataque
-- la reaccion del sistema en cada modo
-
-### 10.2 Tabla comparativa ampliada
-
-| Dimension | Vulnerable | Secure |
-|---|---|---|
-| Hashing | MD5 | bcrypt |
-| Rate limit | ausente | presente |
-| Cookies | laxas | HttpOnly + Secure + Strict |
-| Sesion | identificador predecible | identificador aleatorio |
-| Pago | amount desde cliente | precio desde DB |
-| IDS | detecta y deja pasar | detecta, registra y bloquea |
-| Metricas | parciales | incrementadas ante bloqueo |
-| SOC | sin accion real | notificacion interna |
-
-### 10.3 Flujo comparativo de login
-
-```mermaid
-flowchart TD
-    A[POST /api/v1/auth/login] --> B{APP_MODE}
-    B -->|vulnerable| C[MD5 + sin rate limit]
-    B -->|secure| D[bcrypt + rate limit]
-    C --> E[Cookie menos estricta]
-    D --> F[Cookie HttpOnly y Strict]
-```
-
-## 11. Flujo de datos, flujo de codigo y observabilidad
-
-### 11.1 Flujo de datos extremo a extremo
-
-```mermaid
-flowchart LR
-    A[Interaccion usuario] --> B[Frontend]
-    B --> C[Request HTTP]
-    C --> D[Middleware seguridad]
-    D --> E[Controller]
-    E --> F[Prisma]
-    F --> G[(DB)]
-    G --> F
-    F --> E
-    E --> H[JSON]
-    H --> B
-    D --> I[SecurityEvent]
-    D --> J[Metricas]
-```
-
-### 11.2 Flujo de codigo para login
-
-```mermaid
-flowchart TD
-    A[auth.routes.ts] --> B[demoModeResolver]
-    B --> C[validate]
-    C --> D[authRateLimiter]
-    D --> E[auth.controller.login]
-    E --> F{Modo por peticion}
-    F -->|secure| G[bcrypt + JWT + cookies seguras]
-    F -->|vulnerable| H[MD5 demo + bypass SQLi/XSS reflejado]
-    G --> I[Response]
-    H --> I
-```
-
-### 11.3 Flujo de codigo para deteccion de ataques
-
-```mermaid
-flowchart TD
-    A[Request] --> B[attackDetection.ts]
-    B --> C[detectAttackPatterns]
-    C --> D{Coincide patron?}
-    D -->|No| E[next()]
-    D -->|Si| F[logSecurityEvent]
-    F --> G[getRequestMode]
-    G -->|vulnerable| H[console.warn + next()]
-    G -->|secure| I[metrics + notifySoc + 403]
-```
-
-### 11.4 Observabilidad
-
-La observabilidad se resuelve mediante:
-
-- Winston para logs estructurados
-- Prometheus para metricas
-- SecurityEvent para persistencia de incidentes
-
-### 11.5 Flujo de datos del login dual
-
-```mermaid
-sequenceDiagram
-    participant U as Usuario
-    participant F as Frontend /login
-    participant M as demoModeResolver
-    participant S as Middleware seguridad
-    participant C as Auth Controller
-    participant DB as PostgreSQL
-    U->>F: Selecciona secure o vulnerable
-    F->>M: POST /api/v1/auth/login or /api/v2/auth/login + x-demo-mode
-    M->>S: req.demoMode
-    S-->>F: 403 si detecta patron y el modo es secure
-    S->>C: next() si procede
-    C->>DB: Buscar usuario / validar hash
-    DB-->>C: Datos del usuario
-    C-->>F: JSON + cookies
-```
-
-### 11.6 Flujo de scripts de ataque y evidencia
-
-1. El operador ejecuta un script `npm run attack:*`.
-2. El script construye el payload en `tests/*.ts`.
-3. Se envia la peticion HTTP a `localhost:8001`.
-4. El backend resuelve el modo real de la peticion.
-5. En vulnerable, el evento se permite para demostrar el fallo.
-6. En secure, el request queda bloqueado y se registra evidencia.
-
-Este planteamiento permite relacionar directamente:
-
-- codigo del script
-- endpoint objetivo
-- middleware atravesado
-- comportamiento final
-- metrica o evento generado
-
-## 12. Base de datos y modelo relacional
-
-### 12.1 Entidades principales
+Entidades principales:
 
 - `User`
 - `Service`
+- `Customer`
+- `Asset`
+- `Incident`
 - `Ticket`
 - `TicketMessage`
 - `Payment`
 - `SecurityEvent`
 
-### 12.2 Relacion entre entidades
+### Lógica del modelo
 
-```mermaid
-erDiagram
-    User ||--o{ Ticket : creates
-    User ||--o{ TicketMessage : sends
-    User ||--o{ Payment : performs
-    Ticket ||--o{ TicketMessage : contains
-```
+- un usuario opera sobre la plataforma;
+- un cliente contrata servicios;
+- un servicio protege activos;
+- un activo puede generar incidentes;
+- un incidente y un evento de seguridad alimentan el monitor SOC;
+- los tickets representan soporte y continuidad operativa;
+- los pagos simulan contratación y trazabilidad.
 
-### 12.3 Justificacion del modelo
+## 8. Login dual y seguridad comparativa
 
-El modelo se ha mantenido intencionadamente simple para priorizar claridad pedagogica. No obstante, resulta suficientemente realista para representar:
+Una de las piezas centrales del proyecto es la existencia de dos flujos de autenticación visualmente equivalentes, pero distintos internamente:
 
-- clientes y administradores
-- catalogo comercial
-- historico de pagos
-- soporte tecnico
-- incidentes de seguridad
+- `/login`
+- `/login-secure`
 
-## 13. Despliegue, contenedorizacion y puertos
+Endpoints:
 
-### 13.1 Ejecucion local
+- `POST /api/v1/auth/login`
+- `GET /api/v2/auth/csrf`
+- `POST /api/v2/auth/login`
 
-- Frontend: `8000`
-- Backend: `8001`
+### Objetivo pedagógico
 
-### 13.2 Ejecucion con Docker
+La idea es demostrar que dos interfaces casi idénticas pueden implicar niveles de riesgo muy diferentes. Esto permite explicar con claridad:
 
-Docker Compose levanta:
+- por qué la seguridad no es una cuestión estética;
+- por qué el backend y la política de sesión importan más que la pantalla;
+- cómo se detectan y bloquean ataques reales.
 
-- `postgres` en `5432`
-- `backend` en `8001`
-- `prometheus` en `9090`
+## 9. Ataques demostrados
 
-### 13.3 Diagrama de despliegue
+El proyecto incorpora scripts para demostrar ataques controlados:
 
-```mermaid
-flowchart LR
-    A[Host local] --> B[Frontend Vite 8000]
-    A --> C[Backend Express 8001]
-    C --> D[PostgreSQL 5432]
-    C --> E[Prometheus 9090]
-```
+- SQL Injection
+- XSS
+- path traversal
+- fuerza bruta
+- manipulación de pagos
 
-## 14. Pruebas realizadas
+Estos ataques se ejecutan desde:
 
-### 14.1 Pruebas tecnicas
+- scripts de PowerShell;
+- scripts de shell;
+- scripts TypeScript en `sofia-backend/tests/`.
 
-1. Compilacion del frontend.
-2. Compilacion del backend.
-3. Generacion del cliente Prisma.
-4. Verificacion del endpoint `/health`.
-5. Scripts basicos para `test:vuln` y `test:secure`.
+### Objetivo de los ataques
 
-### 14.2 Objetivo de las pruebas
+No se usan para “romper” el proyecto, sino para enseñar:
 
-Validar:
+- el comportamiento vulnerable;
+- la mejora al endurecer controles;
+- la utilidad real del catálogo de servicios;
+- la importancia de la observabilidad.
 
-- coherencia de arquitectura
-- compatibilidad entre frontend y backend
-- diferencia de comportamiento entre modos
-- disponibilidad de metricas y eventos
+## 10. Catálogo de servicios y lógica de negocio
 
-## 15. Planificacion temporal y recursos
+El catálogo de servicios se ha planteado para que tenga sentido dentro de la plataforma y de la memoria.
 
-### 15.1 Planificacion por fases
+Servicios principales:
 
-```mermaid
-gantt
-    title Planificacion del proyecto Sofia Solutions
-    dateFormat  YYYY-MM-DD
-    section Analisis
-    Requisitos y alcance         :a1, 2026-01-10, 7d
-    Modelado de datos            :a2, after a1, 5d
-    section Backend
-    Configuracion base           :b1, 2026-01-25, 5d
-    Auth y servicios             :b2, after b1, 8d
-    Pagos y tickets              :b3, after b2, 8d
-    Seguridad y metricas         :b4, after b3, 7d
-    section Frontend
-    Landing editable             :c1, 2026-02-20, 7d
-    Dashboard 2026               :c2, after c1, 6d
-    Integracion API              :c3, after c2, 4d
-    section Cierre
-    Docker y pruebas             :d1, 2026-03-10, 6d
-    Documentacion y defensa      :d2, after d1, 12d
-```
+- `SOC 24/7`
+- `Pentesting Premium`
+- `IR Retainer`
+- `Cloud Security Hardening`
 
-### 15.2 Recursos empleados
+### Relación con el dominio
 
-- equipo de desarrollo local
-- Node.js
-- PostgreSQL
-- Docker Desktop
-- editor de codigo
-- navegador web
+- `SOC 24/7` se relaciona con eventos, incidentes y monitorización;
+- `Pentesting Premium` se relaciona con vectores como SQLi o XSS;
+- `IR Retainer` se relaciona con contención y gestión de incidentes;
+- `Cloud Security Hardening` se relaciona con superficie expuesta y validación de configuraciones.
 
-## 16. Presupuesto estimado
+Esto permite defender que los servicios no son simples textos comerciales, sino capacidades operativas vinculadas a datos reales del sistema.
 
-Aunque el proyecto se desarrolla en entorno academico, puede estimarse un presupuesto teorico:
+## 11. SOC corporativo
 
-| Concepto | Estimacion |
-|---|---:|
-| Analisis y disenio | 18 h |
-| Desarrollo backend | 42 h |
-| Desarrollo frontend | 24 h |
-| Pruebas y validacion | 14 h |
-| Documentacion | 20 h |
-| Total horas | 118 h |
+El monitor SOC sirve como panel explicativo de negocio y seguridad.
 
-Si se valorase a 20 EUR/h:
+Ruta:
 
-**Coste estimado total:** 2.360 EUR
+- `http://localhost:8000/admin/security-monitor`
 
-## 17. Resultados, conclusiones y trabajo futuro
+Su función es mostrar de forma comprensible:
 
-### 17.1 Resultados
+- volumen de eventos;
+- incidentes críticos;
+- vectores más frecuentes;
+- países de origen;
+- distribución de alertas;
+- exposición por cliente;
+- relación entre servicios e incidentes.
 
-1. Se ha construido una solucion full stack coherente.
-2. El frontend es editable y defendible en un contexto de presentacion.
-3. El backend presenta una estructura modular y ampliable.
-4. El modo dual permite demostrar seguridad de forma practica.
-5. La documentacion sirve como base de memoria de proyecto final.
+## 12. Grafana
 
-### 17.2 Conclusiones
+Grafana se usa como panel técnico de apoyo a la defensa.
 
-La principal conclusion es que la seguridad no debe entenderse como un añadido final, sino como parte del diseno del sistema. El proyecto demuestra que una misma funcionalidad puede ser equivalente a nivel de negocio y, sin embargo, radicalmente distinta desde la perspectiva de riesgo. Tambien demuestra que observabilidad, logs, metricas y eventos de seguridad no son extras opcionales, sino componentes fundamentales para operar servicios modernos.
+Ruta:
 
-### 17.3 Trabajo futuro
+- `http://localhost:3000`
 
-1. Integrar 2FA real.
-2. Implementar tests end-to-end con base de datos efimera.
-3. Crear dashboards historicos.
-4. Añadir WebSockets para eventos en tiempo real.
-5. Integrar CI/CD y escaneo de dependencias.
+Su utilidad es mostrar:
 
-## 18. Referencias
+- métricas de peticiones;
+- actividad del backend;
+- patrones de autenticación;
+- comportamiento temporal del sistema.
 
-Express.js. (2024). *Express documentation*. https://expressjs.com/
+Grafana no sustituye al SOC. Lo complementa.
 
-NIST. (2020). *Security and privacy controls for information systems and organizations* (SP 800-53 Rev. 5). National Institute of Standards and Technology.
+## 13. Docker y despliegue
 
-OWASP Foundation. (2021). *OWASP Top 10: The ten most critical web application security risks*. https://owasp.org/
+El entorno se levanta con `docker-compose.yml`.
 
-Prisma. (2024). *Prisma ORM documentation*. https://www.prisma.io/docs/
+Contenedores principales:
 
-Prometheus Authors. (2024). *Prometheus documentation*. https://prometheus.io/docs/
+- `frontend`
+- `backend`
+- `postgres`
+- `prometheus`
+- `grafana`
 
-React. (2024). *React documentation*. https://react.dev/
+### Ventajas de esta aproximación
 
-Richardson, L., & Amundsen, M. (2013). *RESTful Web APIs*. O'Reilly Media.
+- entorno reproducible;
+- despliegue rápido;
+- separación clara de servicios;
+- facilidad de demostración en local.
 
-Zod. (2024). *Zod documentation*. https://zod.dev/
+## 14. Automatización y scripting
 
-## 19. Anexos
+Para reforzar el enfoque ASIX se han incluido scripts para:
 
-### Anexo A. Guion de defensa recomendado
+- levantar el stack;
+- reconstruir contenedores;
+- alternar entre modo seguro y vulnerable;
+- ejecutar baterías de ataques.
 
-1. Presentar el problema y la motivacion.
-2. Explicar la arquitectura general.
-3. Mostrar la landing y el panel 2026.
-4. Enseñar el backend y sus modulos.
-5. Comparar modo vulnerable y modo seguro.
-6. Mostrar `/docs`, `/metrics` y eventos de seguridad.
-7. Cerrar con conclusiones y mejoras futuras.
+Archivos principales:
 
-### Anexo B. Capturas sugeridas
+- `scripts/start-stack.ps1`
+- `scripts/start-stack.sh`
+- `scripts/run-attacks.ps1`
+- `scripts/run-attacks.sh`
 
-1. Landing principal en `http://localhost:8000`
-2. Panel principal en `http://localhost:8000/dashboard`
-3. Swagger en `http://localhost:8001/docs`
-4. Metricas en `http://localhost:8001/metrics`
-5. Docker Compose levantado
-6. Tabla `security_events` en PostgreSQL
+## 15. Qué se puede explicar en una defensa
 
-### Anexo C. Evidencias recomendadas para la memoria
+Orden recomendado:
 
-- captura del frontend
-- captura del panel principal
-- captura del health check
-- captura del swagger
-- captura del endpoint de metricas
-- captura de logs
-- captura de la tabla `payments`
-- captura de la tabla `security_events`
+1. explicar el problema y el objetivo del proyecto;
+2. enseñar la arquitectura de red y contenedores;
+3. mostrar el frontend corporativo;
+4. comparar `/login` y `/login-secure`;
+5. ejecutar uno o dos ataques;
+6. abrir el monitor SOC;
+7. abrir Grafana;
+8. explicar base de datos, servicios y automatización;
+9. cerrar con conclusiones y mejoras futuras.
 
+## 16. Conclusión
 
+Sofia Solutions se puede defender como una plataforma académica coherente entre:
+
+- negocio;
+- seguridad;
+- red;
+- base de datos;
+- scripting;
+- Docker;
+- observabilidad.
+
+Ese equilibrio es precisamente lo que hace que el proyecto encaje bien en ASIX.

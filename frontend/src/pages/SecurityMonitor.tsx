@@ -114,6 +114,22 @@ function severityTone(value: string) {
 export default function SecurityMonitor() {
   const [monitor, setMonitor] = useState<SecurityMonitorResponse>(fallbackMonitor);
   const [effectiveness, setEffectiveness] = useState<ServiceEffectivenessResponse>(fallbackEffectiveness);
+  const statusStrip = [
+    { label: "Data sources", value: "8/8 online" },
+    { label: "Retention", value: "365 days" },
+    { label: "Parsers", value: "Healthy" },
+    { label: "Escalation SLA", value: "< 15 min" },
+  ];
+
+  const navItems = [
+    { label: "Overview", href: "#soc-overview", type: "anchor" as const },
+    { label: "Threat Intel", href: "#soc-threat-map", type: "anchor" as const },
+    { label: "Logs", href: "#soc-trends", type: "anchor" as const },
+    { label: "Assets", href: "#soc-customers", type: "anchor" as const },
+    { label: "Incidents", href: "#soc-incidents", type: "anchor" as const },
+    { label: "Reports", href: "#soc-coverage", type: "anchor" as const },
+    { label: "Settings", href: "/dashboard", type: "route" as const },
+  ];
 
   useEffect(() => {
     fetchSecurityMonitor()
@@ -141,24 +157,27 @@ export default function SecurityMonitor() {
         </div>
 
         <nav className="soc-nav">
-          {[
-            "Home",
-            "Threat Intel",
-            "Logs",
-            "Assets",
-            "Incidents",
-            "Reports",
-            "Settings",
-          ].map((item, index) => (
-            <a
-              key={item}
-              className={`soc-nav-item ${index === 0 ? "is-active" : ""}`}
-              href={item === "Home" ? "/dashboard" : "#"}
-            >
-              <span className="soc-nav-icon" />
-              <span>{item}</span>
-            </a>
-          ))}
+          <Link className="soc-nav-item" to="/dashboard">
+            <span className="soc-nav-icon" />
+            <span>Home</span>
+          </Link>
+          {navItems.map((item, index) =>
+            item.type === "route" ? (
+              <Link key={item.label} className="soc-nav-item" to={item.href}>
+                <span className="soc-nav-icon" />
+                <span>{item.label}</span>
+              </Link>
+            ) : (
+              <a
+                key={item.label}
+                className={`soc-nav-item ${index === 0 ? "is-active" : ""}`}
+                href={item.href}
+              >
+                <span className="soc-nav-icon" />
+                <span>{item.label}</span>
+              </a>
+            ),
+          )}
         </nav>
 
         <div className="soc-sidebar-footer">
@@ -172,6 +191,11 @@ export default function SecurityMonitor() {
           <div>
             <p className="soc-eyebrow">{monitor.header.title}</p>
             <h1>{monitor.header.subtitle}</h1>
+            <div className="soc-source-row">
+              <span>Elastic / Wazuh</span>
+              <span>Firewall + VPN</span>
+              <span>EDR + Cloud Audit</span>
+            </div>
           </div>
 
           <div className="soc-header-tools">
@@ -194,8 +218,18 @@ export default function SecurityMonitor() {
           </Link>
         </div>
 
-        <section className="soc-kpi-grid">
+        <section className="soc-status-strip">
+          {statusStrip.map((item) => (
+            <article key={item.label} className="soc-status-card">
+              <span>{item.label}</span>
+              <strong>{item.value}</strong>
+            </article>
+          ))}
+        </section>
+
+        <section className="soc-kpi-grid" id="soc-overview">
           <article className="soc-kpi-card accent-blue">
+            <span className="soc-kpi-accent" aria-hidden="true" />
             <div>
               <span>Total Events Analyzed</span>
               <strong>{monitor.summary.totalEventsAnalyzed >= 1000000 ? `${(monitor.summary.totalEventsAnalyzed / 1000000).toFixed(1)}M` : monitor.summary.totalEventsAnalyzed}</strong>
@@ -209,6 +243,7 @@ export default function SecurityMonitor() {
           </article>
 
           <article className="soc-kpi-card accent-red">
+            <span className="soc-kpi-accent" aria-hidden="true" />
             <div>
               <span>Critical Incidents</span>
               <strong>{monitor.summary.criticalIncidents} Open</strong>
@@ -222,6 +257,7 @@ export default function SecurityMonitor() {
           </article>
 
           <article className="soc-kpi-card accent-amber">
+            <span className="soc-kpi-accent" aria-hidden="true" />
             <div>
               <span>Active Threats Detected</span>
               <strong>{monitor.summary.activeThreats}</strong>
@@ -235,6 +271,7 @@ export default function SecurityMonitor() {
           </article>
 
           <article className="soc-kpi-card accent-green">
+            <span className="soc-kpi-accent" aria-hidden="true" />
             <div>
               <span>System Health</span>
               <strong>{monitor.summary.systemHealth}%</strong>
@@ -249,7 +286,7 @@ export default function SecurityMonitor() {
         </section>
 
         <section className="soc-main-grid">
-          <article className="soc-panel soc-map-panel">
+          <article className="soc-panel soc-map-panel" id="soc-threat-map">
             <div className="soc-panel-head">
               <div>
                 <p className="soc-panel-kicker">Threat map</p>
@@ -310,7 +347,7 @@ export default function SecurityMonitor() {
           </article>
 
           <div className="soc-right-stack">
-            <article className="soc-panel">
+            <article className="soc-panel" id="soc-trends">
               <div className="soc-panel-head">
                 <div>
                   <p className="soc-panel-kicker">SIEM event trend</p>
@@ -365,7 +402,7 @@ export default function SecurityMonitor() {
         </section>
 
         <section className="soc-bottom-grid">
-          <article className="soc-panel">
+          <article className="soc-panel" id="soc-incidents">
             <div className="soc-panel-head">
               <div>
                 <p className="soc-panel-kicker">Live incident feed</p>
@@ -438,7 +475,7 @@ export default function SecurityMonitor() {
         </section>
 
         <section className="soc-bottom-grid soc-bottom-grid-extended">
-          <article className="soc-panel">
+          <article className="soc-panel" id="soc-customers">
             <div className="soc-panel-head">
               <div>
                 <p className="soc-panel-kicker">Customer exposure</p>
@@ -491,7 +528,7 @@ export default function SecurityMonitor() {
         </section>
 
         <section className="soc-bottom-grid soc-bottom-grid-extended">
-          <article className="soc-panel">
+          <article className="soc-panel" id="soc-coverage">
             <div className="soc-panel-head">
               <div>
                 <p className="soc-panel-kicker">Defense posture</p>

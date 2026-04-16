@@ -4,4 +4,4 @@ global:
 scrape_configs:
   - job_name: "sofia-backend"
     static_configs:
-      - targets: ["app:4000"]
+      - targets: ["backend:8001"]

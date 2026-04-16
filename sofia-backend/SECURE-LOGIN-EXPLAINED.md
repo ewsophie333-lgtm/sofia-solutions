@@ -1,199 +1,154 @@
-# Por que el login seguro ya no permite esos ataques
+# Por qué el login seguro bloquea los ataques
 
 ## Resumen
 
-El login seguro bloquea los ataques por una combinacion de controles que actuan en distintas capas. No depende de una sola defensa.
+El login seguro no depende de una única defensa. La robustez del sistema viene de la combinación de varias capas:
 
-## Vista de flujo
+- validación de entrada;
+- detección de patrones maliciosos;
+- rate limiting;
+- control de sesión;
+- almacenamiento menos expuesto de tokens;
+- trazabilidad.
+
+El objetivo de este documento es explicar por qué el usuario ve una pantalla prácticamente igual, pero el comportamiento interno cambia de forma radical.
+
+## Rutas comparadas
+
+- login vulnerable: `http://localhost:8000/login`
+- login seguro: `http://localhost:8000/login-secure`
+
+Endpoints:
+
+- vulnerable: `POST /api/v1/auth/login`
+- seguro: `GET /api/v2/auth/csrf` y `POST /api/v2/auth/login`
+
+## Flujo comparativo
 
 ```mermaid
 flowchart TD
-    A[Cliente envia credenciales] --> B[demoModeResolver]
-    B --> C[attackDetection]
-    C -->|payload malicioso| D[403 + evento + metrica]
-    C -->|payload limpio| E[validate Zod]
-    E --> F[authRateLimiter]
-    F --> G[Verificacion bcrypt]
-    G --> H[JWT + refresh token + cookies seguras]
-    H --> I[Respuesta de login]
+    A[Usuario envía credenciales] --> B{Ruta}
+    B -->|/api/v1/auth/login| C[Flujo vulnerable]
+    B -->|/api/v2/auth/login| D[Flujo seguro]
+    C --> E[Validación laxa]
+    C --> F[Sin rate limit efectivo]
+    C --> G[Puede tolerar payloads inseguros]
+    D --> H[CSRF]
+    H --> I[Detección de ataques]
+    I --> J[Validación estricta]
+    J --> K[Rate limit]
+    K --> L[bcrypt + sesión endurecida]
 ```
 
-## 1. Resolucion de modo por peticion
+## 1. CSRF en el login seguro
 
-El backend determina el modo mediante:
+Antes del login seguro se obtiene un token CSRF:
 
-- ruta (`/secure` o `/vulnerable`)
-- cabecera `x-demo-mode`
-- valor por defecto `APP_MODE`
+- `GET /api/v2/auth/csrf`
 
-Esto permite que la misma API exponga dos comportamientos distintos de forma controlada y trazable.
+Esto obliga a que el cliente siga el flujo previsto por el backend. No resuelve todos los riesgos, pero añade una capa realista de protección.
 
-## 2. Middleware de deteccion de ataques
+La versión vulnerable omite esta medida para facilitar la comparación.
 
-En modo seguro, `attackDetection` analiza:
+## 2. Detección de ataques
 
-- `req.path`
-- `req.query`
+El middleware de detección analiza:
+
 - `req.body`
+- `req.query`
+- `req.path`
 
-Si detecta patrones de:
+Busca patrones asociados a:
 
-- SQL injection
-- XSS
-- path traversal
+- SQL Injection;
+- XSS;
+- path traversal.
 
-entonces:
+### Qué ocurre en modo seguro
 
-1. registra el evento
-2. incrementa metricas
-3. notifica al SOC simulado
-4. devuelve `403`
+1. Se detecta el patrón.
+2. Se registra evidencia.
+3. Se incrementa la métrica correspondiente.
+4. La petición se bloquea con `403`.
 
-Por eso el payload no alcanza la logica de autenticacion.
+### Qué ocurre en modo vulnerable
 
-### Que patrones se buscan
+1. Se detecta el patrón.
+2. Se deja pasar o se registra sin cortar el flujo.
+3. La petición puede llegar a la lógica de negocio.
 
-- expresiones tipicas de SQLi como `OR 1=1`, comentarios SQL o combinaciones con comillas
-- etiquetas `<script>` y atributos `onerror` o `javascript:`
-- secuencias `../` asociadas a path traversal
+## 3. Validación más estricta
 
-### Donde se registran
+La versión segura exige una entrada con formato correcto y reduce el margen para valores arbitrarios.
 
-- log estructurado con Winston
-- tabla `SecurityEvent`
-- metrica `attacks_blocked_total`
+Esto no sustituye al IDS, pero complementa la defensa:
 
-## 3. Validacion estricta
-
-El login seguro usa un esquema Zod mas estricto:
-
-- `email` debe ser email valido
-- `password` debe existir
-
-Esto reduce la superficie de entrada malformada.
-
-En concreto, el login seguro exige:
-
-- email valido segun `z.string().email()`
-- password presente
-- formato JSON correcto
+- evita formatos inválidos;
+- simplifica el comportamiento esperado;
+- limita entradas ambiguas o manipuladas.
 
 ## 4. Rate limiting
 
-En modo seguro se activa `express-rate-limit` sobre login.
+La fuerza bruta y la automatización masiva dependen de repetir peticiones.
 
-Efecto:
+El login seguro limita intentos en una ventana temporal definida. Eso aporta:
 
-- limita fuerza bruta
-- reduce enumeracion de credenciales
-- frena repeticion de payloads automatizados
+- reducción del riesgo de brute force;
+- menor exposición a credential stuffing;
+- menos capacidad para automatizar pruebas ofensivas repetidas.
 
-En modo vulnerable este control se omite.
+La versión vulnerable no aplica este control con el mismo rigor.
 
-Esto es relevante porque evita que un atacante automatice:
+## 5. Verificación de credenciales
 
-- fuerza bruta de credenciales
-- enumeracion de cuentas
-- repeticion masiva del mismo payload para medir respuestas
+En el modo seguro:
 
-## 5. Verificacion de credenciales robusta
+- se usa hashing robusto;
+- la comparación es más correcta desde el punto de vista defensivo;
+- no existe la vía académica de bypass por patrón SQLi.
 
-El login seguro:
+En el modo vulnerable:
 
-- compara contrasenas con `bcrypt`
-- usa coste `12`
-- no permite bypass por SQLi simulado
+- el comportamiento es deliberadamente más débil;
+- se permite escenificar fallos para demostración.
 
-El vulnerable, en cambio, incorpora una via demostrativa donde un patron SQLi puede provocar autenticacion forzada.
+## 6. Gestión de sesión y token
 
-## 5.1 Diferencia de flujo de credenciales
+En el flujo seguro se endurece:
 
-```mermaid
-sequenceDiagram
-    participant U as Usuario
-    participant S as Secure Login
-    participant V as Vulnerable Login
-    participant DB as PostgreSQL
-    U->>S: email/password
-    S->>DB: buscar usuario por email exacto
-    DB-->>S: registro
-    S->>S: bcrypt.compare()
-    S-->>U: 200 o 401
-    U->>V: payload SQLi
-    V->>V: detecta patron inseguro de demo
-    V->>DB: cargar primer admin
-    V-->>U: 200 con bypass academico
-```
+- el tratamiento de cookies;
+- el manejo del token;
+- el aislamiento frente a acceso desde scripts del cliente.
 
-## 6. Cookies y sesion
+En el flujo vulnerable se deja una política más laxa para que el alumno pueda mostrar por qué esa decisión es un riesgo.
 
-El login seguro:
+## 7. Registro y evidencia
 
-- genera `sessionId` aleatorio con `randomUUID`
-- marca cookies como `HttpOnly`
-- usa `SameSite=Strict`
-- puede activar `Secure`
+El login seguro no solo bloquea. También deja rastro útil:
 
-Esto reduce:
+- logs estructurados;
+- eventos de seguridad persistidos;
+- métricas internas consumibles por Grafana;
+- datos útiles para el monitor SOC.
 
-- robo por JavaScript
-- fijacion de sesion
-- reuso de identificadores predecibles
+Esto es importante para ASIX porque la defensa no termina al bloquear. También hay que:
 
-## 6.1 Comparativa directa
+- registrar;
+- correlacionar;
+- visualizar;
+- explicar lo ocurrido.
 
-| Aspecto | Vulnerable | Seguro |
+## Tabla comparativa
+
+| Dimensión | Vulnerable | Seguro |
 |---|---|---|
-| Hash | MD5/demo laxo | bcrypt coste 12 |
-| Rate limit | No efectivo | Activo |
-| Deteccion SQLi/XSS | Solo registra | Bloquea |
-| Cookie | Menos estricta | HttpOnly/SameSite/secure |
-| Sesion | Sin rotacion fuerte | `randomUUID()` |
-| Respuesta XSS | Puede reflejar HTML | No refleja HTML |
+| CSRF | No obligatorio | Obligatorio |
+| Detección de payloads | Registra o tolera | Bloquea |
+| Rate limit | Débil o ausente | Activo |
+| Hashing | Más débil | Más robusto |
+| Sesión | Menos endurecida | Más endurecida |
+| Evidencia | Parcial | Completa |
 
-## 7. Reflexion XSS
+## Conclusión
 
-En la demo vulnerable, un payload con `<script>` puede ser devuelto en `messageHtml` para mostrar reflexion insegura.
-
-En la ruta segura eso no ocurre porque:
-
-1. el middleware bloquea antes
-2. la ruta segura no usa la rama vulnerable
-3. la interfaz segura no interpreta HTML de la respuesta
-
-## 8. Por que los scripts dejan de funcionar en secure
-
-Los scripts no dejan de funcionar porque esten mal escritos. Siguen enviando la misma peticion; lo que cambia es la superficie expuesta por el backend.
-
-### SQLi
-
-- en vulnerable, el payload activa una rama intencional de bypass
-- en secure, `attackDetection` lo clasifica como intento de inyeccion y devuelve `403`
-
-### XSS
-
-- en vulnerable, la respuesta puede incluir `messageHtml` y el frontend de demostracion lo renderiza
-- en secure, el HTML no llega a renderizarse porque ni siquiera se genera en la API
-
-### Path traversal
-
-- en vulnerable, el request puede seguir su curso porque la deteccion es observacional
-- en secure, la peticion se rechaza antes de tocar logica de negocio
-
-### Manipulacion de pagos
-
-- en vulnerable, el backend acepta el `amount` proporcionado por cliente
-- en secure, el importe se recalcula contra la base de datos y se ignora el valor manipulado
-
-## Conclusiones
-
-El login seguro no deja de funcionar por "magia". Funciona porque varias capas trabajan juntas:
-
-- deteccion temprana
-- validacion
-- control de frecuencia
-- autenticacion robusta
-- sesiones menos expuestas
-- ausencia de ramas deliberadamente vulnerables
-
-
+La clave del login seguro no es “verse diferente”, sino proteger el mismo flujo con controles adecuados. Esa es precisamente la idea que interesa defender en el proyecto: dos pantallas casi iguales pueden implicar dos niveles de riesgo completamente distintos.

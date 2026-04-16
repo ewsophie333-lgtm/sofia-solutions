@@ -10,6 +10,18 @@ type LoginFormProps = {
   mode: LoginMode;
 };
 
+const accessHighlights = [
+  "Portal corporativo",
+  "JWT + observabilidad",
+  "SOC 24/7",
+];
+
+const trustSignals = [
+  "Acceso centralizado para clientes, activos y monitorización.",
+  "Mismas credenciales operativas para dashboard, servicios y SOC.",
+  "Trazabilidad de sesiones, eventos e incidentes en una sola plataforma.",
+];
+
 export default function LoginForm({ mode }: LoginFormProps) {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -31,7 +43,7 @@ export default function LoginForm({ mode }: LoginFormProps) {
 
       navigate("/dashboard");
     } catch (loginError) {
-      setError(loginError instanceof Error ? loginError.message : "Error de autenticacion");
+      setError(loginError instanceof Error ? loginError.message : "Error de autenticación");
     } finally {
       setLoading(false);
     }
@@ -50,38 +62,53 @@ export default function LoginForm({ mode }: LoginFormProps) {
             <Logo stacked />
             <div className="login-brand-copy">
               <p className="login-kicker">Control plane 2026</p>
-              <h1>Operacion central para clientes, activos y defensa continua.</h1>
+              <h1>Operación central para clientes, activos y defensa continua.</h1>
               <p>
-                Acceso unificado al panel operativo de Sofia Solutions con visibilidad de
-                servicios, incidentes y postura defensiva.
+                Acceso unificado al panel operativo de Sofia Solutions con visibilidad
+                de servicios, incidentes y postura defensiva.
               </p>
             </div>
             <div className="login-metric-grid">
               <article>
-                <span>Coverage</span>
+                <span>Cobertura</span>
                 <strong>24/7</strong>
               </article>
               <article>
-                <span>Managed assets</span>
+                <span>Activos gestionados</span>
                 <strong>184</strong>
               </article>
               <article>
-                <span>Response SLA</span>
+                <span>SLA de respuesta</span>
                 <strong>&lt; 15 min</strong>
               </article>
+            </div>
+
+            <div className="login-assurance-list">
+              {trustSignals.map((item) => (
+                <div key={item} className="login-assurance-item">
+                  <span className="login-assurance-dot" aria-hidden="true" />
+                  <p>{item}</p>
+                </div>
+              ))}
             </div>
           </section>
 
           <section className="login-card">
             <header className="login-card-header">
               <p className="login-card-kicker">Workspace access</p>
-              <h2>Iniciar sesion</h2>
+              <h2>Iniciar sesión</h2>
               <p>Accede al panel de control de Sofia Solutions.</p>
             </header>
 
+            <div className="login-card-meta" aria-hidden="true">
+              {accessHighlights.map((item) => (
+                <span key={item}>{item}</span>
+              ))}
+            </div>
+
             <form className="login-form" onSubmit={handleSubmit}>
               <label className="login-field">
-                <span>Email</span>
+                <span>Correo electrónico</span>
                 <input
                   type="email"
                   value={email}
@@ -89,34 +116,38 @@ export default function LoginForm({ mode }: LoginFormProps) {
                   autoComplete="username"
                   placeholder="tu@empresa.com"
                 />
+                <small>Usa la cuenta corporativa asignada a tu tenant.</small>
               </label>
 
               <label className="login-field">
-                <span>Contrasena</span>
+                <span>Contraseña</span>
                 <input
                   type="password"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   autoComplete="current-password"
-                  placeholder="Introduce tu contrasena"
+                  placeholder="Introduce tu contraseña"
                 />
+                <small>La sesión conecta con dashboard, tickets y monitorización SOC.</small>
               </label>
 
               <button className="login-submit" type="submit" disabled={loading}>
-                {loading ? "Validando..." : "Iniciar sesion"}
+                {loading ? "Validando..." : "Iniciar sesión"}
               </button>
             </form>
 
             {error ? <p className="login-error">{error}</p> : null}
 
             <div className="login-links">
-              <a href="/forgot-password">Olvidaste tu contrasena?</a>
+              <a href="/forgot-password">¿Olvidaste tu contraseña?</a>
               <a href="/register">Crear cuenta</a>
             </div>
 
             <div className="login-footnote">
               <span>Threat telemetry</span>
-              <strong>Servicios, dashboard y SOC operan sobre la misma plataforma.</strong>
+              <strong>
+                Servicios, dashboard y SOC operan sobre la misma plataforma.
+              </strong>
             </div>
           </section>
         </section>

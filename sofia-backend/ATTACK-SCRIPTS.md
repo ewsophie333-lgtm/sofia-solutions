@@ -1,50 +1,91 @@
-# Guia de scripts de ataque
+# Guía de ataques y validación
 
 ## Objetivo
 
-Este documento explica como ejecutar los scripts de demostracion sobre los flujos de login vulnerable y login seguro de Sofia Solutions.
+Este documento explica cómo se utilizan los scripts de ataque incluidos en el proyecto para demostrar:
 
-## Flujo general de pruebas
+- qué debilidades existen en la versión vulnerable;
+- qué mecanismos las bloquean en la versión segura;
+- cómo se relacionan esos ataques con los servicios ofrecidos por Sofia Solutions.
 
-```mermaid
-flowchart TD
-    A[Operador lanza npm run attack:*] --> B[Script TypeScript en tests/]
-    B --> C[Construccion del payload]
-    C --> D[Envio HTTP a localhost:8001]
-    D --> E{Modo seleccionado}
-    E -->|vulnerable| F[La peticion atraviesa controles laxos]
-    E -->|secure| G[attackDetection y rate limit]
-    F --> H[Se observa bypass o reflejo inseguro]
-    G --> I[Se bloquea o se rechaza el payload]
-```
-
-Los endpoints principales son:
-
-- `POST /api/v1/auth/login`
-- `POST /api/v2/auth/login`
+No se trata de un laboratorio ofensivo genérico. Cada ataque se usa como evidencia técnica dentro de un proyecto académico de ASIX.
 
 ## Requisitos previos
 
-1. Levantar backend en `http://localhost:8001`
-2. Tener PostgreSQL operativo
-3. Haber ejecutado seed para disponer de usuarios de prueba
+Antes de ejecutar la batería de pruebas debe estar operativo:
 
-Credenciales por defecto:
+- frontend corporativo en `http://localhost:8000`;
+- backend en `http://localhost:8001`;
+- PostgreSQL funcionando;
+- seed aplicada para disponer de usuarios, clientes, activos, incidentes y servicios.
+
+Credenciales de prueba:
 
 - `admin@sofia.local`
 - `SofiaAdmin2026!`
 
-## Scripts disponibles
+## Flujo general de los scripts
 
-### SQL injection
+```mermaid
+flowchart TD
+    A[Operador lanza script o npm run] --> B[Script TypeScript o script de sistema]
+    B --> C[Construcción del payload]
+    C --> D[Petición HTTP a localhost:8001]
+    D --> E{Modo}
+    E -->|vulnerable| F[El backend permite o registra sin bloquear]
+    E -->|secure| G[El backend bloquea o endurece la lógica]
+    F --> H[Se observa explotación o comportamiento inseguro]
+    G --> I[Se registra defensa, evento o rechazo]
+```
+
+## Ejecución rápida
+
+### Desde Windows
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/run-attacks.ps1 -Mode vulnerable
+powershell -ExecutionPolicy Bypass -File scripts/run-attacks.ps1 -Mode secure
+```
+
+### Desde Linux
+
+```bash
+sh ./scripts/run-attacks.sh vulnerable
+sh ./scripts/run-attacks.sh secure
+```
+
+### Desde npm
 
 - `npm run attack:sqli:vuln`
-  Envia un payload tipo `' OR 1=1 --` al login vulnerable. En esta demo local provoca un bypass intencional y el backend devuelve `200`.
-
 - `npm run attack:sqli:secure`
-  Envia el mismo payload al login seguro. Debe recibir `403` por el middleware de deteccion de ataques.
+- `npm run attack:xss:vuln`
+- `npm run attack:xss:secure`
+- `npm run attack:traversal:vuln`
+- `npm run attack:traversal:secure`
+- `npm run attack:payment:vuln`
+- `npm run attack:payment:secure`
+- `npm run attack:bruteforce:vuln`
+- `npm run attack:bruteforce:secure`
+- `npm run attack:defense:vuln`
+- `npm run attack:defense:secure`
+- `npm run services:validate`
+- `npm run services:matrix:vuln`
+- `npm run services:matrix:secure`
 
-Payload utilizado:
+## Ataques incluidos
+
+## 1. SQL Injection
+
+### Objetivo
+
+Demostrar que la versión vulnerable permite un bypass académico controlado y que la versión segura lo bloquea antes de llegar a la lógica sensible.
+
+### Endpoint
+
+- vulnerable: `POST /api/v1/auth/login`
+- seguro: `POST /api/v2/auth/login`
+
+### Payload de ejemplo
 
 ```json
 {
@@ -53,20 +94,29 @@ Payload utilizado:
 }
 ```
 
-Interpretacion:
+### Resultado esperado
 
-- en vulnerable: se activa la rama de bypass academico y el backend autentica al primer admin disponible
-- en secure: el request se corta antes de llegar a la verificacion de credenciales
+- vulnerable: `200` o autenticación forzada de demostración;
+- seguro: `403`.
 
-### XSS
+### Servicio relacionado
 
-- `npm run attack:xss:vuln`
-  Envia un payload con `<script>` al login vulnerable. La respuesta incluye un campo reflejado para demostracion academica.
+- `Pentesting Premium`
 
-- `npm run attack:xss:secure`
-  Envia el mismo payload al login seguro. Debe recibir `403`.
+Este servicio se justifica porque permite detectar y reducir este tipo de debilidades antes de producción.
 
-Payload utilizado:
+## 2. XSS
+
+### Objetivo
+
+Mostrar el riesgo de reflejar contenido malicioso en la versión vulnerable y el bloqueo preventivo en la versión segura.
+
+### Endpoint
+
+- vulnerable: `POST /api/v1/auth/login`
+- seguro: `POST /api/v2/auth/login`
+
+### Payload de ejemplo
 
 ```json
 {
@@ -75,124 +125,106 @@ Payload utilizado:
 }
 ```
 
-Interpretacion:
+### Resultado esperado
 
-- en vulnerable: la API devuelve `messageHtml` y la interfaz de demo lo inserta a proposito para mostrar el riesgo
-- en secure: el middleware detecta el patron XSS y bloquea
+- vulnerable: el payload puede reflejarse en una respuesta de demostración;
+- seguro: `403`.
 
-### Path traversal
+### Servicio relacionado
 
-- `npm run attack:traversal:vuln`
-  Prueba un payload `../../etc/passwd` sobre una ruta del catalogo. En modo vulnerable el request no se bloquea.
+- `Pentesting Premium`
 
-- `npm run attack:traversal:secure`
-  Ejecuta el mismo payload en modo seguro. Debe bloquearse con `403`.
+## 3. Path Traversal
 
-Payload base:
+### Objetivo
+
+Comprobar que las cadenas típicas de traversal son toleradas en el modo vulnerable y bloqueadas en el seguro.
+
+### Payload de ejemplo
 
 ```text
 ../../etc/passwd
 ```
 
-### Manipulacion de pagos
+### Resultado esperado
 
-- `npm run attack:payment:vuln`
-  Inicia sesion en login vulnerable y envia un checkout con `amount=1`. La API vulnerable guarda ese valor manipulado.
+- vulnerable: la petición no se bloquea de forma preventiva;
+- seguro: `403`.
 
-- `npm run attack:payment:secure`
-  Inicia sesion en login seguro y envia el mismo payload. El backend ignora el importe del cliente y toma el precio real desde base de datos.
+### Servicios relacionados
 
-Flujo especifico:
+- `Cloud Security Hardening`
+- `Pentesting Premium`
 
-```mermaid
-sequenceDiagram
-    participant T as Test Script
-    participant A as API Auth
-    participant P as API Payments
-    participant D as DB
-    T->>A: POST /api/v1/auth/login or /api/v2/auth/login
-    A-->>T: Cookie/JWT de sesion
-    T->>P: POST /api/payments/checkout amount=1
-    P->>D: Busca precio oficial del servicio
-    alt vulnerable
-      P-->>T: Acepta amount manipulado
-    else secure
-      P-->>T: Sustituye amount por precio real
-    end
-```
+## 4. Fuerza bruta
 
-### Fuerza bruta
+### Objetivo
 
-- `npm run attack:bruteforce:vuln`
-  Repite intentos fallidos de login contra el flujo vulnerable. No debe bloquear por rate limit.
+Comprobar la diferencia entre un login sin limitación efectiva y otro protegido con restricciones de intentos.
 
-- `npm run attack:bruteforce:secure`
-  Repite intentos fallidos contra el flujo seguro. Debe quedar bloqueado por controles del login seguro, bien por CSRF, por deteccion preventiva o por rate limit.
+### Endpoint
 
-### Validacion de servicios
+- vulnerable: `POST /api/v1/auth/login`
+- seguro: `POST /api/v2/auth/login`
 
-- `npm run services:validate`
-  Comprueba que el catalogo y la efectividad de los servicios se calculan desde datos reales de clientes, activos e incidentes.
+### Resultado esperado
 
-- `npm run services:matrix:vuln`
-  Lanza una matriz resumida de ataques sobre el sistema vulnerable y muestra despues la foto de efectividad de servicios.
+- vulnerable: permite múltiples intentos seguidos;
+- seguro: responde con error o bloqueo tras superar el umbral.
 
-- `npm run services:matrix:secure`
-  Repite la matriz anterior en seguro para comparar bloqueo y cobertura.
+### Servicios relacionados
 
-## Ejecucion agrupada
+- `SOC 24/7`
+- `IR Retainer`
 
-- `npm run attack:all:vuln`
-- `npm run attack:all:secure`
-- `npm run attack:defense:vuln`
-- `npm run attack:defense:secure`
+## 5. Manipulación de pagos
 
-Estos comandos encadenan todos los scripts de la bateria.
+### Objetivo
 
-## Lectura de resultados
+Demostrar por qué nunca debe confiarse el precio final al cliente.
 
-- `200` en vulnerable:
-  El backend ha permitido el flujo inseguro o la vulnerabilidad simulada.
+### Flujo
 
-- `403` en secure:
-  El middleware ha detectado el patron y ha bloqueado la peticion antes de llegar a la logica sensible.
+1. Se inicia sesión.
+2. Se envía una petición de checkout con `amount` manipulado.
+3. El backend vulnerable puede aceptar ese valor.
+4. El backend seguro recalcula el importe desde base de datos.
 
-- `401`:
-  La peticion llego al backend pero no supero autenticacion.
+### Resultado esperado
 
-## Orden recomendado para la demostracion
+- vulnerable: acepta un importe modificado por el cliente;
+- seguro: ignora el importe del cliente y aplica el precio oficial.
 
-1. Ejecutar `npm run attack:sqli:vuln`
-2. Ejecutar `npm run attack:sqli:secure`
-3. Repetir con XSS
-4. Mostrar `npm run attack:payment:vuln`
-5. Mostrar `npm run attack:payment:secure`
-6. Abrir `http://localhost:8000/login/vulnerable`
-7. Abrir `http://localhost:8000/login-secure`
+### Servicio relacionado
 
-## Relacion con ficheros de codigo
+- `Cloud Security Hardening`
 
-- Scripts: [tests/](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/tests)
-- Rutas auth: [auth.routes.ts](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/src/routes/auth.routes.ts)
-- Controlador auth: [auth.controller.ts](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/src/controllers/auth.controller.ts)
-- Deteccion de ataques: [attackDetection.ts](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/src/middleware/attackDetection.ts)
+## Matriz resumida
 
-## Relacion con la interfaz web
+| Ataque | Script | Modo vulnerable | Modo seguro | Servicio relacionado |
+|---|---|---|---|---|
+| SQL Injection | `attack:sqli:*` | bypass o respuesta insegura | bloqueo `403` | Pentesting Premium |
+| XSS | `attack:xss:*` | reflexión controlada | bloqueo `403` | Pentesting Premium |
+| Path Traversal | `attack:traversal:*` | tolerado | bloqueo `403` | Cloud Security Hardening |
+| Fuerza bruta | `attack:bruteforce:*` | sin límite efectivo | limitación o bloqueo | SOC 24/7 |
+| Manipulación de pagos | `attack:payment:*` | amount alterado | amount validado en servidor | Cloud Security Hardening |
 
-Los scripts de servicios se apoyan en los nuevos endpoints:
+## Relación con el SOC y Grafana
 
-- `GET /api/services`
-- `GET /api/services/catalog`
-- `GET /api/services/effectiveness`
+La batería de ataques no solo sirve para enseñar explotación. También permite demostrar:
 
-Esto permite justificar en la memoria que los servicios ofrecidos no son estaticos, sino capacidades operativas respaldadas por datos del backend.
+- que el SOC corporativo muestra actividad e incidentes coherentes;
+- que Grafana puede visualizar la actividad técnica y las métricas internas;
+- que la versión segura genera trazabilidad y evidencias más útiles.
 
-La web expone una pantalla propia en:
+## Qué mostrar en una defensa
 
-- `http://localhost:8000/login`
-- `http://localhost:8000/login-secure`
-- `http://localhost:8000/login/vulnerable`
+Secuencia recomendada:
 
-Desde esa interfaz tambien se pueden precargar payloads SQLi y XSS para observar la diferencia entre ambos flujos.
-
-
+1. Arrancar el entorno con Docker.
+2. Enseñar login vulnerable y seguro.
+3. Ejecutar un ataque SQLi o XSS.
+4. Comparar respuesta HTTP.
+5. Abrir el SOC en `http://localhost:8000/admin/security-monitor`.
+6. Abrir Grafana en `http://localhost:3000`.
+7. Explicar qué servicio protege frente a ese vector.

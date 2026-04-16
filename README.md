@@ -1,37 +1,135 @@
 # Sofia Solutions
 
-Monorepo del proyecto final con dos aplicaciones:
+Proyecto final orientado a **ASIX**, centrado en:
 
-- [frontend/](C:/Users/sgomez/Desktop/sofia-solutions/frontend): landing corporativa basada en el build original del preview de Readdy, ajustada para ejecutarse en local con fidelidad visual alta.
-- [sofia-backend/](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend): Express + TypeScript + Prisma con modos `vulnerable` y `secure`.
+- seguridad ofensiva y defensiva;
+- contenedores y despliegue;
+- servicios de red;
+- base de datos;
+- scripting de automatización;
+- monitorización y visualización;
+- comparación entre implementación vulnerable y segura.
 
-## Puertos
+La solución representa una plataforma corporativa de servicios IT y ciberseguridad con:
 
-- Frontend: `http://localhost:8000`
+- frontend servido en web;
+- backend API con Express y TypeScript;
+- PostgreSQL con Prisma;
+- Docker Compose para el entorno completo;
+- visualización de métricas en **Grafana**;
+- monitor SOC propio para la parte corporativa;
+- scripts de ataque para validar diferencias entre entornos.
+
+## Accesos
+
+- Web: `http://localhost:8000`
 - Login vulnerable: `http://localhost:8000/login`
 - Login seguro: `http://localhost:8000/login-secure`
-- Alias de compatibilidad: `http://localhost:8000/login/vulnerable`
-- Backend: `http://localhost:8001`
+- Dashboard: `http://localhost:8000/dashboard`
+- SOC Monitor: `http://localhost:8000/admin/security-monitor`
+- API: `http://localhost:8001`
 - Swagger: `http://localhost:8001/docs`
-- Metricas: `http://localhost:8001/metrics`
+- Grafana: `http://localhost:3000`
 
-## Scripts raiz
+Credenciales demo:
 
-- `npm run dev`
-- `npm run dev:vuln`
-- `npm run dev:secure`
-- `npm run dev:frontend`
-- `npm run dev:backend`
-- `npm run dev:backend:vuln`
-- `npm run dev:backend:secure`
-- `npm run build:frontend`
-- `npm run build:backend`
-- `npm run build`
-- `npm run docker:up`
-- `npm run docker:down`
-- `npm run docker:logs`
+- usuario: `admin@sofia.local`
+- contraseña: `SofiaAdmin2026!`
 
-## Ataques automatizados
+Credenciales Grafana:
+
+- usuario: `admin`
+- contraseña: `admin`
+
+## Enfoque ASIX
+
+El proyecto no debe entenderse como una simple web comercial. Su valor principal para ASIX está en:
+
+- desplegar y administrar una arquitectura cliente-servidor completa;
+- securizar autenticación, sesiones y endpoints;
+- modelar una base de datos relacional coherente;
+- levantar servicios con Docker Compose;
+- automatizar tareas con scripts en Windows y Linux;
+- simular ataques reales sobre una versión vulnerable;
+- verificar el bloqueo de esos mismos ataques en la versión segura;
+- monitorizar actividad y exponer métricas visuales en Grafana.
+
+## Estructura
+
+- `frontend-php/`: frontend servido por Apache/PHP para la capa visible
+- `sofia-backend/`: API REST, lógica de seguridad, Prisma, ataques y documentación técnica
+- `scripts/`: automatización multiplataforma para levantar stack y ejecutar ataques
+- `docker-compose.yml`: orquestación del entorno
+
+## Documentación disponible
+
+- [README backend](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/README.md)
+- [Guía de ataques](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/ATTACK-SCRIPTS.md)
+- [Explicación del login seguro](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/SECURE-LOGIN-EXPLAINED.md)
+- [Arquitectura funcional de servicios](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/SERVICE-ARCHITECTURE.md)
+- [Arquitectura, defensa y operación](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/ARCHITECTURE-AND-DEFENSE.md)
+- [Informe de seguridad](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/SECURITY-REPORT.md)
+- [Documentación técnica académica](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/DOCUMENTACION-APA.md)
+
+## Despliegue
+
+### Opción rápida con Docker
+
+Modo seguro:
+
+```bash
+docker compose up -d
+```
+
+Modo vulnerable:
+
+```bash
+set APP_MODE=vulnerable
+docker compose up -d
+```
+
+### Scripts de automatización
+
+Windows:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/start-stack.ps1
+powershell -ExecutionPolicy Bypass -File scripts/start-stack.ps1 -Mode vulnerable -Rebuild
+```
+
+Linux:
+
+```bash
+sh ./scripts/start-stack.sh
+sh ./scripts/start-stack.sh vulnerable --build
+```
+
+## Ejecución de ataques
+
+Los ataques automatizados están pensados para demostrar:
+
+- inyección SQL;
+- XSS;
+- path traversal;
+- manipulación de pagos;
+- fuerza bruta;
+- diferencia entre el flujo vulnerable y el seguro.
+
+Windows:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/run-attacks.ps1 -Mode vulnerable
+powershell -ExecutionPolicy Bypass -File scripts/run-attacks.ps1 -Mode secure
+```
+
+Linux:
+
+```bash
+sh ./scripts/run-attacks.sh vulnerable
+sh ./scripts/run-attacks.sh secure
+```
+
+También puedes usar los scripts de `npm`:
 
 - `npm run attack:sqli:vuln`
 - `npm run attack:sqli:secure`
@@ -41,142 +139,67 @@ Monorepo del proyecto final con dos aplicaciones:
 - `npm run attack:traversal:secure`
 - `npm run attack:payment:vuln`
 - `npm run attack:payment:secure`
-- `npm run attack:all:vuln`
-- `npm run attack:all:secure`
+- `npm run attack:bruteforce:vuln`
+- `npm run attack:bruteforce:secure`
+- `npm run services:matrix:vuln`
+- `npm run services:matrix:secure`
 
-## Docker
+## Visualización
 
-Docker ahora se puede lanzar directamente desde la raiz.
+La visualización del proyecto se divide en dos capas:
 
-- Si quieres desarrollo rapido, usa npm para frontend y backend.
-- Si quieres todo el stack listo, usa [docker-compose.yml](C:/Users/sgomez/Desktop/sofia-solutions/docker-compose.yml).
-- El frontend actual prioriza replica visual del preview original y no una reimplementacion por componentes.
+### SOC corporativo
 
-Modo por defecto en Docker: `secure`
+Ruta:
 
-Si quieres levantar Docker en modo vulnerable:
+- `http://localhost:8000/admin/security-monitor`
 
-```bash
-set APP_MODE=vulnerable
-docker compose up -d --build
-```
+Sirve para mostrar:
 
-Ejemplo:
+- estado operativo general;
+- incidentes;
+- servicios protegidos;
+- exposición por cliente;
+- telemetría agregada de seguridad.
 
-```bash
-docker compose up -d
-```
+### Grafana
 
-Eso levanta:
+Ruta:
 
-- `frontend` en `8000`
-- `postgres` en `5432`
-- `backend` en `8001`
-- `prometheus` en `9090`
+- `http://localhost:3000`
 
-## Estado actual del frontend
+Se utiliza como panel técnico para enseñar:
 
-- la web publica en `8000` reproduce el preview original de Readdy
-- el logo se sobreescribe localmente por un SVG transparente mas grande
-- el backend y su documentacion siguen siendo editables y academicos
-- el login en `/login` se ha reemplazado por una vista propia con modo seguro e inseguro
-- el SOC monitor en `/admin/security-monitor` ya consume datos del backend en vez de arrays mock
+- volumen de peticiones;
+- ataques bloqueados;
+- intentos de login;
+- sesiones activas;
+- evolución temporal de la actividad.
 
-## Verificacion visual
+Prometheus queda como fuente interna de métricas y no forma parte de la interfaz visible para la presentación.
 
-Actualmente existen **dos familias visuales** en el frontend:
+## Backend
 
-- ` / `
-  usa el bundle original del preview de Readdy para conservar la fidelidad visual casi exacta respecto a la referencia.
-- `/login`, `/login-secure`, `/dashboard` y `/admin/security-monitor`
-  usan pantallas React propias, conectadas al backend local y al flujo academico de seguridad.
+Endpoints principales:
 
-Esto explica por que algunas pantallas se ven "demasiado parecidas" al original y otras muestran los cambios funcionales y de marca pedidos durante el desarrollo.
-
-Si se quiere una experiencia completamente uniforme, hay dos caminos validos:
-
-- migrar todas las pantallas del preview a componentes React editables
-- o servir mas rutas directamente desde el bundle original y limitar los cambios a overrides de branding y datos
-
-El estado actual prioriza:
-
-- home con maxima fidelidad visual
-- login dual real
-- dashboard y SOC monitor conectados a la API local
-
-## SOC realista
-
-El backend ahora modela:
-
-- clientes protegidos
-- activos monitorizados
-- incidentes correlacionados
-- cartera de servicios operativos
-
-Endpoint principal del monitor:
-
+- `POST /api/v1/auth/login`
+- `POST /api/v2/auth/login`
+- `GET /api/v2/auth/csrf`
+- `GET /api/admin/overview`
 - `GET /api/admin/security-monitor`
-
-Ese endpoint alimenta:
-
-- KPIs de eventos, incidentes, salud y activos
-- paises origen
-- tendencia SIEM
-- vectores de ataque
-- feed de incidentes
-- exposicion por cliente
-- portfolio de servicios con SLA
-
-## Logica de servicios
-
-Los servicios ya no funcionan solo como un catalogo visual. El backend expone:
-
 - `GET /api/services`
 - `GET /api/services/catalog`
 - `GET /api/services/effectiveness`
-- `GET /api/services/:id`
+- `GET /metrics`
 
-Con esos endpoints, cada servicio queda relacionado con:
+## Objetivo docente
 
-- clientes protegidos
-- activos monitorizados
-- incidentes abiertos o contenidos
-- vectores de ataque cubiertos
-- nivel de efectividad operativa
+La finalidad del proyecto es demostrar, en un entorno controlado:
 
-Documentacion especifica:
-
-- [SERVICE-ARCHITECTURE.md](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/SERVICE-ARCHITECTURE.md)
-
-## Endpoints de visualizacion
-
-- Home: `http://localhost:8000/`
-- Login vulnerable: `http://localhost:8000/login`
-- Login seguro: `http://localhost:8000/login-secure`
-- Dashboard: `http://localhost:8000/dashboard`
-- SOC monitor: `http://localhost:8000/admin/security-monitor`
-- API backend: `http://localhost:8001`
-- Swagger: `http://localhost:8001/docs`
-- Metricas: `http://localhost:8001/metrics`
-
-## Scripts de validacion
-
-- `npm run services:validate`
-- `npm run services:matrix:vuln`
-- `npm run services:matrix:secure`
-- `npm run attack:bruteforce:vuln`
-- `npm run attack:bruteforce:secure`
-- `npm run attack:defense:vuln`
-- `npm run attack:defense:secure`
-
-## Documentacion de ataques y login
-
-- [ATTACK-SCRIPTS.md](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/ATTACK-SCRIPTS.md)
-- [SECURE-LOGIN-EXPLAINED.md](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/SECURE-LOGIN-EXPLAINED.md)
-
-La documentacion detallada del backend queda en [sofia-backend/README.md](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/README.md).
-
-Documentacion academica ampliada en formato APA:
-
-- [DOCUMENTACION-APA.md](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/DOCUMENTACION-APA.md)
-
+- cómo se despliega una plataforma full stack;
+- cómo se modelan datos empresariales y operativos;
+- cómo se levantan servicios con Docker;
+- cómo se automatizan tareas de administración;
+- cómo se monitoriza una aplicación;
+- cómo se explotan vulnerabilidades intencionadas;
+- y cómo esas vulnerabilidades quedan mitigadas en una implementación segura.
