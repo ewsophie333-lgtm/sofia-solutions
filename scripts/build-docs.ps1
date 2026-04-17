@@ -109,7 +109,9 @@ function Convert-MarkdownToHtml {
       $alt = [System.Net.WebUtility]::HtmlEncode($matches[1])
       $src = $matches[2]
       $resolved = [System.IO.Path]::GetFullPath((Join-Path $BasePath $src))
-      $html.Add("<p><img src=""$resolved"" alt=""$alt"" style=""max-width:100%; border:1px solid #ddd; margin:8pt 0;"" /></p>")
+      $fileName = [System.IO.Path]::GetFileName($resolved).ToLowerInvariant()
+      $figureClass = if ($fileName -like 'codigo-*') { 'figure-code' } else { 'figure-diagram' }
+      $html.Add("<div class=""figure $figureClass""><img src=""$resolved"" alt=""$alt"" class=""$figureClass-image"" /></div>")
       continue
     }
 
@@ -156,8 +158,13 @@ function Build-WordCompatibleDoc {
     p { margin: 0 0 8pt; }
     ul { margin: 0 0 10pt 20pt; }
     li { margin: 0 0 4pt; }
-    pre { background: #f4f4f4; border: 1px solid #ddd; padding: 10pt; white-space: pre-wrap; font-family: Consolas, monospace; font-size: 9.5pt; }
-    code { font-family: Consolas, monospace; font-size: 9.5pt; }
+    .figure { text-align: center; margin: 12pt 0 18pt; page-break-inside: avoid; }
+    .figure img { display: block; margin: 0 auto; border-radius: 8px; }
+    .figure-code { padding: 0 0 6pt; }
+    .figure-code img { width: 15.5cm; max-width: 100%; border: 1px solid #334155; }
+    .figure-diagram img { width: 16cm; max-width: 100%; border: 1px solid #cbd5e1; }
+    pre { background: #111827; color: #e5e7eb; border: 1px solid #334155; border-radius: 10px; padding: 12pt; margin: 14pt 0 16pt; white-space: pre-wrap; font-family: Consolas, monospace; font-size: 9.5pt; line-height: 1.45; page-break-inside: avoid; }
+    code { font-family: Consolas, monospace; font-size: 9.5pt; color: #7c3aed; }
   </style>
 </head>
 <body>

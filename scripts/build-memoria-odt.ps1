@@ -99,8 +99,12 @@ $section += ListBlock @(
   "Esquema de servicios: frontend, backend, PostgreSQL y Grafana.",
   "Esquema de datos: usuarios, servicios, clientes, activos, incidentes, tickets, pagos y eventos de seguridad."
 )
+$section += Para "El primer esquema resume la relación entre la capa web, la API de negocio, la base de datos, el monitor SOC y la visualización técnica."
+$section += ImageBlock "ArquitecturaGeneral" "Pictures/arquitectura-general.svg" "16.2cm" "8.7cm"
+$section += Para ""
 $section += Para "El diagrama más relevante para la implementación es el diagrama entidad-relación de la base de datos, ya que resume las tablas reales y su relación con servicios, clientes, incidentes y pagos."
-$section += ImageBlock "DiagramaBaseDatos" "Pictures/base-datos-er.svg" "15.5cm" "10cm"
+$section += ImageBlock "DiagramaBaseDatos" "Pictures/base-datos-er.svg" "16.2cm" "10.4cm"
+$section += Para ""
 
 $section += Heading2 "Bookmark10" "__RefHeading__1025_496126303" "4.2 Herramientas de software"
 $section += ListBlock @(
@@ -140,28 +144,42 @@ $section += ListBlock @(
 )
 $section += Para "A continuación se muestran fragmentos de código representativos del proyecto, centrados en autenticación segura, automatización y validación del checkout."
 $section += Para "Fragmento de autenticación segura con token CSRF:"
+$section += ImageBlock "CodigoLoginSeguro" "Pictures/codigo-login-seguro.svg" "15.2cm" "5.1cm"
+$section += Para ""
 $section += Para "const csrfResponse = await fetch('/api/v2/auth/csrf', { credentials: 'include' });"
 $section += Para "const { csrfToken } = await csrfResponse.json();"
 $section += Para "await fetch('/api/v2/auth/login', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json', 'x-csrf-token': csrfToken }, body: JSON.stringify({ email, password }) });"
 $section += Para "Fragmento del script start-stack.ps1:"
+$section += ImageBlock "CodigoStartStackPs1" "Pictures/codigo-start-stack.svg" "15.2cm" "5.0cm"
+$section += Para ""
 $section += Para 'param([ValidateSet("secure", "vulnerable")] [string]$Mode = "secure", [switch]$Rebuild)'
 $section += Para '$env:APP_MODE = $Mode'
 $section += Para 'if ($Rebuild) { docker compose down; docker compose up -d --build } else { docker compose up -d }'
 $section += Para "Fragmento del script start-stack.sh:"
+$section += ImageBlock "CodigoStartStackSh" "Pictures/codigo-start-stack.svg" "15.2cm" "5.0cm"
+$section += Para ""
 $section += Para 'MODE="${1:-secure}"'
 $section += Para 'REBUILD="${2:-}"'
 $section += Para 'if [ "$REBUILD" = "--build" ]; then docker compose down; docker compose up -d --build; else docker compose up -d; fi'
 $section += Para "Fragmento del script run-attacks.ps1:"
+$section += ImageBlock "CodigoRunAttacksPs1" "Pictures/codigo-run-attacks-ps1.svg" "15.2cm" "5.2cm"
+$section += Para ""
 $section += Para 'if ($Mode -eq "vulnerable") { npm run attack:sqli:vuln; npm run attack:xss:vuln; npm run attack:traversal:vuln; npm run attack:payment:vuln; npm run attack:bruteforce:vuln; npm run services:matrix:vuln }'
 $section += Para 'else { npm run attack:sqli:secure; npm run attack:xss:secure; npm run attack:traversal:secure; npm run attack:payment:secure; npm run attack:bruteforce:secure; npm run services:matrix:secure }'
 $section += Para "Fragmento del script run-attacks.sh:"
+$section += ImageBlock "CodigoRunAttacksSh" "Pictures/codigo-run-attacks-sh.svg" "15.2cm" "5.2cm"
+$section += Para ""
 $section += Para 'case "$MODE" in vulnerable) npm run attack:sqli:vuln; npm run attack:xss:vuln; npm run attack:traversal:vuln; npm run attack:payment:vuln; npm run attack:bruteforce:vuln; npm run services:matrix:vuln ;; secure) npm run attack:sqli:secure; npm run attack:xss:secure; npm run attack:traversal:secure; npm run attack:payment:secure; npm run attack:bruteforce:secure; npm run services:matrix:secure ;; esac'
 $section += Para "Fragmento del archivo docker-compose.yml:"
+$section += ImageBlock "CodigoDockerCompose" "Pictures/codigo-docker-compose.svg" "15.2cm" "5.3cm"
+$section += Para ""
 $section += Para 'frontend -> dockerfile: frontend-php/Dockerfile, puerto 8000:80'
 $section += Para 'backend -> dockerfile: sofia-backend/docker/Dockerfile, puerto 8001:8001, APP_MODE y DATABASE_URL'
 $section += Para 'postgres -> image postgres:15, puerto 5432:5432'
 $section += Para 'grafana -> image grafana/grafana:11.1.0, puerto 3000:3000'
 $section += Para "Fragmento de validación del importe en el checkout seguro:"
+$section += ImageBlock "CodigoCheckoutSeguro" "Pictures/codigo-checkout-seguro.svg" "15.2cm" "5.2cm"
+$section += Para ""
 $section += Para "const service = await prisma.service.findUnique({ where: { id: payload.serviceId } });"
 $section += Para "const manipulated = Number(payload.amount) !== Number(service.price);"
 $section += Para "if (manipulated) { await securityEventsService.register({ type: 'payment_amount_tampering', severity: 'high', endpoint: '/api/payments/checkout', action: 'blocked' }); }"
@@ -196,7 +214,14 @@ Copy-Item $TemplatePath (Join-Path $tempRoot "template.zip") -Force
 Expand-Archive -LiteralPath (Join-Path $tempRoot "template.zip") -DestinationPath $workDir -Force
 
 $pictureMap = @{
+  "arquitectura-general.svg" = (Join-Path $PWD "memoria\diagramas\arquitectura-general.svg")
   "base-datos-er.svg"        = (Join-Path $PWD "memoria\diagramas\base-datos-er.svg")
+  "codigo-login-seguro.svg"  = (Join-Path $PWD "memoria\diagramas\codigo-login-seguro.svg")
+  "codigo-checkout-seguro.svg" = (Join-Path $PWD "memoria\diagramas\codigo-checkout-seguro.svg")
+  "codigo-start-stack.svg"   = (Join-Path $PWD "memoria\diagramas\codigo-start-stack.svg")
+  "codigo-run-attacks-ps1.svg" = (Join-Path $PWD "memoria\diagramas\codigo-run-attacks-ps1.svg")
+  "codigo-run-attacks-sh.svg" = (Join-Path $PWD "memoria\diagramas\codigo-run-attacks-sh.svg")
+  "codigo-docker-compose.svg" = (Join-Path $PWD "memoria\diagramas\codigo-docker-compose.svg")
 }
 
 foreach ($entry in $pictureMap.GetEnumerator()) {

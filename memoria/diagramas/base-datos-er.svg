@@ -1,27 +1,27 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1620" viewBox="0 0 2200 1620">
+<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1600" viewBox="0 0 2200 1600">
   <defs>
     <style>
       .bg { fill: #0f1020; }
-      .panel { fill: #16192b; stroke: #8b5cf6; stroke-width: 2.4; rx: 18; ry: 18; }
+      .panel { fill: #16192b; stroke: #8b5cf6; stroke-width: 2.2; rx: 18; ry: 18; }
       .head { fill: #221a3b; }
       .title { fill: #f8fafc; font: 700 42px Inter, Arial, sans-serif; }
-      .name { fill: #ffffff; font: 700 26px Inter, Arial, sans-serif; }
       .meta { fill: #a78bfa; font: 600 15px Inter, Arial, sans-serif; letter-spacing: 1px; }
+      .name { fill: #ffffff; font: 700 25px Inter, Arial, sans-serif; }
       .field { fill: #dbe4f0; font: 500 18px Consolas, "Courier New", monospace; }
       .pk { fill: #fbbf24; font-weight: 700; }
       .fk { fill: #38bdf8; font-weight: 700; }
-      .rel { stroke: #c4b5fd; stroke-width: 3; fill: none; }
+      .rel { stroke: #c4b5fd; stroke-width: 3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
       .label { fill: #cbd5e1; font: 600 16px Inter, Arial, sans-serif; }
     </style>
   </defs>
 
-  <rect class="bg" width="2200" height="1620"/>
+  <rect class="bg" width="2200" height="1600"/>
   <text x="70" y="80" class="title">Diagrama entidad-relación completo</text>
   <text x="70" y="114" class="meta">Modelo real extraído de prisma/schema.prisma</text>
 
-  <!-- Row 1 -->
-  <g transform="translate(70,160)">
-    <rect class="panel" width="420" height="360"/>
+  <!-- User -->
+  <g transform="translate(70,170)">
+    <rect class="panel" width="420" height="352"/>
     <rect class="head" width="420" height="54" rx="18" ry="18"/>
     <text x="22" y="35" class="name">User</text>
     <text x="24" y="88" class="field"><tspan class="pk">PK</tspan> id : Int</text>
@@ -30,14 +30,15 @@
     <text x="24" y="172" class="field">role : Role</text>
     <text x="24" y="200" class="field">createdAt : DateTime</text>
     <text x="24" y="228" class="field"><tspan class="fk">FK</tspan> customerId : Int?</text>
-    <text x="24" y="270" class="field">tickets : Ticket[]</text>
-    <text x="24" y="298" class="field">messages : TicketMessage[]</text>
-    <text x="24" y="326" class="field">payments : Payment[]</text>
+    <text x="24" y="256" class="field">tickets : Ticket[]</text>
+    <text x="24" y="284" class="field">messages : TicketMessage[]</text>
+    <text x="24" y="312" class="field">payments : Payment[]</text>
   </g>
 
-  <g transform="translate(560,160)">
-    <rect class="panel" width="420" height="344"/>
-    <rect class="head" width="420" height="54" rx="18" ry="18"/>
+  <!-- Customer -->
+  <g transform="translate(670,170)">
+    <rect class="panel" width="430" height="340"/>
+    <rect class="head" width="430" height="54" rx="18" ry="18"/>
     <text x="22" y="35" class="name">Customer</text>
     <text x="24" y="88" class="field"><tspan class="pk">PK</tspan> id : Int</text>
     <text x="24" y="116" class="field">name : String</text>
@@ -46,12 +47,12 @@
     <text x="24" y="200" class="field">securityTier : String</text>
     <text x="24" y="228" class="field">createdAt : DateTime</text>
     <text x="24" y="256" class="field"><tspan class="fk">FK</tspan> primaryServiceId : Int?</text>
-    <text x="24" y="298" class="field">users : User[]</text>
-    <text x="24" y="326" class="field">assets : Asset[] / incidents : Incident[]</text>
+    <text x="24" y="284" class="field">users / assets / incidents</text>
   </g>
 
-  <g transform="translate(1050,160)">
-    <rect class="panel" width="420" height="330"/>
+  <!-- Service -->
+  <g transform="translate(1270,170)">
+    <rect class="panel" width="420" height="324"/>
     <rect class="head" width="420" height="54" rx="18" ry="18"/>
     <text x="22" y="35" class="name">Service</text>
     <text x="24" y="88" class="field"><tspan class="pk">PK</tspan> id : Int</text>
@@ -64,9 +65,10 @@
     <text x="24" y="284" class="field">slaHours : Int</text>
   </g>
 
-  <g transform="translate(1540,160)">
-    <rect class="panel" width="500" height="302"/>
-    <rect class="head" width="500" height="54" rx="18" ry="18"/>
+  <!-- SecurityEvent -->
+  <g transform="translate(1760,170)">
+    <rect class="panel" width="370" height="300"/>
+    <rect class="head" width="370" height="54" rx="18" ry="18"/>
     <text x="22" y="35" class="name">SecurityEvent</text>
     <text x="24" y="88" class="field"><tspan class="pk">PK</tspan> id : Int</text>
     <text x="24" y="116" class="field">type : String</text>
@@ -74,14 +76,13 @@
     <text x="24" y="172" class="field">sourceIp : String</text>
     <text x="24" y="200" class="field">endpoint : String</text>
     <text x="24" y="228" class="field">payload : String</text>
-    <text x="24" y="256" class="field">action : String / timestamp : DateTime</text>
-    <text x="24" y="284" class="field">metadata : String?</text>
+    <text x="24" y="256" class="field">action / timestamp / metadata</text>
   </g>
 
-  <!-- Row 2 -->
-  <g transform="translate(560,620)">
-    <rect class="panel" width="420" height="344"/>
-    <rect class="head" width="420" height="54" rx="18" ry="18"/>
+  <!-- Asset -->
+  <g transform="translate(670,640)">
+    <rect class="panel" width="430" height="340"/>
+    <rect class="head" width="430" height="54" rx="18" ry="18"/>
     <text x="22" y="35" class="name">Asset</text>
     <text x="24" y="88" class="field"><tspan class="pk">PK</tspan> id : Int</text>
     <text x="24" y="116" class="field"><tspan class="fk">FK</tspan> customerId : Int</text>
@@ -94,9 +95,10 @@
     <text x="24" y="312" class="field">createdAt : DateTime</text>
   </g>
 
-  <g transform="translate(1050,600)">
-    <rect class="panel" width="520" height="430"/>
-    <rect class="head" width="520" height="54" rx="18" ry="18"/>
+  <!-- Incident -->
+  <g transform="translate(1270,600)">
+    <rect class="panel" width="470" height="424"/>
+    <rect class="head" width="470" height="54" rx="18" ry="18"/>
     <text x="22" y="35" class="name">Incident</text>
     <text x="24" y="88" class="field"><tspan class="pk">PK</tspan> id : Int</text>
     <text x="24" y="116" class="field"><tspan class="fk">FK</tspan> customerId : Int</text>
@@ -109,11 +111,11 @@
     <text x="24" y="312" class="field">sourceIp : String</text>
     <text x="24" y="340" class="field">sourceCountry : String</text>
     <text x="24" y="368" class="field">attackSurface : String</text>
-    <text x="24" y="396" class="field">timelineSlot : Int</text>
+    <text x="24" y="396" class="field">timelineSlot / createdAt / updatedAt</text>
   </g>
 
-  <!-- Row 3 -->
-  <g transform="translate(70,1100)">
+  <!-- Ticket -->
+  <g transform="translate(70,1110)">
     <rect class="panel" width="420" height="288"/>
     <rect class="head" width="420" height="54" rx="18" ry="18"/>
     <text x="22" y="35" class="name">Ticket</text>
@@ -126,9 +128,10 @@
     <text x="24" y="256" class="field">messages : TicketMessage[]</text>
   </g>
 
-  <g transform="translate(560,1100)">
-    <rect class="panel" width="420" height="300"/>
-    <rect class="head" width="420" height="54" rx="18" ry="18"/>
+  <!-- TicketMessage -->
+  <g transform="translate(670,1110)">
+    <rect class="panel" width="430" height="300"/>
+    <rect class="head" width="430" height="54" rx="18" ry="18"/>
     <text x="22" y="35" class="name">TicketMessage</text>
     <text x="24" y="88" class="field"><tspan class="pk">PK</tspan> id : Int</text>
     <text x="24" y="116" class="field"><tspan class="fk">FK</tspan> ticketId : Int</text>
@@ -139,7 +142,8 @@
     <text x="24" y="256" class="field">sender : User</text>
   </g>
 
-  <g transform="translate(1050,1100)">
+  <!-- Payment -->
+  <g transform="translate(1270,1110)">
     <rect class="panel" width="420" height="316"/>
     <rect class="head" width="420" height="54" rx="18" ry="18"/>
     <text x="22" y="35" class="name">Payment</text>
@@ -153,34 +157,39 @@
     <text x="24" y="284" class="field">transactionId : String @unique</text>
   </g>
 
-  <!-- Relations -->
-  <path class="rel" d="M490 338 C530 338 520 338 560 338"/>
-  <text x="510" y="324" class="label">customerId</text>
+  <!-- Relation lanes -->
+  <path class="rel" d="M490 346 L580 346 L580 282 L670 282"/>
+  <text x="522" y="330" class="label">customerId</text>
 
-  <path class="rel" d="M980 338 C1020 338 1010 338 1050 338"/>
-  <text x="994" y="324" class="label">primaryServiceId</text>
+  <path class="rel" d="M1100 330 L1185 330 L1185 282 L1270 282"/>
+  <text x="1126" y="314" class="label">primaryServiceId</text>
 
-  <path class="rel" d="M770 504 C770 560 770 560 770 620"/>
-  <text x="786" y="570" class="label">customerId</text>
+  <path class="rel" d="M885 510 L885 575 L885 575 L885 640"/>
+  <text x="901" y="580" class="label">customerId</text>
 
-  <path class="rel" d="M1260 490 C1260 540 1260 548 1260 600"/>
-  <text x="1276" y="560" class="label">customerId</text>
+  <path class="rel" d="M1100 760 L1185 760 L1185 760 L1270 760"/>
+  <text x="1128" y="744" class="label">customerId</text>
 
-  <path class="rel" d="M980 792 C1020 792 1010 792 1050 792"/>
-  <text x="994" y="778" class="label">assetId</text>
+  <path class="rel" d="M1100 820 L1185 820 L1185 820 L1270 820"/>
+  <text x="1138" y="804" class="label">assetId</text>
 
-  <path class="rel" d="M280 520 C280 760 280 760 280 1100"/>
-  <text x="294" y="820" class="label">userId</text>
+  <!-- User -> Incident through upper middle lane -->
+  <path class="rel" d="M490 400 L560 400 L560 560 L1505 560 L1505 600"/>
+  <text x="586" y="546" class="label">analystId</text>
 
-  <path class="rel" d="M490 1244 C530 1244 520 1244 560 1244"/>
-  <text x="506" y="1230" class="label">ticketId</text>
+  <!-- User -> Ticket through left gutter -->
+  <path class="rel" d="M160 522 L40 522 L40 1080 L280 1080 L280 1110"/>
+  <text x="56" y="1066" class="label">userId</text>
 
-  <path class="rel" d="M490 1268 C760 1268 760 520 280 520"/>
-  <text x="520" y="1294" class="label">senderId</text>
+  <!-- Ticket -> TicketMessage through center lower lane -->
+  <path class="rel" d="M490 1254 L590 1254 L590 1254 L670 1254"/>
+  <text x="522" y="1238" class="label">ticketId</text>
 
-  <path class="rel" d="M490 360 C840 360 840 740 1050 740"/>
-  <text x="760" y="724" class="label">analystId</text>
+  <!-- User -> TicketMessage through left and bottom gutters -->
+  <path class="rel" d="M70 430 L30 430 L30 1450 L885 1450 L885 1410"/>
+  <text x="56" y="1432" class="label">senderId</text>
 
-  <path class="rel" d="M490 390 C900 390 900 1140 1050 1140"/>
-  <text x="874" y="1124" class="label">userId</text>
+  <!-- User -> Payment through bottom gutter -->
+  <path class="rel" d="M490 462 L560 462 L560 1490 L1480 1490 L1480 1426"/>
+  <text x="590" y="1472" class="label">userId</text>
 </svg>

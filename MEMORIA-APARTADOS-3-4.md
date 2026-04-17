@@ -292,6 +292,10 @@ Gracias a esta estructura, los servicios ofertados no son elementos decorativos,
 - métricas de cobertura;
 - y eficacia de defensa.
 
+### Arquitectura general
+
+![Arquitectura general de Sofia Solutions](memoria/diagramas/arquitectura-general.svg)
+
 ### Diagrama entidad-relación
 
 ![Diagrama entidad-relación de la base de datos](memoria/diagramas/base-datos-er.svg)
@@ -461,6 +465,8 @@ Este script permite:
 
 Para ejecutar la batería de pruebas ofensivas controladas se ha creado un script específico:
 
+![Captura del script de ataques en PowerShell](memoria/diagramas/codigo-run-attacks-ps1.svg)
+
 ```powershell
 param(
   [ValidateSet("vulnerable", "secure")]
@@ -495,6 +501,8 @@ Su función es ejecutar la misma matriz de ataques sobre ambas versiones para co
 #### Script de arranque equivalente en Linux
 
 La automatización del despliegue también se implementó para sistemas Linux:
+
+![Captura del script de arranque en Linux](memoria/diagramas/codigo-start-stack.svg)
 
 ```sh
 #!/usr/bin/env sh
@@ -553,6 +561,8 @@ Con esto se demuestra que la automatización del proyecto no depende de un únic
 #### Script de ataques en Linux
 
 Este script reproduce en Linux la misma lógica de pruebas ofensivas:
+
+![Captura del script de ataques en Linux](memoria/diagramas/codigo-run-attacks-sh.svg)
 
 ```sh
 #!/usr/bin/env sh
@@ -637,6 +647,8 @@ if (manipulated) {
 #### Extracto del archivo docker-compose.yml
 
 La puesta en marcha del entorno depende de Docker Compose. Este fragmento resume los servicios principales:
+
+![Captura del archivo docker-compose.yml](memoria/diagramas/codigo-docker-compose.svg)
 
 ```yaml
 services:

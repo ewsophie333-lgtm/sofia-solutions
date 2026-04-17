@@ -37,6 +37,8 @@ La arquitectura visible del proyecto queda organizada así:
 - `grafana`: visualización técnica;
 - `docker-compose.yml`: orquestación completa del entorno.
 
+![Arquitectura general de Sofia Solutions](../memoria/diagramas/arquitectura-general.svg)
+
 ### Diagrama general de arquitectura
 
 La capa técnica visible se apoya en el frontend corporativo, la API backend, PostgreSQL y Grafana como panel técnico de apoyo.
@@ -177,6 +179,8 @@ La idea es demostrar que dos interfaces casi idénticas pueden implicar niveles 
 
 ### Fragmento del login seguro
 
+![Captura del flujo de login seguro](../memoria/diagramas/codigo-login-seguro.svg)
+
 ```js
 const csrfResponse = await fetch('/api/v2/auth/csrf', {
   credentials: 'include'
@@ -197,6 +201,8 @@ await fetch('/api/v2/auth/login', {
 
 ### Fragmento del script de arranque en PowerShell
 
+![Captura del script de arranque en PowerShell](../memoria/diagramas/codigo-start-stack.svg)
+
 ```powershell
 param(
   [ValidateSet("secure", "vulnerable")]
@@ -215,6 +221,8 @@ if ($Rebuild) {
 ```
 
 ### Fragmento del script de arranque en Linux
+
+![Captura del script de arranque en Linux](../memoria/diagramas/codigo-start-stack.svg)
 
 ```sh
 #!/usr/bin/env sh
@@ -260,6 +268,8 @@ No se usan para “romper” el proyecto, sino para enseñar:
 
 ### Fragmento del ataque al checkout
 
+![Captura de la validación del checkout seguro](../memoria/diagramas/codigo-checkout-seguro.svg)
+
 ```ts
 const response = await fetch(`${baseUrl}/api/payments/checkout`, {
   method: 'POST',
@@ -280,6 +290,8 @@ const response = await fetch(`${baseUrl}/api/payments/checkout`, {
 
 ### Fragmento del script de ataques en PowerShell
 
+![Captura del script de ataques en PowerShell](../memoria/diagramas/codigo-run-attacks-ps1.svg)
+
 ```powershell
 if ($Mode -eq "vulnerable") {
   npm run attack:sqli:vuln
@@ -299,6 +311,8 @@ if ($Mode -eq "vulnerable") {
 ```
 
 ### Fragmento del script de ataques en Linux
+
+![Captura del script de ataques en Linux](../memoria/diagramas/codigo-run-attacks-sh.svg)
 
 ```sh
 case "$MODE" in
@@ -337,6 +351,8 @@ const manipulated = Number(payload.amount) !== Number(service.price);
 ```
 
 ### Fragmento de docker-compose.yml
+
+![Captura del archivo docker-compose.yml](../memoria/diagramas/codigo-docker-compose.svg)
 
 ```yaml
 services:
