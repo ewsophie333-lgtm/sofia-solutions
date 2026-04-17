@@ -10,8 +10,13 @@
     p { margin: 0 0 8pt; }
     ul { margin: 0 0 10pt 20pt; }
     li { margin: 0 0 4pt; }
-    pre { background: #f4f4f4; border: 1px solid #ddd; padding: 10pt; white-space: pre-wrap; font-family: Consolas, monospace; font-size: 9.5pt; }
-    code { font-family: Consolas, monospace; font-size: 9.5pt; }
+    .figure { text-align: center; margin: 12pt 0 18pt; page-break-inside: avoid; }
+    .figure img { display: block; margin: 0 auto; border-radius: 8px; }
+    .figure-code { padding: 0 0 6pt; }
+    .figure-code img { width: 15.5cm; max-width: 100%; border: 1px solid #334155; }
+    .figure-diagram img { width: 16cm; max-width: 100%; border: 1px solid #cbd5e1; }
+    pre { background: #111827; color: #e5e7eb; border: 1px solid #334155; border-radius: 10px; padding: 12pt; margin: 14pt 0 16pt; white-space: pre-wrap; font-family: Consolas, monospace; font-size: 9.5pt; line-height: 1.45; page-break-inside: avoid; }
+    code { font-family: Consolas, monospace; font-size: 9.5pt; color: #7c3aed; }
   </style>
 </head>
 <body>
@@ -267,8 +272,10 @@
 <li>m&#233;tricas de cobertura;</li>
 <li>y eficacia de defensa.</li>
 </ul>
+<h3>Arquitectura general</h3>
+<div class="figure figure-diagram"><img src="C:\Users\sgomez\Desktop\sofia-solutions\memoria\diagramas\arquitectura-general.svg" alt="Arquitectura general de Sofia Solutions" class="figure-diagram-image" /></div>
 <h3>Diagrama entidad-relaci&#243;n</h3>
-<p><img src="C:\Users\sgomez\Desktop\sofia-solutions\memoria\diagramas\base-datos-er.svg" alt="Diagrama entidad-relaci&#243;n de la base de datos" style="max-width:100%; border:1px solid #ddd; margin:8pt 0;" /></p>
+<div class="figure figure-diagram"><img src="C:\Users\sgomez\Desktop\sofia-solutions\memoria\diagramas\base-datos-er.svg" alt="Diagrama entidad-relaci&#243;n de la base de datos" class="figure-diagram-image" /></div>
 <h2>4.2 Herramientas de software</h2>
 <p>Las principales herramientas de software utilizadas han sido:</p>
 <ul>
@@ -348,7 +355,7 @@
 </ul>
 <h3>Fragmento del login seguro</h3>
 <p>Este fragmento representa el uso del token CSRF y el env&#237;o autenticado al endpoint seguro:</p>
-<p><img src="C:\Users\sgomez\Desktop\sofia-solutions\memoria\diagramas\codigo-login-seguro.svg" alt="Captura del flujo de login seguro" style="max-width:100%; border:1px solid #ddd; margin:8pt 0;" /></p>
+<div class="figure figure-code"><img src="C:\Users\sgomez\Desktop\sofia-solutions\memoria\diagramas\codigo-login-seguro.svg" alt="Captura del flujo de login seguro" class="figure-code-image" /></div>
 <pre>
 const csrfResponse = await fetch(&#39;/api/v2/auth/csrf&#39;, {
   credentials: &#39;include&#39;
@@ -380,7 +387,7 @@ const loginResponse = await fetch(&#39;/api/v2/auth/login&#39;, {
 <p>Para que la implementaci&#243;n no quede en una descripci&#243;n abstracta, se han preparado scripts reales de operaci&#243;n y validaci&#243;n. Estos scripts est&#225;n comentados en el proyecto para facilitar su lectura y justificar su uso dentro de la memoria.</p>
 <p>#### Script de arranque en Windows</p>
 <p>El siguiente ejemplo corresponde al arranque del entorno completo en PowerShell:</p>
-<p><img src="C:\Users\sgomez\Desktop\sofia-solutions\memoria\diagramas\codigo-start-stack.svg" alt="Captura del script de arranque en PowerShell" style="max-width:100%; border:1px solid #ddd; margin:8pt 0;" /></p>
+<div class="figure figure-code"><img src="C:\Users\sgomez\Desktop\sofia-solutions\memoria\diagramas\codigo-start-stack.svg" alt="Captura del script de arranque en PowerShell" class="figure-code-image" /></div>
 <pre>
 param(
   [ValidateSet(&quot;secure&quot;, &quot;vulnerable&quot;)]
@@ -410,6 +417,7 @@ if ($Rebuild) {
 </ul>
 <p>#### Script de ataques en PowerShell</p>
 <p>Para ejecutar la bater&#237;a de pruebas ofensivas controladas se ha creado un script espec&#237;fico:</p>
+<div class="figure figure-code"><img src="C:\Users\sgomez\Desktop\sofia-solutions\memoria\diagramas\codigo-run-attacks-ps1.svg" alt="Captura del script de ataques en PowerShell" class="figure-code-image" /></div>
 <pre>
 param(
   [ValidateSet(&quot;vulnerable&quot;, &quot;secure&quot;)]
@@ -442,6 +450,7 @@ if ($Mode -eq &quot;vulnerable&quot;) {
 </ul>
 <p>#### Script de arranque equivalente en Linux</p>
 <p>La automatizaci&#243;n del despliegue tambi&#233;n se implement&#243; para sistemas Linux:</p>
+<div class="figure figure-code"><img src="C:\Users\sgomez\Desktop\sofia-solutions\memoria\diagramas\codigo-start-stack.svg" alt="Captura del script de arranque en Linux" class="figure-code-image" /></div>
 <pre>
 #!/usr/bin/env sh
 set -eu
@@ -493,6 +502,7 @@ esac
 <p>Con esto se demuestra que la automatizaci&#243;n del proyecto no depende de un &#250;nico sistema operativo.</p>
 <p>#### Script de ataques en Linux</p>
 <p>Este script reproduce en Linux la misma l&#243;gica de pruebas ofensivas:</p>
+<div class="figure figure-code"><img src="C:\Users\sgomez\Desktop\sofia-solutions\memoria\diagramas\codigo-run-attacks-sh.svg" alt="Captura del script de ataques en Linux" class="figure-code-image" /></div>
 <pre>
 #!/usr/bin/env sh
 set -eu
@@ -544,7 +554,7 @@ const response = await fetch(`${baseUrl}/api/payments/checkout`, {
 <li>el intento de manipulaci&#243;n puede vincularse a la capa de seguridad y a la visualizaci&#243;n en el panel correspondiente.</li>
 </ul>
 <p>#### Validaci&#243;n del precio en el backend seguro</p>
-<p><img src="C:\Users\sgomez\Desktop\sofia-solutions\memoria\diagramas\codigo-checkout-seguro.svg" alt="Captura de la validaci&#243;n del checkout seguro" style="max-width:100%; border:1px solid #ddd; margin:8pt 0;" /></p>
+<div class="figure figure-code"><img src="C:\Users\sgomez\Desktop\sofia-solutions\memoria\diagramas\codigo-checkout-seguro.svg" alt="Captura de la validaci&#243;n del checkout seguro" class="figure-code-image" /></div>
 <pre>
 const service = await prisma.service.findUnique({
   where: { id: payload.serviceId }
@@ -568,6 +578,7 @@ if (manipulated) {
 </pre>
 <p>#### Extracto del archivo docker-compose.yml</p>
 <p>La puesta en marcha del entorno depende de Docker Compose. Este fragmento resume los servicios principales:</p>
+<div class="figure figure-code"><img src="C:\Users\sgomez\Desktop\sofia-solutions\memoria\diagramas\codigo-docker-compose.svg" alt="Captura del archivo docker-compose.yml" class="figure-code-image" /></div>
 <pre>
 services:
   frontend:

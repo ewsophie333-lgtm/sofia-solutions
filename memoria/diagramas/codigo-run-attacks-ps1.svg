@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="560" viewBox="0 0 1280 560">
+  <rect width="1280" height="560" rx="18" fill="#0b1020"/>
+  <rect x="24" y="24" width="1232" height="512" rx="14" fill="#11182d" stroke="#27324d"/>
+  <circle cx="56" cy="54" r="8" fill="#ff5f57"/><circle cx="82" cy="54" r="8" fill="#febc2e"/><circle cx="108" cy="54" r="8" fill="#28c840"/>
+  <text x="150" y="60" fill="#94a3b8" font-family="Consolas, 'Courier New', monospace" font-size="22">scripts / run-attacks.ps1</text>
+  <g font-family="Consolas, 'Courier New', monospace" font-size="24">
+    <text x="54" y="118" fill="#475569">1</text><text x="90" y="118" fill="#cbd5e1">if</text><text x="120" y="118" fill="#e2e8f0"> ($Mode -eq </text><text x="270" y="118" fill="#86efac">"vulnerable"</text><text x="426" y="118" fill="#e2e8f0">) {</text>
+    <text x="54" y="164" fill="#475569">2</text><text x="126" y="164" fill="#60a5fa">npm run attack:sqli:vuln</text>
+    <text x="54" y="210" fill="#475569">3</text><text x="126" y="210" fill="#60a5fa">npm run attack:xss:vuln</text>
+    <text x="54" y="256" fill="#475569">4</text><text x="126" y="256" fill="#60a5fa">npm run attack:traversal:vuln</text>
+    <text x="54" y="302" fill="#475569">5</text><text x="126" y="302" fill="#60a5fa">npm run attack:payment:vuln</text>
+    <text x="54" y="348" fill="#475569">6</text><text x="126" y="348" fill="#60a5fa">npm run attack:bruteforce:vuln</text>
+    <text x="54" y="394" fill="#475569">7</text><text x="126" y="394" fill="#60a5fa">npm run services:matrix:vuln</text>
+    <text x="54" y="440" fill="#475569">8</text><text x="90" y="440" fill="#e2e8f0">} else { ... secure ... }</text>
+  </g>
+</svg>
