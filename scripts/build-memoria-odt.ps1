@@ -29,6 +29,18 @@ function ListBlock([string[]]$items) {
   return "<text:list text:style-name=""L1"">$inner</text:list>"
 }
 
+function ImageBlock([string]$name, [string]$href, [string]$width = "16cm", [string]$height = "9cm") {
+  return "<text:p text:style-name=""P21""><draw:frame draw:style-name=""fr1"" draw:name=""$name"" text:anchor-type=""paragraph"" svg:width=""$width"" svg:height=""$height"" draw:z-index=""0""><draw:image xlink:href=""$href"" xlink:type=""simple"" xlink:show=""embed"" xlink:actuate=""onLoad""/></draw:frame></text:p>"
+}
+
+function Fix-Mojibake([string]$text) {
+  if ($text.Contains([char]0x00C3) -or $text.Contains([char]0x00C2) -or $text.Contains([char]0x00E2)) {
+    $bytes = [System.Text.Encoding]::GetEncoding(1252).GetBytes($text)
+    $text = [System.Text.Encoding]::UTF8.GetString($bytes)
+  }
+  return $text
+}
+
 $section = @()
 
 $section += Heading1 "Bookmark3" "__RefHeading__1013_496126303" "3. Análisis de requerimientos"
@@ -66,7 +78,7 @@ $section += Para "Esta alternativa fue elegida porque equilibra realismo técnic
 $section += '<text:p text:style-name="P26"/><text:p text:style-name="P26"/>'
 
 $section += Heading2 "Bookmark6" "__RefHeading__1019_496126303" "3.3 Elección, valoración económica y diseño de las posibles soluciones"
-$section += Para "La solución final se compone de varios servicios conectados entre sí: un frontend visible, un backend de aplicación, una base de datos PostgreSQL, una fuente interna de métricas y una capa de visualización técnica con Grafana. Este diseño permite presentar la solución como una plataforma desplegada y administrada, no solo como una aplicación web."
+$section += Para "La solución final se compone de varios servicios conectados entre sí: un frontend visible, un backend de aplicación, una base de datos PostgreSQL y una capa de visualización técnica con Grafana. Este diseño permite presentar la solución como una plataforma desplegada y administrada, no solo como una aplicación web."
 $section += Para "Desde el punto de vista económico, al tratarse de un proyecto académico, se ha trabajado íntegramente con software libre y despliegue local. Por tanto, el coste de licencias es nulo. No obstante, en un escenario real, habría que contemplar costes de servidor, almacenamiento, logs, dominio y operación continua."
 $section += ListBlock @(
   "Software libre utilizado: Apache/PHP, Node.js, Express, PostgreSQL, Prisma, Docker y Grafana: 0 EUR en licencias.",
@@ -84,9 +96,11 @@ $section += Heading2 "Bookmark8" "__RefHeading__1023_496126303" "4.1 Diagramas y
 $section += Para "El sistema se compone de varias rutas visibles y varios servicios internos. A nivel funcional, la plataforma presenta una página principal, dos rutas de login, un dashboard y un monitor SOC. A nivel de infraestructura, se despliegan servicios diferenciados para frontend, backend, base de datos, fuente de métricas y visualización."
 $section += ListBlock @(
   "Mapa del sitio: /, /login, /login-secure, /dashboard y /admin/security-monitor.",
-  "Esquema de servicios: frontend, backend, PostgreSQL, Prometheus interno y Grafana.",
+  "Esquema de servicios: frontend, backend, PostgreSQL y Grafana.",
   "Esquema de datos: usuarios, servicios, clientes, activos, incidentes, tickets, pagos y eventos de seguridad."
 )
+$section += Para "El diagrama más relevante para la implementación es el diagrama entidad-relación de la base de datos, ya que resume las tablas reales y su relación con servicios, clientes, incidentes y pagos."
+$section += ImageBlock "DiagramaBaseDatos" "Pictures/base-datos-er.svg" "15.5cm" "10cm"
 
 $section += Heading2 "Bookmark10" "__RefHeading__1025_496126303" "4.2 Herramientas de software"
 $section += ListBlock @(
@@ -124,6 +138,33 @@ $section += ListBlock @(
   "Scripts de validación de servicios y efectividad defensiva.",
   "Endpoints diferenciados entre autenticación vulnerable y segura."
 )
+$section += Para "A continuación se muestran fragmentos de código representativos del proyecto, centrados en autenticación segura, automatización y validación del checkout."
+$section += Para "Fragmento de autenticación segura con token CSRF:"
+$section += Para "const csrfResponse = await fetch('/api/v2/auth/csrf', { credentials: 'include' });"
+$section += Para "const { csrfToken } = await csrfResponse.json();"
+$section += Para "await fetch('/api/v2/auth/login', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json', 'x-csrf-token': csrfToken }, body: JSON.stringify({ email, password }) });"
+$section += Para "Fragmento del script start-stack.ps1:"
+$section += Para 'param([ValidateSet("secure", "vulnerable")] [string]$Mode = "secure", [switch]$Rebuild)'
+$section += Para '$env:APP_MODE = $Mode'
+$section += Para 'if ($Rebuild) { docker compose down; docker compose up -d --build } else { docker compose up -d }'
+$section += Para "Fragmento del script start-stack.sh:"
+$section += Para 'MODE="${1:-secure}"'
+$section += Para 'REBUILD="${2:-}"'
+$section += Para 'if [ "$REBUILD" = "--build" ]; then docker compose down; docker compose up -d --build; else docker compose up -d; fi'
+$section += Para "Fragmento del script run-attacks.ps1:"
+$section += Para 'if ($Mode -eq "vulnerable") { npm run attack:sqli:vuln; npm run attack:xss:vuln; npm run attack:traversal:vuln; npm run attack:payment:vuln; npm run attack:bruteforce:vuln; npm run services:matrix:vuln }'
+$section += Para 'else { npm run attack:sqli:secure; npm run attack:xss:secure; npm run attack:traversal:secure; npm run attack:payment:secure; npm run attack:bruteforce:secure; npm run services:matrix:secure }'
+$section += Para "Fragmento del script run-attacks.sh:"
+$section += Para 'case "$MODE" in vulnerable) npm run attack:sqli:vuln; npm run attack:xss:vuln; npm run attack:traversal:vuln; npm run attack:payment:vuln; npm run attack:bruteforce:vuln; npm run services:matrix:vuln ;; secure) npm run attack:sqli:secure; npm run attack:xss:secure; npm run attack:traversal:secure; npm run attack:payment:secure; npm run attack:bruteforce:secure; npm run services:matrix:secure ;; esac'
+$section += Para "Fragmento del archivo docker-compose.yml:"
+$section += Para 'frontend -> dockerfile: frontend-php/Dockerfile, puerto 8000:80'
+$section += Para 'backend -> dockerfile: sofia-backend/docker/Dockerfile, puerto 8001:8001, APP_MODE y DATABASE_URL'
+$section += Para 'postgres -> image postgres:15, puerto 5432:5432'
+$section += Para 'grafana -> image grafana/grafana:11.1.0, puerto 3000:3000'
+$section += Para "Fragmento de validación del importe en el checkout seguro:"
+$section += Para "const service = await prisma.service.findUnique({ where: { id: payload.serviceId } });"
+$section += Para "const manipulated = Number(payload.amount) !== Number(service.price);"
+$section += Para "if (manipulated) { await securityEventsService.register({ type: 'payment_amount_tampering', severity: 'high', endpoint: '/api/payments/checkout', action: 'blocked' }); }"
 
 $section += Heading2 "" "__RefHeading__626_2124264076" "4.6 Administración"
 $section += Para "La administración del sistema se ha planteado como parte central del proyecto. Cada servicio tiene una función específica y puede arrancarse, detenerse y supervisarse de forma independiente. El backend centraliza la lógica de negocio, el frontend expone la interfaz, PostgreSQL almacena los datos y Grafana permite visualizar el estado técnico del sistema."
@@ -138,10 +179,10 @@ $section += ListBlock @(
   "Eventos y métricas: el sistema registra actividad sospechosa y la expone para visualización en SOC y Grafana.",
   "Base de datos y contenedores: separación de servicios y persistencia controlada dentro del entorno Docker."
 )
-$section += Para "La visualización final del comportamiento del sistema no se apoya en Prometheus como interfaz visible, sino en Grafana y en el monitor SOC propio. De este modo, la defensa del proyecto puede centrarse en la parte realmente útil para ASIX: seguridad, redes, servicios, scripting, monitorización y administración."
+$section += Para "La visualización final del comportamiento del sistema se apoya en Grafana y en el monitor SOC propio. De este modo, la defensa del proyecto puede centrarse en la parte realmente útil para ASIX: seguridad, redes, servicios, scripting, monitorización y administración."
 $section += '<text:p text:style-name="P39"><text:soft-page-break/></text:p>'
 
-$newSection = ($section -join "")
+$newSection = Fix-Mojibake ($section -join "")
 
 $tempRoot = Join-Path $PWD "temp\memoria_build"
 $workDir = Join-Path $tempRoot "work"
@@ -153,6 +194,14 @@ New-Item -ItemType Directory -Force -Path $workDir | Out-Null
 
 Copy-Item $TemplatePath (Join-Path $tempRoot "template.zip") -Force
 Expand-Archive -LiteralPath (Join-Path $tempRoot "template.zip") -DestinationPath $workDir -Force
+
+$pictureMap = @{
+  "base-datos-er.svg"        = (Join-Path $PWD "memoria\diagramas\base-datos-er.svg")
+}
+
+foreach ($entry in $pictureMap.GetEnumerator()) {
+  Copy-Item $entry.Value (Join-Path $workDir ("Pictures\" + $entry.Key)) -Force
+}
 
 $contentPath = Join-Path $workDir "content.xml"
 $content = Get-Content $contentPath -Raw -Encoding UTF8
@@ -166,6 +215,17 @@ if ($updated -eq $content) {
 }
 
 [System.IO.File]::WriteAllText($contentPath, $updated, [System.Text.UTF8Encoding]::new($false))
+
+$manifestPath = Join-Path $workDir "META-INF\manifest.xml"
+$manifest = Get-Content $manifestPath -Raw -Encoding UTF8
+foreach ($pictureName in $pictureMap.Keys) {
+  $fullPath = "Pictures/$pictureName"
+  if ($manifest -notmatch [regex]::Escape($fullPath)) {
+    $entry = "<manifest:file-entry manifest:full-path=""$fullPath"" manifest:media-type=""image/svg+xml""/>"
+    $manifest = $manifest -replace '</manifest:manifest>', " $entry`r`n</manifest:manifest>"
+  }
+}
+[System.IO.File]::WriteAllText($manifestPath, $manifest, [System.Text.UTF8Encoding]::new($false))
 
 if (Test-Path $OutputPath) {
   Remove-Item $OutputPath -Force

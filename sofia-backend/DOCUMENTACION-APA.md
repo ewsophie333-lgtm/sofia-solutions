@@ -35,8 +35,11 @@ La arquitectura visible del proyecto queda organizada así:
 - `sofia-backend/`: API REST construida con Express y TypeScript;
 - `postgres`: persistencia relacional;
 - `grafana`: visualización técnica;
-- `prometheus`: recolector interno para Grafana;
 - `docker-compose.yml`: orquestación completa del entorno.
+
+### Diagrama general de arquitectura
+
+La capa técnica visible se apoya en el frontend corporativo, la API backend, PostgreSQL y Grafana como panel técnico de apoyo.
 
 ## 4. Arquitectura de red y servicios
 
@@ -51,9 +54,8 @@ La arquitectura visible del proyecto queda organizada así:
 ### Servicios internos
 
 - `postgres:5432`
-- `prometheus` como fuente interna de métricas
 
-La decisión de dejar Prometheus como componente interno responde a un criterio práctico: para una defensa o demostración resulta más profesional enseñar el SOC y Grafana como paneles visibles, manteniendo Prometheus como pieza de infraestructura.
+La defensa del proyecto se centra en el SOC corporativo y en Grafana como panel técnico visible.
 
 ## 5. Frontend corporativo
 
@@ -84,6 +86,14 @@ El frontend no se limita a presentar formularios:
 - consume el dashboard de negocio;
 - muestra un monitor SOC entendible;
 - da contexto a los servicios ofrecidos.
+
+### Control de acceso visible
+
+Aunque la home es pública, los paneles operativos no deben quedar expuestos a cualquier visitante. Por ello:
+
+- `/dashboard` y `/admin/security-monitor` quedan reservados a cuentas con rol `ADMIN`;
+- el backend protege esos endpoints con autenticación y rol;
+- el frontend redirige a `/login` cuando no existe una sesión válida o cuando la cuenta no tiene privilegios suficientes.
 
 ## 6. Backend y organización del código
 
@@ -133,6 +143,10 @@ Entidades principales:
 - los tickets representan soporte y continuidad operativa;
 - los pagos simulan contratación y trazabilidad.
 
+### Diagrama entidad-relación
+
+![Diagrama ER](../memoria/diagramas/base-datos-er.svg)
+
 ## 8. Login dual y seguridad comparativa
 
 Una de las piezas centrales del proyecto es la existencia de dos flujos de autenticación visualmente equivalentes, pero distintos internamente:
@@ -146,6 +160,13 @@ Endpoints:
 - `GET /api/v2/auth/csrf`
 - `POST /api/v2/auth/login`
 
+Las dos rutas visibles (`/login` y `/login-secure`) mantienen la misma interfaz. La diferencia se da en:
+
+- el flujo de autenticación contra la API;
+- el tratamiento de tokens y cookies;
+- la protección del backend;
+- el modo en que se permite o bloquea la carga posterior del panel.
+
 ### Objetivo pedagógico
 
 La idea es demostrar que dos interfaces casi idénticas pueden implicar niveles de riesgo muy diferentes. Esto permite explicar con claridad:
@@ -153,6 +174,64 @@ La idea es demostrar que dos interfaces casi idénticas pueden implicar niveles 
 - por qué la seguridad no es una cuestión estética;
 - por qué el backend y la política de sesión importan más que la pantalla;
 - cómo se detectan y bloquean ataques reales.
+
+### Fragmento del login seguro
+
+```js
+const csrfResponse = await fetch('/api/v2/auth/csrf', {
+  credentials: 'include'
+});
+
+const { csrfToken } = await csrfResponse.json();
+
+await fetch('/api/v2/auth/login', {
+  method: 'POST',
+  credentials: 'include',
+  headers: {
+    'Content-Type': 'application/json',
+    'x-csrf-token': csrfToken
+  },
+  body: JSON.stringify({ email, password })
+});
+```
+
+### Fragmento del script de arranque en PowerShell
+
+```powershell
+param(
+  [ValidateSet("secure", "vulnerable")]
+  [string]$Mode = "secure",
+  [switch]$Rebuild
+)
+
+$env:APP_MODE = $Mode
+
+if ($Rebuild) {
+  docker compose down
+  docker compose up -d --build
+} else {
+  docker compose up -d
+}
+```
+
+### Fragmento del script de arranque en Linux
+
+```sh
+#!/usr/bin/env sh
+set -eu
+
+MODE="${1:-secure}"
+REBUILD="${2:-}"
+
+export APP_MODE="$MODE"
+
+if [ "$REBUILD" = "--build" ]; then
+  docker compose down
+  docker compose up -d --build
+else
+  docker compose up -d
+fi
+```
 
 ## 9. Ataques demostrados
 
@@ -178,6 +257,117 @@ No se usan para “romper” el proyecto, sino para enseñar:
 - la mejora al endurecer controles;
 - la utilidad real del catálogo de servicios;
 - la importancia de la observabilidad.
+
+### Fragmento del ataque al checkout
+
+```ts
+const response = await fetch(`${baseUrl}/api/payments/checkout`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${accessToken}`,
+    'x-demo-mode': mode
+  },
+  body: JSON.stringify({
+    serviceId: 1,
+    amount: 1,
+    currency: 'EUR',
+    last4: '4242',
+    brand: 'visa'
+  })
+});
+```
+
+### Fragmento del script de ataques en PowerShell
+
+```powershell
+if ($Mode -eq "vulnerable") {
+  npm run attack:sqli:vuln
+  npm run attack:xss:vuln
+  npm run attack:traversal:vuln
+  npm run attack:payment:vuln
+  npm run attack:bruteforce:vuln
+  npm run services:matrix:vuln
+} else {
+  npm run attack:sqli:secure
+  npm run attack:xss:secure
+  npm run attack:traversal:secure
+  npm run attack:payment:secure
+  npm run attack:bruteforce:secure
+  npm run services:matrix:secure
+}
+```
+
+### Fragmento del script de ataques en Linux
+
+```sh
+case "$MODE" in
+  vulnerable)
+    npm run attack:sqli:vuln
+    npm run attack:xss:vuln
+    npm run attack:traversal:vuln
+    npm run attack:payment:vuln
+    npm run attack:bruteforce:vuln
+    npm run services:matrix:vuln
+    ;;
+  secure)
+    npm run attack:sqli:secure
+    npm run attack:xss:secure
+    npm run attack:traversal:secure
+    npm run attack:payment:secure
+    npm run attack:bruteforce:secure
+    npm run services:matrix:secure
+    ;;
+esac
+```
+
+### Fragmento de validación del checkout seguro
+
+```ts
+const service = await prisma.service.findUnique({
+  where: { id: payload.serviceId }
+});
+
+if (!service) {
+  throw new NotFoundError('Servicio no encontrado');
+}
+
+const safeAmount = service.price;
+const manipulated = Number(payload.amount) !== Number(service.price);
+```
+
+### Fragmento de docker-compose.yml
+
+```yaml
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend-php/Dockerfile
+    ports:
+      - "8000:80"
+
+  backend:
+    build:
+      context: ./sofia-backend
+      dockerfile: docker/Dockerfile
+    environment:
+      PORT: 8001
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/sofia_solutions
+      APP_MODE: ${APP_MODE:-secure}
+    ports:
+      - "8001:8001"
+
+  postgres:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    ports:
+      - "3000:3000"
+```
 
 ## 10. Catálogo de servicios y lógica de negocio
 
@@ -234,6 +424,22 @@ Su utilidad es mostrar:
 
 Grafana no sustituye al SOC. Lo complementa.
 
+### Acceso recomendado durante la defensa
+
+- web corporativa: `http://localhost:8000`
+- login vulnerable: `http://localhost:8000/login`
+- login seguro: `http://localhost:8000/login-secure`
+- dashboard: `http://localhost:8000/dashboard`
+- SOC: `http://localhost:8000/admin/security-monitor`
+- Swagger: `http://localhost:8001/docs`
+- Grafana: `http://localhost:3000`
+
+Credenciales de demostración:
+
+- cuenta administradora: `admin@sofia.local`
+- contraseña: `SofiaAdmin2026!`
+- Grafana: `admin / admin`
+
 ## 13. Docker y despliegue
 
 El entorno se levanta con `docker-compose.yml`.
@@ -243,7 +449,6 @@ Contenedores principales:
 - `frontend`
 - `backend`
 - `postgres`
-- `prometheus`
 - `grafana`
 
 ### Ventajas de esta aproximación

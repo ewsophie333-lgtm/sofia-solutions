@@ -97,7 +97,8 @@ img {
 
 .brand-mark {
   object-fit: contain;
-  filter: drop-shadow(0 12px 28px rgba(139, 92, 246, 0.18));
+  opacity: 0.98;
+  filter: brightness(0) invert(1) contrast(1.05) drop-shadow(0 12px 28px rgba(139, 92, 246, 0.22));
 }
 
 .brand-mark-header {

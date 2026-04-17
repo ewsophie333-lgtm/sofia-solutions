@@ -36,6 +36,12 @@ Credenciales demo:
 - usuario: `admin@sofia.local`
 - contraseña: `SofiaAdmin2026!`
 
+Acceso a paneles restringidos:
+
+- `http://localhost:8000/dashboard` y `http://localhost:8000/admin/security-monitor` requieren una cuenta con rol `ADMIN`
+- si no existe sesión válida, el frontend redirige a `http://localhost:8000/login`
+- la cuenta administradora de demostración es `admin@sofia.local`
+
 Credenciales Grafana:
 
 - usuario: `admin`
@@ -70,6 +76,8 @@ El proyecto no debe entenderse como una simple web comercial. Su valor principal
 - [Arquitectura, defensa y operación](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/ARCHITECTURE-AND-DEFENSE.md)
 - [Informe de seguridad](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/SECURITY-REPORT.md)
 - [Documentación técnica académica](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/DOCUMENTACION-APA.md)
+- [Guion de defensa](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/DEFENSA-PROYECTO.md)
+- [Guía completa de estudio](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/GUIA-ESTUDIO-PROYECTO.md)
 
 ## Despliegue
 
@@ -176,7 +184,12 @@ Se utiliza como panel técnico para enseñar:
 - sesiones activas;
 - evolución temporal de la actividad.
 
-Prometheus queda como fuente interna de métricas y no forma parte de la interfaz visible para la presentación.
+
+## Decisiones de UX/UI
+
+- El logo corporativo se fuerza con el mismo tratamiento visual en home, login, dashboard y SOC.
+- `/login` y `/login-secure` usan la misma interfaz; la diferencia está en el backend.
+- El dashboard y el monitor SOC solo deben visualizarse con una sesión administradora válida.
 
 ## Backend
 

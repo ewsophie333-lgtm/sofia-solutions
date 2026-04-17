@@ -6,15 +6,20 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# Define el modo de demostración del entorno completo.
+# secure: controles activos
+# vulnerable: fallos didácticos habilitados
 Write-Host "== Sofia Solutions stack =="
 Write-Host "Mode: $Mode"
 
 $env:APP_MODE = $Mode
 
 if ($Rebuild) {
+  # Baja y reconstruye todos los servicios para asegurar consistencia.
   docker compose down
   docker compose up -d --build
 } else {
+  # Arranque rápido reutilizando imágenes previas.
   docker compose up -d
 }
 
@@ -28,4 +33,3 @@ Write-Host ""
 Write-Host "Credenciales Grafana:"
 Write-Host "  usuario: admin"
 Write-Host "  clave:   admin"
-
