@@ -6,6 +6,17 @@
     return localStorage.getItem("sofia_token_v1");
   }
 
+  function getRedirectTarget() {
+    const params = new URLSearchParams(window.location.search);
+    const next = params.get("next");
+    return next && next.startsWith("/") ? next : "/dashboard";
+  }
+
+  function redirectToLogin() {
+    const next = encodeURIComponent(`${window.location.pathname}${window.location.search}`);
+    window.location.href = `/login?next=${next}&restricted=1`;
+  }
+
   function headers(json = true) {
     const auth = getToken();
     return {
@@ -52,7 +63,9 @@
       ...extra,
     });
     if (!response.ok) {
-      throw new Error(`Request failed ${response.status}`);
+      const error = new Error(`Request failed ${response.status}`);
+      error.status = response.status;
+      throw error;
     }
     return response.json();
   }
@@ -71,9 +84,9 @@
       });
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.message || "Credenciales inválidas");
+        throw new Error(data.message || "Credenciales inv\u00e1lidas");
       }
-      window.location.href = "/dashboard";
+      window.location.href = getRedirectTarget();
       return;
     }
 
@@ -85,12 +98,12 @@
     });
     const data = await response.json();
     if (!response.ok) {
-      throw new Error(data.message || "Error de autenticación");
+      throw new Error(data.message || "Error de autenticaci\u00f3n");
     }
     if (data.accessToken) {
       localStorage.setItem("sofia_token_v1", data.accessToken);
     }
-    window.location.href = "/dashboard";
+    window.location.href = getRedirectTarget();
   }
 
   async function renderDashboard() {
@@ -101,7 +114,7 @@
     ]);
 
     document.getElementById("dashboard-kpis").innerHTML = [
-      kpiCard("Servicios activos", String(catalog?.summary?.totalServices ?? 0), "Líneas de servicio operativas y vinculadas a clientes", "ok"),
+      kpiCard("Servicios activos", String(catalog?.summary?.totalServices ?? 0), "L\u00edneas de servicio operativas y vinculadas a clientes", "ok"),
       kpiCard("Sesiones seguras", String(overview?.secureLogins ?? 0), "Accesos registrados en el flujo reforzado", "ok"),
       kpiCard("Ataques bloqueados", String(overview?.blockedAttacks ?? 0), "Detecciones rechazadas por controles activos", (overview?.blockedAttacks ?? 0) > 0 ? "warn" : "ok"),
       kpiCard("Tickets abiertos", String(overview?.openTickets ?? 0), "Casos operativos y seguimiento en curso", (overview?.openTickets ?? 0) > 0 ? "warn" : "ok"),
@@ -148,7 +161,7 @@
             String(event.severity || "").toLowerCase().includes("critical") ? "bad" : "warn",
           ),
         ).join("")
-      : stackItem("Sin eventos críticos", "No se han registrado anomalías recientes en el periodo visible.", "ok");
+      : stackItem("Sin eventos cr\u00edticos", "No se han registrado anomal\u00edas recientes en el periodo visible.", "ok");
   }
 
   async function renderSoc() {
@@ -156,16 +169,16 @@
 
     document.getElementById("soc-status").innerHTML = [
       stackItem("Data sources", "8/8 colectores activos y sincronizados", "ok"),
-      stackItem("Retention", "365 días de retención caliente para investigación", "ok"),
-      stackItem("Parsers", "Normalización, enriquecimiento y clasificación operativos", "ok"),
+      stackItem("Retention", "365 d\u00edas de retenci\u00f3n caliente para investigaci\u00f3n", "ok"),
+      stackItem("Parsers", "Normalizaci\u00f3n, enriquecimiento y clasificaci\u00f3n operativos", "ok"),
       stackItem("Escalation SLA", "Menos de 15 minutos en alta criticidad", "ok"),
     ].join("");
 
     const summary = monitor?.summary || {};
     document.getElementById("soc-kpis").innerHTML = [
-      kpiCard("Total events", String(summary.totalEventsAnalyzed ?? 0), "Telemetría consolidada en la ventana operativa", "ok"),
+      kpiCard("Total events", String(summary.totalEventsAnalyzed ?? 0), "Telemetr\u00eda consolidada en la ventana operativa", "ok"),
       kpiCard("Critical incidents", String(summary.criticalIncidents ?? 0), "Incidentes con impacto alto actualmente abiertos", (summary.criticalIncidents ?? 0) > 0 ? "bad" : "ok"),
-      kpiCard("Active threats", String(summary.activeThreats ?? 0), "Vectores activos y actividad relevante en investigación", (summary.activeThreats ?? 0) > 0 ? "warn" : "ok"),
+      kpiCard("Active threats", String(summary.activeThreats ?? 0), "Vectores activos y actividad relevante en investigaci\u00f3n", (summary.activeThreats ?? 0) > 0 ? "warn" : "ok"),
       kpiCard("System health", `${summary.systemHealth ?? 0}%`, "Estado agregado de pipelines, fuentes y paneles", "ok"),
     ].join("");
 
@@ -174,11 +187,11 @@
       ? vectors.map((vector) =>
           stackItem(
             vector.label,
-            `${vector.count} casos · presión ${vector.value}%`,
+            `${vector.count} casos · presi\u00f3n ${vector.value}%`,
             vector.accent === "critical" ? "bad" : vector.accent === "warning" ? "warn" : "ok",
           ),
         ).join("")
-      : stackItem("Sin presión de ataque", "No hay vectores activos en el periodo visible.", "ok");
+      : stackItem("Sin presi\u00f3n de ataque", "No hay vectores activos en el periodo visible.", "ok");
 
     const liveFeed = Array.isArray(monitor?.liveFeed) ? monitor.liveFeed : [];
     document.getElementById("soc-incidents").innerHTML = liveFeed.length
@@ -194,9 +207,9 @@
     const countries = Array.isArray(monitor?.topCountries) ? monitor.topCountries : [];
     document.getElementById("soc-countries").innerHTML = countries.length
       ? countries.map((country) =>
-          stackItem(country.name, `${country.count} eventos asociados al origen geográfico`, "ok"),
+          stackItem(country.name, `${country.count} eventos asociados al origen geogr\u00e1fico`, "ok"),
         ).join("")
-      : stackItem("Sin países destacados", "No hay orígenes predominantes registrados actualmente.", "ok");
+      : stackItem("Sin pa\u00edses destacados", "No hay or\u00edgenes predominantes registrados actualmente.", "ok");
 
     const services = Array.isArray(monitor?.servicePortfolio) ? monitor.servicePortfolio : [];
     document.getElementById("soc-services").innerHTML = services.length
@@ -215,6 +228,13 @@
     if (!form) return;
 
     const errorNode = document.getElementById("login-error");
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get("restricted") === "1") {
+      errorNode.textContent = "Acceso restringido. Inicia sesi\u00f3n con una cuenta administradora para ver el dashboard y el SOC.";
+      errorNode.hidden = false;
+    }
+
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       errorNode.hidden = true;
@@ -226,7 +246,7 @@
       try {
         await login(config.loginMode, email, password);
       } catch (error) {
-        errorNode.textContent = error instanceof Error ? error.message : "No se pudo iniciar sesión";
+        errorNode.textContent = error instanceof Error ? error.message : "No se pudo iniciar sesi\u00f3n";
         errorNode.hidden = false;
       }
     });
@@ -239,6 +259,10 @@
       try {
         await renderDashboard();
       } catch (error) {
+        if (error && (error.status === 401 || error.status === 403)) {
+          redirectToLogin();
+          return;
+        }
         console.error(error);
       }
     }
@@ -247,6 +271,10 @@
       try {
         await renderSoc();
       } catch (error) {
+        if (error && (error.status === 401 || error.status === 403)) {
+          redirectToLogin();
+          return;
+        }
         console.error(error);
       }
     }

@@ -45,12 +45,15 @@ El valor del backend para ASIX está en que permite demostrar competencias de:
 - Zod
 - Winston
 - Swagger/OpenAPI
-- Prometheus como fuente interna de métricas
 - Grafana como capa visible de visualización técnica
 
 ## Servicios y puertos
 
 - frontend corporativo: `http://localhost:8000`
+- login vulnerable: `http://localhost:8000/login`
+- login seguro: `http://localhost:8000/login-secure`
+- dashboard ejecutivo: `http://localhost:8000/dashboard`
+- SOC monitor: `http://localhost:8000/admin/security-monitor`
 - backend API: `http://localhost:8001`
 - Swagger: `http://localhost:8001/docs`
 - healthcheck: `http://localhost:8001/health`
@@ -58,7 +61,13 @@ El valor del backend para ASIX está en que permite demostrar competencias de:
 - PostgreSQL: `5432`
 - Grafana: `http://localhost:3000`
 
-Prometheus sigue existiendo como recolector interno para Grafana, pero ya no forma parte de la capa visible principal del proyecto.
+
+## Control de acceso visible
+
+- `dashboard` y `SOC monitor` están pensados para cuentas administradoras.
+- Las rutas API bajo `/api/admin/*` ya requieren `requireAuth` y `requireRole("ADMIN")`.
+- El frontend redirige a `/login` cuando intenta cargar paneles protegidos sin sesión válida o sin privilegios.
+- La cuenta de demostración con rol administrativo es `admin@sofia.local`.
 
 ## Endpoints principales
 
@@ -136,7 +145,7 @@ Aplica controles más realistas:
 
 El backend se organiza para reflejar una arquitectura profesional y mantenible:
 
-- `config/`: variables de entorno, base de datos, Prometheus
+- `config/`: variables de entorno y base de datos
 - `controllers/`: lógica de negocio
 - `routes/`: exposición de endpoints
 - `middleware/`: autenticación, detección de ataques, rate limiting, logging
@@ -236,3 +245,4 @@ Comandos útiles:
 
 - usuario: `admin@sofia.local`
 - contraseña: `SofiaAdmin2026!`
+- Grafana: `admin / admin`

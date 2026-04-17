@@ -1,0 +1,739 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Memoria ASIX Apartados 3 y 4</title>
+  <style>
+    body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; color: #111; margin: 2.2cm; line-height: 1.5; }
+    h1 { font-size: 19pt; margin: 0 0 14pt; }
+    h2 { font-size: 15pt; margin: 18pt 0 8pt; }
+    h3 { font-size: 12.5pt; margin: 14pt 0 6pt; }
+    p { margin: 0 0 8pt; }
+    ul { margin: 0 0 10pt 20pt; }
+    li { margin: 0 0 4pt; }
+    pre { background: #f4f4f4; border: 1px solid #ddd; padding: 10pt; white-space: pre-wrap; font-family: Consolas, monospace; font-size: 9.5pt; }
+    code { font-family: Consolas, monospace; font-size: 9.5pt; }
+  </style>
+</head>
+<body>
+<h1>3. An&#225;lisis de requerimientos</h1>
+<h2>3.1 Necesidades, requerimientos del cliente y an&#225;lisis de la situaci&#243;n actual</h2>
+<p>El proyecto desarrollado para <strong>Sofia Solutions</strong> responde a una necesidad claramente orientada al &#225;mbito de <strong>ASIX</strong>: desplegar, securizar, administrar y monitorizar una plataforma corporativa capaz de representar una empresa de servicios IT y ciberseguridad con una arquitectura realista.</p>
+<p>La necesidad principal no era &#250;nicamente disponer de una p&#225;gina web corporativa, sino construir un entorno completo que permitiera demostrar:</p>
+<ul>
+<li>autenticaci&#243;n de usuarios con dos niveles de seguridad;</li>
+<li>exposici&#243;n de servicios empresariales de forma coherente con la l&#243;gica del sistema;</li>
+<li>persistencia de datos en una base de datos relacional;</li>
+<li>monitorizaci&#243;n de eventos y m&#233;tricas de seguridad;</li>
+<li>ejecuci&#243;n controlada de ataques sobre una versi&#243;n vulnerable;</li>
+<li>comparaci&#243;n directa entre una implementaci&#243;n vulnerable y una segura;</li>
+<li>despliegue reproducible mediante contenedores;</li>
+<li>automatizaci&#243;n de tareas de administraci&#243;n y validaci&#243;n.</li>
+</ul>
+<p>Desde el punto de vista funcional, el cliente necesita una plataforma unificada con cuatro &#225;reas principales:</p>
+<p><strong><strong>Capa corporativa</strong></strong></p>
+<p>   Para mostrar la marca, la oferta de servicios y los accesos a la plataforma.</p>
+<p><strong><strong>Capa operativa</strong></strong></p>
+<p>   Para ofrecer un dashboard con visi&#243;n de clientes, activos, tickets, incidentes y postura general del servicio.</p>
+<p><strong><strong>Capa de monitorizaci&#243;n SOC</strong></strong></p>
+<p>   Para representar la actividad de seguridad, los vectores de ataque, los eventos detectados y el estado del entorno.</p>
+<p><strong><strong>Capa de observabilidad t&#233;cnica</strong></strong></p>
+<p>   Para visualizar m&#233;tricas reales en Grafana, alimentadas por la API y orientadas a la defensa y la administraci&#243;n del sistema.</p>
+<p>La situaci&#243;n de partida era la inexistencia de una soluci&#243;n previa. No exist&#237;a infraestructura desplegada, ni base de datos, ni API, ni l&#243;gica de negocio, ni monitorizaci&#243;n, ni frontend operativo. El proyecto se inici&#243;, por tanto, desde una situaci&#243;n de <strong>dise&#241;o en blanco</strong>, apoyada &#250;nicamente en:</p>
+<ul>
+<li>una referencia visual inicial;</li>
+<li>unos requisitos funcionales definidos manualmente;</li>
+<li>y la necesidad acad&#233;mica de construir una soluci&#243;n que pudiera defenderse como proyecto de ASIX.</li>
+</ul>
+<p>Desde el punto de vista t&#233;cnico, esto implic&#243; definir desde cero:</p>
+<ul>
+<li>la topolog&#237;a de servicios;</li>
+<li>el esquema de base de datos;</li>
+<li>la l&#243;gica de autenticaci&#243;n dual;</li>
+<li>los controles de seguridad;</li>
+<li>los scripts de ataque;</li>
+<li>los scripts de despliegue;</li>
+<li>la contenerizaci&#243;n con Docker Compose;</li>
+<li>y la capa de visualizaci&#243;n t&#233;cnica con Grafana y un monitor SOC propio.</li>
+</ul>
+<p>La plataforma deb&#237;a adem&#225;s poder demostrar aspectos especialmente relevantes en ASIX:</p>
+<ul>
+<li>separaci&#243;n entre frontend y backend;</li>
+<li>puertos y comunicaci&#243;n entre servicios;</li>
+<li>contenedores enlazados en red interna;</li>
+<li>gesti&#243;n de credenciales y variables de entorno;</li>
+<li>persistencia de la base de datos;</li>
+<li>exposici&#243;n controlada de servicios al exterior;</li>
+<li>defensa frente a ataques web;</li>
+<li>y monitorizaci&#243;n del comportamiento del sistema.</li>
+</ul>
+<p>Este enfoque encaja directamente con varios m&#243;dulos profesionales que se trabajan en <strong>2&#186; curso de ASIX</strong> en Espa&#241;a. En la orden curricular estatal del t&#237;tulo aparecen, entre otros, los siguientes m&#243;dulos especialmente relacionados con el proyecto:</p>
+<ul>
+<li><strong>Administraci&#243;n de sistemas operativos</strong></li>
+<li><strong>Servicios de red e Internet</strong></li>
+<li><strong>Implantaci&#243;n de aplicaciones web</strong></li>
+<li><strong>Administraci&#243;n de sistemas gestores de bases de datos</strong></li>
+<li><strong>Seguridad y alta disponibilidad</strong></li>
+<li><strong>Proyecto de administraci&#243;n de sistemas inform&#225;ticos en red</strong></li>
+<li>adem&#225;s de los m&#243;dulos de empleabilidad, ingl&#233;s profesional y formaci&#243;n en empresa seg&#250;n el curr&#237;culo m&#225;s reciente</li>
+</ul>
+<p>La relaci&#243;n con el proyecto es directa: la capa backend y su despliegue encajan con administraci&#243;n de servicios, la base de datos con administraci&#243;n de SGBD, Docker y la red entre contenedores con servicios de red, la autenticaci&#243;n dual y los ataques con seguridad y alta disponibilidad, y la integraci&#243;n global del sistema con el m&#243;dulo de proyecto.</p>
+<p>Por tanto, el an&#225;lisis de necesidades del cliente se traduce en una soluci&#243;n que no solo debe “verse bien”, sino que debe ser <strong>administrable, auditable, desplegable y defendible t&#233;cnicamente</strong>.</p>
+<h2>3.2 Estudio de alternativas de soluci&#243;n</h2>
+<p>Durante el an&#225;lisis se valoraron varias alternativas, no solo desde un punto de vista visual o de programaci&#243;n, sino desde su utilidad real para un proyecto de administraci&#243;n de sistemas, redes y seguridad.</p>
+<h3>Alternativa 1. Sitio web est&#225;tico sin backend ni base de datos</h3>
+<p>La primera opci&#243;n consist&#237;a en desarrollar &#250;nicamente una web corporativa est&#225;tica con HTML, CSS y JavaScript, sin backend real, sin persistencia y sin monitorizaci&#243;n. Esta posibilidad era r&#225;pida y simple, pero fue descartada porque no permit&#237;a justificar:</p>
+<ul>
+<li>gesti&#243;n de servicios;</li>
+<li>autenticaci&#243;n;</li>
+<li>diferencias entre seguridad vulnerable y segura;</li>
+<li>pruebas de ataque;</li>
+<li>despliegue de servicios;</li>
+<li>observabilidad;</li>
+<li>ni administraci&#243;n de infraestructura.</li>
+</ul>
+<p>Para un proyecto de ASIX, esta alternativa resultaba insuficiente.</p>
+<h3>Alternativa 2. Aplicaci&#243;n web visual con datos simulados</h3>
+<p>Tambi&#233;n se valor&#243; una aplicaci&#243;n con frontend completo y datos simulados, sin backend real. Habr&#237;a permitido una maqueta convincente, pero sin l&#243;gica de negocio real ni defensa ante ataques. Se descart&#243; porque la parte m&#225;s importante del proyecto no es solo la interfaz, sino la infraestructura que hay detr&#225;s:</p>
+<ul>
+<li>API;</li>
+<li>base de datos;</li>
+<li>autenticaci&#243;n;</li>
+<li>control de accesos;</li>
+<li>m&#233;tricas;</li>
+<li>logging;</li>
+<li>y validaci&#243;n de amenazas.</li>
+</ul>
+<h3>Alternativa 3. Soluci&#243;n &#250;nica sin separaci&#243;n entre modo vulnerable y seguro</h3>
+<p>Otra posibilidad era desarrollar un &#250;nico flujo de autenticaci&#243;n y un &#250;nico backend con controles parciales. Esta opci&#243;n simplificaba el desarrollo, pero fue descartada porque anulaba uno de los objetivos clave del proyecto: demostrar de forma pr&#225;ctica c&#243;mo una misma necesidad funcional puede resolverse de forma insegura o segura.</p>
+<p>La separaci&#243;n en dos modos permite justificar:</p>
+<ul>
+<li>qu&#233; vulnerabilidades existen;</li>
+<li>c&#243;mo se explotan;</li>
+<li>c&#243;mo se bloquean;</li>
+<li>y qu&#233; medidas concretas producen esa mejora.</li>
+</ul>
+<h3>Alternativa 4. Stack full JavaScript/TypeScript con frontend moderno</h3>
+<p>La soluci&#243;n inicialmente construida con React, Express, Prisma y PostgreSQL ofrec&#237;a una arquitectura moderna, mantenible y v&#225;lida desde el punto de vista t&#233;cnico. Sin embargo, para alinear mejor el proyecto con el enfoque de ASIX, se decidi&#243; evolucionar la capa visible hacia un frontend servido por Apache/PHP, manteniendo la API y la l&#243;gica de seguridad en el backend desacoplado.</p>
+<p>Esta decisi&#243;n permite conservar la parte fuerte del proyecto:</p>
+<ul>
+<li>backend con seguridad y observabilidad real;</li>
+<li>scripts de ataque;</li>
+<li>modelo de datos;</li>
+<li>Docker Compose;</li>
+<li>monitorizaci&#243;n;</li>
+</ul>
+<p>y, al mismo tiempo, acercar la capa visible a tecnolog&#237;as vistas en clase, sin alterar la arquitectura principal.</p>
+<h3>Alternativa elegida</h3>
+<p>La soluci&#243;n final elegida se basa en:</p>
+<ul>
+<li><strong>frontend servido por Apache/PHP</strong> como capa visible;</li>
+<li><strong>backend Express + TypeScript</strong> como servicio de negocio y seguridad;</li>
+<li><strong>PostgreSQL + Prisma</strong> como capa de persistencia;</li>
+<li><strong>Docker Compose</strong> como sistema de despliegue;</li>
+<li><strong>Grafana</strong> como panel t&#233;cnico de visualizaci&#243;n;</li>
+<li><strong>SOC corporativo propio</strong> como vista operativa orientada a negocio;</li>
+<li><strong>scripts de automatizaci&#243;n</strong> para levantar el entorno y ejecutar ataques en Windows y Linux.</li>
+</ul>
+<h3>Razones de la elecci&#243;n</h3>
+<p>Esta alternativa fue seleccionada porque equilibra:</p>
+<ul>
+<li>realismo t&#233;cnico;</li>
+<li>facilidad de despliegue;</li>
+<li>valor demostrativo;</li>
+<li>coherencia con ASIX;</li>
+<li>y claridad para la defensa oral.</li>
+</ul>
+<p>Desde el punto de vista formativo, permite trabajar simult&#225;neamente:</p>
+<ul>
+<li>redes y servicios;</li>
+<li>Docker y orquestaci&#243;n;</li>
+<li>seguridad ofensiva y defensiva;</li>
+<li>bases de datos;</li>
+<li>scripting;</li>
+<li>monitorizaci&#243;n;</li>
+<li>y administraci&#243;n del entorno.</li>
+</ul>
+<h2>3.3 Elecci&#243;n, valoraci&#243;n econ&#243;mica y dise&#241;o de las posibles soluciones</h2>
+<p>La soluci&#243;n definitiva se apoya en una arquitectura de servicios desacoplados desplegados en contenedores. El sistema se divide en:</p>
+<ul>
+<li>servicio web visible;</li>
+<li>servicio backend;</li>
+<li>base de datos PostgreSQL;</li>
+<li>fuente de m&#233;tricas;</li>
+<li>capa de visualizaci&#243;n mediante Grafana.</li>
+</ul>
+<h3>Valoraci&#243;n econ&#243;mica</h3>
+<p>Al tratarse de un proyecto acad&#233;mico, la implantaci&#243;n se ha realizado sobre entorno local y software libre, por lo que el coste directo de licencias es nulo. No obstante, para realizar una valoraci&#243;n realista, se puede estimar el siguiente escenario:</p>
+<p>#### Costes de software</p>
+<ul>
+<li>Apache/PHP: <strong>0 EUR</strong></li>
+<li>Node.js / Express / TypeScript: <strong>0 EUR</strong></li>
+<li>PostgreSQL / Prisma: <strong>0 EUR</strong></li>
+<li>Docker / Docker Compose: <strong>0 EUR</strong></li>
+<li>Grafana: <strong>0 EUR</strong></li>
+<li>librer&#237;as auxiliares de validaci&#243;n, logging y seguridad: <strong>0 EUR</strong></li>
+</ul>
+<p>#### Costes de infraestructura estimados</p>
+<p>En un escenario real de peque&#241;a empresa o entorno piloto:</p>
+<ul>
+<li>VPS o servidor principal: <strong>20 a 40 EUR/mes</strong></li>
+<li>base de datos o nodo adicional: <strong>15 a 30 EUR/mes</strong></li>
+<li>almacenamiento y retenci&#243;n de logs: <strong>10 a 25 EUR/mes</strong></li>
+<li>dominio y certificados: <strong>10 a 20 EUR/a&#241;o</strong></li>
+</ul>
+<p>#### Coste de implantaci&#243;n t&#233;cnica</p>
+<p>Si la soluci&#243;n se valorase como servicio profesional, el coste no estar&#237;a solo en el desarrollo web, sino en:</p>
+<ul>
+<li>an&#225;lisis de arquitectura;</li>
+<li>despliegue de contenedores;</li>
+<li>modelado y administraci&#243;n de base de datos;</li>
+<li>endurecimiento y configuraci&#243;n de seguridad;</li>
+<li>scripts de automatizaci&#243;n;</li>
+<li>pruebas de ataque y validaci&#243;n;</li>
+<li>documentaci&#243;n y operaci&#243;n inicial.</li>
+</ul>
+<p>Una implantaci&#243;n funcional de este tipo podr&#237;a situarse razonablemente entre <strong>3.000 y 6.500 EUR</strong>, dependiendo de si se incluye soporte posterior, automatizaciones adicionales y una integraci&#243;n real con sistemas de terceros.</p>
+<h3>Dise&#241;o final de la soluci&#243;n</h3>
+<p>La arquitectura elegida se organiza en las siguientes capas:</p>
+<p><strong><strong>Capa de acceso web</strong></strong></p>
+<p>   Servida por Apache/PHP, responsable de la interfaz visible y la navegaci&#243;n.</p>
+<p><strong><strong>Capa de aplicaci&#243;n y seguridad</strong></strong></p>
+<p>   Implementada en Express + TypeScript, donde residen:</p>
+<p>   - autenticaci&#243;n;</p>
+<p>   - sesiones;</p>
+<p>   - servicios;</p>
+<p>   - tickets;</p>
+<p>   - pagos simulados;</p>
+<p>   - eventos de seguridad;</p>
+<p>   - m&#233;tricas;</p>
+<p>   - y l&#243;gica del SOC.</p>
+<p><strong><strong>Capa de persistencia</strong></strong></p>
+<p>   Basada en PostgreSQL, con Prisma como herramienta de modelado y acceso.</p>
+<p><strong><strong>Capa de observabilidad</strong></strong></p>
+<p>   Formada por la exposici&#243;n de m&#233;tricas y su visualizaci&#243;n en Grafana.</p>
+<p><strong><strong>Capa de automatizaci&#243;n y validaci&#243;n</strong></strong></p>
+<p>   Compuesta por scripts de despliegue y scripts de ataque para modo vulnerable y seguro.</p>
+<p>Esta estructura permite justificar la soluci&#243;n no solo como aplicaci&#243;n web, sino como <strong>plataforma de servicios desplegada y administrada</strong>, que es el enfoque m&#225;s coherente para ASIX.</p>
+<h1>4. Implementaci&#243;n</h1>
+<p>La implementaci&#243;n del proyecto se ha llevado a cabo desde una perspectiva de servicios, seguridad y administraci&#243;n, no &#250;nicamente de desarrollo web. La soluci&#243;n final integra red interna entre contenedores, autenticaci&#243;n dual, base de datos relacional, visualizaci&#243;n de m&#233;tricas y automatizaci&#243;n multiplataforma.</p>
+<h2>4.1 Diagramas y esquemas</h2>
+<h3>Mapa funcional del sistema</h3>
+<p>La plataforma expone las siguientes rutas visibles:</p>
+<ul>
+<li><code>/</code> → portal corporativo</li>
+<li><code>/login</code> → acceso vulnerable</li>
+<li><code>/login-secure</code> → acceso seguro</li>
+<li><code>/dashboard</code> → panel operativo</li>
+<li><code>/admin/security-monitor</code> → monitor SOC</li>
+</ul>
+<p>Adem&#225;s, la infraestructura expone:</p>
+<ul>
+<li><code>http://localhost:8001</code> → API backend</li>
+<li><code>http://localhost:8001/docs</code> → documentaci&#243;n Swagger</li>
+<li><code>http://localhost:3000</code> → Grafana</li>
+</ul>
+<h3>Esquema de red y servicios</h3>
+<p>La soluci&#243;n se despliega mediante Docker Compose, de modo que cada servicio comparte una red interna privada:</p>
+<ul>
+<li><code>frontend</code> → servicio web Apache/PHP</li>
+<li><code>backend</code> → API Express/TypeScript</li>
+<li><code>postgres</code> → base de datos relacional</li>
+<li><code>grafana</code> → visualizaci&#243;n externa de m&#233;tricas</li>
+</ul>
+<p>Desde el punto de vista de red:</p>
+<ul>
+<li>el usuario solo necesita acceder a <code>8000</code>, <code>8001</code> y <code>3000</code>;</li>
+<li>PostgreSQL queda como servicio persistente de datos;</li>
+<li>Grafana se utiliza como herramienta visual de apoyo t&#233;cnico para la defensa del proyecto.</li>
+</ul>
+<h3>Esquema de datos</h3>
+<p>La base de datos se ha dise&#241;ado para conectar negocio, operaci&#243;n y seguridad. Entre las entidades principales se encuentran:</p>
+<ul>
+<li><code>User</code></li>
+<li><code>Service</code></li>
+<li><code>Customer</code></li>
+<li><code>Asset</code></li>
+<li><code>Incident</code></li>
+<li><code>Ticket</code></li>
+<li><code>TicketMessage</code></li>
+<li><code>Payment</code></li>
+<li><code>SecurityEvent</code></li>
+</ul>
+<p>Gracias a esta estructura, los servicios ofertados no son elementos decorativos, sino piezas con efecto real en:</p>
+<ul>
+<li>clientes protegidos;</li>
+<li>activos monitorizados;</li>
+<li>incidentes asociados;</li>
+<li>m&#233;tricas de cobertura;</li>
+<li>y eficacia de defensa.</li>
+</ul>
+<h3>Diagrama entidad-relaci&#243;n</h3>
+<p><img src="C:\Users\sgomez\Desktop\sofia-solutions\memoria\diagramas\base-datos-er.svg" alt="Diagrama entidad-relaci&#243;n de la base de datos" style="max-width:100%; border:1px solid #ddd; margin:8pt 0;" /></p>
+<h2>4.2 Herramientas de software</h2>
+<p>Las principales herramientas de software utilizadas han sido:</p>
+<ul>
+<li><strong>Apache/PHP</strong> para la capa visible del sistema</li>
+<li><strong>Node.js 20+</strong> para la ejecuci&#243;n del backend</li>
+<li><strong>Express.js</strong> como API REST</li>
+<li><strong>TypeScript</strong> para reforzar robustez y mantenibilidad</li>
+<li><strong>Prisma ORM</strong> como herramienta de modelado de base de datos</li>
+<li><strong>PostgreSQL 15</strong> como motor de persistencia</li>
+<li><strong>Docker y Docker Compose</strong> para desplegar el entorno completo</li>
+<li><strong>Grafana</strong> para visualizaci&#243;n t&#233;cnica</li>
+<li><strong>Prom-client</strong> para exposici&#243;n de m&#233;tricas</li>
+<li><strong>Winston</strong> para logging estructurado</li>
+<li><strong>Zod</strong> para validaci&#243;n de entradas</li>
+<li><strong>Helmet</strong>, <strong>rate limiting</strong>, <strong>CORS</strong> y <strong>cookies seguras</strong> para el refuerzo de la seguridad</li>
+</ul>
+<p>Adem&#225;s, se han creado scripts de automatizaci&#243;n espec&#237;ficos para:</p>
+<ul>
+<li>levantar el stack en Windows;</li>
+<li>levantar el stack en Linux;</li>
+<li>lanzar ataques en entorno vulnerable;</li>
+<li>validar el bloqueo en entorno seguro.</li>
+</ul>
+<h2>4.3 Herramientas de hardware</h2>
+<p>No ha sido necesario emplear hardware especializado, ya que la soluci&#243;n se ha dise&#241;ado para ejecutarse sobre un equipo de desarrollo est&#225;ndar. Sin embargo, el proyecto s&#237; se ha planteado con una mentalidad de infraestructura real, por lo que podr&#237;a trasladarse a:</p>
+<ul>
+<li>un servidor Linux;</li>
+<li>una m&#225;quina virtual;</li>
+<li>un host con Docker;</li>
+<li>o un entorno de laboratorio con varias m&#225;quinas.</li>
+</ul>
+<p>Desde el punto de vista de ASIX, el valor no est&#225; en el hardware concreto, sino en la capacidad de desplegar servicios, administrarlos y conectarlos de forma controlada.</p>
+<h2>4.4 Lenguajes</h2>
+<p>Los lenguajes utilizados en el proyecto son:</p>
+<ul>
+<li><strong>PHP</strong> para la capa visible servida por Apache</li>
+<li><strong>HTML</strong> para la estructura de p&#225;ginas</li>
+<li><strong>CSS</strong> para maquetaci&#243;n visual</li>
+<li><strong>JavaScript</strong> para l&#243;gica en cliente y consumo de la API</li>
+<li><strong>TypeScript</strong> para el backend y scripts avanzados</li>
+<li><strong>SQL relacional</strong> a trav&#233;s de PostgreSQL y Prisma</li>
+<li><strong>YAML</strong> para Docker Compose y configuraci&#243;n de Grafana</li>
+<li><strong>PowerShell y shell script</strong> para automatizaci&#243;n multiplataforma</li>
+</ul>
+<p>Esto permite defender el proyecto tanto desde la &#243;ptica de desarrollo como desde la &#243;ptica de administraci&#243;n y scripting.</p>
+<h2>4.5 Codificaci&#243;n</h2>
+<p>La codificaci&#243;n se ha organizado por capas y responsabilidades:</p>
+<h3>Capa web</h3>
+<p>Se ha desarrollado un frontend visible servido por Apache/PHP, encargado de:</p>
+<ul>
+<li>renderizar la portada;</li>
+<li>presentar el login;</li>
+<li>mostrar dashboard y SOC;</li>
+<li>consumir la API del backend;</li>
+<li>mantener una experiencia corporativa uniforme.</li>
+</ul>
+<h3>Capa backend</h3>
+<p>El backend Express + TypeScript concentra:</p>
+<ul>
+<li>autenticaci&#243;n vulnerable y segura;</li>
+<li>servicios y cat&#225;logo;</li>
+<li>tickets y mensajes;</li>
+<li>pagos simulados;</li>
+<li>eventos de seguridad;</li>
+<li>m&#233;tricas;</li>
+<li>datos para dashboard y SOC.</li>
+</ul>
+<h3>Middleware y seguridad</h3>
+<p>La l&#243;gica cr&#237;tica de seguridad reside en middleware y controladores espec&#237;ficos, donde se implementan:</p>
+<ul>
+<li>detecci&#243;n de patrones maliciosos;</li>
+<li>rate limiting;</li>
+<li>validaci&#243;n de entradas;</li>
+<li>gesti&#243;n de cookies y JWT;</li>
+<li>logging;</li>
+<li>diferenciaci&#243;n entre modo vulnerable y modo seguro.</li>
+</ul>
+<h3>Fragmento del login seguro</h3>
+<p>Este fragmento representa el uso del token CSRF y el env&#237;o autenticado al endpoint seguro:</p>
+<p><img src="C:\Users\sgomez\Desktop\sofia-solutions\memoria\diagramas\codigo-login-seguro.svg" alt="Captura del flujo de login seguro" style="max-width:100%; border:1px solid #ddd; margin:8pt 0;" /></p>
+<pre>
+const csrfResponse = await fetch(&#39;/api/v2/auth/csrf&#39;, {
+  credentials: &#39;include&#39;
+});
+
+const { csrfToken } = await csrfResponse.json();
+
+const loginResponse = await fetch(&#39;/api/v2/auth/login&#39;, {
+  method: &#39;POST&#39;,
+  credentials: &#39;include&#39;,
+  headers: {
+    &#39;Content-Type&#39;: &#39;application/json&#39;,
+    &#39;x-csrf-token&#39;: csrfToken
+  },
+  body: JSON.stringify({ email, password })
+});
+</pre>
+<h3>Scripts relevantes</h3>
+<p>Una parte importante de la implementaci&#243;n para ASIX no est&#225; solo en la aplicaci&#243;n, sino en los scripts creados para operar el entorno:</p>
+<ul>
+<li>scripts de levantado del stack;</li>
+<li>scripts de ejecuci&#243;n de ataques;</li>
+<li>scripts de validaci&#243;n defensiva;</li>
+<li>seed de base de datos;</li>
+<li>utilidades de despliegue y reconstrucci&#243;n.</li>
+</ul>
+<p>Esto refuerza el componente de administraci&#243;n y automatizaci&#243;n del proyecto.</p>
+<h3>Ejemplos reales de scripts comentados</h3>
+<p>Para que la implementaci&#243;n no quede en una descripci&#243;n abstracta, se han preparado scripts reales de operaci&#243;n y validaci&#243;n. Estos scripts est&#225;n comentados en el proyecto para facilitar su lectura y justificar su uso dentro de la memoria.</p>
+<p>#### Script de arranque en Windows</p>
+<p>El siguiente ejemplo corresponde al arranque del entorno completo en PowerShell:</p>
+<p><img src="C:\Users\sgomez\Desktop\sofia-solutions\memoria\diagramas\codigo-start-stack.svg" alt="Captura del script de arranque en PowerShell" style="max-width:100%; border:1px solid #ddd; margin:8pt 0;" /></p>
+<pre>
+param(
+  [ValidateSet(&quot;secure&quot;, &quot;vulnerable&quot;)]
+  [string]$Mode = &quot;secure&quot;,
+  [switch]$Rebuild
+)
+
+$ErrorActionPreference = &quot;Stop&quot;
+
+# Define el modo de demostraci&#243;n del entorno completo.
+$env:APP_MODE = $Mode
+
+if ($Rebuild) {
+  # Baja y reconstruye todos los servicios.
+  docker compose down
+  docker compose up -d --build
+} else {
+  # Arranque r&#225;pido reutilizando im&#225;genes previas.
+  docker compose up -d
+}
+</pre>
+<p>Este script permite:</p>
+<ul>
+<li>cambiar entre modo seguro y vulnerable;</li>
+<li>reconstruir el entorno completo;</li>
+<li>simplificar el despliegue para defensa y pruebas.</li>
+</ul>
+<p>#### Script de ataques en PowerShell</p>
+<p>Para ejecutar la bater&#237;a de pruebas ofensivas controladas se ha creado un script espec&#237;fico:</p>
+<pre>
+param(
+  [ValidateSet(&quot;vulnerable&quot;, &quot;secure&quot;)]
+  [string]$Mode = &quot;vulnerable&quot;
+)
+
+$ErrorActionPreference = &quot;Stop&quot;
+
+# Lanza la bater&#237;a de ataques acad&#233;micos contra el modo indicado.
+if ($Mode -eq &quot;vulnerable&quot;) {
+  npm run attack:sqli:vuln
+  npm run attack:xss:vuln
+  npm run attack:traversal:vuln
+  npm run attack:payment:vuln
+  npm run attack:bruteforce:vuln
+} else {
+  npm run attack:sqli:secure
+  npm run attack:xss:secure
+  npm run attack:traversal:secure
+  npm run attack:payment:secure
+  npm run attack:bruteforce:secure
+}
+</pre>
+<p>Su funci&#243;n es ejecutar la misma matriz de ataques sobre ambas versiones para comparar:</p>
+<ul>
+<li>respuestas HTTP;</li>
+<li>diferencias funcionales;</li>
+<li>eventos generados;</li>
+<li>relaci&#243;n entre ataque, servicio y panel SOC.</li>
+</ul>
+<p>#### Script de arranque equivalente en Linux</p>
+<p>La automatizaci&#243;n del despliegue tambi&#233;n se implement&#243; para sistemas Linux:</p>
+<pre>
+#!/usr/bin/env sh
+set -eu
+
+MODE=&quot;${1:-secure}&quot;
+REBUILD=&quot;${2:-}&quot;
+
+case &quot;$MODE&quot; in
+  secure|vulnerable) ;;
+  *)
+    echo &quot;Uso: ./scripts/start-stack.sh [secure|vulnerable] [--build]&quot;
+    exit 1
+    ;;
+esac
+
+export APP_MODE=&quot;$MODE&quot;
+
+if [ &quot;$REBUILD&quot; = &quot;--build&quot; ]; then
+  docker compose down
+  docker compose up -d --build
+else
+  docker compose up -d
+fi
+</pre>
+<p>#### Script equivalente en Linux</p>
+<p>Tambi&#233;n se desarroll&#243; una variante en shell script para entornos Linux:</p>
+<pre>
+#!/usr/bin/env sh
+set -eu
+
+# Ejecuta la bater&#237;a de ataques en entorno vulnerable o seguro.
+MODE=&quot;${1:-vulnerable}&quot;
+
+case &quot;$MODE&quot; in
+  vulnerable)
+    npm run attack:sqli:vuln
+    npm run attack:xss:vuln
+    npm run attack:traversal:vuln
+    npm run attack:payment:vuln
+    ;;
+  secure)
+    npm run attack:sqli:secure
+    npm run attack:xss:secure
+    npm run attack:traversal:secure
+    npm run attack:payment:secure
+    ;;
+esac
+</pre>
+<p>Con esto se demuestra que la automatizaci&#243;n del proyecto no depende de un &#250;nico sistema operativo.</p>
+<p>#### Script de ataques en Linux</p>
+<p>Este script reproduce en Linux la misma l&#243;gica de pruebas ofensivas:</p>
+<pre>
+#!/usr/bin/env sh
+set -eu
+
+MODE=&quot;${1:-vulnerable}&quot;
+
+case &quot;$MODE&quot; in
+  vulnerable)
+    npm run attack:sqli:vuln
+    npm run attack:xss:vuln
+    npm run attack:traversal:vuln
+    npm run attack:payment:vuln
+    npm run attack:bruteforce:vuln
+    npm run services:matrix:vuln
+    ;;
+  secure)
+    npm run attack:sqli:secure
+    npm run attack:xss:secure
+    npm run attack:traversal:secure
+    npm run attack:payment:secure
+    npm run attack:bruteforce:secure
+    npm run services:matrix:secure
+    ;;
+esac
+</pre>
+<p>#### Script de ataque al checkout</p>
+<p>Uno de los ejemplos m&#225;s importantes es el ataque al flujo de pago, donde se intenta manipular el importe enviado por el cliente:</p>
+<pre>
+const response = await fetch(`${baseUrl}/api/payments/checkout`, {
+  method: &quot;POST&quot;,
+  headers: {
+    &quot;Content-Type&quot;: &quot;application/json&quot;,
+    Authorization: `Bearer ${accessToken}`,
+    &quot;x-demo-mode&quot;: mode
+  },
+  body: JSON.stringify({
+    serviceId: 1,
+    amount: 1,
+    currency: &quot;EUR&quot;,
+    last4: &quot;4242&quot;,
+    brand: &quot;visa&quot;
+  })
+});
+</pre>
+<p>Este fragmento se utiliza para demostrar que:</p>
+<ul>
+<li>en modo vulnerable, el backend puede aceptar el <code>amount</code> manipulado;</li>
+<li>en modo seguro, el precio debe validarse o recalcularse del lado servidor;</li>
+<li>el intento de manipulaci&#243;n puede vincularse a la capa de seguridad y a la visualizaci&#243;n en el panel correspondiente.</li>
+</ul>
+<p>#### Validaci&#243;n del precio en el backend seguro</p>
+<p><img src="C:\Users\sgomez\Desktop\sofia-solutions\memoria\diagramas\codigo-checkout-seguro.svg" alt="Captura de la validaci&#243;n del checkout seguro" style="max-width:100%; border:1px solid #ddd; margin:8pt 0;" /></p>
+<pre>
+const service = await prisma.service.findUnique({
+  where: { id: payload.serviceId }
+});
+
+if (!service) {
+  throw new NotFoundError(&#39;Servicio no encontrado&#39;);
+}
+
+const safeAmount = service.price;
+const manipulated = Number(payload.amount) !== Number(service.price);
+
+if (manipulated) {
+  await securityEventsService.register({
+    type: &#39;payment_amount_tampering&#39;,
+    severity: &#39;high&#39;,
+    endpoint: &#39;/api/payments/checkout&#39;,
+    action: &#39;blocked&#39;
+  });
+}
+</pre>
+<p>#### Extracto del archivo docker-compose.yml</p>
+<p>La puesta en marcha del entorno depende de Docker Compose. Este fragmento resume los servicios principales:</p>
+<pre>
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend-php/Dockerfile
+    ports:
+      - &quot;8000:80&quot;
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./sofia-backend
+      dockerfile: docker/Dockerfile
+    environment:
+      PORT: 8001
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/sofia_solutions
+      APP_MODE: ${APP_MODE:-secure}
+    ports:
+      - &quot;8001:8001&quot;
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15
+    ports:
+      - &quot;5432:5432&quot;
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    ports:
+      - &quot;3000:3000&quot;
+</pre>
+<p>#### Justificaci&#243;n de los comentarios en el c&#243;digo</p>
+<p>Dentro del proyecto, los fragmentos sensibles o menos evidentes se han comentado para que puedan entenderse r&#225;pidamente durante la defensa. Los comentarios no se han a&#241;adido como relleno, sino para explicar:</p>
+<ul>
+<li>la finalidad del script;</li>
+<li>la diferencia entre modo vulnerable y seguro;</li>
+<li>la intenci&#243;n de cada bloque de automatizaci&#243;n;</li>
+<li>y el valor del c&#243;digo desde una perspectiva de administraci&#243;n y seguridad.</li>
+</ul>
+<h2>4.6 Administraci&#243;n</h2>
+<p>La plataforma se ha implementado con una visi&#243;n clara de administraci&#243;n de servicios.</p>
+<h3>Gesti&#243;n de servicios</h3>
+<p>Cada servicio del entorno tiene una funci&#243;n concreta:</p>
+<ul>
+<li>el frontend sirve la capa visible;</li>
+<li>el backend centraliza la l&#243;gica;</li>
+<li>PostgreSQL almacena datos persistentes;</li>
+<li>Grafana presenta m&#233;tricas;</li>
+<li>el monitor SOC presenta telemetr&#237;a de negocio y seguridad.</li>
+</ul>
+<h3>Usuarios y perfiles</h3>
+<p>La aplicaci&#243;n contempla perfiles autenticados, especialmente:</p>
+<ul>
+<li>administrador;</li>
+<li>cliente;</li>
+<li>operador o analista.</li>
+</ul>
+<p>Los permisos dependen del rol y del endpoint consumido. Esto permite justificar:</p>
+<ul>
+<li>control de accesos;</li>
+<li>separaci&#243;n funcional;</li>
+<li>y visibilidad distinta seg&#250;n el tipo de usuario.</li>
+</ul>
+<h3>Automatizaci&#243;n administrativa</h3>
+<p>Se han a&#241;adido scripts para simplificar la operaci&#243;n del entorno en dos sistemas:</p>
+<ul>
+<li><strong>Windows</strong></li>
+<li><strong>Linux</strong></li>
+</ul>
+<p>Esto es especialmente relevante en ASIX, ya que demuestra capacidad para:</p>
+<ul>
+<li>preparar entornos reproducibles;</li>
+<li>reducir errores manuales;</li>
+<li>y documentar procedimientos operativos claros.</li>
+</ul>
+<h2>4.7 Aspectos de seguridad</h2>
+<p>Este apartado es uno de los m&#225;s importantes del proyecto.</p>
+<h3>Prevenci&#243;n de ataques</h3>
+<p>La soluci&#243;n implementa dos comportamientos diferenciados:</p>
+<ul>
+<li><strong>modo vulnerable</strong></li>
+<li><strong>modo seguro</strong></li>
+</ul>
+<p>En el modo vulnerable se permiten, con fines docentes, ataques como:</p>
+<ul>
+<li>inyecci&#243;n SQL;</li>
+<li>XSS;</li>
+<li>path traversal;</li>
+<li>fuerza bruta;</li>
+<li>manipulaci&#243;n de par&#225;metros de pago;</li>
+<li>gesti&#243;n insegura de sesiones y tokens.</li>
+</ul>
+<p>Para demostrarlo se han desarrollado scripts que lanzan estas pruebas de forma automatizada. Esto permite observar:</p>
+<ul>
+<li>qu&#233; peticiones se aceptan en la versi&#243;n vulnerable;</li>
+<li>c&#243;mo impactan sobre autenticaci&#243;n y l&#243;gica de negocio;</li>
+<li>y qu&#233; registros o efectos generan.</li>
+</ul>
+<p>En el modo seguro se han implementado mecanismos como:</p>
+<ul>
+<li>validaci&#243;n estricta de entradas;</li>
+<li>bcrypt para contrase&#241;as;</li>
+<li>tokens y cookies con medidas de protecci&#243;n;</li>
+<li>rate limiting;</li>
+<li>CSRF en flujo seguro;</li>
+<li>mensajes de error gen&#233;ricos;</li>
+<li>detecci&#243;n y bloqueo de patrones maliciosos;</li>
+<li>logging y m&#233;tricas asociadas a actividad sospechosa.</li>
+</ul>
+<h3>Uso de scripts maliciosos y sentencias de prueba</h3>
+<p>Para que el proyecto tenga valor demostrativo real, no basta con afirmar que una aplicaci&#243;n es vulnerable o segura. Por ello se han creado scripts espec&#237;ficos para ejecutar pruebas de ataque controladas.</p>
+<p>Estos scripts permiten:</p>
+<ul>
+<li>lanzar ataques sobre el login vulnerable;</li>
+<li>repetir el mismo ataque contra el login seguro;</li>
+<li>comparar respuestas;</li>
+<li>analizar bloqueos;</li>
+<li>visualizar actividad posterior en el SOC y en Grafana.</li>
+</ul>
+<p>Esto da al proyecto un componente pr&#225;ctico muy fuerte, especialmente &#250;til en defensa oral.</p>
+<h3>Base de datos y seguridad</h3>
+<p>La base de datos juega un papel central no solo como almacenamiento, sino como componente de seguridad:</p>
+<ul>
+<li>persistencia de usuarios;</li>
+<li>almacenamiento de servicios, clientes, activos e incidentes;</li>
+<li>registro de eventos de seguridad;</li>
+<li>soporte para trazabilidad de actividad.</li>
+</ul>
+<p>La correcta estructura relacional permite adem&#225;s mantener integridad y coherencia en el sistema.</p>
+<h3>Docker y aislamiento</h3>
+<p>La contenerizaci&#243;n tambi&#233;n forma parte de la estrategia de seguridad y administraci&#243;n:</p>
+<ul>
+<li>cada servicio est&#225; encapsulado;</li>
+<li>la base de datos est&#225; separada del frontend;</li>
+<li>la red de contenedores queda controlada;</li>
+<li>el despliegue es repetible;</li>
+<li>y la reconstrucci&#243;n del entorno es sencilla.</li>
+</ul>
+<h3>Observabilidad</h3>
+<p>La parte visible de monitorizaci&#243;n se apoya en dos capas:</p>
+<ul>
+<li><strong>SOC corporativo propio</strong>, orientado a negocio y operaci&#243;n;</li>
+<li><strong>Grafana</strong>, orientado a m&#233;tricas y defensa t&#233;cnica.</li>
+</ul>
+<p>Grafana y el SOC son las herramientas utilizadas para visualizar el comportamiento del sistema.</p>
+<h3>Continuidad operativa</h3>
+<p>Aunque el proyecto no implementa un sistema enterprise completo de backup y restore, s&#237; deja una base s&#243;lida para continuidad operativa:</p>
+<ul>
+<li>base de datos persistente;</li>
+<li>seed reproducible;</li>
+<li>despliegue definido en Docker Compose;</li>
+<li>scripts de arranque;</li>
+<li>separaci&#243;n clara entre servicios;</li>
+<li>posibilidad de reconstrucci&#243;n r&#225;pida del entorno.</li>
+</ul>
+<p>En conjunto, la implementaci&#243;n est&#225; alineada con el enfoque de ASIX porque demuestra no solo desarrollo, sino tambi&#233;n:</p>
+<ul>
+<li>administraci&#243;n;</li>
+<li>despliegue;</li>
+<li>securizaci&#243;n;</li>
+<li>validaci&#243;n ofensiva;</li>
+<li>observabilidad;</li>
+<li>y operaci&#243;n de servicios.</li>
+</ul>
+</body>
+</html>
