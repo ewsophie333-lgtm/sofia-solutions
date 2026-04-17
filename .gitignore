@@ -20,3 +20,35 @@ vendor/
 # Build output
 dist/
 build/
+
+# Local working folders
+temp/
+.claude/
+
+# Generated memory duplicates at repo root
+/MEMORIA-APARTADOS-3-4.doc
+/Memoria-ASIX-Apartados-3-4.doc
+/Memoria-ASIX-Completa.doc
+/Memoria-ASIX-Sofia-Solutions.odt
+
+# Local test artifacts
+*.json
+*.txt
+!package*.json
+
+# Local screenshots and exported reference assets
+*.png
+/readdy-*.js
+/readdy-*.css
+/readdy-*.html
+/readdy-config.js
+
+# Local extracted Word support folder
+/memoria/Memoria-ASIX-Apartados-3-4_archivos/
+
+# Legacy memory artifacts not used in final delivery
+/memoria/Memoria-ASIX-Sofia-Solutions.odt
+/memoria/diagramas/arquitectura-general.svg
+/memoria/diagramas/checkout-ataque.svg
+/memoria/diagramas/flujo-autenticacion.svg
+/memoria/diagramas/red-servicios.svg
