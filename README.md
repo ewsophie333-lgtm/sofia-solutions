@@ -33,8 +33,9 @@ La solución representa una plataforma corporativa de servicios IT y ciberseguri
 
 Credenciales demo:
 
-- **Administrador**: `admin@sofia.local` / `SofiaAdmin2026!`
-- **Cliente**: `cliente@sofia.local` / `SofiaAdmin2026!`
+- **Administrador**: `admin@sofia.local` / `S0f1a_Secur3!_2026`
+- **Cliente**: `cliente@sofia.local` / `S0f1a_Secur3!_2026`
+- **Cliente Aquila**: `aquila@sofia.local` / `S0f1a_Secur3!_2026`
 
 Acceso a paneles restringidos:
 
@@ -154,6 +155,10 @@ También puedes usar los scripts de `npm`:
 - `npm run services:matrix:vuln`
 - `npm run services:matrix:secure`
 
+**Prueba de Concepto Especial (Texto Plano):**
+Se ha incluido un script externo en Python en el directorio principal (`scripts/demo_ataque_plano.py`). 
+Muestra cómo en el entorno vulnerable (`/login`), las contraseñas se almacenan y evalúan totalmente en Texto Plano al enviarlas de forma automatizada mediante red.
+
 ## Trobuleshooting & Errores en tiempo de ejecución (ASIR)
 
 Durante el despliegue iterativo surgieron los siguientes casos prácticos solucionados:
@@ -207,6 +212,9 @@ Se utiliza como panel técnico para enseñar:
 - El logo corporativo se fuerza con el mismo tratamiento visual en home, login, dashboard y SOC.
 - `/login` y `/login-secure` usan la misma interfaz; la diferencia está en el backend.
 - En la ruta segura de entrada se ha integrado un validador antimanual **(Captcha / Anti-bot)** integrado en el frontend, y el backend respectivo en API v2 implementa **Limitación de Tasas (Rate Limiting)** a nivel de middleware. Esto frena intentos de Login distribuidos o mediante fuerza bruta, blindando contra ataques de diccionario que buscan tirar el endpoint.
+- **Implementación Criptográfica Securizada:** La base de datos no guarda las contraseñas en texto plano bajo ninguna circunstancia cuando está en modo seguro. Dependiendo del entorno de despliegue (`APP_MODE`):
+  - *Entorno Vulnerable (`loginV1`)*: Las contraseñas quedan almacenadas en **Texto Plano** expresamente para demostrar lo destructivo de guardar sin ofuscar. Un vector de la API permite inicio de sesión pasándole el string llano directamente y validando contra la BD sin cifrar ni usar hashes.
+  - *Entorno Seguro (`loginV2`)*: Las contraseñas se hashean utilizando fuertemente **Bcrypt con un coste de 12 saltos (Rounds)**. Esto hace computacionalmente inviable un ataque offline contra la recolección de hashes de la DB, reforzando la postura ante exfiltraciones.
 - El panel de control (Dashboard) y el monitor SOC ya no tienen atajos públicos desde el Home, requiriendo estrictamente autenticación.
 - Se ha incluido una sección de "Selector de Servicios" en el **Dashboard de Cliente** con formularios de pago deliberadamente vulnerables para pruebas (modo GET).
 - Los avatares del Home exhiben fotografías de estilo corporativo implementadas estáticamente.

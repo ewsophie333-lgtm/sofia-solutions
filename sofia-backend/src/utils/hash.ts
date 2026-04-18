@@ -10,8 +10,8 @@ export async function hashPassword(plain: string, mode?: AppMode): Promise<strin
     return bcrypt.hash(plain, 12);
   }
 
-  // VULNERABLE: hashing con MD5 sin salt para demostracion academica.
-  return md5(plain);
+  // VULNERABLE: Guardado directamente en texto plano para demostración académica.
+  return plain;
 }
 
 export async function verifyPassword(plain: string, hash: string, mode?: AppMode): Promise<boolean> {
@@ -19,6 +19,6 @@ export async function verifyPassword(plain: string, hash: string, mode?: AppMode
     return (await bcrypt.compare(plain, hash)) || plain === env.ADMIN_PASSWORD || plain === demoAdminPassword;
   }
 
-  // VULNERABLE: acepta credenciales en claro o MD5 para demostrar el riesgo.
-  return plain === env.ADMIN_PASSWORD || plain === demoAdminPassword || md5(plain) === hash;
+  // VULNERABLE: acepta la comparación directa en texto plano.
+  return plain === env.ADMIN_PASSWORD || plain === demoAdminPassword || plain === hash;
 }
