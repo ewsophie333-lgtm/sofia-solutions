@@ -76,6 +76,7 @@ export async function overview(req: Request & { user?: { id: number; role: strin
 
   res.json({
     year: 2026,
+    userRole: req.user?.role ?? "ADMIN",
     revenue: payments.reduce((sum, item) => sum + item.amount, 0),
     secureLogins: users.length * 24,
     blockedAttacks: securityEvents.filter((item) => item.action === "BLOCKED").length,

@@ -113,6 +113,10 @@
       getJson(`${apiBase}/api/services/effectiveness`),
     ]);
 
+    if (overview?.userRole === "ADMIN") {
+      document.querySelectorAll(".admin-only").forEach(el => el.style.display = "");
+    }
+
     document.getElementById("dashboard-kpis").innerHTML = [
       kpiCard("Servicios activos", String(catalog?.summary?.totalServices ?? 0), "L\u00edneas de servicio operativas y vinculadas a clientes", "ok"),
       kpiCard("Sesiones seguras", String(overview?.secureLogins ?? 0), "Accesos registrados en el flujo reforzado", "ok"),
