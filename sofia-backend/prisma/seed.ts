@@ -10,8 +10,8 @@ const prisma = new PrismaClient();
 async function main() {
   const adminPassword =
     process.env.APP_MODE === "vulnerable"
-      ? createHash("md5").update(process.env.ADMIN_PASSWORD ?? "SofiaAdmin2026!").digest("hex")
-      : await bcrypt.hash(process.env.ADMIN_PASSWORD ?? "SofiaAdmin2026!", 12);
+      ? (process.env.ADMIN_PASSWORD ?? "S0f1a_Secur3!_2026")
+      : await bcrypt.hash(process.env.ADMIN_PASSWORD ?? "S0f1a_Secur3!_2026", 12);
 
   await prisma.incident.deleteMany();
   await prisma.asset.deleteMany();
