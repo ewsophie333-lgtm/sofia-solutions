@@ -159,6 +159,23 @@ También puedes usar los scripts de `npm`:
 Se ha incluido un script externo en Bash en el directorio de scripts (`scripts/demo_ataque_plano.sh`). 
 Muestra cómo en el entorno vulnerable (`/login`), las contraseñas se almacenan y evalúan totalmente en Texto Plano al enviarlas de forma automatizada mediante red empleando comandos `curl`.
 
+### Scripts de Ataque Bash (ASIR — Demostraciones por Línea de Comando)
+
+Los siguientes scripts en Bash permiten demostrar ataques activos contra la plataforma. Todos funcionan con `curl` y no requieren instalación adicional:
+
+| Script | Descripción |
+|--------|-------------|
+| `bash scripts/ataque_bruteforce.sh [email] [vulnerable\|secure]` | Fuerza bruta: diccionario de contraseñas contra login V1 (vulnerable) o V2 (con rate-limit) |
+| `bash scripts/ataque_dos.sh [N peticiones] [vulnerable\|secure]` | DoS simulado: N peticiones en ráfaga, demuestra cuándo el rate-limiter bloquea con HTTP 429 |
+| `bash scripts/ataque_sqli.sh` | SQL Injection: payloads clásicos contra el endpoint vulnerable para bypass de autenticación |
+| `bash scripts/demo_ataque_plano.sh` | Login directo con contraseña en texto plano, demuestra la ausencia de hash en BD vulnerable |
+
+**Cómo ver el impacto en tiempo real:**
+
+1. Inicia sesión en el Dashboard con cualquier usuario
+2. En la sección **"Actividad de Login — En vivo"** (al fondo del dashboard), los eventos de seguridad se actualizan automáticamente cada 8 segundos
+3. Accede a Grafana (`http://localhost:3000` · admin/admin) y busca la métrica `sofia_login_attempts_total` filtrando por `mode` y `result` para ver gráficas históricas de ataques en tiempo real
+
 ## Trobuleshooting & Errores en tiempo de ejecución (ASIR)
 
 Durante el despliegue iterativo surgieron los siguientes casos prácticos solucionados:
