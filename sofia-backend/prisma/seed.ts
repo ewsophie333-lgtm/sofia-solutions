@@ -35,18 +35,14 @@ async function main() {
     },
   });
 
-  await prisma.user.upsert({
-    where: { email: "cliente@sofia.local" },
-    update: {
-      passwordHash: adminPassword,
-      role: "CLIENT",
-    },
-    create: {
-      email: "cliente@sofia.local",
-      passwordHash: adminPassword,
-      role: "CLIENT",
-    },
-  });
+  const clientEmails = ["aquila@sofia.local", "nordex@sofia.local", "helios@sofia.local"];
+  for (const email of clientEmails) {
+    await prisma.user.upsert({
+      where: { email },
+      update: { passwordHash: adminPassword, role: "CLIENT" },
+      create: { email, passwordHash: adminPassword, role: "CLIENT" },
+    });
+  }
 
   await prisma.service.createMany({
     data: [
@@ -89,10 +85,11 @@ async function main() {
     ],
   });
 
-  const [admin, client] = await Promise.all([
-    prisma.user.findUniqueOrThrow({ where: { email: process.env.ADMIN_EMAIL ?? "admin@sofia.local" } }),
-    prisma.user.findUniqueOrThrow({ where: { email: "cliente@sofia.local" } }),
-  ]);
+  const admin = await prisma.user.findUniqueOrThrow({ where: { email: process.env.ADMIN_EMAIL ?? "admin@sofia.local" } });
+  const [aquilaUser, nordexUser, heliosUser] = await Promise.all(
+    clientEmails.map(email => prisma.user.findUniqueOrThrow({ where: { email } }))
+  );
+  const client = aquilaUser;
 
   const services = await prisma.service.findMany({ orderBy: { id: "asc" } });
   const [soc, pentest, ir, cloud] = services;
@@ -132,10 +129,9 @@ async function main() {
     data: { customerId: customers[0].id },
   });
 
-  await prisma.user.update({
-    where: { id: client.id },
-    data: { customerId: customers[0].id },
-  });
+  await prisma.user.update({ where: { id: aquilaUser.id }, data: { customerId: customers[0].id } });
+  await prisma.user.update({ where: { id: nordexUser.id }, data: { customerId: customers[1].id } });
+  await prisma.user.update({ where: { id: heliosUser.id }, data: { customerId: customers[2].id } });
 
   const assets = await prisma.asset.createManyAndReturn({
     data: [

@@ -64,7 +64,16 @@ $headerCopy = 'Resumen consolidado de actividad, cobertura, efectividad y operac
                         <h2>Postura de servicio y cobertura</h2>
                     </div>
                 </div>
-                <div id="dashboard-services" class="stack-list stack-list-spacious">
+                <div id="dashboard-services" class="stack-list stack-list-spacious"></div>
+            </article>
+            <article class="panel panel-feature" style="grid-column: 1 / -1;">
+                <div class="panel-heading">
+                    <div>
+                        <span class="eyebrow">Facturación y Planes</span>
+                        <h2>Selector de Servicios</h2>
+                    </div>
+                </div>
+                <div class="stack-list stack-list-spacious">
                     <div class="planes-grid" style="margin-top:0;">
                         <article class="plan-card">
                             <h3 style="margin-top:0;">Standard Resilience</h3>
