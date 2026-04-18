@@ -18,20 +18,23 @@
                 <label>
                     <span>Correo electrónico</span>
                     <input type="email" name="email" placeholder="admin@sofia.local" autocomplete="username" required>
-                    <small>Utiliza una cuenta autorizada para acceso a entorno corporativo.</small>
                 </label>
                 <label>
                     <span>Contraseña</span>
                     <input type="password" name="password" placeholder="Introduce tu contraseña" autocomplete="current-password" required>
-                    <small>Las credenciales se validan contra la API de autenticación correspondiente.</small>
                 </label>
+                <?php if (isset($mode) && $mode === 'secure'): ?>
+                <div class="captcha-container" style="margin:16px 0; padding:12px; border:1px solid var(--border); border-radius:6px; display:flex; align-items:center; gap:8px;">
+                    <input type="checkbox" id="hcaptcha" name="hcaptcha" required>
+                    <label for="hcaptcha" style="margin:0; cursor:pointer;">No soy un robot (Protección Anti-Bot)</label>
+                </div>
+                <?php endif; ?>
                 <button class="btn btn-primary btn-block" type="submit">Iniciar sesión</button>
                 <p id="login-error" class="form-error" hidden></p>
             </form>
 
             <div class="auth-footer-row">
-                <a href="/dashboard">Acceso al panel ejecutivo</a>
-                <a href="/admin/security-monitor">Monitor de seguridad</a>
+                <a href="/">Volver a la página principal</a>
             </div>
         </div>
     </section>

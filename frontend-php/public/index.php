@@ -29,18 +29,21 @@ $customerReviews = [
         'rating' => '4.9/5',
         'quote' => 'El servicio SOC redujo el tiempo de escalado y nos dio trazabilidad real sobre accesos, endpoints y activos críticos.',
         'service' => 'SOC 24/7',
+        'avatar' => 'https://randomuser.me/api/portraits/men/51.jpg'
     ],
     [
         'company' => 'Nova Retail Systems',
         'rating' => '4.8/5',
         'quote' => 'La revisión de superficie de ataque y el hardening cloud nos permitieron cerrar hallazgos antes de auditoría.',
         'service' => 'Cloud Hardening',
+        'avatar' => 'https://randomuser.me/api/portraits/women/68.jpg'
     ],
     [
         'company' => 'Iberia Health Tech',
         'rating' => '5.0/5',
         'quote' => 'El retainer de respuesta y la visibilidad del panel nos dieron una operación mucho más ordenada y medible.',
         'service' => 'IR Retainer',
+        'avatar' => 'https://randomuser.me/api/portraits/men/33.jpg'
     ],
 ];
 

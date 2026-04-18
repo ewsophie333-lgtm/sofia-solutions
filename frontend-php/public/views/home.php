@@ -9,15 +9,15 @@
 
     <section class="hero-section page-container">
         <div class="hero-copy">
-            <span class="eyebrow">Managed security operations</span>
-            <h1>Seguridad gestionada para organizaciones que no pueden operar a ciegas.</h1>
-            <p class="hero-body">
-                Sofia Solutions integra monitorización SOC, hardening, pentesting y respuesta ante incidentes
-                en una única plataforma con trazabilidad, métricas y criterio operativo.
+            <span class="eyebrow" style="color: #a78bfa; margin-bottom: 1rem;">Cybersecurity & Threat Intelligence</span>
+            <h1 style="font-size: clamp(3.5rem, 6vw, 5.5rem); background: linear-gradient(135deg, #fff 0%, #a78bfa 100%); -webkit-background-clip: text; color: transparent;">
+                Tu Seguridad,<br>Nuestra Misión.
+            </h1>
+            <p class="hero-body" style="font-size: 1.25rem;">
+                Sofia Solutions integra monitorización SOC avanzada, simulación de ataques de red, pentesting ofensivo y respuesta inmediata ante incidentes. <br>Protegemos lo que más importa con precisión e inteligencia activa.
             </p>
             <div class="hero-actions">
                 <a class="btn btn-primary" href="/login">Acceder a la plataforma</a>
-                <a class="btn btn-secondary" href="/admin/security-monitor">Ver monitor SOC</a>
             </div>
             <div class="hero-meta-grid">
                 <article class="hero-meta-card">
@@ -135,6 +135,39 @@
         </article>
     </section>
 
+    <section class="section-shell page-container planes-shell">
+        <div class="section-heading">
+            <span class="eyebrow">Planes de Servicio</span>
+            <h2>Niveles de protección adaptados a tus vectores de riesgo.</h2>
+        </div>
+        <div class="planes-grid">
+            <article class="plan-card">
+                <h3>Standard Resilience</h3>
+                <p class="price">€1,500<span> / mes</span></p>
+                <ul class="plan-features">
+                    <li>SOC 8/5 Ingesta básica</li>
+                    <li>Pentesting Anual</li>
+                </ul>
+                <div style="margin-top:24px;">
+                    <a href="/login" class="btn btn-secondary btn-block">Inicia sesión para adquirir</a>
+                </div>>
+            </article>
+
+            <article class="plan-card premium-plan">
+                <div class="ribbon">Recomendado</div>
+                <h3>Enterprise Defense</h3>
+                <p class="price">€4,200<span> / mes</span></p>
+                <ul class="plan-features">
+                    <li>SOC 24/7 Cobertura total</li>
+                    <li>Pentesting Premium & IR Retainer</li>
+                </ul>
+                <div style="margin-top:24px;">
+                    <a href="/login" class="btn btn-primary btn-block">Inicia sesión para adquirir</a>
+                </div>
+            </article>
+        </div>
+    </section>
+
     <section class="section-shell page-container reviews-shell">
         <div class="section-heading section-heading-inline">
             <div>
@@ -150,8 +183,11 @@
             <?php foreach ($customerReviews as $review): ?>
                 <article class="review-card">
                     <div class="review-top">
-                        <strong><?= htmlspecialchars($review['company'], ENT_QUOTES, 'UTF-8') ?></strong>
-                        <span><?= htmlspecialchars($review['service'], ENT_QUOTES, 'UTF-8') ?></span>
+                        <img src="<?= htmlspecialchars($review['avatar'], ENT_QUOTES, 'UTF-8') ?>" alt="Avatar CEO" class="review-avatar">
+                        <div class="review-info">
+                            <strong><?= htmlspecialchars($review['company'], ENT_QUOTES, 'UTF-8') ?></strong>
+                            <span><?= htmlspecialchars($review['service'], ENT_QUOTES, 'UTF-8') ?></span>
+                        </div>
                     </div>
                     <div class="review-rating">
                         <span>★★★★★</span>
@@ -165,12 +201,16 @@
 
     <section class="cta-band page-container">
         <div>
-            <span class="eyebrow">Siguiente paso</span>
-            <h2>Accede a la plataforma y revisa el panel ejecutivo o el monitor de seguridad.</h2>
+            <span class="eyebrow">Contacto y Soporte</span>
+            <h2>Para más información, solicitar una demo o hablar con ventas, contáctanos.</h2>
         </div>
-        <div class="hero-actions">
-            <a class="btn btn-primary" href="/login">Entrar al workspace</a>
-            <a class="btn btn-secondary" href="/dashboard">Ver dashboard</a>
+        <div class="hero-actions" style="margin-top: 0; align-items: center; gap: 32px; color: var(--text-soft);">
+            <div>
+                <strong style="color: var(--text);">✉ Email:</strong> contacto@sofiasolutions.local
+            </div>
+            <div>
+                <strong style="color: var(--text);">☎ Teléfono:</strong> +34 900 831 294
+            </div>
         </div>
     </section>
 </main>

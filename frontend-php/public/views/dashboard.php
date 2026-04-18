@@ -64,7 +64,46 @@ $headerCopy = 'Resumen consolidado de actividad, cobertura, efectividad y operac
                         <h2>Postura de servicio y cobertura</h2>
                     </div>
                 </div>
-                <div id="dashboard-services" class="stack-list stack-list-spacious"></div>
+                <div id="dashboard-services" class="stack-list stack-list-spacious">
+                    <div class="planes-grid" style="margin-top:0;">
+                        <article class="plan-card">
+                            <h3 style="margin-top:0;">Standard Resilience</h3>
+                            <p class="price" style="font-size:1.8rem; margin:10px 0;">€1,500<span> / mes</span></p>
+                            <form action="/pago_inseguro.php" method="GET" class="vulnerable-form">
+                                <input type="hidden" name="plan" value="standard">
+                                <label>
+                                    <span>Tarjeta de crédito</span>
+                                    <input type="text" name="cc_number" placeholder="0000 0000 0000 0000">
+                                </label>
+                                <div class="form-row">
+                                    <input type="text" name="cc_exp" placeholder="MM/YY">
+                                    <input type="text" name="cc_cvv" placeholder="CVV">
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block">Pagar / Renovar</button>
+                                <small>Este endpoint simula una vulnerabilidad (GET, sin token).</small>
+                            </form>
+                        </article>
+
+                        <article class="plan-card premium-plan">
+                            <div class="ribbon">VIP</div>
+                            <h3 style="margin-top:0;">Enterprise Defense</h3>
+                            <p class="price" style="font-size:1.8rem; margin:10px 0;">€4,200<span> / mes</span></p>
+                            <form action="/pago_inseguro.php" method="GET" class="vulnerable-form">
+                                <input type="hidden" name="plan" value="enterprise">
+                                <label>
+                                    <span>Tarjeta de crédito</span>
+                                    <input type="text" name="cc_number" placeholder="0000 0000 0000 0000">
+                                </label>
+                                <div class="form-row">
+                                    <input type="text" name="cc_exp" placeholder="MM/YY">
+                                    <input type="text" name="cc_cvv" placeholder="CVV">
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block">Cambiar a Premium</button>
+                                <small>Simulación: Pago expuesto y vulnerable.</small>
+                            </form>
+                        </article>
+                    </div>
+                </div>
             </article>
             <article class="panel">
                 <div class="panel-heading">

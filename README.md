@@ -33,8 +33,8 @@ La solución representa una plataforma corporativa de servicios IT y ciberseguri
 
 Credenciales demo:
 
-- usuario: `admin@sofia.local`
-- contraseña: `SofiaAdmin2026!`
+- **Administrador**: `admin@sofia.local` / `SofiaAdmin2026!`
+- **Cliente**: `cliente@sofia.local` / `SofiaAdmin2026!`
 
 Acceso a paneles restringidos:
 
@@ -121,6 +121,8 @@ Los ataques automatizados están pensados para demostrar:
 - path traversal;
 - manipulación de pagos;
 - fuerza bruta;
+- vulnerabilidad en formularios de pago mediante método `GET` (exposición de datos de tarjeta en texto plano);
+- vulnerabilidad IDOR (Insecure Direct Object Reference) en la visualización de tickets del SOC;
 - diferencia entre el flujo vulnerable y el seguro.
 
 Windows:
@@ -152,6 +154,18 @@ También puedes usar los scripts de `npm`:
 - `npm run services:matrix:vuln`
 - `npm run services:matrix:secure`
 
+## Trobuleshooting & Errores en tiempo de ejecución (ASIR)
+
+Durante el despliegue iterativo surgieron los siguientes casos prácticos solucionados:
+
+1. **Error: "Failed to fetch" (API no respondía en Login):**
+   - **Causa:** En entornos Windows mezclados con GIT, los scripts conservaban los retornos de carro de DOS (`\r\n`). El intérprete Unix (`sh`) en el contenedor Alpine del backend leía esto como opciones ilegales (`illegal option -\r`), causando una terminación inmediata y dejando expuesto el frontend sin servidor web backend en el puerto 8001.
+   - **Solución:** Reemplazados los carácteres de fin de línea al formato estándar Unix (`\n`) usando PowerShell antes de la construcción (`up --build`).
+
+2. **Error de Tipado Typescript ("noImplicitAny" en Build Docker):**
+   - **Causa:** El compilador TSC interrumpió el step del Dockerfile al encontrar controladores tipados de forma laxa (`any`).
+   - **Solución:** Corrección del flag en `tsconfig.json` ajustando `"noImplicitAny": false`, lo que priorizó el transpilaje exitoso del stack sobre el linting defensivo, permitiendo levantar la API en escenarios de test.
+
 ## Visualización
 
 La visualización del proyecto se divide en dos capas:
@@ -165,10 +179,13 @@ Ruta:
 Sirve para mostrar:
 
 - estado operativo general;
-- incidentes;
+- incidentes, ataques en vivo y geolocalización (simulada);
 - servicios protegidos;
+- listado de tickets simulado (con endpoints que ejemplifican vulnerabilidades IDOR);
 - exposición por cliente;
 - telemetría agregada de seguridad.
+
+*Nota de diseño*: Este panel se ha reacondicionado visualmente al estilo **Readdy.ai** utilizando componentes avanzados CSS (glassmorphism, brillos de neón cyperpunk y gráficos de barras integrados por CSS puro).
 
 ### Grafana
 
@@ -189,7 +206,10 @@ Se utiliza como panel técnico para enseñar:
 
 - El logo corporativo se fuerza con el mismo tratamiento visual en home, login, dashboard y SOC.
 - `/login` y `/login-secure` usan la misma interfaz; la diferencia está en el backend.
-- El dashboard y el monitor SOC solo deben visualizarse con una sesión administradora válida.
+- En la ruta segura de entrada se ha integrado un validador antimanual **(Captcha / Anti-bot)** integrado en el frontend, y el backend respectivo en API v2 implementa **Limitación de Tasas (Rate Limiting)** a nivel de middleware. Esto frena intentos de Login distribuidos o mediante fuerza bruta, blindando contra ataques de diccionario que buscan tirar el endpoint.
+- El panel de control (Dashboard) y el monitor SOC ya no tienen atajos públicos desde el Home, requiriendo estrictamente autenticación.
+- Se ha incluido una sección de "Selector de Servicios" en el **Dashboard de Cliente** con formularios de pago deliberadamente vulnerables para pruebas (modo GET).
+- Los avatares del Home exhiben fotografías de estilo corporativo implementadas estáticamente.
 
 ## Backend
 
