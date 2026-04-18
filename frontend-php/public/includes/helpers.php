@@ -36,11 +36,15 @@ function renderAppNav(string $activeNav): void
     ?>
     <nav class="sidebar-nav" aria-label="Navegación de aplicación">
         <?php foreach ($items as $item): ?>
-            <?php $external = $item['external'] ?? false; ?>
+            <?php 
+                $external = $item['external'] ?? false; 
+                $isAdminOnly = in_array($item['key'], ['soc', 'grafana']);
+            ?>
             <a
                 href="<?= htmlspecialchars($item['href'], ENT_QUOTES, 'UTF-8') ?>"
-                class="<?= $activeNav === $item['key'] ? 'active' : '' ?>"
+                class="<?= $activeNav === $item['key'] ? 'active' : '' ?> <?= $isAdminOnly ? 'admin-only' : '' ?>"
                 <?= $external ? 'target="_blank" rel="noreferrer"' : '' ?>
+                <?= $isAdminOnly ? 'style="display:none;"' : '' ?>
             >
                 <span class="nav-icon" aria-hidden="true"><?= htmlspecialchars($item['icon'], ENT_QUOTES, 'UTF-8') ?></span>
                 <span><?= htmlspecialchars($item['label'], ENT_QUOTES, 'UTF-8') ?></span>
