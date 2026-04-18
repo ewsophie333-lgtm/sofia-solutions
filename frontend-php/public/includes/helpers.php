@@ -12,8 +12,6 @@ function renderTopNav(string $activeNav): void
 {
     $items = [
         'home' => ['href' => '/', 'label' => 'Inicio'],
-        'dashboard' => ['href' => '/dashboard', 'label' => 'Dashboard'],
-        'soc' => ['href' => '/admin/security-monitor', 'label' => 'SOC'],
         'login' => ['href' => '/login', 'label' => 'Acceso'],
     ];
     ?>
@@ -32,7 +30,7 @@ function renderAppNav(string $activeNav): void
     $items = [
         ['key' => 'dashboard', 'href' => '/dashboard', 'label' => 'Resumen ejecutivo', 'icon' => '◧'],
         ['key' => 'soc', 'href' => '/admin/security-monitor', 'label' => 'Security monitor', 'icon' => '◎'],
-        ['key' => 'login', 'href' => '/login', 'label' => 'Acceso corporativo', 'icon' => '→'],
+        ['key' => 'login', 'href' => '/login', 'label' => 'Cerrar sesión', 'icon' => '→'],
         ['key' => 'grafana', 'href' => 'http://localhost:3000', 'label' => 'Grafana', 'icon' => '↗', 'external' => true],
     ];
     ?>
