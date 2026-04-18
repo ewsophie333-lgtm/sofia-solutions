@@ -156,8 +156,8 @@ También puedes usar los scripts de `npm`:
 - `npm run services:matrix:secure`
 
 **Prueba de Concepto Especial (Texto Plano):**
-Se ha incluido un script externo en Python en el directorio principal (`scripts/demo_ataque_plano.py`). 
-Muestra cómo en el entorno vulnerable (`/login`), las contraseñas se almacenan y evalúan totalmente en Texto Plano al enviarlas de forma automatizada mediante red.
+Se ha incluido un script externo en Bash en el directorio de scripts (`scripts/demo_ataque_plano.sh`). 
+Muestra cómo en el entorno vulnerable (`/login`), las contraseñas se almacenan y evalúan totalmente en Texto Plano al enviarlas de forma automatizada mediante red empleando comandos `curl`.
 
 ## Trobuleshooting & Errores en tiempo de ejecución (ASIR)
 
