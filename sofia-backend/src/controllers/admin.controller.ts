@@ -62,13 +62,16 @@ function severityRank(value: string) {
   }
 }
 
-export async function overview(_req: Request, res: Response) {
+export async function overview(req: Request & { user?: { id: number; role: string } }, res: Response) {
+  const userId = req.user?.id;
+  const isClient = req.user?.role === "CLIENT";
+
   const [payments, tickets, securityEvents, services, users] = await Promise.all([
-    prisma.payment.findMany(),
-    prisma.ticket.findMany({ orderBy: { createdAt: "desc" }, take: 5 }),
+    isClient ? prisma.payment.findMany({ where: { userId } }) : prisma.payment.findMany(),
+    isClient ? prisma.ticket.findMany({ where: { userId }, orderBy: { createdAt: "desc" }, take: 5 }) : prisma.ticket.findMany({ orderBy: { createdAt: "desc" }, take: 5 }),
     prisma.securityEvent.findMany({ orderBy: { timestamp: "desc" }, take: 5 }),
     prisma.service.findMany({ orderBy: { id: "asc" }, take: 5 }),
-    prisma.user.findMany()
+    isClient ? prisma.user.findMany({ where: { id: userId } }) : prisma.user.findMany()
   ]);
 
   res.json({
