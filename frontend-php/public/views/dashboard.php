@@ -50,11 +50,43 @@ $headerCopy = 'Resumen consolidado de actividad, cobertura, efectividad y operac
                 </article>
             </div>
             <div class="header-links">
-                <a class="btn btn-secondary" href="/admin/security-monitor">Abrir SOC</a>
+                <!-- Buttons removed -->
             </div>
         </section>
 
         <section id="dashboard-kpis" class="kpi-grid"></section>
+
+        <!-- Dynamic CSS Graph Injection -->
+        <section class="executive-grid">
+            <article class="panel panel-feature" style="grid-column: 1 / -1;">
+                <div class="panel-heading">
+                    <div>
+                        <span class="eyebrow">Visual Analytics</span>
+                        <h2>Línea de Tendencia Criptográfica (Simulada)</h2>
+                    </div>
+                </div>
+                <div class="trend-chart" style="display:flex; align-items:flex-end; gap:8px; height:120px; padding-top:20px; margin-bottom:10px;">
+                    <div style="flex:1; background:var(--bg-glass); border-radius:4px 4px 0 0; position:relative; height:15%; transition:height 0.3s;" onmouseover="this.style.background='var(--primary)'" onmouseout="this.style.background='var(--bg-glass)'"></div>
+                    <div style="flex:1; background:var(--bg-glass); border-radius:4px 4px 0 0; position:relative; height:35%; transition:height 0.3s;" onmouseover="this.style.background='var(--primary)'" onmouseout="this.style.background='var(--bg-glass)'"></div>
+                    <div style="flex:1; background:var(--bg-glass); border-radius:4px 4px 0 0; position:relative; height:75%; transition:height 0.3s;" onmouseover="this.style.background='var(--primary)'" onmouseout="this.style.background='var(--bg-glass)'"></div>
+                    <div style="flex:1; background:var(--bg-glass); border-radius:4px 4px 0 0; position:relative; height:45%; transition:height 0.3s;" onmouseover="this.style.background='var(--primary)'" onmouseout="this.style.background='var(--bg-glass)'"></div>
+                    <div style="flex:1; background:var(--primary); border-radius:4px 4px 0 0; position:relative; height:100%; box-shadow:0 0 12px var(--primary-glow); transition:height 0.3s;"></div>
+                    <div style="flex:1; background:var(--bg-glass); border-radius:4px 4px 0 0; position:relative; height:60%; transition:height 0.3s;" onmouseover="this.style.background='var(--primary)'" onmouseout="this.style.background='var(--bg-glass)'"></div>
+                    <div style="flex:1; background:var(--bg-glass); border-radius:4px 4px 0 0; position:relative; height:20%; transition:height 0.3s;" onmouseover="this.style.background='var(--primary)'" onmouseout="this.style.background='var(--bg-glass)'"></div>
+                    <div style="flex:1; background:var(--bg-glass); border-radius:4px 4px 0 0; position:relative; height:40%; transition:height 0.3s;" onmouseover="this.style.background='var(--primary)'" onmouseout="this.style.background='var(--bg-glass)'"></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; color:var(--text-muted); font-size:0.8rem;">
+                    <span>-4h</span>
+                    <span>-3h</span>
+                    <span>-2h</span>
+                    <span>-1h</span>
+                    <span style="color:var(--primary); font-weight:bold;">Now</span>
+                    <span>+1h</span>
+                    <span>+2h</span>
+                    <span>+3h</span>
+                </div>
+            </article>
+        </section>
 
         <section class="executive-grid executive-grid-wide">
             <article class="panel panel-feature">
