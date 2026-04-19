@@ -44,30 +44,30 @@
         </div>
 
         <aside class="hero-panel">
-            <div class="hero-panel-shell" style="background:radial-gradient(circle at top right,rgba(6,182,212,0.1),transparent 40%),rgba(8,12,26,0.95);border:1px solid rgba(6,182,212,0.15);">
+            <div class="hero-panel-shell" style="background:rgba(15,23,42,0.8); border:1px solid rgba(255,255,255,0.08); backdrop-filter:blur(12px);">
                 <div class="signal-row" style="gap:8px;">
-                    <span class="signal-chip" style="background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.25);color:#34d399;font-size:0.78rem;">
+                    <span class="signal-chip" style="background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.1); color:rgba(203,213,225,0.9); font-size:0.75rem;">
                         <span style="width:6px;height:6px;border-radius:50%;background:#10b981;box-shadow:0 0 6px #10b981;display:inline-block;margin-right:5px;"></span>SOC en vivo
                     </span>
-                    <span class="signal-chip signal-chip-soft" style="font-size:0.78rem;">Clientes enterprise</span>
-                    <span class="signal-chip" style="background:rgba(6,182,212,0.08);border-color:rgba(6,182,212,0.2);color:#22d3ee;font-size:0.78rem;">ISO 27001</span>
+                    <span class="signal-chip signal-chip-soft" style="font-size:0.75rem; color:rgba(148,163,184,0.7);">Clientes enterprise</span>
+                    <span class="signal-chip" style="background:rgba(255,255,255,0.03); border-color:rgba(255,255,255,0.08); color:rgba(148,163,184,0.7); font-size:0.75rem;">ISO 27001</span>
                 </div>
                 <h2 style="margin:18px 0 12px;font-size:1.35rem;letter-spacing:-0.03em;">Operación basada en evidencia y visibilidad real</h2>
                 <p style="color:var(--text-soft);line-height:1.7;font-size:0.92rem;">
                     Combinamos correlación de eventos, servicios gestionados y hardening para convertir la seguridad en una capacidad operativa medible.
                 </p>
                 <div class="hero-timeline" style="margin-top:22px;gap:10px;">
-                    <article style="border-left:3px solid rgba(6,182,212,0.5);padding:12px 16px;border-radius:0 10px 10px 0;background:rgba(6,182,212,0.04);">
-                        <strong style="font-size:0.92rem;color:#22d3ee;">01 · Ingesta</strong>
-                        <small style="display:block;margin-top:4px;color:var(--text-muted);font-size:0.82rem;">Logs, endpoints, VPN, WAF, identidad y actividad cloud.</small>
+                    <article style="border-left:3px solid rgba(255,255,255,0.15); padding:12px 16px; border-radius:0 10px 10px 0; background:rgba(255,255,255,0.02);">
+                        <strong style="font-size:0.92rem; color:rgba(255,255,255,0.9);">01 · Ingesta</strong>
+                        <small style="display:block; margin-top:4px; color:rgba(148,163,184,0.7); font-size:0.82rem;">Logs, endpoints, VPN, WAF, identidad y actividad cloud.</small>
                     </article>
-                    <article style="border-left:3px solid rgba(139,92,246,0.5);padding:12px 16px;border-radius:0 10px 10px 0;background:rgba(139,92,246,0.04);">
-                        <strong style="font-size:0.92rem;color:#a78bfa;">02 · Correlación</strong>
-                        <small style="display:block;margin-top:4px;color:var(--text-muted);font-size:0.82rem;">Contexto por activo, cliente, criticidad y vector de ataque.</small>
+                    <article style="border-left:3px solid rgba(255,255,255,0.15); padding:12px 16px; border-radius:0 10px 10px 0; background:rgba(255,255,255,0.02);">
+                        <strong style="font-size:0.92rem; color:rgba(255,255,255,0.9);">02 · Correlación</strong>
+                        <small style="display:block; margin-top:4px; color:rgba(148,163,184,0.7); font-size:0.82rem;">Contexto por activo, cliente, criticidad y vector de ataque.</small>
                     </article>
-                    <article style="border-left:3px solid rgba(16,185,129,0.5);padding:12px 16px;border-radius:0 10px 10px 0;background:rgba(16,185,129,0.04);">
-                        <strong style="font-size:0.92rem;color:#34d399;">03 · Acción</strong>
-                        <small style="display:block;margin-top:4px;color:var(--text-muted);font-size:0.82rem;">Escalado, ticketing, seguimiento y evidencia para defensa.</small>
+                    <article style="border-left:3px solid rgba(255,255,255,0.15); padding:12px 16px; border-radius:0 10px 10px 0; background:rgba(255,255,255,0.02);">
+                        <strong style="font-size:0.92rem; color:rgba(255,255,255,0.9);">03 · Acción</strong>
+                        <small style="display:block; margin-top:4px; color:rgba(148,163,184,0.7); font-size:0.82rem;">Escalado, ticketing, seguimiento y evidencia para defensa.</small>
                     </article>
                 </div>
             </div>
