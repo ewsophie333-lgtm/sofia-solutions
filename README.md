@@ -18,7 +18,10 @@ La solución representa una plataforma corporativa de servicios IT y ciberseguri
 - Docker Compose para el entorno completo;
 - visualización de métricas en **Grafana**;
 - monitor SOC propio para la parte corporativa;
-- scripts de ataque para validar diferencias entre entornos.
+- scripts de ataque para validar diferencias entre entornos;
+- **chat de asistencia integrado** en el Dashboard del cliente;
+- **feed de actividad en tiempo real** que muestra eventos de seguridad actualizados cada 8 segundos;
+- **diseño visual premium** de tipo Cyberpunk/Glassmorphism en todas las vistas.
 
 ## Accesos
 
