@@ -12,17 +12,17 @@
     <!-- ===== HERO ===== -->
     <section class="hero-section page-container">
         <div class="hero-copy">
-            <span class="eyebrow" style="color:#22d3ee;">Cybersecurity &amp; Threat Intelligence</span>
-            <h1 style="font-size:clamp(3.2rem,5.5vw,5.2rem);background:linear-gradient(135deg,#fff 30%,#22d3ee 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.02;letter-spacing:-0.04em;margin:16px 0 20px;">
+            <span class="eyebrow" style="color:rgba(148,163,184,0.75);">Cybersecurity &amp; Threat Intelligence</span>
+            <h1 style="font-size:clamp(3.2rem,5.5vw,5.2rem);color:#f1f5f9;line-height:1.02;letter-spacing:-0.04em;margin:16px 0 20px;">
                 Tu Seguridad,<br>Nuestra Misión.
             </h1>
-            <p class="hero-body" style="font-size:1.1rem;max-width:52ch;line-height:1.75;color:var(--text-soft);">
+            <p class="hero-body" style="font-size:1.05rem;max-width:52ch;line-height:1.75;color:rgba(148,163,184,0.85);">
                 Sofia Solutions integra monitorización SOC avanzada, pentesting ofensivo y respuesta inmediata ante incidentes.
                 Protegemos lo que más importa con precisión, inteligencia activa y visibilidad continua.
             </p>
             <div class="hero-actions" style="margin-top:28px;">
-                <a class="btn btn-primary" href="/login" style="padding:0 28px;font-size:0.95rem;">Acceder a la plataforma</a>
-                <a class="btn btn-secondary" href="#planes" style="padding:0 24px;font-size:0.95rem;">Ver planes</a>
+                <a href="/login" style="display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 28px;border-radius:11px;background:rgba(255,255,255,0.92);color:#0a0e18;font-weight:700;font-size:0.92rem;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.92)'">Acceder a la plataforma</a>
+                <a class="btn btn-secondary" href="#planes" style="padding:0 24px;font-size:0.92rem;border-color:rgba(255,255,255,0.12);color:rgba(203,213,225,0.8);">Ver planes</a>
             </div>
             <div class="hero-meta-grid" style="margin-top:32px;">
                 <article class="hero-meta-card">
