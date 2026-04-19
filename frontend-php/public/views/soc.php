@@ -50,17 +50,32 @@ $headerCopy = 'Vista consolidada de incidentes, presión de ataque, orígenes, s
                 </article>
             </div>
             <div class="header-links">
-                <a class="btn btn-secondary" href="/dashboard">Volver al dashboard</a>
-                <a class="btn btn-primary" href="http://localhost:3000" target="_blank" rel="noreferrer">Abrir Grafana</a>
+                <a class="btn btn-secondary" href="/dashboard">← Dashboard</a>
+                <a class="btn btn-primary" href="http://localhost:3000" target="_blank" rel="noreferrer">📊 Grafana Live</a>
             </div>
         </section>
 
-        <section id="soc-status" class="status-strip">
-            <span class="signal-chip signal-chip-soft">WAF Active</span>
-            <span class="signal-chip signal-chip-soft">VPN Telemetry: OK</span>
-            <span class="signal-chip signal-chip-soft">SIEM Logs: Synced</span>
-            <span class="signal-chip" style="background:rgba(239, 68, 68, 0.2); border-color:rgba(239, 68, 68, 0.4); color:#fca5a5;">Alerts: 3 Critical</span>
+        <section id="soc-status" class="status-strip" style="display:flex;flex-direction:row;flex-wrap:wrap;gap:10px;margin-top:18px;padding:14px 18px;">
+            <span style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:#34d399;font-size:0.8rem;font-weight:600;">
+                <span style="width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 8px #10b981;animation:pulse 2s infinite;"></span> WAF Active
+            </span>
+            <span style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:#34d399;font-size:0.8rem;font-weight:600;">
+                <span style="width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 8px #10b981;animation:pulse 2s infinite;"></span> VPN Telemetry: OK
+            </span>
+            <span style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:#34d399;font-size:0.8rem;font-weight:600;">
+                <span style="width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 8px #10b981;animation:pulse 2s infinite;"></span> SIEM: Synced
+            </span>
+            <span style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.35);color:#f87171;font-size:0.8rem;font-weight:600;">
+                <span style="width:7px;height:7px;border-radius:50%;background:#ef4444;box-shadow:0 0 8px #ef4444;animation:pulse 1.2s infinite;"></span> Alerts: 3 Critical
+            </span>
+            <span style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:#fbbf24;font-size:0.8rem;font-weight:600;">
+                <span style="width:7px;height:7px;border-radius:50%;background:#f59e0b;box-shadow:0 0 8px #f59e0b;animation:pulse 1.8s infinite;"></span> EDR: Monitoring
+            </span>
+            <span style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;background:rgba(6,182,212,0.08);border:1px solid rgba(6,182,212,0.2);color:#22d3ee;font-size:0.8rem;font-weight:600;">
+                <span style="width:7px;height:7px;border-radius:50%;background:#06b6d4;box-shadow:0 0 8px #06b6d4;animation:pulse 2.5s infinite;"></span> Threat Intel: Live
+            </span>
         </section>
+        <style>@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.4)}}</style>
         <section id="soc-kpis" class="kpi-grid">
             <article class="kpi-card" data-tone="warn">
                 <span class="meta-label">Eventos / Hora</span>

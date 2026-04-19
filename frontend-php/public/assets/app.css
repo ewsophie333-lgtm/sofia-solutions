@@ -700,7 +700,7 @@ img {
 
 .panel-feature {
   background:
-    radial-gradient(circle at top right, rgba(167, 139, 250, 0.11), transparent 30%),
+    radial-gradient(circle at top right, rgba(6,182,212,0.07), transparent 35%),
     var(--bg-panel);
 }
 
@@ -1051,80 +1051,123 @@ img {
     background: rgba(15, 12, 25, 0.4);
 }
 
-/* READDY.AI DASHBOARD THEME */
+/* ===== READDY DASHBOARD CYBER THEME ===== */
 .readdy-dashboard {
-    background-color: #06080F !important;
-    background-image: 
-        radial-gradient(ellipse at top, rgba(29, 78, 216, 0.15) 0%, transparent 50%),
-        radial-gradient(ellipse at bottom, rgba(139, 92, 246, 0.15) 0%, transparent 50%) !important;
-    font-family: 'Inter', system-ui, sans-serif !important;
+    background-color: #03050d !important;
+    background-image:
+        radial-gradient(ellipse 70% 55% at 0% 0%, rgba(6,182,212,0.14) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 50% at 100% 100%, rgba(139,92,246,0.12) 0%, transparent 52%) !important;
+    font-family: "Inter", system-ui, sans-serif !important;
 }
-
 .readdy-dashboard .sidebar {
-    background: rgba(10, 15, 26, 0.8) !important;
-    border-right: 1px solid rgba(56, 189, 248, 0.1) !important;
-    backdrop-filter: blur(20px) !important;
+    background: rgba(3,5,14,0.97) !important;
+    border-right: 1px solid rgba(6,182,212,0.12) !important;
+    backdrop-filter: blur(24px) !important;
 }
-
 .readdy-dashboard .panel,
 .readdy-dashboard .kpi-card,
 .readdy-dashboard .panel-header,
-.readdy-dashboard .toolbar-strip {
-    background: rgba(15, 23, 42, 0.6) !important;
-    border: 1px solid rgba(56, 189, 248, 0.15) !important;
-    box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.5) !important;
-    backdrop-filter: blur(12px) !important;
+.readdy-dashboard .toolbar-strip,
+.readdy-dashboard .status-strip {
+    background: rgba(6,9,20,0.82) !important;
+    border: 1px solid rgba(6,182,212,0.13) !important;
+    box-shadow: 0 4px 28px rgba(0,0,0,0.65), 0 0 0 1px rgba(6,182,212,0.03) inset !important;
+    backdrop-filter: blur(18px) !important;
 }
-
-.readdy-dashboard .eyebrow {
-    color: #38bdf8 !important;
+.readdy-dashboard .kpi-card:hover {
+    border-color: rgba(6,182,212,0.32) !important;
+    box-shadow: 0 8px 32px rgba(6,182,212,0.14) !important;
+    transform: translateY(-3px) !important;
 }
-
+.readdy-dashboard .eyebrow { color: #22d3ee !important; }
 .readdy-dashboard .eyebrow::before {
-    background: #38bdf8 !important;
-    box-shadow: 0 0 8px #38bdf8 !important;
+    background: #22d3ee !important;
+    box-shadow: 0 0 10px #22d3ee, 0 0 22px rgba(34,211,238,0.3) !important;
+    width: 24px !important;
 }
-
-.readdy-dashboard h1, .readdy-dashboard h2, .readdy-dashboard strong {
-    color: #f1f5f9 !important;
+.readdy-dashboard h1,
+.readdy-dashboard h2,
+.readdy-dashboard strong { color: #f0f4f8 !important; }
+.readdy-dashboard .kpi-card strong {
+    font-size: 2.4rem !important;
+    letter-spacing: -0.06em !important;
 }
-
 .readdy-dashboard .kpi-card[data-tone="warn"] .tone-bar {
     background: linear-gradient(90deg, #f59e0b, #fbbf24) !important;
-    box-shadow: 0 0 12px rgba(245, 158, 11, 0.6) !important;
+    box-shadow: 0 0 14px rgba(245,158,11,0.6) !important;
+    width: 100% !important; height: 3px !important;
 }
-
 .readdy-dashboard .kpi-card[data-tone="ok"] .tone-bar {
     background: linear-gradient(90deg, #10b981, #34d399) !important;
-    box-shadow: 0 0 12px rgba(16, 185, 129, 0.6) !important;
+    box-shadow: 0 0 14px rgba(16,185,129,0.6) !important;
+    width: 100% !important; height: 3px !important;
 }
-
+.readdy-dashboard .kpi-card[data-tone="bad"] .tone-bar {
+    background: linear-gradient(90deg, #ef4444, #f87171) !important;
+    box-shadow: 0 0 14px rgba(239,68,68,0.6) !important;
+    width: 100% !important; height: 3px !important;
+}
 .readdy-dashboard .css-graph .bar {
-    background: rgba(56, 189, 248, 0.1) !important;
-    border: 1px solid rgba(56, 189, 248, 0.4) !important;
+    background: rgba(6,182,212,0.07) !important;
+    border: 1px solid rgba(6,182,212,0.35) !important;
+    transition: all 0.3s !important;
 }
-
 .readdy-dashboard .css-graph .bar:hover {
-    background: rgba(56, 189, 248, 0.25) !important;
+    background: rgba(6,182,212,0.22) !important;
+    box-shadow: 0 0 12px rgba(6,182,212,0.3) !important;
 }
-
 .readdy-dashboard .css-graph .bar-fill {
-    background: linear-gradient(180deg, rgba(56, 189, 248, 0.8) 0%, transparent 100%) !important;
+    background: linear-gradient(180deg, rgba(6,182,212,0.9), rgba(6,182,212,0.1)) !important;
 }
-
 .readdy-dashboard .btn-primary {
-    background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%) !important;
-    color: #0f172a !important;
-    box-shadow: 0 4px 14px rgba(56, 189, 248, 0.4) !important;
+    background: linear-gradient(135deg, #06b6d4, #7c3aed) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 16px rgba(6,182,212,0.35) !important;
+    border-radius: 10px !important;
 }
-
 .readdy-dashboard .btn-secondary {
-    background: rgba(255, 255, 255, 0.05) !important;
-    border-color: rgba(56, 189, 248, 0.3) !important;
-    color: #e2e8f0 !important;
+    background: rgba(255,255,255,0.04) !important;
+    border-color: rgba(6,182,212,0.22) !important;
+    color: #94a3b8 !important;
+    border-radius: 10px !important;
 }
-
 .readdy-dashboard .stack-item {
-    background: rgba(255, 255, 255, 0.02) !important;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    background: rgba(255,255,255,0.015) !important;
+    border: 1px solid rgba(255,255,255,0.05) !important;
+    transition: border-color 0.2s, background 0.2s !important;
+}
+.readdy-dashboard .stack-item:hover {
+    background: rgba(6,182,212,0.04) !important;
+    border-color: rgba(6,182,212,0.16) !important;
+}
+.readdy-dashboard .signal-chip {
+    border-color: rgba(6,182,212,0.2) !important;
+    background: rgba(6,182,212,0.07) !important;
+    color: #7dd3fc !important;
+}
+.readdy-dashboard .status-strip {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 12px !important;
+    flex-wrap: wrap !important;
+}
+.readdy-dashboard .sidebar-nav a.active {
+    background: rgba(6,182,212,0.12) !important;
+    color: #22d3ee !important;
+    border: 1px solid rgba(6,182,212,0.2) !important;
+}
+/* Auth panel premium */
+.auth-panel-brand {
+    background:
+        radial-gradient(ellipse 90% 80% at top left, rgba(6,182,212,0.1), transparent 50%),
+        radial-gradient(ellipse 60% 60% at bottom, rgba(139,92,246,0.1), transparent 55%),
+        linear-gradient(175deg, rgba(5,8,20,0.99), rgba(3,5,12,1));
+    border-right: 1px solid rgba(6,182,212,0.1);
+}
+/* Login input premium */
+.login-form input { transition: border-color 0.2s, box-shadow 0.2s; }
+.login-form input:focus {
+    outline: none;
+    border-color: rgba(6,182,212,0.45);
+    box-shadow: 0 0 0 3px rgba(6,182,212,0.1);
 }
