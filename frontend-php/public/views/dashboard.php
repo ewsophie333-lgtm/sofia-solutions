@@ -104,46 +104,108 @@ $headerCopy = 'Resumen consolidado de actividad, cobertura, efectividad y operac
                         <span class="eyebrow">Facturación y Planes</span>
                         <h2>Selector de Servicios</h2>
                     </div>
+                    <span class="context-chip" style="color:var(--text-muted);font-size:0.75rem;">⚠️ Demo: los datos de pago viajan en texto plano (GET)</span>
                 </div>
-                <div class="stack-list stack-list-spacious">
-                    <div class="planes-grid" style="margin-top:0;">
-                        <article class="plan-card">
-                            <h3 style="margin-top:0;">Standard Resilience</h3>
-                            <p class="price" style="font-size:1.8rem; margin:10px 0;">€1,500<span> / mes</span></p>
-                            <form action="/pago_inseguro.php" method="GET" class="vulnerable-form">
-                                <input type="hidden" name="plan" value="standard">
-                                <label>
-                                    <span>Tarjeta de crédito</span>
-                                    <input type="text" name="cc_number" placeholder="0000 0000 0000 0000">
-                                </label>
-                                <div class="form-row">
-                                    <input type="text" name="cc_exp" placeholder="MM/YY">
-                                    <input type="text" name="cc_cvv" placeholder="CVV">
-                                </div>
-                                <button type="submit" class="btn btn-primary btn-block">Pagar / Renovar</button>
-                                <small>Este endpoint simula una vulnerabilidad (GET, sin token).</small>
-                            </form>
-                        </article>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; padding:4px 0 8px;">
 
-                        <article class="plan-card premium-plan">
-                            <div class="ribbon">VIP</div>
-                            <h3 style="margin-top:0;">Enterprise Defense</h3>
-                            <p class="price" style="font-size:1.8rem; margin:10px 0;">€4,200<span> / mes</span></p>
-                            <form action="/pago_inseguro.php" method="GET" class="vulnerable-form">
-                                <input type="hidden" name="plan" value="enterprise">
-                                <label>
-                                    <span>Tarjeta de crédito</span>
-                                    <input type="text" name="cc_number" placeholder="0000 0000 0000 0000">
-                                </label>
-                                <div class="form-row">
-                                    <input type="text" name="cc_exp" placeholder="MM/YY">
-                                    <input type="text" name="cc_cvv" placeholder="CVV">
-                                </div>
-                                <button type="submit" class="btn btn-primary btn-block">Cambiar a Premium</button>
-                                <small>Simulación: Pago expuesto y vulnerable.</small>
-                            </form>
-                        </article>
-                    </div>
+                    <!-- Plan Individual -->
+                    <article style="position:relative; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:28px 24px; display:flex; flex-direction:column; gap:14px; transition:border-color 0.2s,transform 0.2s;" onmouseover="this.style.borderColor='var(--primary)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.transform='translateY(0)'">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <span style="font-size:1.6rem;">👤</span>
+                            <div>
+                                <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);">Plan</div>
+                                <strong style="font-size:1.05rem;color:var(--text);">Individual</strong>
+                            </div>
+                        </div>
+                        <div style="font-size:2rem;font-weight:800;color:var(--text);letter-spacing:-0.02em;">€499<span style="font-size:0.9rem;font-weight:400;color:var(--text-muted);"> / mes</span></div>
+                        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;font-size:0.85rem;color:var(--text-muted);">
+                            <li>✅ SOC básico 8/5</li>
+                            <li>✅ 1 endpoint monitorizado</li>
+                            <li>✅ Alertas por correo</li>
+                            <li>✅ SLA 24h respuesta</li>
+                            <li style="opacity:0.35;">✗ Respuesta a incidentes</li>
+                            <li style="opacity:0.35;">✗ Pentesting incluido</li>
+                        </ul>
+                        <form action="/pago_inseguro.php" method="GET" style="margin-top:auto;">
+                            <input type="hidden" name="plan" value="individual">
+                            <label style="display:block;margin-bottom:8px;font-size:0.82rem;color:var(--text-muted);">
+                                <span style="display:block;margin-bottom:4px;">Nº Tarjeta</span>
+                                <input type="text" name="cc_number" placeholder="0000 0000 0000 0000" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 10px;color:var(--text);font-size:0.85rem;outline:none;box-sizing:border-box;">
+                            </label>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+                                <input type="text" name="cc_exp" placeholder="MM/YY" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 10px;color:var(--text);font-size:0.82rem;outline:none;">
+                                <input type="text" name="cc_cvv" placeholder="CVV" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 10px;color:var(--text);font-size:0.82rem;outline:none;">
+                            </div>
+                            <button type="submit" style="width:100%;background:rgba(6,182,212,0.15);border:1px solid var(--primary);border-radius:10px;padding:10px;color:var(--primary);font-weight:600;font-size:0.88rem;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='var(--primary)';this.style.color='#fff'" onmouseout="this.style.background='rgba(6,182,212,0.15)';this.style.color='var(--primary)'">Contratar — €499/mes</button>
+                        </form>
+                    </article>
+
+                    <!-- Plan Business (Destacado) -->
+                    <article style="position:relative; background:linear-gradient(145deg,rgba(6,182,212,0.1),rgba(14,116,144,0.08)); border:1px solid var(--primary); border-radius:16px; padding:28px 24px; display:flex; flex-direction:column; gap:14px; box-shadow:0 0 30px rgba(6,182,212,0.12); transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+                        <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;font-size:0.7rem;font-weight:700;padding:4px 14px;border-radius:20px;letter-spacing:0.08em;text-transform:uppercase;">Más Popular</div>
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <span style="font-size:1.6rem;">🏢</span>
+                            <div>
+                                <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--primary);">Plan</div>
+                                <strong style="font-size:1.05rem;color:var(--text);">Business</strong>
+                            </div>
+                        </div>
+                        <div style="font-size:2rem;font-weight:800;color:var(--text);letter-spacing:-0.02em;">€1,500<span style="font-size:0.9rem;font-weight:400;color:var(--text-muted);"> / mes</span></div>
+                        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;font-size:0.85rem;color:var(--text-muted);">
+                            <li>✅ SOC 24/7 completo</li>
+                            <li>✅ Hasta 15 endpoints</li>
+                            <li>✅ Alertas en tiempo real</li>
+                            <li>✅ SLA 4h respuesta</li>
+                            <li>✅ IR Retainer básico</li>
+                            <li style="opacity:0.35;">✗ Pentesting incluido</li>
+                        </ul>
+                        <form action="/pago_inseguro.php" method="GET" style="margin-top:auto;">
+                            <input type="hidden" name="plan" value="business">
+                            <label style="display:block;margin-bottom:8px;font-size:0.82rem;color:var(--text-muted);">
+                                <span style="display:block;margin-bottom:4px;">Nº Tarjeta</span>
+                                <input type="text" name="cc_number" placeholder="0000 0000 0000 0000" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(6,182,212,0.3);border-radius:8px;padding:8px 10px;color:var(--text);font-size:0.85rem;outline:none;box-sizing:border-box;">
+                            </label>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+                                <input type="text" name="cc_exp" placeholder="MM/YY" style="background:rgba(255,255,255,0.05);border:1px solid rgba(6,182,212,0.3);border-radius:8px;padding:8px 10px;color:var(--text);font-size:0.82rem;outline:none;">
+                                <input type="text" name="cc_cvv" placeholder="CVV" style="background:rgba(255,255,255,0.05);border:1px solid rgba(6,182,212,0.3);border-radius:8px;padding:8px 10px;color:var(--text);font-size:0.82rem;outline:none;">
+                            </div>
+                            <button type="submit" style="width:100%;background:var(--primary);border:1px solid var(--primary);border-radius:10px;padding:10px;color:#fff;font-weight:700;font-size:0.9rem;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 16px rgba(6,182,212,0.3);" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Contratar — €1,500/mes</button>
+                        </form>
+                    </article>
+
+                    <!-- Plan Business Max -->
+                    <article style="position:relative; background:linear-gradient(145deg,rgba(168,85,247,0.08),rgba(109,40,217,0.05)); border:1px solid rgba(168,85,247,0.4); border-radius:16px; padding:28px 24px; display:flex; flex-direction:column; gap:14px; transition:border-color 0.2s,transform 0.2s;" onmouseover="this.style.borderColor='#a855f7';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='rgba(168,85,247,0.4)';this.style.transform='translateY(0)'">
+                        <div style="position:absolute;top:-12px;right:20px;background:linear-gradient(135deg,#a855f7,#7c3aed);color:#fff;font-size:0.7rem;font-weight:700;padding:4px 14px;border-radius:20px;letter-spacing:0.08em;text-transform:uppercase;">Elite</div>
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <span style="font-size:1.6rem;">🏆</span>
+                            <div>
+                                <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:#a855f7;">Plan</div>
+                                <strong style="font-size:1.05rem;color:var(--text);">Business Max</strong>
+                            </div>
+                        </div>
+                        <div style="font-size:2rem;font-weight:800;color:var(--text);letter-spacing:-0.02em;">€4,200<span style="font-size:0.9rem;font-weight:400;color:var(--text-muted);"> / mes</span></div>
+                        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;font-size:0.85rem;color:var(--text-muted);">
+                            <li style="color:var(--text);">✅ SOC 24/7 dedicado</li>
+                            <li style="color:var(--text);">✅ Endpoints ilimitados</li>
+                            <li style="color:var(--text);">✅ SLA &lt; 15 min respuesta</li>
+                            <li style="color:var(--text);">✅ IR Retainer full</li>
+                            <li style="color:var(--text);">✅ Pentesting trimestral</li>
+                            <li style="color:var(--text);">✅ Cloud Hardening incluido</li>
+                        </ul>
+                        <form action="/pago_inseguro.php" method="GET" style="margin-top:auto;">
+                            <input type="hidden" name="plan" value="business-max">
+                            <label style="display:block;margin-bottom:8px;font-size:0.82rem;color:var(--text-muted);">
+                                <span style="display:block;margin-bottom:4px;">Nº Tarjeta</span>
+                                <input type="text" name="cc_number" placeholder="0000 0000 0000 0000" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(168,85,247,0.3);border-radius:8px;padding:8px 10px;color:var(--text);font-size:0.85rem;outline:none;box-sizing:border-box;">
+                            </label>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+                                <input type="text" name="cc_exp" placeholder="MM/YY" style="background:rgba(255,255,255,0.05);border:1px solid rgba(168,85,247,0.3);border-radius:8px;padding:8px 10px;color:var(--text);font-size:0.82rem;outline:none;">
+                                <input type="text" name="cc_cvv" placeholder="CVV" style="background:rgba(255,255,255,0.05);border:1px solid rgba(168,85,247,0.3);border-radius:8px;padding:8px 10px;color:var(--text);font-size:0.82rem;outline:none;">
+                            </div>
+                            <button type="submit" style="width:100%;background:linear-gradient(135deg,#a855f7,#7c3aed);border:none;border-radius:10px;padding:10px;color:#fff;font-weight:700;font-size:0.9rem;cursor:pointer;transition:opacity 0.2s;box-shadow:0 4px 16px rgba(168,85,247,0.3);" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Contratar — €4,200/mes</button>
+                        </form>
+                    </article>
+
                 </div>
             </article>
             <article class="panel">
