@@ -21,18 +21,22 @@ La solución representa una plataforma corporativa de servicios IT y ciberseguri
 - scripts de ataque para validar diferencias entre entornos;
 - **chat de asistencia integrado** en el Dashboard del cliente;
 - **feed de actividad en tiempo real** que muestra eventos de seguridad actualizados cada 8 segundos;
-- **diseño visual premium** de tipo Cyberpunk/Glassmorphism en todas las vistas.
+- **diseño visual premium** Cyberpunk/Glassmorphism unificado en todas las vistas;
+- **3 planes de servicio** (Individual €499/mes, Business €1,500/mes, Business Max €4,200/mes) presentes tanto en la web pública como en el dashboard del cliente con la misma estética;
+- **login profesional** sin referencias técnicas, con indicadores de estado del sistema en tiempo real.
 
 ## Accesos
 
-- Web: `http://localhost:8000`
-- Login vulnerable: `http://localhost:8000/login`
-- Login seguro: `http://localhost:8000/login-secure`
-- Dashboard: `http://localhost:8000/dashboard`
-- SOC Monitor: `http://localhost:8000/admin/security-monitor`
-- API: `http://localhost:8001`
-- Swagger: `http://localhost:8001/docs`
-- Grafana: `http://localhost:3000`
+| Servicio | URL |
+|----------|-----|
+| Web pública | `http://localhost:8000` |
+| Login (demo académico) | `http://localhost:8000/login` |
+| Login seguro (CAPTCHA + rate-limit) | `http://localhost:8000/login-secure` |
+| Dashboard cliente | `http://localhost:8000/dashboard` |
+| SOC Monitor (solo admin) | `http://localhost:8000/admin/security-monitor` |
+| API Backend | `http://localhost:8001` |
+| Swagger / Docs | `http://localhost:8001/docs` |
+| Grafana | `http://localhost:3000` |
 
 Credenciales demo:
 

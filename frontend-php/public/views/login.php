@@ -4,30 +4,30 @@
     <section class="auth-panel auth-panel-brand">
         <div class="auth-brand-frame">
             <?php renderLogo('brand-mark brand-mark-login'); ?>
-            <span class="eyebrow" style="color:#22d3ee;margin-top:28px;display:block;">Sofia Solutions</span>
-            <h1 style="margin:14px 0 16px;font-size:clamp(1.9rem,3.5vw,2.8rem);line-height:1.06;letter-spacing:-0.04em;">
+            <span class="eyebrow" style="margin-top:28px;display:block;color:rgba(255,255,255,0.45);letter-spacing:0.14em;">Sofia Solutions</span>
+            <h1 style="margin:14px 0 16px;font-size:clamp(1.9rem,3.5vw,2.8rem);line-height:1.06;letter-spacing:-0.04em;color:#f1f5f9;">
                 Your Security,<br>Our Mission.
             </h1>
-            <p style="color:var(--text-soft);line-height:1.7;font-size:0.95rem;max-width:38ch;">
+            <p style="color:rgba(203,213,225,0.65);line-height:1.7;font-size:0.9rem;max-width:38ch;">
                 Acceso corporativo a la plataforma de seguridad gestionada, monitorización SOC y operación continua.
             </p>
 
-            <!-- Indicadores de estado del sistema -->
-            <div style="display:flex;flex-direction:column;gap:10px;margin-top:36px;">
-                <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.2);">
-                    <span style="width:8px;height:8px;border-radius:50%;background:#10b981;box-shadow:0 0 8px #10b981;flex-shrink:0;"></span>
-                    <span style="font-size:0.82rem;color:#34d399;font-weight:600;">Plataforma operativa</span>
-                    <span style="margin-left:auto;font-size:0.75rem;color:var(--text-muted);">100% uptime</span>
+            <!-- Indicadores de estado -->
+            <div style="display:flex;flex-direction:column;gap:9px;margin-top:36px;">
+                <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
+                    <span style="width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 6px #10b981;flex-shrink:0;"></span>
+                    <span style="font-size:0.82rem;color:rgba(203,213,225,0.9);font-weight:500;">Plataforma operativa</span>
+                    <span style="margin-left:auto;font-size:0.73rem;color:rgba(148,163,184,0.7);">100% uptime</span>
                 </div>
-                <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:rgba(6,182,212,0.07);border:1px solid rgba(6,182,212,0.18);">
-                    <span style="width:8px;height:8px;border-radius:50%;background:#06b6d4;box-shadow:0 0 8px #06b6d4;flex-shrink:0;"></span>
-                    <span style="font-size:0.82rem;color:#22d3ee;font-weight:600;">SOC activo 24/7</span>
-                    <span style="margin-left:auto;font-size:0.75rem;color:var(--text-muted);">En línea</span>
+                <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
+                    <span style="width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 6px #10b981;flex-shrink:0;"></span>
+                    <span style="font-size:0.82rem;color:rgba(203,213,225,0.9);font-weight:500;">SOC activo 24/7</span>
+                    <span style="margin-left:auto;font-size:0.73rem;color:rgba(148,163,184,0.7);">En línea</span>
                 </div>
-                <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:rgba(139,92,246,0.07);border:1px solid rgba(139,92,246,0.18);">
-                    <span style="width:8px;height:8px;border-radius:50%;background:#8b5cf6;box-shadow:0 0 8px #8b5cf6;flex-shrink:0;"></span>
-                    <span style="font-size:0.82rem;color:#a78bfa;font-weight:600;">Telemetría sincronizada</span>
-                    <span style="margin-left:auto;font-size:0.75rem;color:var(--text-muted);">En tiempo real</span>
+                <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
+                    <span style="width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 6px #10b981;flex-shrink:0;"></span>
+                    <span style="font-size:0.82rem;color:rgba(203,213,225,0.9);font-weight:500;">Telemetría sincronizada</span>
+                    <span style="margin-left:auto;font-size:0.73rem;color:rgba(148,163,184,0.7);">Tiempo real</span>
                 </div>
             </div>
         </div>
@@ -35,47 +35,47 @@
 
     <!-- Panel derecho del formulario -->
     <section class="auth-panel auth-panel-form">
-        <div class="auth-card" style="width:min(480px,100%);padding:40px 36px;border-radius:20px;background:rgba(8,12,26,0.85);border:1px solid rgba(6,182,212,0.12);box-shadow:0 8px 40px rgba(0,0,0,0.5);">
+        <div class="auth-card" style="width:min(460px,100%);padding:40px 36px;border-radius:18px;background:rgba(10,14,24,0.92);border:1px solid rgba(255,255,255,0.09);box-shadow:0 8px 40px rgba(0,0,0,0.5);">
 
-            <span class="card-kicker" style="color:#22d3ee;">Acceso a plataforma</span>
-            <h2 style="margin:12px 0 6px;font-size:1.7rem;letter-spacing:-0.03em;">Iniciar sesión</h2>
-            <p class="card-copy" style="color:var(--text-muted);font-size:0.9rem;margin-bottom:28px;line-height:1.6;">
+            <span class="card-kicker" style="color:rgba(148,163,184,0.7);">Acceso a plataforma</span>
+            <h2 style="margin:12px 0 6px;font-size:1.65rem;letter-spacing:-0.03em;color:#f1f5f9;">Iniciar sesión</h2>
+            <p style="color:rgba(100,116,139,1);font-size:0.88rem;margin-bottom:26px;line-height:1.6;">
                 Introduce tus credenciales corporativas para acceder al entorno operativo.
             </p>
 
-            <form id="login-form" class="login-form" novalidate style="gap:16px;">
-                <label style="display:grid;gap:8px;">
-                    <span style="font-size:0.85rem;font-weight:600;color:var(--text-soft);">Correo electrónico</span>
+            <form id="login-form" class="login-form" novalidate style="gap:14px;">
+                <label style="display:grid;gap:7px;">
+                    <span style="font-size:0.82rem;font-weight:600;color:rgba(148,163,184,0.9);">Correo electrónico</span>
                     <input type="email" name="email" placeholder="usuario@empresa.com" autocomplete="username" required
-                           style="min-height:50px;padding:0 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text);font-size:0.92rem;">
+                           style="min-height:48px;padding:0 15px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#f1f5f9;font-size:0.9rem;">
                 </label>
-                <label style="display:grid;gap:8px;">
-                    <span style="font-size:0.85rem;font-weight:600;color:var(--text-soft);">Contraseña</span>
+                <label style="display:grid;gap:7px;">
+                    <span style="font-size:0.82rem;font-weight:600;color:rgba(148,163,184,0.9);">Contraseña</span>
                     <input type="password" name="password" placeholder="••••••••••••" autocomplete="current-password" required
-                           style="min-height:50px;padding:0 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text);font-size:0.92rem;">
+                           style="min-height:48px;padding:0 15px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#f1f5f9;font-size:0.9rem;">
                 </label>
 
                 <?php if (isset($mode) && $mode === 'secure'): ?>
-                <div style="display:flex;align-items:center;gap:12px;padding:13px 14px;border:1px solid rgba(6,182,212,0.25);border-radius:12px;background:rgba(6,182,212,0.06);">
-                    <input type="checkbox" id="hcaptcha" name="hcaptcha" required style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;flex-shrink:0;">
+                <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid rgba(255,255,255,0.1);border-radius:10px;background:rgba(255,255,255,0.03);">
+                    <input type="checkbox" id="hcaptcha" name="hcaptcha" required style="width:17px;height:17px;cursor:pointer;flex-shrink:0;">
                     <div style="flex:1;">
-                        <label for="hcaptcha" style="margin:0;cursor:pointer;font-weight:600;color:var(--text);font-size:0.88rem;">No soy un robot</label>
-                        <small style="display:block;color:var(--text-muted);font-size:0.75rem;margin-top:3px;">Verificación de seguridad requerida</small>
+                        <label for="hcaptcha" style="margin:0;cursor:pointer;font-weight:600;color:rgba(203,213,225,0.9);font-size:0.86rem;">No soy un robot</label>
+                        <small style="display:block;color:rgba(100,116,139,0.9);font-size:0.73rem;margin-top:2px;">Verificación de seguridad requerida</small>
                     </div>
-                    <span style="font-size:1.2rem;">🛡️</span>
+                    <span style="font-size:1.1rem;opacity:0.6;">🛡️</span>
                 </div>
                 <?php endif; ?>
 
                 <button class="btn btn-primary btn-block" type="submit"
-                        style="min-height:52px;border-radius:12px;font-size:0.95rem;margin-top:4px;background:linear-gradient(135deg,#06b6d4,#7c3aed);box-shadow:0 4px 20px rgba(6,182,212,0.25);">
+                        style="min-height:50px;border-radius:11px;font-size:0.92rem;margin-top:6px;background:rgba(255,255,255,0.92);color:#0a0e18;font-weight:700;border:none;box-shadow:none;letter-spacing:0.01em;"
+                        onmouseover="this.style.background='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.92)'">
                     Iniciar sesión
                 </button>
                 <p id="login-error" class="form-error" hidden></p>
             </form>
 
-            <div class="auth-footer-row" style="margin-top:20px;justify-content:space-between;align-items:center;">
-                <a href="/" style="color:var(--text-muted);font-size:0.85rem;text-decoration:none;" onmouseover="this.style.color='#22d3ee'" onmouseout="this.style.color='var(--text-muted)'">← Volver al inicio</a>
-                <span style="color:var(--text-muted);font-size:0.78rem;">Acceso seguro · TLS 1.3</span>
+            <div style="margin-top:20px;display:flex;justify-content:center;">
+                <a href="/" style="color:rgba(100,116,139,0.8);font-size:0.83rem;text-decoration:none;" onmouseover="this.style.color='rgba(203,213,225,0.9)'" onmouseout="this.style.color='rgba(100,116,139,0.8)'">← Volver al inicio</a>
             </div>
         </div>
     </section>
