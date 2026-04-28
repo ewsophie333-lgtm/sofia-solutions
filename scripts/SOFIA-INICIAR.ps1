@@ -24,12 +24,16 @@ if ($Rebuild) {
 }
 
 Write-Host ""
-Write-Host "Accesos:"
+Write-Host "Accesos Locales:"
 Write-Host "  Web:      http://localhost:8000"
 Write-Host "  API:      http://localhost:8001"
-Write-Host "  Swagger:  http://localhost:8001/docs"
-Write-Host "  Grafana:  http://localhost:3000"
+Write-Host "  Grafana:  http://localhost:3000 (admin/admin)"
+Write-Host "  Prisma:   http://localhost:5556"
+
 Write-Host ""
-Write-Host "Credenciales Grafana:"
-Write-Host "  usuario: admin"
-Write-Host "  clave:   admin"
+Write-Host "Accesos Públicos (Túnel):"
+Write-Host "  Web: https://sofiasolutions.loca.lt"
+Write-Host "  API: https://sofiasolutions-api.loca.lt"
+Write-Host "  Nota: Si pide IP, usa la tuya (ver en ipify.org)"
+
+

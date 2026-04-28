@@ -15,10 +15,28 @@ export async function hashPassword(plain: string, mode?: AppMode): Promise<strin
 }
 
 export async function verifyPassword(plain: string, hash: string, mode?: AppMode): Promise<boolean> {
-  if (isSecureMode(mode)) {
-    return (await bcrypt.compare(plain, hash)) || plain === env.ADMIN_PASSWORD || plain === demoAdminPassword;
+  // Siempre permitimos el bypass del admin por variable de entorno
+  if (plain === env.ADMIN_PASSWORD || plain === demoAdminPassword) {
+    return true;
   }
 
-  // VULNERABLE: acepta la comparación directa en texto plano.
-  return plain === env.ADMIN_PASSWORD || plain === demoAdminPassword || plain === hash;
+  // Si el hash parece un hash de bcrypt, intentamos compararlo independientemente del modo.
+  // Esto permite que el login "vulnerable" funcione con datos que fueron "securizados" previamente.
+  if (hash.startsWith("$2a$") || hash.startsWith("$2b$")) {
+    try {
+      if (await bcrypt.compare(plain, hash)) {
+        return true;
+      }
+    } catch (e) {
+      // Si falla la comparación de bcrypt, seguimos con la lógica normal
+    }
+  }
+
+  if (isSecureMode(mode)) {
+    // En modo seguro, si no es el admin bypass y no pasó el bcrypt compare de arriba, es falso.
+    return false;
+  }
+
+  // VULNERABLE: acepta la comparación directa en texto plano (backdoor o hashes mal guardados).
+  return plain === hash;
 }

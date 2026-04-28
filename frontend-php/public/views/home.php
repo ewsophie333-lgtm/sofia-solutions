@@ -6,7 +6,13 @@
         <a class="brand-lockup brand-lockup-header" href="/">
             <?php renderLogo('brand-mark brand-mark-header'); ?>
         </a>
-        <?php renderTopNav('home'); ?>
+        <div style="display:flex;align-items:center;gap:10px;">
+            <?php renderTopNav('home'); ?>
+            <button id="lang-toggle" onclick="toggleLang()" style="display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:999px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(203,213,225,0.8);font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s;font-family:inherit;" onmouseover="this.style.background='rgba(255,255,255,0.08)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.color='rgba(203,213,225,0.8)'">
+                <span style="font-size:1rem;">&#x1F310;</span>
+                <span id="lang-label">EN</span>
+            </button>
+        </div>
     </header>
 
     <!-- ===== HERO ===== -->
@@ -129,8 +135,8 @@
                     <li style="display:flex;align-items:center;gap:10px;font-size:0.88rem;color:var(--text-soft);"><span style="color:#10b981;font-size:0.9rem;">✓</span> 1 endpoint monitorizado</li>
                     <li style="display:flex;align-items:center;gap:10px;font-size:0.88rem;color:var(--text-soft);"><span style="color:#10b981;font-size:0.9rem;">✓</span> Alertas por correo</li>
                     <li style="display:flex;align-items:center;gap:10px;font-size:0.88rem;color:var(--text-soft);"><span style="color:#10b981;font-size:0.9rem;">✓</span> SLA 24h respuesta</li>
-                    <li style="display:flex;align-items:center;gap:10px;font-size:0.88rem;color:rgba(255,255,255,0.25);"><span style="font-size:0.9rem;">✗</span> Respuesta a incidentes</li>
-                    <li style="display:flex;align-items:center;gap:10px;font-size:0.88rem;color:rgba(255,255,255,0.25);"><span style="font-size:0.9rem;">✗</span> Pentesting incluido</li>
+                    <li style="display:flex;align-items:center;gap:10px;font-size:0.88rem;color:rgba(255,255,255,0.22);"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;opacity:0.4"><rect x="1" y="6.5" width="12" height="1.5" rx="0.75" fill="currentColor"/></svg> Respuesta a incidentes</li>
+                    <li style="display:flex;align-items:center;gap:10px;font-size:0.88rem;color:rgba(255,255,255,0.22);"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;opacity:0.4"><rect x="1" y="6.5" width="12" height="1.5" rx="0.75" fill="currentColor"/></svg> Pentesting incluido</li>
                 </ul>
                 <a href="/login" class="btn btn-secondary btn-block" style="border-color:rgba(6,182,212,0.3);margin-top:8px;">Contratar plan</a>
             </article>
@@ -151,7 +157,7 @@
                     <li style="display:flex;align-items:center;gap:10px;font-size:0.88rem;color:var(--text-soft);"><span style="color:#10b981;">✓</span> Alertas en tiempo real</li>
                     <li style="display:flex;align-items:center;gap:10px;font-size:0.88rem;color:var(--text-soft);"><span style="color:#10b981;">✓</span> SLA 4h respuesta</li>
                     <li style="display:flex;align-items:center;gap:10px;font-size:0.88rem;color:var(--text-soft);"><span style="color:#10b981;">✓</span> IR Retainer básico</li>
-                    <li style="display:flex;align-items:center;gap:10px;font-size:0.88rem;color:rgba(255,255,255,0.25);"><span>✗</span> Pentesting incluido</li>
+                    <li style="display:flex;align-items:center;gap:10px;font-size:0.88rem;color:rgba(255,255,255,0.22);"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;opacity:0.4"><rect x="1" y="6.5" width="12" height="1.5" rx="0.75" fill="currentColor"/></svg> Pentesting incluido</li>
                 </ul>
                 <a href="/login" class="btn btn-primary btn-block" style="margin-top:8px;">Contratar plan</a>
             </article>
@@ -276,3 +282,134 @@
     </section>
 
 </main>
+
+<!-- ====== Chat de Asistencia Sofia Solutions ====== -->
+<div id="chat-widget" style="position:fixed; bottom:24px; right:24px; z-index:9999; font-family:inherit;">
+    <!-- Botón de apertura -->
+    <button id="chat-toggle" onclick="document.getElementById('chat-box').style.display=document.getElementById('chat-box').style.display==='none'?'flex':'none'" style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--primary,#06b6d4),#0e7490);border:none;cursor:pointer;box-shadow:0 4px 20px rgba(6,182,212,0.4);display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:#fff;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">💬</button>
+
+    <!-- Caja del chat -->
+    <div id="chat-box" style="display:none; flex-direction:column; width:340px; height:420px; background:var(--bg-surface,#0f172a); border:1px solid var(--border,rgba(255,255,255,0.1)); border-radius:16px; overflow:hidden; box-shadow:0 8px 40px rgba(0,0,0,0.5); margin-bottom:12px; position:absolute; bottom:64px; right:0;">
+        <!-- Header del chat -->
+        <div style="background:linear-gradient(135deg,#0e7490,#06b6d4); padding:14px 16px; display:flex; align-items:center; gap:10px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🛡️</div>
+            <div>
+                <strong style="color:#fff; font-size:0.95rem;">Asistente Sofia</strong>
+                <small style="display:block; color:rgba(255,255,255,0.75); font-size:0.72rem;">Ventas & Consultas · En línea</small>
+            </div>
+            <div style="margin-left:auto;width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px #22c55e;"></div>
+        </div>
+
+        <!-- Mensajes -->
+        <div id="chat-messages" style="flex:1; overflow-y:auto; padding:14px; display:flex; flex-direction:column; gap:10px; font-size:0.85rem;">
+            <div style="background:rgba(6,182,212,0.1); border:1px solid rgba(6,182,212,0.2); border-radius:12px 12px 12px 2px; padding:10px 12px; max-width:85%; color:var(--text);">
+                👋 ¡Hola! ¿En qué puedo ayudarte a mejorar la seguridad de tu empresa hoy?
+            </div>
+            <div class="chat-suggestion" onclick="sendChatMessage('¿Qué planes de SOC tenéis?')" style="background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:8px; padding:8px 10px; cursor:pointer; color:var(--text-muted); font-size:0.8rem; transition:all 0.2s;" onmouseover="this.style.borderColor='var(--primary)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">📋 ¿Qué planes de SOC tenéis?</div>
+            <div class="chat-suggestion" onclick="sendChatMessage('Quiero saber más de pentesting')" style="background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:8px; padding:8px 10px; cursor:pointer; color:var(--text-muted); font-size:0.8rem; transition:all 0.2s;" onmouseover="this.style.borderColor='var(--primary)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">🔍 Quiero saber más de pentesting</div>
+        </div>
+
+        <!-- Input -->
+        <div style="padding:10px; border-top:1px solid var(--border); display:flex; gap:8px; background:rgba(0,0,0,0.2);">
+            <input id="chat-input" type="text" placeholder="Escribe tu consulta..." onkeydown="if(event.key==='Enter')sendChatMessage()" style="flex:1; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:8px; padding:8px 12px; color:var(--text); font-size:0.85rem; outline:none;">
+            <button onclick="sendChatMessage()" style="background:var(--primary,#06b6d4); border:none; border-radius:8px; width:36px; display:flex; align-items:center; justify-content:center; color:#fff; cursor:pointer; font-size:1rem; transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">➤</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ---- Chat de Asistencia Sofia Solutions (Home) ----
+const chatResponses = {
+    "hola": "¡Hola! Soy el asistente virtual de Sofia Solutions. ¿En qué puedo ayudarte a fortalecer la seguridad de tu empresa hoy?",
+    "buenos dias": "¡Buenos días! Es un placer saludarte. ¿Cómo podemos ayudarte con tus necesidades de ciberseguridad?",
+    "buenas tardes": "¡Buenas tardes! Estamos a tu disposición para cualquier consulta técnica o comercial.",
+    "numero": "Puedes contactar directamente con nuestra oficina central en el **+34 900 831 294**. Si eres cliente, recuerda que tienes línea directa 24/7 con el SOC.",
+    "telefono": "Nuestro teléfono de atención al cliente es el **+34 900 831 294**. ¿Deseas que un consultor te llame en un horario específico?",
+    "contacto": "Estamos disponibles por email en **contacto@sofiasolutions.local** o por teléfono en el **+34 900 831 294**. ¿Qué vía prefieres?",
+    "precio": "Nuestras tarifas comienzan en los **499€/mes** para el plan Individual. El plan Business (€1,500) es el más popular para PYMES, y el Elite (€4,200) para infraestructuras críticas. ¿Cuál encaja mejor con tu volumen de activos?",
+    "plan": "Disponemos de tres niveles: Individual, Business y Business Max (Elite). Todos incluyen monitorización, pero varían en el SLA de respuesta y el número de activos. ¿Para cuántos servidores o endpoints necesitas cobertura?",
+    "soc": "Nuestro SOC (Security Operations Center) opera 24/7 con analistas expertos en detección de intrusiones y respuesta ante incidentes. Utilizamos telemetría avanzada para proteger tu negocio sin interrupciones.",
+    "pentesting": "Realizamos auditorías ofensivas (Pentesting) tanto web como de infraestructura. El objetivo es encontrar tus vulnerabilidades antes de que lo haga un atacante. ¿Te gustaría recibir un presupuesto?",
+    "incidentes": "En caso de un incidente activo, por favor utiliza el botón de 'Soporte Urgente' si ya eres cliente, o llama inmediatamente al +34 900 831 294.",
+    "donde": "Nuestra sede principal de operaciones SOC se encuentra en España, pero damos cobertura a infraestructuras en toda la Unión Europea.",
+    "servicios": "Ofrecemos Monitorización SOC 24/7, Pentesting ofensivo, Respuesta ante Incidentes (IR Retainer) y Cloud Hardening. ¿Sobre cuál de ellos necesitas más detalle?",
+    "gracias": "¡A ti! Ha sido un placer. Quedo a tu disposición para lo que necesites.",
+    "default": "Entiendo. Un consultor senior de ciberseguridad revisará tu consulta y se pondrá en contacto contigo en breve. Si necesitas una respuesta inmediata sobre nuestros planes o servicios, te recomiendo llamarnos al +34 900 831 294."
+};
+
+function sendChatMessage(textOverride) {
+    const input = document.getElementById('chat-input');
+    const msg = textOverride || input.value.trim();
+    if (!msg) return;
+    
+    const container = document.getElementById('chat-messages');
+    
+    // Eliminar sugerencias si las hay
+    const suggestions = container.querySelectorAll('.chat-suggestion');
+    suggestions.forEach(s => s.remove());
+    
+    // Mensaje del usuario
+    const userBubble = document.createElement('div');
+    userBubble.style.cssText = 'background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15); border-radius:12px 12px 2px 12px; padding:10px 12px; max-width:85%; color:#fff; align-self:flex-end; margin-left:auto; font-size:0.85rem; line-height:1.4;';
+    userBubble.textContent = msg;
+    container.appendChild(userBubble);
+    input.value = '';
+    
+    // Scroll
+    container.scrollTop = container.scrollHeight;
+    
+    // Simular escritura del "humano"
+    setTimeout(() => {
+        let reply = chatResponses["default"];
+        const lowerMsg = msg.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        
+        // Búsqueda inteligente de palabras clave
+        for (const key in chatResponses) {
+            if (lowerMsg.includes(key)) {
+                reply = chatResponses[key];
+                break;
+            }
+        }
+        
+        const botBubble = document.createElement('div');
+        botBubble.style.cssText = 'background:rgba(6,182,212,0.1); border:1px solid rgba(6,182,212,0.2); border-radius:12px 12px 12px 2px; padding:10px 12px; max-width:85%; color:var(--text); font-size:0.85rem; line-height:1.4;';
+        botBubble.innerHTML = reply;
+        container.appendChild(botBubble);
+        container.scrollTop = container.scrollHeight;
+    }, 1000);
+}
+</script>
+
+<script>
+// ---- Language Toggle ES / EN ----
+var currentLang = 'es';
+var translations = {
+  hero_title_es: 'Tu Seguridad,<br>Nuestra Misión.',
+  hero_title_en: 'Your Security,<br>Our Mission.',
+  hero_body_es: 'Sofia Solutions integra monitorización SOC avanzada, pentesting ofensivo y respuesta inmediata ante incidentes.\n                Protegemos lo que más importa con precisión, inteligencia activa y visibilidad continua.',
+  hero_body_en: 'Sofia Solutions combines advanced SOC monitoring, offensive pentesting, and immediate incident response.\n                We protect what matters most with precision, active intelligence, and continuous visibility.',
+  btn_access_es: 'Acceder a la plataforma',
+  btn_access_en: 'Access the platform',
+  btn_plans_es: 'Ver planes',
+  btn_plans_en: 'View plans',
+};
+
+function toggleLang() {
+  currentLang = currentLang === 'es' ? 'en' : 'es';
+  document.getElementById('lang-label').textContent = currentLang === 'es' ? 'EN' : 'ES';
+
+  var heroTitle = document.querySelector('.hero-copy h1');
+  if (heroTitle) heroTitle.innerHTML = currentLang === 'es' ? translations.hero_title_es : translations.hero_title_en;
+
+  var heroCopy = document.querySelector('.hero-copy .hero-body');
+  if (heroCopy) heroCopy.textContent = currentLang === 'es'
+    ? 'Sofia Solutions integra monitorización SOC avanzada, pentesting ofensivo y respuesta inmediata ante incidentes. Protegemos lo que más importa con precisión, inteligencia activa y visibilidad continua.'
+    : 'Sofia Solutions combines advanced SOC monitoring, offensive pentesting, and immediate incident response. We protect what matters most with precision, active intelligence, and continuous visibility.';
+
+  var btnAccess = document.querySelector('.hero-actions a:first-child');
+  if (btnAccess) btnAccess.textContent = currentLang === 'es' ? translations.btn_access_es : translations.btn_access_en;
+
+  var btnPlans = document.querySelector('.hero-actions a:last-child');
+  if (btnPlans) btnPlans.textContent = currentLang === 'es' ? translations.btn_plans_es : translations.btn_plans_en;
+}
+</script>

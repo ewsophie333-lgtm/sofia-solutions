@@ -20,6 +20,7 @@
   function headers(json = true) {
     const auth = getToken();
     return {
+      "Bypass-Tunnel-Reminder": "true",
       ...(json ? { "Content-Type": "application/json" } : {}),
       ...(auth ? { Authorization: `Bearer ${auth}` } : {}),
     };
@@ -147,13 +148,13 @@
 
     const tickets = Array.isArray(overview?.recentTickets) ? overview.recentTickets : [];
     document.getElementById("dashboard-tickets").innerHTML = tickets.length
-      ? tickets.map((ticket) =>
-          stackItem(
-            ticket.subject,
-            `${ticket.status} · prioridad ${ticket.priority} · ${ticket.customerName || "Cliente asociado"}`,
-            ticket.priority === "critical" ? "bad" : ticket.priority === "high" ? "warn" : "ok",
-          ),
-        ).join("")
+      ? tickets.map((ticket) => {
+          const tone = ticket.priority === "critical" ? "bad" : ticket.priority === "high" ? "warn" : "ok";
+          const toneLabel = tone === "ok" ? "OK" : tone === "warn" ? "Warning" : "Critical";
+          const badge = tone ? `<span class="severity ${tone}">${toneLabel}</span>` : "";
+          const msg = escapeHtml(ticket.messages && ticket.messages.length ? ticket.messages[0].content : '');
+          return `<article class="stack-item" style="cursor:pointer; transition:transform 0.2s;" onmouseover="this.style.transform='translateX(5px)'" onmouseout="this.style.transform='translateX(0)'" onclick="if(window.openTicketModal) openTicketModal('${ticket.id}', '${escapeHtml(ticket.subject)}', '${ticket.status}', '${ticket.priority}', '${msg}')"><strong>${escapeHtml(ticket.subject)}</strong><small>${ticket.status} · prioridad ${ticket.priority} · ${escapeHtml(ticket.customerName || "Cliente asociado")}</small>${badge}</article>`;
+      }).join("")
       : stackItem("Sin tickets abiertos", "No hay actividad pendiente en la mesa de servicio.", "ok");
 
     const securityEvents = Array.isArray(overview?.securityEvents) ? overview.securityEvents : [];
