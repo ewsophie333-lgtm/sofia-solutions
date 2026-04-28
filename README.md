@@ -23,26 +23,28 @@ La solución representa una plataforma corporativa de servicios IT y ciberseguri
 - **feed de actividad en tiempo real** que muestra eventos de seguridad actualizados cada 8 segundos;
 - **diseño visual premium** Cyberpunk/Glassmorphism unificado en todas las vistas;
 - **3 planes de servicio** (Individual €499/mes, Business €1,500/mes, Business Max €4,200/mes) presentes tanto en la web pública como en el dashboard del cliente con la misma estética;
-- **login profesional** sin referencias técnicas, con indicadores de estado del sistema en tiempo real.
+- **login profesional** minimalista, con indicadores de estado del sistema y selector de idioma (ES/EN) integrado.
+- **acceso público global** configurado mediante túneles DNS personalizados (`sofiasolutions.loca.lt`).
 
 ## Accesos
 
-| Servicio | URL |
-|----------|-----|
-| Web pública | `http://localhost:8000` |
-| Login (demo académico) | `http://localhost:8000/login` |
-| Login seguro (CAPTCHA + rate-limit) | `http://localhost:8000/login-secure` |
-| Dashboard cliente | `http://localhost:8000/dashboard` |
-| SOC Monitor (solo admin) | `http://localhost:8000/admin/security-monitor` |
-| API Backend | `http://localhost:8001` |
-| Swagger / Docs | `http://localhost:8001/docs` |
-| Grafana | `http://localhost:3000` |
-
-Credenciales demo:
+| Servicio | URL Local | URL Pública (Túnel) |
+|----------|-----------|---------------------|
+| Web pública | `http://localhost:8000` | `https://sofiasolutions.loca.lt` |
+| Login (demo académico) | `http://localhost:8000/login` | `https://sofiasolutions.loca.lt/login` |
+| Login seguro (CAPTCHA) | `http://localhost:8000/login-secure` | `https://sofiasolutions.loca.lt/login-secure` |
+| API Backend | `http://localhost:8001` | `https://sofiasolutions-api.loca.lt` |
+| SOC Monitor (solo admin) | `http://localhost:8000/admin/security-monitor` | `https://sofiasolutions.loca.lt/admin/security-monitor` |
+| Grafana | `http://localhost:3000` | Integrado en SOC Monitor |
+| Prisma Studio | `http://localhost:5556` | - |
 
 - **Administrador**: `admin@sofia.local` / `S0f1a_Secur3!_2026`
-- **Cliente**: `cliente@sofia.local` / `S0f1a_Secur3!_2026`
-- **Cliente Aquila**: `aquila@sofia.local` / `S0f1a_Secur3!_2026`
+- **Clientes Corporativos (España)**:
+  - `iberdrola@sofia.local` / `S0f1a_Iberdrola!_2026`
+  - `mapfre@sofia.local` / `S0f1a_Mapfre!_2026`
+  - `mercadona@sofia.local` / `S0f1a_Mercadona!_2026`
+  - `repsol@sofia.local` / `S0f1a_Repsol!_2026`
+  - `sabadell@sofia.local` / `S0f1a_Sabadell!_2026`
 
 Acceso a paneles restringidos:
 
@@ -109,15 +111,15 @@ docker compose up -d
 Windows:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/start-stack.ps1
-powershell -ExecutionPolicy Bypass -File scripts/start-stack.ps1 -Mode vulnerable -Rebuild
+powershell -ExecutionPolicy Bypass -File scripts/SOFIA-INICIAR.ps1
+powershell -ExecutionPolicy Bypass -File scripts/SOFIA-INICIAR.ps1 -Mode vulnerable -Rebuild
 ```
 
 Linux:
 
 ```bash
-sh ./scripts/start-stack.sh
-sh ./scripts/start-stack.sh vulnerable --build
+sh ./scripts/sofia-iniciar.sh
+sh ./scripts/sofia-iniciar.sh vulnerable --build
 ```
 
 ## Ejecución de ataques
@@ -136,15 +138,15 @@ Los ataques automatizados están pensados para demostrar:
 Windows:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts/run-attacks.ps1 -Mode vulnerable
-powershell -ExecutionPolicy Bypass -File scripts/run-attacks.ps1 -Mode secure
+powershell -ExecutionPolicy Bypass -File scripts/SOFIA-ATAQUES.ps1 -Mode vulnerable
+powershell -ExecutionPolicy Bypass -File scripts/SOFIA-ATAQUES.ps1 -Mode secure
 ```
 
 Linux:
 
 ```bash
-sh ./scripts/run-attacks.sh vulnerable
-sh ./scripts/run-attacks.sh secure
+sh ./scripts/sofia-ataques.sh vulnerable
+sh ./scripts/sofia-ataques.sh secure
 ```
 
 También puedes usar los scripts de `npm`:
@@ -163,7 +165,7 @@ También puedes usar los scripts de `npm`:
 - `npm run services:matrix:secure`
 
 **Prueba de Concepto Especial (Texto Plano):**
-Se ha incluido un script externo en Bash en el directorio de scripts (`scripts/demo_ataque_plano.sh`). 
+Se ha incluido un script externo en Bash en el directorio de scripts (`scripts/sofia-texto-plano.sh`). 
 Muestra cómo en el entorno vulnerable (`/login`), las contraseñas se almacenan y evalúan totalmente en Texto Plano al enviarlas de forma automatizada mediante red empleando comandos `curl`.
 
 ### Scripts de Ataque Bash (ASIR — Demostraciones por Línea de Comando)
@@ -172,10 +174,10 @@ Los siguientes scripts en Bash permiten demostrar ataques activos contra la plat
 
 | Script | Descripción |
 |--------|-------------|
-| `bash scripts/ataque_bruteforce.sh [email] [vulnerable\|secure]` | Fuerza bruta: diccionario de contraseñas contra login V1 (vulnerable) o V2 (con rate-limit) |
-| `bash scripts/ataque_dos.sh [N peticiones] [vulnerable\|secure]` | DoS simulado: N peticiones en ráfaga, demuestra cuándo el rate-limiter bloquea con HTTP 429 |
-| `bash scripts/ataque_sqli.sh` | SQL Injection: payloads clásicos contra el endpoint vulnerable para bypass de autenticación |
-| `bash scripts/demo_ataque_plano.sh` | Login directo con contraseña en texto plano, demuestra la ausencia de hash en BD vulnerable |
+| `bash scripts/sofia-bruteforce.sh [email] [vulnerable\|secure]` | Fuerza bruta: diccionario de contraseñas contra login V1 (vulnerable) o V2 (con rate-limit) |
+| `bash scripts/sofia-dos.sh [N peticiones] [vulnerable\|secure]` | DoS simulado: N peticiones en ráfaga, demuestra cuándo el rate-limiter bloquea con HTTP 429 |
+| `bash scripts/sofia-sqli.sh` | SQL Injection: payloads clásicos contra el endpoint vulnerable para bypass de autenticación |
+| `bash scripts/sofia-texto-plano.sh` | Login directo con contraseña en texto plano, demuestra la ausencia de hash en BD vulnerable |
 
 **Cómo ver el impacto en tiempo real:**
 

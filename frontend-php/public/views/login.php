@@ -1,33 +1,21 @@
 <main class="auth-shell">
 
-    <!-- Panel izquierdo de marca -->
     <section class="auth-panel auth-panel-brand">
         <div class="auth-brand-frame">
             <?php renderLogo('brand-mark brand-mark-login'); ?>
             <span class="eyebrow" style="margin-top:28px;display:block;color:rgba(255,255,255,0.45);letter-spacing:0.14em;">Sofia Solutions</span>
             <h1 style="margin:14px 0 16px;font-size:clamp(1.9rem,3.5vw,2.8rem);line-height:1.06;letter-spacing:-0.04em;color:#f1f5f9;">
-                Your Security,<br>Our Mission.
+                Inteligencia activa.<br>Operación sin interrupciones.
             </h1>
-            <p style="color:rgba(203,213,225,0.65);line-height:1.7;font-size:0.9rem;max-width:38ch;">
-                Acceso corporativo a la plataforma de seguridad gestionada, monitorización SOC y operación continua.
-            </p>
 
-            <!-- Indicadores de estado -->
-            <div style="display:flex;flex-direction:column;gap:9px;margin-top:36px;">
-                <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
-                    <span style="width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 6px #10b981;flex-shrink:0;"></span>
-                    <span style="font-size:0.82rem;color:rgba(203,213,225,0.9);font-weight:500;">Plataforma operativa</span>
-                    <span style="margin-left:auto;font-size:0.73rem;color:rgba(148,163,184,0.7);">100% uptime</span>
+            <div style="display:flex;flex-direction:column;gap:10px;margin-top:38px;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span style="width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 8px #10b981;flex-shrink:0;"></span>
+                    <span style="font-size:0.82rem;color:rgba(203,213,225,0.75);">Plataforma operativa &mdash; 100% uptime</span>
                 </div>
-                <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
-                    <span style="width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 6px #10b981;flex-shrink:0;"></span>
-                    <span style="font-size:0.82rem;color:rgba(203,213,225,0.9);font-weight:500;">SOC activo 24/7</span>
-                    <span style="margin-left:auto;font-size:0.73rem;color:rgba(148,163,184,0.7);">En línea</span>
-                </div>
-                <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);">
-                    <span style="width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 6px #10b981;flex-shrink:0;"></span>
-                    <span style="font-size:0.82rem;color:rgba(203,213,225,0.9);font-weight:500;">Telemetría sincronizada</span>
-                    <span style="margin-left:auto;font-size:0.73rem;color:rgba(148,163,184,0.7);">Tiempo real</span>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span style="width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 8px #10b981;flex-shrink:0;"></span>
+                    <span style="font-size:0.82rem;color:rgba(203,213,225,0.75);">SOC activo 24/7 &mdash; Telemetría en tiempo real</span>
                 </div>
             </div>
         </div>
@@ -38,10 +26,7 @@
         <div class="auth-card" style="width:min(460px,100%);padding:40px 36px;border-radius:18px;background:rgba(10,14,24,0.92);border:1px solid rgba(255,255,255,0.09);box-shadow:0 8px 40px rgba(0,0,0,0.5);">
 
             <span class="card-kicker" style="color:rgba(148,163,184,0.7);">Acceso a plataforma</span>
-            <h2 style="margin:12px 0 6px;font-size:1.65rem;letter-spacing:-0.03em;color:#f1f5f9;">Iniciar sesión</h2>
-            <p style="color:rgba(100,116,139,1);font-size:0.88rem;margin-bottom:26px;line-height:1.6;">
-                Introduce tus credenciales corporativas para acceder al entorno operativo.
-            </p>
+            <h2 style="margin:12px 0 24px;font-size:1.65rem;letter-spacing:-0.03em;color:#f1f5f9;">Iniciar sesión</h2>
 
             <form id="login-form" class="login-form" novalidate style="gap:14px;">
                 <label style="display:grid;gap:7px;">
@@ -62,7 +47,7 @@
                         <label for="hcaptcha" style="margin:0;cursor:pointer;font-weight:600;color:rgba(203,213,225,0.9);font-size:0.86rem;">No soy un robot</label>
                         <small style="display:block;color:rgba(100,116,139,0.9);font-size:0.73rem;margin-top:2px;">Verificación de seguridad requerida</small>
                     </div>
-                    <span style="font-size:1.1rem;opacity:0.6;">🛡️</span>
+                    <span style="font-size:1.1rem;opacity:0.6;">&#x1F6E1;</span>
                 </div>
                 <?php endif; ?>
 
@@ -75,7 +60,7 @@
             </form>
 
             <div style="margin-top:20px;display:flex;justify-content:center;">
-                <a href="/" style="color:rgba(100,116,139,0.8);font-size:0.83rem;text-decoration:none;" onmouseover="this.style.color='rgba(203,213,225,0.9)'" onmouseout="this.style.color='rgba(100,116,139,0.8)'">← Volver al inicio</a>
+                <a href="/" style="color:rgba(100,116,139,0.8);font-size:0.83rem;text-decoration:none;" onmouseover="this.style.color='rgba(203,213,225,0.9)'" onmouseout="this.style.color='rgba(100,116,139,0.8)'">&#8592; Volver al inicio</a>
             </div>
         </div>
     </section>

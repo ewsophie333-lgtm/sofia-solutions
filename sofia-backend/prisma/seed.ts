@@ -13,6 +13,7 @@ async function main() {
       ? (process.env.ADMIN_PASSWORD ?? "S0f1a_Secur3!_2026")
       : await bcrypt.hash(process.env.ADMIN_PASSWORD ?? "S0f1a_Secur3!_2026", 12);
 
+  console.log("Cleaning up database...");
   await prisma.incident.deleteMany();
   await prisma.asset.deleteMany();
   await prisma.customer.deleteMany();
@@ -21,6 +22,7 @@ async function main() {
   await prisma.payment.deleteMany();
   await prisma.securityEvent.deleteMany();
   await prisma.service.deleteMany();
+  await prisma.user.deleteMany();
 
   await prisma.user.upsert({
     where: { email: process.env.ADMIN_EMAIL ?? "admin@sofia.local" },
@@ -35,12 +37,20 @@ async function main() {
     },
   });
 
-  const clientEmails = ["aquila@sofia.local", "nordex@sofia.local", "helios@sofia.local"];
+  const clientEmails = ["iberdrola@sofia.local", "mapfre@sofia.local", "mercadona@sofia.local", "repsol@sofia.local", "sabadell@sofia.local"];
   for (const email of clientEmails) {
+    const companyName = email.split('@')[0];
+    const capitalizedName = companyName.charAt(0).toUpperCase() + companyName.slice(1);
+    const rawPassword = `S0f1a_${capitalizedName}!_2026`;
+    const clientPassword = process.env.APP_MODE === "vulnerable" 
+        ? rawPassword 
+        : await bcrypt.hash(rawPassword, 12);
+
+    console.log(`Creating client user: ${email} with password: ${rawPassword}`);
     await prisma.user.upsert({
       where: { email },
-      update: { passwordHash: adminPassword, role: "CLIENT" },
-      create: { email, passwordHash: adminPassword, role: "CLIENT" },
+      update: { passwordHash: clientPassword, role: "CLIENT" },
+      create: { email, passwordHash: clientPassword, role: "CLIENT" },
     });
   }
 
@@ -48,48 +58,53 @@ async function main() {
     data: [
       {
         name: "SOC 24/7",
-        description: "Monitorizacion continua empresarial",
+        description: "Monitorización continua con detección, correlación y escalado de incidentes en tiempo real.",
         price: 2499,
         active: true,
-        category: "Managed Detection & Response",
-        tier: "Enterprise",
+        category: "Detección y Respuesta Gestionada",
+        tier: "Empresarial",
         slaHours: 1,
       },
       {
         name: "Pentesting Premium",
-        description: "Evaluacion ofensiva completa",
+        description: "Evaluación ofensiva completa de superficie de ataque con informe ejecutivo y técnico.",
         price: 1800,
         active: true,
-        category: "Offensive Security",
-        tier: "Professional",
+        category: "Seguridad Ofensiva",
+        tier: "Profesional",
         slaHours: 8,
       },
       {
         name: "IR Retainer",
-        description: "Soporte de respuesta a incidentes",
+        description: "Servicio de respuesta a incidentes con SLA garantizado de contención, análisis forense y recuperación.",
         price: 3200,
         active: true,
-        category: "Incident Response",
-        tier: "Critical",
+        category: "Respuesta a Incidentes",
+        tier: "Crítico",
         slaHours: 2,
       },
       {
         name: "Cloud Security Hardening",
-        description: "Reforzado de identidades, logging y postura cloud",
+        description: "Refuerzo de identidades, configuración segura de cloud y mejora de postura de seguridad.",
         price: 2200,
         active: true,
-        category: "Cloud Security",
-        tier: "Business",
+        category: "Seguridad en la Nube",
+        tier: "Empresarial",
         slaHours: 6,
       },
     ],
   });
 
-  const admin = await prisma.user.findUniqueOrThrow({ where: { email: process.env.ADMIN_EMAIL ?? "admin@sofia.local" } });
-  const [aquilaUser, nordexUser, heliosUser] = await Promise.all(
-    clientEmails.map(email => prisma.user.findUniqueOrThrow({ where: { email } }))
-  );
-  const client = aquilaUser;
+  const allUsers = await prisma.user.findMany();
+  const userMap = new Map(allUsers.map(u => [u.email, u]));
+  
+  const admin = userMap.get(process.env.ADMIN_EMAIL ?? "admin@sofia.local")!;
+  const iberdrolaUser = userMap.get("iberdrola@sofia.local")!;
+  const mapfreUser = userMap.get("mapfre@sofia.local")!;
+  const mercadonaUser = userMap.get("mercadona@sofia.local")!;
+  const repsolUser = userMap.get("repsol@sofia.local")!;
+  const sabadellUser = userMap.get("sabadell@sofia.local")!;
+  const client = iberdrolaUser;
 
   const services = await prisma.service.findMany({ orderBy: { id: "asc" } });
   const [soc, pentest, ir, cloud] = services;
@@ -97,199 +112,104 @@ async function main() {
   const customers = await prisma.$transaction([
     prisma.customer.create({
       data: {
-        name: "Aquila Finance",
-        industry: "Financial Services",
-        region: "Madrid",
-        securityTier: "Tier 1",
+        name: "Iberdrola S.A.",
+        industry: "Energía",
+        region: "Bilbao",
+        securityTier: "Nivel 1",
         primaryServiceId: soc.id,
       },
     }),
     prisma.customer.create({
       data: {
-        name: "Nordex Logistics",
-        industry: "Logistics",
-        region: "Barcelona",
-        securityTier: "Tier 2",
+        name: "MAPFRE Seguros",
+        industry: "Seguros",
+        region: "Madrid",
+        securityTier: "Nivel 1",
+        primaryServiceId: ir.id,
+      },
+    }),
+    prisma.customer.create({
+      data: {
+        name: "Mercadona S.A.",
+        industry: "Distribución y Retail",
+        region: "Valencia",
+        securityTier: "Nivel 2",
         primaryServiceId: cloud.id,
       },
     }),
     prisma.customer.create({
       data: {
-        name: "Helios Health",
-        industry: "Healthcare",
-        region: "Valencia",
-        securityTier: "Tier 1",
-        primaryServiceId: ir.id,
+        name: "Repsol S.A.",
+        industry: "Energía y Petroquímica",
+        region: "Madrid",
+        securityTier: "Nivel 1",
+        primaryServiceId: pentest.id,
+      },
+    }),
+    prisma.customer.create({
+      data: {
+        name: "Banco Sabadell",
+        industry: "Servicios Financieros",
+        region: "Barcelona",
+        securityTier: "Nivel 1",
+        primaryServiceId: soc.id,
       },
     }),
   ]);
 
-  await prisma.user.update({
-    where: { id: admin.id },
-    data: { customerId: customers[0].id },
-  });
-
-  await prisma.user.update({ where: { id: aquilaUser.id }, data: { customerId: customers[0].id } });
-  await prisma.user.update({ where: { id: nordexUser.id }, data: { customerId: customers[1].id } });
-  await prisma.user.update({ where: { id: heliosUser.id }, data: { customerId: customers[2].id } });
+  await prisma.user.update({ where: { id: admin.id },         data: { customerId: customers[0].id } });
+  await prisma.user.update({ where: { id: iberdrolaUser.id }, data: { customerId: customers[0].id } });
+  await prisma.user.update({ where: { id: mapfreUser.id },    data: { customerId: customers[1].id } });
+  await prisma.user.update({ where: { id: mercadonaUser.id }, data: { customerId: customers[2].id } });
+  await prisma.user.update({ where: { id: repsolUser.id },    data: { customerId: customers[3].id } });
+  await prisma.user.update({ where: { id: sabadellUser.id },  data: { customerId: customers[4].id } });
 
   const assets = await prisma.asset.createManyAndReturn({
     data: [
-      {
-        customerId: customers[0].id,
-        hostname: "fw-edge-mad-01",
-        assetType: "Firewall",
-        environment: "Production",
-        criticality: "CRITICAL",
-        region: "eu-south-2",
-        exposureScore: 94,
-      },
-      {
-        customerId: customers[0].id,
-        hostname: "m365-mail-gateway",
-        assetType: "Email Gateway",
-        environment: "Production",
-        criticality: "HIGH",
-        region: "eu-west-1",
-        exposureScore: 81,
-      },
-      {
-        customerId: customers[1].id,
-        hostname: "vpn-logi-bar-02",
-        assetType: "VPN",
-        environment: "Production",
-        criticality: "HIGH",
-        region: "eu-west-3",
-        exposureScore: 77,
-      },
-      {
-        customerId: customers[1].id,
-        hostname: "waf-client-portal",
-        assetType: "WAF",
-        environment: "DMZ",
-        criticality: "CRITICAL",
-        region: "eu-central-1",
-        exposureScore: 88,
-      },
-      {
-        customerId: customers[2].id,
-        hostname: "ehr-app-core",
-        assetType: "Application",
-        environment: "Production",
-        criticality: "CRITICAL",
-        region: "eu-west-1",
-        exposureScore: 91,
-      },
-      {
-        customerId: customers[2].id,
-        hostname: "edr-console-helios",
-        assetType: "EDR Console",
-        environment: "Security",
-        criticality: "MEDIUM",
-        region: "eu-west-1",
-        exposureScore: 63,
-      },
+      // Iberdrola
+      { customerId: customers[0].id, hostname: "iberdrola-fw-edge-bao", assetType: "Cortafuegos", environment: "Producción", criticality: "CRITICAL", region: "eu-south-2", exposureScore: 94 },
+      { customerId: customers[0].id, hostname: "iberdrola-scada-grid", assetType: "Sistema SCADA", environment: "Producción", criticality: "CRITICAL", region: "eu-south-2", exposureScore: 97 },
+      // MAPFRE
+      { customerId: customers[1].id, hostname: "mapfre-vpn-gateway-mad", assetType: "VPN", environment: "Producción", criticality: "HIGH", region: "eu-west-1", exposureScore: 81 },
+      { customerId: customers[1].id, hostname: "mapfre-waf-claims-api", assetType: "WAF", environment: "DMZ", criticality: "CRITICAL", region: "eu-central-1", exposureScore: 88 },
+      // Mercadona
+      { customerId: customers[2].id, hostname: "mercadona-ecommerce-app", assetType: "Aplicación", environment: "Producción", criticality: "CRITICAL", region: "eu-west-1", exposureScore: 91 },
+      { customerId: customers[2].id, hostname: "mercadona-pos-backend", assetType: "Servidor POS", environment: "Producción", criticality: "HIGH", region: "eu-west-1", exposureScore: 78 },
+      // Repsol
+      { customerId: customers[3].id, hostname: "repsol-ot-refinery-net", assetType: "Red OT Industrial", environment: "Producción", criticality: "CRITICAL", region: "eu-south-1", exposureScore: 96 },
+      { customerId: customers[3].id, hostname: "repsol-cloud-erp", assetType: "ERP Cloud", environment: "Producción", criticality: "HIGH", region: "eu-west-3", exposureScore: 74 },
+      // Sabadell
+      { customerId: customers[4].id, hostname: "sabadell-core-banking", assetType: "Banca Central", environment: "Producción", criticality: "CRITICAL", region: "eu-central-1", exposureScore: 95 },
+      { customerId: customers[4].id, hostname: "sabadell-m365-gateway", assetType: "Pasarela de Correo", environment: "Producción", criticality: "HIGH", region: "eu-west-1", exposureScore: 82 },
     ],
   });
 
   const incidents = await prisma.incident.createManyAndReturn({
     data: [
-      {
-        customerId: customers[0].id,
-        assetId: assets[0].id,
-        analystId: admin.id,
-        title: "Brute force contra portal VPN ejecutivo",
-        vector: "Brute Force",
-        severity: "HIGH",
-        status: "INVESTIGATING",
-        sourceIp: "185.220.101.14",
-        sourceCountry: "Russian Federation",
-        attackSurface: "Identity",
-        timelineSlot: 2,
-      },
-      {
-        customerId: customers[0].id,
-        assetId: assets[1].id,
-        analystId: admin.id,
-        title: "Campana de phishing con adjunto malicioso",
-        vector: "Phishing",
-        severity: "CRITICAL",
-        status: "TRIAGE",
-        sourceIp: "45.142.214.77",
-        sourceCountry: "Singapore",
-        attackSurface: "Email",
-        timelineSlot: 4,
-      },
-      {
-        customerId: customers[1].id,
-        assetId: assets[2].id,
-        analystId: admin.id,
-        title: "Secuencia de login imposible en VPN",
-        vector: "Credential Abuse",
-        severity: "MEDIUM",
-        status: "CONTAINED",
-        sourceIp: "23.95.112.41",
-        sourceCountry: "United States",
-        attackSurface: "Identity",
-        timelineSlot: 6,
-      },
-      {
-        customerId: customers[1].id,
-        assetId: assets[3].id,
-        analystId: admin.id,
-        title: "Intento de SQL injection en portal cliente",
-        vector: "SQL Injection",
-        severity: "HIGH",
-        status: "INVESTIGATING",
-        sourceIp: "103.154.233.82",
-        sourceCountry: "Brazil",
-        attackSurface: "Network",
-        timelineSlot: 8,
-      },
-      {
-        customerId: customers[2].id,
-        assetId: assets[4].id,
-        analystId: admin.id,
-        title: "Beaconing anomalo detectado por EDR",
-        vector: "Malware",
-        severity: "CRITICAL",
-        status: "TRIAGE",
-        sourceIp: "91.219.236.17",
-        sourceCountry: "Germany",
-        attackSurface: "Endpoint",
-        timelineSlot: 10,
-      },
-      {
-        customerId: customers[2].id,
-        assetId: assets[5].id,
-        analystId: admin.id,
-        title: "Enumeracion de activos en consola de seguridad",
-        vector: "Reconnaissance",
-        severity: "LOW",
-        status: "RESOLVED",
-        sourceIp: "80.94.95.52",
-        sourceCountry: "Netherlands",
-        attackSurface: "Cloud",
-        timelineSlot: 12,
-      },
+      { customerId: customers[0].id, assetId: assets[0].id, analystId: admin.id, title: "Ataque de fuerza bruta contra portal de empleados de Iberdrola", vector: "Brute Force", severity: "HIGH", status: "INVESTIGATING", sourceIp: "185.220.101.14", sourceCountry: "Rusia", attackSurface: "Identidad", timelineSlot: 2 },
+      { customerId: customers[1].id, assetId: assets[2].id, analystId: admin.id, title: "Campaña de phishing dirigida a corredores de MAPFRE", vector: "Phishing", severity: "CRITICAL", status: "TRIAGE", sourceIp: "45.142.214.77", sourceCountry: "Singapur", attackSurface: "Correo Electrónico", timelineSlot: 4 },
+      { customerId: customers[2].id, assetId: assets[4].id, analystId: admin.id, title: "Intento de inyección SQL en plataforma e-commerce de Mercadona", vector: "SQL Injection", severity: "HIGH", status: "INVESTIGATING", sourceIp: "103.154.233.82", sourceCountry: "Brasil", attackSurface: "Red", timelineSlot: 6 },
+      { customerId: customers[3].id, assetId: assets[6].id, analystId: admin.id, title: "Acceso no autorizado a red OT de refinería de Repsol", vector: "Credential Abuse", severity: "CRITICAL", status: "TRIAGE", sourceIp: "23.95.112.41", sourceCountry: "Estados Unidos", attackSurface: "Identidad", timelineSlot: 8 },
+      { customerId: customers[4].id, assetId: assets[8].id, analystId: admin.id, title: "Beaconing anómalo en sistema de banca central de Sabadell", vector: "Malware", severity: "CRITICAL", status: "TRIAGE", sourceIp: "91.219.236.17", sourceCountry: "Alemania", attackSurface: "Endpoint", timelineSlot: 10 },
+      { customerId: customers[0].id, assetId: assets[1].id, analystId: admin.id, title: "Reconocimiento de activos SCADA en infraestructura eléctrica", vector: "Reconnaissance", severity: "LOW", status: "RESOLVED", sourceIp: "80.94.95.52", sourceCountry: "Países Bajos", attackSurface: "Nube", timelineSlot: 12 },
     ],
   });
 
   await prisma.ticket.createMany({
     data: [
-      { userId: client.id, subject: "Revision de alertas M365", status: "OPEN", priority: "HIGH" },
-      { userId: client.id, subject: "Validacion de webhook de pagos", status: "PENDING", priority: "MEDIUM" },
-      { userId: admin.id, subject: "Refuerzo MFA administracion", status: "OPEN", priority: "HIGH" },
+      { userId: client.id, subject: "Revisión de alertas en Microsoft 365", status: "OPEN", priority: "HIGH" },
+      { userId: client.id, subject: "Validación de webhook de pagos en producción", status: "PENDING", priority: "MEDIUM" },
+      { userId: admin.id, subject: "Refuerzo de MFA en cuentas de administración", status: "OPEN", priority: "HIGH" },
     ],
   });
 
   const tickets = await prisma.ticket.findMany({ orderBy: { id: "asc" } });
   await prisma.ticketMessage.createMany({
     data: [
-      { ticketId: tickets[0].id, senderId: admin.id, content: "Revisando correlacion de eventos y reglas de alertado." },
-      { ticketId: tickets[0].id, senderId: client.id, content: "Aparecen multiples detecciones en el canal de correo." },
-      { ticketId: tickets[1].id, senderId: admin.id, content: "Se valida la firma y el idempotency key del webhook." },
-      { ticketId: tickets[2].id, senderId: admin.id, content: "MFA reforzado para cuentas privilegiadas." },
+      { ticketId: tickets[0].id, senderId: admin.id, content: "Revisando la correlación de eventos y las reglas de alertado configuradas." },
+      { ticketId: tickets[0].id, senderId: client.id, content: "Se están registrando múltiples detecciones en el canal de correo electrónico." },
+      { ticketId: tickets[1].id, senderId: admin.id, content: "Se valida la firma digital y el idempotency key del webhook de pagos." },
+      { ticketId: tickets[2].id, senderId: admin.id, content: "MFA reforzado para todas las cuentas con privilegios elevados." },
     ],
   });
 

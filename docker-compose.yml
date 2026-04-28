@@ -44,6 +44,19 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
+  prisma-studio:
+    build:
+      context: ./sofia-backend
+      dockerfile: docker/Dockerfile
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/sofia_solutions
+    command: npx prisma studio --port 5555 --hostname 0.0.0.0
+    ports:
+      - "5556:5555"
+    depends_on:
+      - postgres
+      - backend
+
   prometheus:
     image: prom/prometheus
     volumes:
@@ -59,11 +72,29 @@ services:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
       GF_USERS_ALLOW_SIGN_UP: false
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+      GF_SERVER_ROOT_URL: http://localhost:3000
     volumes:
       - ./sofia-backend/docker/grafana/provisioning:/etc/grafana/provisioning
       - ./sofia-backend/docker/grafana/dashboards:/var/lib/grafana/dashboards
     depends_on:
       - prometheus
+
+  tunnel-frontend:
+    image: node:20-alpine
+    restart: always
+    command: npx localtunnel --port 80 --subdomain sofiasolutions --host http://localtunnel.me
+    depends_on:
+      - frontend
+
+  tunnel-api:
+    image: node:20-alpine
+    restart: always
+    command: npx localtunnel --port 8001 --subdomain sofiasolutions-api --host http://localtunnel.me
+    depends_on:
+      - backend
 
 volumes:
   postgres-data:

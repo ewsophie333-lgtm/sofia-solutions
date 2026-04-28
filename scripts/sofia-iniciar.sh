@@ -25,13 +25,16 @@ else
 fi
 
 echo ""
-echo "Accesos:"
+echo "Accesos Locales:"
 echo "  Web:      http://localhost:8000"
 echo "  API:      http://localhost:8001"
-echo "  Swagger:  http://localhost:8001/docs"
-echo "  Grafana:  http://localhost:3000"
+echo "  Grafana:  http://localhost:3000 (admin/admin)"
+echo "  Prisma:   http://localhost:5556"
+
 echo ""
-echo "Credenciales Grafana:"
-echo "  usuario: admin"
-echo "  clave:   admin"
+echo "Accesos Públicos (Túnel):"
+echo "  Frontend: https://sofiasolutions.loca.lt"
+echo "  Backend:  https://sofiasolutions-api.loca.lt"
+echo ""
+echo "Nota: Si el túnel pide contraseña, usa tu IP pública (ver en ipify.org)"
 

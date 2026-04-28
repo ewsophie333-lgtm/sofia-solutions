@@ -25,24 +25,24 @@ $mode = $route['mode'] ?? '';
 
 $customerReviews = [
     [
-        'company' => 'Lynx Industrial Group',
+        'company' => 'Iberdrola S.A.',
         'rating' => '4.9/5',
-        'quote' => 'El servicio SOC redujo el tiempo de escalado y nos dio trazabilidad real sobre accesos, endpoints y activos críticos.',
+        'quote' => 'El SOC de Sofia redujo el tiempo de escalado en incidentes críticos y nos dio visibilidad real sobre nuestra infraestructura eléctrica y activos SCADA.',
         'service' => 'SOC 24/7',
         'avatar' => 'https://randomuser.me/api/portraits/men/51.jpg'
     ],
     [
-        'company' => 'Nova Retail Systems',
+        'company' => 'MAPFRE Seguros',
         'rating' => '4.8/5',
-        'quote' => 'La revisión de superficie de ataque y el hardening cloud nos permitieron cerrar hallazgos antes de auditoría.',
-        'service' => 'Cloud Hardening',
+        'quote' => 'El servicio de IR Retainer y la cobertura de identidad nos permitieron contener una brecha en menos de 2 horas. Operación impecable.',
+        'service' => 'IR Retainer',
         'avatar' => 'https://randomuser.me/api/portraits/women/68.jpg'
     ],
     [
-        'company' => 'Iberia Health Tech',
+        'company' => 'Banco Sabadell',
         'rating' => '5.0/5',
-        'quote' => 'El retainer de respuesta y la visibilidad del panel nos dieron una operación mucho más ordenada y medible.',
-        'service' => 'IR Retainer',
+        'quote' => 'Sofia Solutions gestiona la seguridad de nuestro sistema de banca central con un SLA de respuesta que supera cualquier expectativa del sector.',
+        'service' => 'SOC 24/7',
         'avatar' => 'https://randomuser.me/api/portraits/men/33.jpg'
     ],
 ];
@@ -72,7 +72,7 @@ $operationalBenefits = [
 
 <script>
 window.SOFIA_CONFIG = {
-  apiBase: "http://localhost:8001",
+  apiBase: window.location.origin, // Usa el mismo dominio para evitar problemas de túneles mixtos
   view: "<?= htmlspecialchars($view, ENT_QUOTES, 'UTF-8') ?>",
   loginMode: "<?= htmlspecialchars($mode, ENT_QUOTES, 'UTF-8') ?>"
 };
