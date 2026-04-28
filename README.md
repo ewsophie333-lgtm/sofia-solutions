@@ -122,6 +122,15 @@ sh ./scripts/sofia-iniciar.sh
 sh ./scripts/sofia-iniciar.sh vulnerable --build
 ```
 
+### Despliegue en la Nube (GitHub Codespaces)
+
+Este proyecto está configurado para trabajar 100% en la nube sin necesidad de tener Docker instalado localmente:
+
+1.  Accede al repositorio en GitHub.
+2.  Haz clic en **Code** > **Codespaces** > **Create codespace on main**.
+3.  Una vez cargado el entorno, abre una terminal y ejecuta `docker compose up -d`.
+4.  VS Code detectará los puertos automáticamente y te dará un enlace para ver la web y el SOC Monitor.
+
 ## Ejecución de ataques
 
 Los ataques automatizados están pensados para demostrar:
