@@ -1,0 +1,44 @@
+{
+  "name": "Sofia Solutions - ASIX Dev Environment",
+  "dockerComposeFile": [
+    "../docker-compose.yml"
+  ],
+  "service": "frontend",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest"
+    }
+  },
+  "forwardPorts": [
+    8000,
+    8001,
+    3000,
+    5556
+  ],
+  "portsAttributes": {
+    "8000": {
+      "label": "Web Pública (Frontend)",
+      "onAutoForward": "notify"
+    },
+    "8001": {
+      "label": "API Backend",
+      "onAutoForward": "ignore"
+    },
+    "3000": {
+      "label": "Grafana SOC",
+      "onAutoForward": "notify"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-azuretools.vscode-docker",
+        "ms-vscode.vscode-typescript-next",
+        "prisma.prisma",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  },
+  "postCreateCommand": "npm install && echo 'Entorno listo. Usa docker compose up -d para arrancar.'"
+}
