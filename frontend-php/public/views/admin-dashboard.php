@@ -432,10 +432,24 @@ function triggerIRAction(action) {
     else if (action.startsWith('pcap-')) { title = `FORENSE: Captura PCAP generada y cifrada (${action.split('-')[1].toUpperCase()}).`; }
     else if (action.startsWith('fw-')) { title = `WAF: Política Strict-OWASP aplicada a ${action.split('-')[1].toUpperCase()}.`; }
     else if (action === 'sos-intervention') { title = 'SOS: Intervención SOC nivel 3 en curso.'; }
+    else if (action === 'export-global-logs') {
+        title = 'AUDITORÍA: Exportación de logs globales generada con éxito.';
+        downloadLogs();
+    }
     else { title = `ACCION SOC: ${action}`; }
 
     const html = `<div style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:rgba(${sev==='danger'?'239,68,68':'34,197,94'},0.1);border:1px solid rgba(${sev==='danger'?'239,68,68':'34,197,94'},0.4);border-radius:10px;margin-bottom:8px;animation:pulse 2s;"><div style="font-size:1.1rem;">${icon}</div><div style="flex:1;"><strong style="color:${sev==='danger'?'#fca5a5':'#86efac'};font-size:0.85rem;">[ADMIN SOC] ${title}</strong><div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;">Timestamp: ${new Date().toLocaleTimeString()}</div></div></div>`;
     feedEl.insertAdjacentHTML('afterbegin', html);
+}
+
+function downloadLogs() {
+    const data = "ID,Timestamp,Client,Type,Severity\n1,2026-05-01 12:00,MAPFRE,BRUTE_FORCE,WARNING\n2,2026-05-01 12:30,IBERDROLA,SQL_INJECTION,CRITICAL\n3,2026-05-01 14:00,SYSTEM,LOG_ROTATION,INFO";
+    const blob = new Blob([data], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('href', url);
+    a.setAttribute('download', `sofia_soc_logs_${new Date().toISOString().slice(0,10)}.csv`);
+    a.click();
 }
 
 setTimeout(() => setIRTab('global'), 100);
