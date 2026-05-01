@@ -67,7 +67,7 @@ $operationalBenefits = [
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= htmlspecialchars($title, ENT_QUOTES, 'UTF-8') ?></title>
-    <link rel="stylesheet" href="/assets/app.css?v=1.0.3">
+    <link rel="stylesheet" href="/assets/app.css?v=1.0.4">
 </head>
 <body data-view="<?= htmlspecialchars($view, ENT_QUOTES, 'UTF-8') ?>" data-login-mode="<?= htmlspecialchars($mode, ENT_QUOTES, 'UTF-8') ?>">
 <?php require __DIR__ . '/views/' . $view . '.php'; ?>
@@ -79,7 +79,7 @@ window.SOFIA_CONFIG = {
   loginMode: "<?= htmlspecialchars($mode, ENT_QUOTES, 'UTF-8') ?>"
 };
 </script>
-<script src="/assets/app.js?v=1.0.3"></script>
+<script src="/assets/app.js?v=1.0.4"></script>
 <?php include __DIR__ . '/includes/ai-assistant.php'; ?>
 </body>
 </html>
