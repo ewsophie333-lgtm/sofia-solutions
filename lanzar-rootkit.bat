@@ -1,9 +1,9 @@
 @echo off
-title Sofia Solutions - Audit Framework CLI
+title Sofia Audit Kit - Proyecto Final ASIR 2026
 color 0a
 
 echo ========================================================
-echo   SOFIA SOLUTIONS - HERRAMIENTA DE AUDITORIA (ROOTKIT)
+echo   SOFIA AUDIT KIT - PROYECTO FINAL ASIR 2026
 echo ========================================================
 echo.
 
