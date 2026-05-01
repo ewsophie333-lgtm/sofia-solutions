@@ -138,8 +138,7 @@ const authHdr = () => ({ Authorization: 'Bearer ' + TOKEN() });
  * Resolves local vs tunnel URLs based on current origin.
  */
 (function setupGrafana() {
-    const isLocal = ['localhost','127.0.0.1'].includes(location.hostname);
-    const base    = isLocal ? 'http://localhost:3000' : (location.origin + '/grafana');
+    const base    = location.origin + '/grafana';
     const panelUrl = `${base}/d/sofia-prometheus/sofia-security-overview?orgId=1&kiosk&theme=dark`;
     const frame    = document.getElementById('grafana-frame');
     const openBtn  = document.getElementById('grafana-open-btn');
