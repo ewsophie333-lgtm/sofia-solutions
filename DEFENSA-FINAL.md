@@ -64,5 +64,20 @@ Este documento es tu guion estratégico para una defensa de 10. Está diseñado 
 
 ---
 
-## 🏆 Conclusión
+## 🎓 Conclusión
 "Este proyecto demuestra que la ciberseguridad no es un producto, sino un proceso. Desde el despliegue automatizado hasta la monitorización visual, Sofia Solutions ofrece una defensa en profundidad (Defense in Depth) preparada para los retos de 2026."
+
+---
+
+## 🛠️ 6. Herramientas Avanzadas SOC (Zero Trust y Forense)
+*Si el tribunal pregunta qué otras funcionalidades tiene o tendría el SOC, enséñalas en el Panel de Operaciones:*
+
+1.  **Kill-Switch (Botón de Aislamiento de Red):**
+    *   **Qué es:** Un botón de emergencia por cliente ("Panic Button") situado en los paneles de salud de los servidores (ej. MAPFRE, IBERDROLA).
+    *   **Por qué:** Si detectas que el servidor de MAPFRE ha sido comprometido por Ransomware, el SOC pulsa este botón que, mediante la API de Docker, aísla ese contenedor de la red principal. Así se evita el *movimiento lateral* y la infección no salta a IBERDROLA. Es el concepto puro de **"Zero Trust"** y micro-segmentación.
+2.  **Exportador de PCAP (Captura de Paquetes):**
+    *   **Qué es:** Un botón en la consola de eventos para generar una captura de red profunda (`.pcap`).
+    *   **Por qué:** Cuando hay un incidente avanzado que el WAF no logra clasificar, las gráficas no son suficientes. El analista SOC descarga los paquetes crudos para abrirlos en **Wireshark** y hacer análisis forense (Deep Packet Inspection), comprobando exactamente qué payload envió el atacante.
+3.  **Rotación Automática de Claves Maestras (Panic Mode):**
+    *   **Qué es:** Un sistema de alerta roja global en el panel de operaciones.
+    *   **Por qué:** Si hay una brecha de datos crítica o se compromete un administrador, este botón invalida automáticamente todos los tokens JWT activos, regenera los "Secrets" criptográficos y rota las contraseñas de la base de datos PostgreSQL, forzando un *Zero-Downtime* seguro y expulsando a los atacantes de las sesiones secuestradas.
