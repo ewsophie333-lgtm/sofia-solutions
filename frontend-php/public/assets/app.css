@@ -1,3 +1,12 @@
+/**
+ * SOFIA SOLUTIONS - Global Design System
+ * Aesthetic: Cyberpunk / Glassmorphism V3.0
+ * 
+ * This CSS implements a unified design token system using CSS Variables.
+ * It focuses on depth (shadows), transparency (backdrop-blur), 
+ * and vibrant accents (neon tones) to create a premium corporate identity.
+ */
+
 :root {
   --bg: #0d0a16;
   --bg-elevated: #151124;
