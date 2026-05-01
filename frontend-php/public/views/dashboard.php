@@ -157,11 +157,25 @@ $activeNav = 'dashboard';
         <!-- Subscription & Finance Layer -->
         <section class="planes-grid" style="grid-template-columns:1.5fr 1fr;gap:32px;margin-bottom:40px;">
             <article class="panel" style="padding:24px;">
-                <div class="panel-heading" style="margin-bottom:24px;">
-                    <div><span class="eyebrow">Suscripción</span><h2>Plan Contratado</h2></div>
+                <div class="panel-heading" style="margin-bottom:24px; display:flex; justify-content:space-between; align-items:center;">
+                    <div><span class="eyebrow">Suscripción</span><h2>Estado de Cuenta</h2></div>
+                    <button class="btn btn-primary" onclick="toggleUpgrades()" style="font-size:0.75rem;">Mejorar Suscripción ↑</button>
                 </div>
                 <div id="active-plan-display">
                     <!-- Dynamic active plan card -->
+                </div>
+                <div id="upgrade-catalog" style="display:none; margin-top:24px; padding-top:24px; border-top:1px solid rgba(255,255,255,0.05); animation: slideDown 0.4s ease;">
+                    <div class="eyebrow" style="margin-bottom:16px;">Planes Disponibles para Upgrade</div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                        <div onclick="openPayment('Business Premium', 1500)" style="cursor:pointer; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:16px; transition:all 0.3s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
+                            <strong style="display:block; margin-bottom:4px;">Business Premium</strong>
+                            <div style="font-size:0.8rem; color:var(--primary); font-weight:700;">1.500€/mes</div>
+                        </div>
+                        <div onclick="openPayment('Enterprise SOC', 4200)" style="cursor:pointer; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:16px; transition:all 0.3s;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
+                            <strong style="display:block; margin-bottom:4px;">Enterprise SOC</strong>
+                            <div style="font-size:0.8rem; color:var(--primary); font-weight:700;">4.200€/mes</div>
+                        </div>
+                    </div>
                 </div>
             </article>
 
@@ -277,6 +291,11 @@ function closePayment(){ document.getElementById('pay-modal').style.display = 'n
 function processPayment(){
     closePayment();
     alert('Suscripción actualizada. El departamento de facturación procesará el cambio.');
+}
+
+function toggleUpgrades() {
+    const el = document.getElementById('upgrade-catalog');
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 
 function openNewTicket(){
