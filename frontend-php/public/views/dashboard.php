@@ -75,6 +75,11 @@ $activeNav = 'dashboard';
                 <h1 data-i18n="title" style="margin:8px 0 0;">Panel de Gestión: <span id="company-name-display" style="color:var(--primary);">Cargando...</span></h1>
             </div>
             <div style="display:flex; align-items:center; gap:24px;">
+                <!-- SOS Panic Button -->
+                <button onclick="openSOS()" style="background:#ef4444; color:#fff; border:none; padding:10px 20px; border-radius:10px; font-weight:800; cursor:pointer; box-shadow:0 0 15px rgba(239,68,68,0.4); animation: pulse 2s infinite; display:flex; align-items:center; gap:8px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/><path d="m9.05 9 1.41 1.41"/><path d="M12 14v5"/><path d="m14.95 9-1.41 1.41"/></svg>
+                    AYUDA URGENTE (SOS)
+                </button>
                 <!-- Localization Switcher -->
                 <div style="display:flex;gap:4px;background:rgba(255,255,255,0.03);padding:4px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);">
                     <button onclick="setLang('es')" id="btn-es" class="btn" style="min-height:30px; min-width:40px; padding:0 8px; font-size:0.7rem; border-radius:6px; background:rgba(139,92,246,0.15); color:#fff; border:1px solid rgba(139,92,246,0.3);">ES</button>
@@ -228,6 +233,56 @@ $activeNav = 'dashboard';
         </section>
     </section>
 </main>
+
+<!-- SOS Emergency Modal -->
+<div id="sos-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); backdrop-filter:blur(10px); z-index:10000; align-items:center; justify-content:center; padding:20px;">
+    <div class="panel" style="width:min(450px, 100%); border:2px solid #ef4444; box-shadow:0 0 30px rgba(239,68,68,0.3);">
+        <div style="text-align:center; margin-bottom:24px;">
+            <div style="background:rgba(239,68,68,0.1); width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; border:1px solid rgba(239,68,68,0.3);">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/><path d="m9.05 9 1.41 1.41"/><path d="M12 14v5"/><path d="m14.95 9-1.41 1.41"/></svg>
+            </div>
+            <h2 style="color:#ef4444; margin:0;">ALERTA DE EMERGENCIA</h2>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-top:8px;">Envía una notificación prioritaria al equipo SOC.</p>
+        </div>
+        <div style="display:grid; gap:12px;">
+            <label style="font-size:0.8rem; font-weight:700; color:var(--text-soft);">Razón de la emergencia:</label>
+            <textarea id="sos-reason" style="width:100%; height:100px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; padding:12px; font-family:inherit; font-size:0.9rem; resize:none;" placeholder="Ej: He detectado un acceso no autorizado en el servidor de producción..."></textarea>
+            <div style="display:flex; gap:12px; margin-top:12px;">
+                <button onclick="closeSOS()" style="flex:1; background:rgba(255,255,255,0.05); color:#fff; border:1px solid rgba(255,255,255,0.1); padding:12px; border-radius:10px; cursor:pointer; font-weight:700;">Cancelar</button>
+                <button onclick="sendSOS()" style="flex:2; background:#ef4444; color:#fff; border:none; padding:12px; border-radius:10px; cursor:pointer; font-weight:800; box-shadow:0 4px 12px rgba(239,68,68,0.3);">ENVIAR ALERTA SOC</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openSOS() { document.getElementById('sos-modal').style.display = 'flex'; }
+function closeSOS() { document.getElementById('sos-modal').style.display = 'none'; }
+function sendSOS() {
+    const reason = document.getElementById('sos-reason').value.trim();
+    if (!reason) return alert('Por favor, indica una razón.');
+    
+    const user = JSON.parse(localStorage.getItem('sofia_user_v1') || '{}');
+    const alertData = {
+        id: Date.now(),
+        client: user.name || 'Cliente Desconocido',
+        reason: reason,
+        timestamp: new Date().toISOString()
+    };
+    
+    // Guardamos la alerta en localStorage para que el panel de Admin la detecte
+    localStorage.setItem('sofia_sos_request', JSON.stringify(alertData));
+    
+    closeSOS();
+    document.getElementById('sos-reason').value = '';
+    
+    // Feedback visual
+    const t = document.createElement('div');
+    t.innerHTML = '<div style="position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:99999;background:#ef4444;color:#fff;padding:16px 32px;border-radius:14px;font-weight:800;box-shadow:0 10px 40px rgba(0,0,0,0.5);text-align:center;">🚨 ALERTA ENVIADA AL SOC<br><small style="font-weight:400;opacity:0.8;">Un analista contactará contigo de inmediato.</small></div>';
+    document.body.appendChild(t);
+    setTimeout(()=>t.remove(), 5000);
+}
+</script>
 
 <!-- Simulation: Payment Processing Modal -->
 <div class="pay-modal" id="pay-modal">

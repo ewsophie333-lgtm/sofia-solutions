@@ -168,6 +168,43 @@ $activeNav = 'admin-dashboard';
     </div>
 </div>
 
+<!-- SOS Admin Notification Modal -->
+<div id="sos-admin-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); backdrop-filter:blur(15px); z-index:20000; align-items:center; justify-content:center; padding:20px;">
+    <div class="panel" style="width:min(500px, 100%); border:2px solid #ef4444; box-shadow:0 0 50px rgba(239,68,68,0.5); animation: shake 0.5s infinite;">
+        <div style="text-align:center; margin-bottom:24px;">
+            <div style="background:rgba(239,68,68,0.2); width:80px; height:80px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px; border:2px solid #ef4444;">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/><path d="m9.05 9 1.41 1.41"/><path d="M12 14v5"/><path d="m14.95 9-1.41 1.41"/></svg>
+            </div>
+            <h2 style="color:#ef4444; margin:0; font-size:1.8rem; letter-spacing:1px;">¡ALERTA SOS RECIBIDA!</h2>
+            <div id="sos-client-badge" style="display:inline-block; margin-top:12px; background:#ef4444; color:#fff; padding:4px 12px; border-radius:4px; font-weight:800; font-size:0.9rem;">CLIENTE: —</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:20px; margin-bottom:24px;">
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px; text-transform:uppercase; font-weight:700;">Mensaje de Emergencia:</div>
+            <div id="sos-admin-reason" style="color:#fff; font-size:1rem; line-height:1.5; font-style:italic;">"..."</div>
+        </div>
+        <div style="display:flex; gap:12px;">
+            <button onclick="dismissSOS()" style="flex:1; background:rgba(255,255,255,0.1); color:#fff; border:none; padding:14px; border-radius:10px; cursor:pointer; font-weight:700;">Ignorar</button>
+            <button onclick="handleSOS()" style="flex:2; background:#22c55e; color:#fff; border:none; padding:14px; border-radius:10px; cursor:pointer; font-weight:800; box-shadow:0 4px 15px rgba(34,197,94,0.3);">INTERVENIR DE INMEDIATO</button>
+        </div>
+    </div>
+</div>
+
+<style>
+@keyframes shake {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -2px) rotate(-1deg); }
+  20% { transform: translate(-3px, 0px) rotate(1deg); }
+  30% { transform: translate(3px, 2px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(1deg); }
+  50% { transform: translate(-1px, 2px) rotate(-1deg); }
+  60% { transform: translate(-3px, 1px) rotate(0deg); }
+  70% { transform: translate(3px, 1px) rotate(-1deg); }
+  80% { transform: translate(-1px, -1px) rotate(1deg); }
+  90% { transform: translate(1px, 2px) rotate(0deg); }
+  100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+</style>
+
 <script>
 /**
  * CORE ADMINISTRATIVE LOGIC
@@ -176,11 +213,50 @@ const API    = window.SOFIA_CONFIG?.apiBase || '';
 const TOKEN  = () => localStorage.getItem('sofia_token_v1');
 const authHdr = () => ({ Authorization: 'Bearer ' + TOKEN() });
 
+/**
+ * SOS EMERGENCY LISTENER (Simulated Real-time)
+ */
+function checkSOS() {
+    const sos = localStorage.getItem('sofia_sos_request');
+    if (sos) {
+        const data = JSON.parse(sos);
+        // Evitamos repetir la misma alerta si ya se mostró
+        if (window.lastSOSId === data.id) return;
+        window.lastSOSId = data.id;
 
+        document.getElementById('sos-client-badge').textContent = `CLIENTE: ${data.client.toUpperCase()}`;
+        document.getElementById('sos-admin-reason').textContent = `"${data.reason}"`;
+        document.getElementById('sos-admin-modal').style.display = 'flex';
+        
+        // Sonido de alerta (opcional/simulado)
+        console.log('🚨 SOS ALERT RECEIVED FROM ' + data.client);
+    }
+}
+setInterval(checkSOS, 2000); // Poll every 2 seconds
+
+function dismissSOS() {
+    document.getElementById('sos-admin-modal').style.display = 'none';
+    localStorage.removeItem('sofia_sos_request');
+}
+
+function handleSOS() {
+    dismissSOS();
+    triggerIRAction('sos-intervention');
+    // Inyectamos un evento especial en el feed
+    const feedEl = document.getElementById('ir-feed');
+    const html = `
+    <div style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:rgba(34,197,94,0.1);border:1px solid #22c55e;border-radius:8px;margin-bottom:8px;">
+        <div style="font-size:1.2rem;">👨‍💻</div>
+        <div style="flex:1;">
+            <strong style="color:#22c55e;font-size:0.85rem;">INTERVENCIÓN EN CURSO</strong>
+            <p style="font-size:0.75rem;color:#94a3b8;margin-top:2px;">Analista SOC Nivel 3 conectado al entorno del cliente para triaje.</p>
+        </div>
+    </div>`;
+    feedEl.insertAdjacentHTML('afterbegin', html);
+}
 
 /**
  * TELEMETRY SYNCHRONIZATION
- * Fetches and processes real-time security data from the backend.
  */
 (async function loadAdmin() {
     try {
@@ -189,13 +265,11 @@ const authHdr = () => ({ Authorization: 'Bearer ' + TOKEN() });
         const d = await r.json();
         const s = d.summary || {};
 
-        // Update KPI counters
         document.querySelector('#kpi-events strong').textContent    = s.totalEventsAnalyzed ? (s.totalEventsAnalyzed/1e6).toFixed(1)+'M' : '—';
         document.querySelector('#kpi-incidents strong').textContent = s.criticalIncidents ?? '—';
         document.querySelector('#kpi-customers strong').textContent = s.protectedCustomers ?? '—';
         document.querySelector('#kpi-health strong').textContent    = s.systemHealth != null ? s.systemHealth + '%' : '—';
 
-        // Populate Client Ledger
         const rows = (d.customerExposure || []).map(c => {
             const inc   = c.incidents || 0;
             const color = inc === 0 ? '#22c55e' : inc <= 2 ? '#f59e0b' : '#ef4444';
@@ -211,66 +285,21 @@ const authHdr = () => ({ Authorization: 'Bearer ' + TOKEN() });
                 <td style="padding:14px 12px;color:var(--text-muted);font-size:0.82rem;">${c.service || '—'}</td>
             </tr>`;
         }).join('');
-        document.getElementById('client-table-body').innerHTML =
-            rows || '<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--text-muted);">No client records found</td></tr>';
-
+        document.getElementById('client-table-body').innerHTML = rows || '<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--text-muted);">No client records found</td></tr>';
         renderCharts(d.topAttackVectors || [], d.alertDistribution || []);
-
-    } catch(e) {
-        console.warn('Admin Analytics Sync Failure', e);
-        renderCharts([], []); // Fallback to demo mode
-    }
+    } catch(e) { renderCharts([], []); }
 })();
 
 /**
- * DATA VISUALIZATION (Chart.js Implementation)
+ * DATA VISUALIZATION
  */
 function renderCharts(vectors, dist) {
-    const vLabels = vectors.length ? vectors.map(v => v.label) : ['DDoS','SQLi','Brute Force','Malware','XSS'];
-    const vData   = vectors.length ? vectors.map(v => v.count) : [1200,1900,3000,500,800];
-    const dLabels = dist.length ? dist.map(d => d.label) : ['Crítico','Alto','Medio','Bajo'];
-    const dData   = dist.length ? dist.map(d => d.value) : [15,25,40,20];
-    const dColors = dist.length ? dist.map(d => d.color) : ['#ef4444','#f59e0b','#06b6d4','#22c55e'];
-
-    new Chart(document.getElementById('globalTrafficChart'), {
-        type: 'bar',
-        data: { labels: vLabels, datasets: [{ data: vData, backgroundColor: 'rgba(6,182,212,0.5)', borderColor: '#06b6d4', borderWidth: 1 }] },
-        options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} }, scales:{ y:{ beginAtZero:true, grid:{ color:'rgba(255,255,255,0.04)' }, ticks:{color:'rgba(255,255,255,0.4)'} }, x:{ grid:{display:false}, ticks:{color:'rgba(255,255,255,0.4)'} } } }
-    });
-    new Chart(document.getElementById('riskChart'), {
-        type: 'doughnut',
-        data: { labels: dLabels, datasets: [{ data: dData, backgroundColor: dColors, borderWidth: 0 }] },
-        options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom', labels:{ color:'#fff', padding:16, font:{size:11} } } } }
-    });
-
-    // Client Server Latency Charts
-    const commonLineOptions = {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: { 
-            x: { display: false }, 
-            y: { display: false, min: 0 } 
-        },
-        elements: { point: { radius: 0 } }
-    };
-
-    new Chart(document.getElementById('mapfreLatencyChart'), {
-        type: 'line',
-        data: { labels: ['1','2','3','4','5','6','7','8','9','10'], datasets: [{ data: [11,12,15,10,13,12,11,14,12,12], borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.1)', fill: true, tension: 0.4 }] },
-        options: commonLineOptions
-    });
-
-    new Chart(document.getElementById('iberdrolaLatencyChart'), {
-        type: 'line',
-        data: { labels: ['1','2','3','4','5','6','7','8','9','10'], datasets: [{ data: [20,25,30,85,90,40,45,50,42,45], borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', fill: true, tension: 0.4 }] },
-        options: commonLineOptions
-    });
-
-    new Chart(document.getElementById('sabadellLatencyChart'), {
-        type: 'line',
-        data: { labels: ['1','2','3','4','5','6','7','8','9','10'], datasets: [{ data: [8,7,9,8,10,8,7,8,9,8], borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.1)', fill: true, tension: 0.4 }] },
-        options: commonLineOptions
-    });
+    const commonLineOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false, min: 0 } }, elements: { point: { radius: 0 } } };
+    new Chart(document.getElementById('globalTrafficChart'), { type: 'bar', data: { labels: vectors.map(v=>v.label), datasets: [{ data: vectors.map(v=>v.count), backgroundColor: 'rgba(6,182,212,0.5)', borderColor: '#06b6d4', borderWidth: 1 }] }, options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} }, scales:{ y:{ beginAtZero:true, grid:{ color:'rgba(255,255,255,0.04)' }, ticks:{color:'rgba(255,255,255,0.4)'} }, x:{ grid:{display:false}, ticks:{color:'rgba(255,255,255,0.4)'} } } } });
+    new Chart(document.getElementById('riskChart'), { type: 'doughnut', data: { labels: dist.map(d=>d.label), datasets: [{ data: dist.map(d=>d.value), backgroundColor: dist.map(d=>d.color), borderWidth: 0 }] }, options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom', labels:{ color:'#fff', padding:16, font:{size:11} } } } } });
+    new Chart(document.getElementById('mapfreLatencyChart'), { type: 'line', data: { labels: ['1','2','3','4','5','6','7','8','9','10'], datasets: [{ data: [11,12,15,10,13,12,11,14,12,12], borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.1)', fill: true, tension: 0.4 }] }, options: commonLineOptions });
+    new Chart(document.getElementById('iberdrolaLatencyChart'), { type: 'line', data: { labels: ['1','2','3','4','5','6','7','8','9','10'], datasets: [{ data: [20,25,30,85,90,40,45,50,42,45], borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', fill: true, tension: 0.4 }] }, options: commonLineOptions });
+    new Chart(document.getElementById('sabadellLatencyChart'), { type: 'line', data: { labels: ['1','2','3','4','5','6','7','8','9','10'], datasets: [{ data: [8,7,9,8,10,8,7,8,9,8], borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.1)', fill: true, tension: 0.4 }] }, options: commonLineOptions });
 }
 
 /**
@@ -278,21 +307,21 @@ function renderCharts(vectors, dist) {
  */
 const mockFeed = {
     global: [
-        { time:'Hace 2 min', type:'Alerta Global: Intento de Brute Force Distribuido', sev:'warning', node:'API Gateway' },
-        { time:'Hace 15 min', type:'Actualización WAF desplegada con éxito', sev:'success', node:'Core Firewall' },
-        { time:'Hace 1 hora', type:'Detección de anomalía en tráfico de Europa del Este', sev:'danger', node:'N/A' }
+        { time:'Hace 2 min', type:'ALERTA: Intento de Brute Force Distribuido', sev:'warning', node:'API Gateway' },
+        { time:'Hace 15 min', type:'POLÍTICA: WAF actualizado (Reglas OWASP Core)', sev:'success', node:'Edge Firewall' },
+        { time:'Hace 1 hora', type:'CRÍTICO: Anomalía de red detectada (Análisis Heurístico)', sev:'danger', node:'N/A' }
     ],
     mapfre: [
-        { time:'Hace 5 min', type:'Escaneo de puertos bloqueado', sev:'success', node:'srv-prod-01' },
-        { time:'Hace 30 min', type:'Aumento inusual de latencia en base de datos', sev:'warning', node:'db-mapfre-cluster' }
+        { time:'Hace 5 min', type:'INCIDENTE: Escaneo de puertos bloqueado por IDS', sev:'success', node:'srv-prod-01' },
+        { time:'Hace 30 min', type:'LATENCIA: Pico inusual detectado en clúster DB', sev:'warning', node:'db-mapfre-primary' }
     ],
     iberdrola: [
-        { time:'Hace 1 min', type:'Intento de inyección SCADA-Modbus detectado', sev:'danger', node:'scada-gw' },
-        { time:'Hace 10 min', type:'Fallo de autenticación de operador industrial', sev:'warning', node:'scada-auth' }
+        { time:'Hace 1 min', type:'CRÍTICO: Inyección SCADA-Modbus mitigada', sev:'danger', node:'scada-gateway' },
+        { time:'Hace 10 min', type:'AUTENTICACIÓN: Fallo múltiple de operador SCADA', sev:'warning', node:'auth-node-02' }
     ],
     sabadell: [
-        { time:'Hace 8 min', type:'Transacción anómala retenida por anti-fraude', sev:'warning', node:'core-db' },
-        { time:'Hace 45 min', type:'Sincronización de HSM completada', sev:'success', node:'hsm-cluster' }
+        { time:'Hace 8 min', type:'FRAUDE: Transacción anómala en revisión manual', sev:'warning', node:'core-banking-db' },
+        { time:'Hace 45 min', type:'SISTEMA: Sincronización de HSM completada', sev:'success', node:'hsm-cluster' }
     ]
 };
 
@@ -300,16 +329,20 @@ function renderFeed(tab) {
     const feed = mockFeed[tab] || [];
     const html = feed.map(f => {
         const c = f.sev === 'danger' ? '#ef4444' : f.sev === 'warning' ? '#f59e0b' : '#22c55e';
-        const icon = f.sev === 'danger' ? '🔥' : f.sev === 'warning' ? '⚠️' : '✅';
+        // Iconos SVG profesionales en lugar de emojis
+        const icon = f.sev === 'danger' ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>` : 
+                     f.sev === 'warning' ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>` : 
+                     `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`;
+        
         return `
-        <div style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:8px;margin-bottom:8px;">
-            <div style="font-size:1.2rem;">${icon}</div>
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:10px;margin-bottom:8px;">
+            <div style="margin-top:2px;">${icon}</div>
             <div style="flex:1;">
                 <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-                    <strong style="color:${c};font-size:0.85rem;">${f.type}</strong>
+                    <strong style="color:${c};font-size:0.85rem;letter-spacing:0.5px;">${f.type}</strong>
                     <span style="font-size:0.7rem;color:var(--text-muted);">${f.time}</span>
                 </div>
-                <div style="font-size:0.75rem;color:#94a3b8;">Afecta a: <span style="color:#e2e8f0;">${f.node}</span></div>
+                <div style="font-size:0.75rem;color:#94a3b8;">Asset Tag: <span style="color:#e2e8f0;font-family:monospace;">${f.node}</span></div>
             </div>
         </div>`;
     }).join('');
@@ -320,15 +353,15 @@ function renderActions(tab) {
     const act = document.getElementById('ir-actions');
     if (tab === 'global') {
         act.innerHTML = `
-            <button class="diag-btn" onclick="triggerIRAction('export-global-logs')" style="border-color:rgba(148,163,184,0.5); color:#cbd5e1;">📥 Exportar Logs Globales</button>
-            <button class="diag-btn" onclick="triggerIRAction('rotate-keys')" style="border-color:rgba(239,68,68,0.5); color:#fca5a5; margin-left:auto; background:rgba(239,68,68,0.1);">🚨 Rotación de Claves (Panic Mode)</button>
+            <button class="diag-btn" onclick="triggerIRAction('export-global-logs')">📥 Exportar Logs Globales</button>
+            <button class="diag-btn" onclick="triggerIRAction('rotate-keys')" style="border-color:#ef4444; color:#fca5a5; margin-left:auto; background:rgba(239,68,68,0.1);">🚨 Rotación Maestra (Panic Mode)</button>
         `;
     } else {
         const T = tab.toUpperCase();
         act.innerHTML = `
-            <button class="diag-btn" onclick="triggerIRAction('pcap-${tab}')" style="border-color:rgba(168,85,247,0.5); color:#c084fc;">🖧 Exportar PCAP (${T})</button>
-            <button class="diag-btn" onclick="triggerIRAction('fw-${tab}')" style="border-color:rgba(56,189,248,0.5); color:#7dd3fc;">🛡️ Ajustar WAF (${T})</button>
-            <button class="diag-btn" onclick="triggerIRAction('kill-${tab}')" style="border-color:rgba(239,68,68,0.5); color:#fca5a5; margin-left:auto; background:rgba(239,68,68,0.1);">🛑 AISLAMIENTO KILL-SWITCH (${T})</button>
+            <button class="diag-btn" onclick="triggerIRAction('pcap-${tab}')">🖧 Forense: Exportar PCAP (${T})</button>
+            <button class="diag-btn" onclick="triggerIRAction('fw-${tab}')">🛡️ WAF: Endurecer Reglas (${T})</button>
+            <button class="diag-btn" onclick="triggerIRAction('kill-${tab}')" style="border-color:#ef4444; color:#fca5a5; margin-left:auto; background:rgba(239,68,68,0.1);">🛑 AISLAMIENTO KILL-SWITCH (${T})</button>
         `;
     }
 }
@@ -350,52 +383,28 @@ function setIRTab(tab) {
 }
 
 function triggerIRAction(action) {
-    // Add visual feedback directly to the feed
     const feedEl = document.getElementById('ir-feed');
     let title, sev = 'success', icon = '✅';
     
-    if (action === 'rotate-keys') {
-        title = 'ALERTA ROJA: Claves JWT y BD regeneradas. Sesiones invalidadas.'; sev = 'danger'; icon = '🚨';
-    } else if (action.startsWith('kill-')) {
-        title = `AISLAMIENTO ZERO TRUST: Red de ${action.split('-')[1].toUpperCase()} desconectada exitosamente.`; sev = 'danger'; icon = '🛑';
-    } else if (action.startsWith('pcap-')) {
-        title = `Captura PCAP Forense generada y cifrada con GPG (${action.split('-')[1].toUpperCase()}).`;
-    } else if (action.startsWith('fw-')) {
-        title = `Reglas WAF estrictas aplicadas al tenant ${action.split('-')[1].toUpperCase()}.`;
-    } else {
-        title = `Acción ejecutada: ${action}`;
-    }
+    if (action === 'rotate-keys') { title = 'CRÍTICO: Rotación Maestra completada. Tokens invalidados.'; sev = 'danger'; icon = '🚨'; }
+    else if (action.startsWith('kill-')) { title = `AISLAMIENTO: Tenant ${action.split('-')[1].toUpperCase()} aislado de la red por Kill-Switch.`; sev = 'danger'; icon = '🛑'; }
+    else if (action.startsWith('pcap-')) { title = `FORENSE: Captura PCAP generada y cifrada (${action.split('-')[1].toUpperCase()}).`; }
+    else if (action.startsWith('fw-')) { title = `WAF: Política Strict-OWASP aplicada a ${action.split('-')[1].toUpperCase()}.`; }
+    else if (action === 'sos-intervention') { title = 'SOS: Intervención SOC nivel 3 en curso.'; }
+    else { title = `ACCION SOC: ${action}`; }
 
-    const html = `
-    <div style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:rgba(${sev==='danger'?'239,68,68':'34,197,94'},0.1);border:1px solid rgba(${sev==='danger'?'239,68,68':'34,197,94'},0.4);border-radius:8px;margin-bottom:8px;animation:pulse 2s;">
-        <div style="font-size:1.2rem;">${icon}</div>
-        <div style="flex:1;">
-            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-                <strong style="color:${sev==='danger'?'#fca5a5':'#86efac'};font-size:0.85rem;">[ACCIÓN DEL SOC] ${title}</strong>
-                <span style="font-size:0.7rem;color:var(--text-muted);">Ahora mismo</span>
-            </div>
-            <div style="font-size:0.75rem;color:#e2e8f0;">Ejecutado por Administrador SOC.</div>
-        </div>
-    </div>`;
-    
+    const html = `<div style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:rgba(${sev==='danger'?'239,68,68':'34,197,94'},0.1);border:1px solid rgba(${sev==='danger'?'239,68,68':'34,197,94'},0.4);border-radius:10px;margin-bottom:8px;animation:pulse 2s;"><div style="font-size:1.1rem;">${icon}</div><div style="flex:1;"><strong style="color:${sev==='danger'?'#fca5a5':'#86efac'};font-size:0.85rem;">[ADMIN SOC] ${title}</strong><div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;">Timestamp: ${new Date().toLocaleTimeString()}</div></div></div>`;
     feedEl.insertAdjacentHTML('afterbegin', html);
 }
 
-// Initialize IR panel
 setTimeout(() => setIRTab('global'), 100);
 
 function openClient(name) {
-    document.getElementById('modal-content').innerHTML =
-        `<h2 style="font-size:1.6rem;margin-bottom:8px;">${name}</h2>
-         <p style="color:var(--text-muted);">Redirecting to SOC Monitor for detailed real-time incident mapping and asset inventory for this client.</p>
-         <a href="/soc" class="btn btn-primary" style="margin-top:16px;display:inline-block;">Launch SOC Monitor →</a>`;
+    document.getElementById('modal-content').innerHTML = `<h2 style="font-size:1.6rem;margin-bottom:8px;">${name}</h2><p style="color:var(--text-muted);">Redirigiendo al Monitor SOC para mapeo detallado de activos para este cliente.</p><a href="/soc" class="btn btn-primary" style="margin-top:16px;display:inline-block;">Lanzar Monitor SOC →</a>`;
     document.getElementById('client-modal').style.display = 'flex';
 }
 function closeModal() { document.getElementById('client-modal').style.display = 'none'; }
 
-/**
- * INTERNATIONALIZATION (i18n)
- */
 const i18n = {
     es: { eyebrow:"Operaciones Globales", title:"Panel de Operaciones", copy:"Visión unificada de ciberseguridad multi-cliente.", k1:"Eventos Analizados", k2:"Incidentes Activos", k3:"Clientes Protegidos", k4:"Salud del Sistema", chart1:"Ataques por Vector (24h)", chart2:"Distribución de Alertas", table_title:"Postura de Seguridad por Cliente" },
     en: { eyebrow:"Global Operations",  title:"Operations Panel",       copy:"Unified multi-client cybersecurity view.",           k1:"Events Analyzed",   k2:"Active Incidents",   k3:"Protected Clients",  k4:"System Health",      chart1:"Attacks by Vector (24h)",   chart2:"Alert Distribution",    table_title:"Security Posture by Client" }
@@ -411,3 +420,4 @@ function setLang(l) {
 }
 (function(){ setLang(localStorage.getItem('sofia_lang') || 'es'); })();
 </script>
+
