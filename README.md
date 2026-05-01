@@ -19,22 +19,22 @@ La solución representa una plataforma corporativa de servicios IT y ciberseguri
 - visualización de métricas en **Grafana**;
 - monitor SOC propio para la parte corporativa;
 - scripts de ataque para validar diferencias entre entornos;
-- **chat de asistencia integrado** en el Dashboard del cliente;
+- **asistente Nova AI mejorado** en el Dashboard, con lenguaje natural y botones de sugerencia rápida;
 - **feed de actividad en tiempo real** que muestra eventos de seguridad actualizados cada 8 segundos;
 - **diseño visual premium** Cyberpunk/Glassmorphism unificado en todas las vistas;
 - **3 planes de servicio** (Individual €499/mes, Business €1,500/mes, Business Max €4,200/mes) presentes tanto en la web pública como en el dashboard del cliente con la misma estética;
 - **login profesional** minimalista, con indicadores de estado del sistema y selector de idioma (ES/EN) integrado.
-- **acceso público global** configurado mediante túneles DNS personalizados (`sofiasolutions.loca.lt`).
+- **acceso público global** configurado mediante túneles DNS personalizados (`sofia-solutions.serveousercontent.com`).
 
 ## Accesos
 
 | Servicio | URL Local | URL Pública (Túnel) |
 |----------|-----------|---------------------|
-| Web pública | `http://localhost:8000` | `https://sofiasolutions.loca.lt` |
-| Login (demo académico) | `http://localhost:8000/login` | `https://sofiasolutions.loca.lt/login` |
-| Login seguro (CAPTCHA) | `http://localhost:8000/login-secure` | `https://sofiasolutions.loca.lt/login-secure` |
-| API Backend | `http://localhost:8001` | `https://sofiasolutions-api.loca.lt` |
-| SOC Monitor (solo admin) | `http://localhost:8000/admin/security-monitor` | `https://sofiasolutions.loca.lt/admin/security-monitor` |
+| Web pública | `http://localhost:8000` | `https://sofia-solutions.serveousercontent.com` |
+| Login (demo académico) | `http://localhost:8000/login` | `https://sofia-solutions.serveousercontent.com/login` |
+| Login seguro (CAPTCHA) | `http://localhost:8000/login-secure` | `https://sofia-solutions.serveousercontent.com/login-secure` |
+| API Backend | `http://localhost:8001` | `https://sofia-solutions.serveousercontent.com/api` (Proxy) |
+| SOC Monitor (solo admin) | `http://localhost:8000/admin/security-monitor` | `https://sofia-solutions.serveousercontent.com/admin/security-monitor` |
 | Grafana | `http://localhost:3000` | Integrado en SOC Monitor |
 | Prisma Studio | `http://localhost:5556` | - |
 
@@ -77,17 +77,13 @@ El proyecto no debe entenderse como una simple web comercial. Su valor principal
 - `scripts/`: automatización multiplataforma para levantar stack y ejecutar ataques
 - `docker-compose.yml`: orquestación del entorno
 
-## Documentación disponible
-
-- [README backend](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/README.md)
-- [Guía de ataques](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/ATTACK-SCRIPTS.md)
-- [Explicación del login seguro](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/SECURE-LOGIN-EXPLAINED.md)
-- [Arquitectura funcional de servicios](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/SERVICE-ARCHITECTURE.md)
-- [Arquitectura, defensa y operación](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/ARCHITECTURE-AND-DEFENSE.md)
-- [Informe de seguridad](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/SECURITY-REPORT.md)
-- [Documentación técnica académica](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/DOCUMENTACION-APA.md)
-- [Guion de defensa](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/DEFENSA-PROYECTO.md)
-- [Guía completa de estudio](C:/Users/sgomez/Desktop/sofia-solutions/sofia-backend/GUIA-ESTUDIO-PROYECTO.md)
+- [README backend](./sofia-backend/README.md)
+- [Guía de ataques](./sofia-backend/ATTACK-SCRIPTS.md)
+- [Explicación del login seguro](./sofia-backend/SECURE-LOGIN-EXPLAINED.md)
+- [Arquitectura funcional de servicios](./sofia-backend/SERVICE-ARCHITECTURE.md)
+- [Arquitectura, defensa y operación](./sofia-backend/ARCHITECTURE-AND-DEFENSE.md)
+- [Informe de seguridad](./sofia-backend/SECURITY-REPORT.md)
+- [Guion de defensa](./sofia-backend/DEFENSA-PROYECTO.md)
 
 ## Despliegue
 
@@ -111,6 +107,11 @@ docker compose up -d
 Windows:
 
 ```powershell
+.\scripts\ACTIVAR-MODO-VULNERABLE.bat
+.\scripts\ACTIVAR-MODO-SEGURO.bat
+```
+*(Opcionalmente, usando PowerShell directamente)*
+```powershell
 powershell -ExecutionPolicy Bypass -File scripts/SOFIA-INICIAR.ps1
 powershell -ExecutionPolicy Bypass -File scripts/SOFIA-INICIAR.ps1 -Mode vulnerable -Rebuild
 ```
@@ -124,12 +125,13 @@ sh ./scripts/sofia-iniciar.sh vulnerable --build
 
 ### Despliegue en la Nube (GitHub Codespaces)
 
-Este proyecto está configurado para trabajar 100% en la nube sin necesidad de tener Docker instalado localmente:
+Este proyecto incluye un contenedor de desarrollo (`.devcontainer/devcontainer.json`) preconfigurado, por lo que es **100% compatible con GitHub Codespaces**. Puedes trabajar en la nube sin tener Docker ni PHP instalados en tu máquina:
 
-1.  Accede al repositorio en GitHub.
-2.  Haz clic en **Code** > **Codespaces** > **Create codespace on main**.
-3.  Una vez cargado el entorno, abre una terminal y ejecuta `docker compose up -d`.
-4.  VS Code detectará los puertos automáticamente y te dará un enlace para ver la web y el SOC Monitor.
+1. Accede al repositorio en GitHub.
+2. Haz clic en el botón verde **Code** > pestaña **Codespaces** > **Create codespace on main**.
+3. El entorno cargará automáticamente el entorno de Linux, Node y levantará Docker-in-Docker.
+4. Abre una terminal dentro de Codespaces y ejecuta `docker compose up -d`.
+5. VS Code detectará automáticamente los puertos (8000, 8001, 3000) e indicará en la pestaña de "Ports" las URLs públicas (HTTPS) para que accedas a la plataforma.
 
 ## Ejecución de ataques
 
@@ -146,6 +148,10 @@ Los ataques automatizados están pensados para demostrar:
 
 Windows:
 
+```powershell
+.\scripts\Lanzar-Auditoria.bat
+```
+*(Opcionalmente, usando PowerShell directamente)*
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/SOFIA-ATAQUES.ps1 -Mode vulnerable
 powershell -ExecutionPolicy Bypass -File scripts/SOFIA-ATAQUES.ps1 -Mode secure
@@ -210,8 +216,6 @@ Durante el despliegue iterativo surgieron los siguientes casos prácticos soluci
 
 La visualización del proyecto se divide en dos capas:
 
-### SOC corporativo
-
 Ruta:
 
 - `http://localhost:8000/admin/security-monitor`
@@ -225,7 +229,19 @@ Sirve para mostrar:
 - exposición por cliente;
 - telemetría agregada de seguridad.
 
-*Nota de diseño*: Este panel se ha reacondicionado visualmente al estilo **Readdy.ai** utilizando componentes avanzados CSS (glassmorphism, brillos de neón cyperpunk y gráficos de barras integrados por CSS puro).
+*Nota de diseño*: Este panel se ha reacondicionado visualmente utilizando componentes avanzados CSS (glassmorphism, brillos de neón cyperpunk y gráficos de barras integrados por CSS puro).
+
+### Consola Maestra (Audit Tool)
+
+Ruta:
+
+- `/sistema/consola`
+
+Permite visualizar la ejecución práctica de los ataques en vivo:
+- Desarrollada 100% en español.
+- Intefaz hacker in-browser, con *Leak Viewer* en modal para saltar los bloqueos de pop-ups del navegador durante la explotación LFI.
+- **Log detallado de auditoría**: Muestra los comandos y payloads reales (`[#]`) ejecutados contra el servidor para una mejor comprensión técnica del ataque.
+- Diseño "Mobile First", preparado para presentaciones fluidas desde cualquier dispositivo o navegador.
 
 ### Grafana
 

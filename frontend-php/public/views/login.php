@@ -66,3 +66,8 @@
     </section>
 
 </main>
+<script>
+// LIMPIEZA DE SESION AL LLEGAR AL LOGIN
+localStorage.removeItem('sofia_token_v1');
+localStorage.removeItem('sofia_user_v1');
+</script>

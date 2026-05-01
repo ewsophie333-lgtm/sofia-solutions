@@ -5,17 +5,18 @@ require __DIR__ . '/includes/helpers.php';
 
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 
-if ($path === '/admin') {
-    header('Location: /admin/security-monitor', true, 302);
-    exit;
-}
+// Admin route is handled by the router below — no redirect needed
 
 $routes = [
-    '/' => ['title' => 'Sofia Solutions | Seguridad gestionada para entornos críticos', 'view' => 'home'],
-    '/login' => ['title' => 'Acceso | Sofia Solutions', 'view' => 'login', 'mode' => 'vulnerable'],
-    '/login-secure' => ['title' => 'Acceso seguro | Sofia Solutions', 'view' => 'login', 'mode' => 'secure'],
-    '/dashboard' => ['title' => 'Dashboard Ejecutivo | Sofia Solutions', 'view' => 'dashboard'],
+    '/'                    => ['title' => 'Sofia Solutions | Seguridad gestionada para entornos críticos', 'view' => 'home'],
+    '/login'               => ['title' => 'Acceso | Sofia Solutions', 'view' => 'login', 'mode' => 'vulnerable'],
+    '/login-seguro'        => ['title' => 'Acceso seguro | Sofia Solutions', 'view' => 'login', 'mode' => 'secure'],
+    '/dashboard'           => ['title' => 'Dashboard Ejecutivo | Sofia Solutions', 'view' => 'dashboard'],
+    '/admin'               => ['title' => 'Panel de Operaciones | Sofia Solutions', 'view' => 'admin-dashboard'],
     '/admin/security-monitor' => ['title' => 'SOC Monitor | Sofia Solutions', 'view' => 'soc'],
+    '/soc'                 => ['title' => 'SOC Monitor | Sofia Solutions', 'view' => 'soc'],
+    '/admin/audit-tool'    => ['title' => 'Security Audit Kit | Sofia Solutions', 'view' => 'audit'],
+    '/sistema/consola'     => ['title' => 'Consola Maestra | Sofia Solutions', 'view' => 'audit'],
 ];
 
 $route = $routes[$path] ?? $routes['/'];
@@ -66,6 +67,19 @@ $operationalBenefits = [
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= htmlspecialchars($title, ENT_QUOTES, 'UTF-8') ?></title>
     <link rel="stylesheet" href="/assets/app.css">
+    <script>
+    // GUARDIA GLOBAL DE ROLES (Se ejecuta antes que el body)
+    (function() {
+        const user = JSON.parse(localStorage.getItem('sofia_user_v1') || '{}');
+        const path = window.location.pathname;
+        if (user.role === 'ADMIN' && path === '/dashboard') {
+            window.location.href = '/admin';
+        }
+        if (user.role === 'CLIENT' && path === '/admin') {
+            window.location.href = '/dashboard';
+        }
+    })();
+    </script>
 </head>
 <body data-view="<?= htmlspecialchars($view, ENT_QUOTES, 'UTF-8') ?>" data-login-mode="<?= htmlspecialchars($mode, ENT_QUOTES, 'UTF-8') ?>">
 <?php require __DIR__ . '/views/' . $view . '.php'; ?>
@@ -78,5 +92,6 @@ window.SOFIA_CONFIG = {
 };
 </script>
 <script src="/assets/app.js"></script>
+<?php include __DIR__ . '/includes/ai-assistant.php'; ?>
 </body>
 </html>
