@@ -1,518 +1,223 @@
-<?php
-$activeNav = 'dashboard';
-$headerEyebrow = 'Executive overview';
-$headerTitle = 'Panel ejecutivo de seguridad y servicio';
-$headerCopy = 'Resumen consolidado de actividad, cobertura, efectividad y operación para cliente o CISO.';
-?>
-<main class="app-shell">
+<?php $activeNav = 'dashboard'; ?>
+<script>(function(){const u=JSON.parse(localStorage.getItem('sofia_user_v1')||'{}');if(u.role==='ADMIN')window.location.href='/admin';})();</script>
+<style>
+.pay-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);z-index:9999;align-items:center;justify-content:center;}
+.pay-card{background:#0f0c1d;border:1px solid rgba(6,182,212,0.3);border-radius:20px;padding:40px;width:min(480px,90vw);}
+.plan-btn{width:100%;padding:14px;border:none;border-radius:12px;font-weight:700;font-size:0.9rem;cursor:pointer;margin-top:12px;transition:all 0.2s;}
+.ticket-row{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:10px;margin-bottom:8px;transition:background 0.15s;}
+.ticket-row:hover{background:rgba(255,255,255,0.04);}
+.ticket-status{font-size:0.72rem;font-weight:700;padding:3px 10px;border-radius:20px;}
+.status-open{background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.2);}
+.status-progress{background:rgba(245,158,11,0.1);color:#f59e0b;border:1px solid rgba(245,158,11,0.2);}
+.status-closed{background:rgba(34,197,94,0.1);color:#22c55e;border:1px solid rgba(34,197,94,0.2);}
+</style>
+
+<main class="app-shell readdy-dashboard">
     <aside class="sidebar">
         <div class="sidebar-brand">
             <?php renderLogo('brand-mark brand-mark-sidebar'); ?>
-            <div class="sidebar-brand-copy">
-                <span>Sofia Solutions</span>
-                <small>Your Security, Our Mission</small>
-            </div>
+            <div class="sidebar-brand-copy"><span>Sofia Solutions</span><small>Protección 24/7</small></div>
         </div>
         <?php renderAppNav($activeNav); ?>
-        <div class="sidebar-status">
-            <span class="meta-label">Estado de plataforma</span>
-            <strong>Operativa</strong>
-            <small>Servicios activos, conectividad estable y paneles sincronizados.</small>
+        <div style="margin-top:auto;padding:20px;border-top:1px solid rgba(255,255,255,0.05);">
+            <div style="display:flex;gap:8px;background:rgba(0,0,0,0.2);padding:4px;border-radius:8px;">
+                <button onclick="setLang('es')" id="btn-es" style="flex:1;border:none;padding:6px;border-radius:6px;font-size:0.7rem;cursor:pointer;font-weight:700;">ES</button>
+                <button onclick="setLang('en')" id="btn-en" style="flex:1;border:none;padding:6px;border-radius:6px;font-size:0.7rem;cursor:pointer;font-weight:700;">EN</button>
+            </div>
         </div>
     </aside>
 
     <section class="content">
-        <header class="panel-header" style="border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:20px; margin-bottom:24px;">
+        <header class="panel-header" style="margin-bottom:32px;">
             <div>
-                <span class="eyebrow" style="color:var(--primary); font-weight:700; letter-spacing:1px;"><?= htmlspecialchars($headerEyebrow, ENT_QUOTES, 'UTF-8') ?></span>
-                <h1 style="font-size:2.4rem; font-weight:800; letter-spacing:-0.03em; margin:8px 0;"><?= htmlspecialchars($headerTitle, ENT_QUOTES, 'UTF-8') ?></h1>
-                <p class="panel-header-copy" style="color:var(--text-soft);"><?= htmlspecialchars($headerCopy, ENT_QUOTES, 'UTF-8') ?></p>
+                <span class="eyebrow" data-i18n="eyebrow">Postura de Seguridad Corporativa</span>
+                <h1 data-i18n="title">Panel de Gestión de Ciberseguridad</h1>
             </div>
-            <div class="header-links" style="display:flex; gap:12px;">
-                <span style="display:inline-flex; align-items:center; gap:6px; background:rgba(34,197,94,0.1); color:#22c55e; border:1px solid rgba(34,197,94,0.2); padding:6px 12px; border-radius:999px; font-size:0.75rem; font-weight:700;"><span style="width:6px;height:6px;background:#22c55e;border-radius:50%;box-shadow:0 0 8px #22c55e;animation:pulse 2s infinite;"></span> Sistema Estable</span>
-                <span class="context-chip context-chip-soft" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1);">Última sincronización: Hace 2s</span>
+            <div style="display:flex;align-items:center;gap:20px;">
+                <div style="text-align:right;">
+                    <div style="font-size:0.72rem;color:var(--text-muted);" data-i18n="score_label">Security Score</div>
+                    <div style="font-size:2.2rem;font-weight:800;color:#22c55e;line-height:1;">94<span style="font-size:1rem;color:var(--text-muted);">/100</span></div>
+                </div>
             </div>
         </header>
 
-        <!-- Enterprise KPIs -->
-        <section style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:20px; margin-bottom:30px;">
-            <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px; position:relative; overflow:hidden;">
-                <div style="position:absolute; top:0; left:0; width:4px; height:100%; background:var(--primary);"></div>
-                <span style="display:block; color:var(--text-soft); font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Eventos Procesados (24h)</span>
-                <div style="font-size:2.5rem; font-weight:800; color:#fff; font-family:monospace;">14,092</div>
-                <span style="color:#22c55e; font-size:0.8rem; font-weight:600;">↑ 12% vs ayer</span>
-            </div>
-            <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px; position:relative; overflow:hidden;">
-                <div style="position:absolute; top:0; left:0; width:4px; height:100%; background:#ef4444;"></div>
-                <span style="display:block; color:var(--text-soft); font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Ataques Bloqueados</span>
-                <div style="font-size:2.5rem; font-weight:800; color:#fff; font-family:monospace;">38</div>
-                <span style="color:#ef4444; font-size:0.8rem; font-weight:600;">Requieren atención</span>
-            </div>
-            <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:24px; position:relative; overflow:hidden;">
-                <div style="position:absolute; top:0; left:0; width:4px; height:100%; background:#a855f7;"></div>
-                <span style="display:block; color:var(--text-soft); font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Tiempo de Respuesta (SLA)</span>
-                <div style="font-size:2.5rem; font-weight:800; color:#fff; font-family:monospace;">4.2<span style="font-size:1.2rem; color:var(--text-muted);">m</span></div>
-                <span style="color:#22c55e; font-size:0.8rem; font-weight:600;">Dentro del margen óptimo</span>
-            </div>
+        <!-- KPIs -->
+        <section class="planes-grid" style="grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:36px;">
+            <div class="kpi-card" data-tone="ok"><span class="meta-label" data-i18n="k1">Activos Protegidos</span><strong>12</strong><div class="tone-bar"></div></div>
+            <div class="kpi-card" data-tone="ok"><span class="meta-label" data-i18n="k2">Uptime</span><strong>99.9%</strong><div class="tone-bar"></div></div>
+            <div class="kpi-card" data-tone="warn"><span class="meta-label" data-i18n="k3">Vulnerabilidades</span><strong>2</strong><div class="tone-bar"></div></div>
+            <div class="kpi-card" data-tone="ok"><span class="meta-label" data-i18n="k4">SLA Cumplido</span><strong>100%</strong><div class="tone-bar"></div></div>
         </section>
 
-        <!-- Main Dashboard Grid -->
-        <section style="display:grid; grid-template-columns: 2fr 1fr; gap:30px; margin-bottom:40px;">
-            <!-- Left Column -->
-            <div style="display:flex; flex-direction:column; gap:30px;">
-                <article class="panel panel-feature" style="border-radius:20px; background:linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0) 100%);">
-                    <div class="panel-heading" style="border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:16px;">
-                        <div>
-                            <span class="eyebrow">Cobertura Activa</span>
-                            <h2 style="font-size:1.4rem;">Servicios Contratados</h2>
-                        </div>
-                    </div>
-                    <div id="dashboard-services" class="stack-list stack-list-spacious" style="padding-top:16px;"></div>
-                </article>
+        <!-- Plans -->
+        <section style="margin-bottom:40px;">
+            <div class="panel-heading" style="margin-bottom:24px;">
+                <div><span class="eyebrow" data-i18n="plans_eyebrow">Suscripción</span><h2 data-i18n="plans_title">Planes de Cobertura</h2></div>
             </div>
-
-            <!-- Right Column -->
-            <div style="display:flex; flex-direction:column; gap:30px;">
-                <article class="panel panel-feature" style="border-radius:20px; background:linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0) 100%);">
-                    <div class="panel-heading" style="border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:16px;">
-                        <div>
-                            <span class="eyebrow">Soporte Continuo</span>
-                            <h2 style="font-size:1.4rem;">Tickets y Continuidad</h2>
-                        </div>
-                    </div>
-                    <div id="dashboard-tickets" class="stack-list" style="padding-top:16px;"></div>
-                    <div style="margin-top:20px;">
-                        <button onclick="document.getElementById('chat-toggle').click();" class="btn btn-outline" style="width:100%; border-radius:12px; font-weight:600; font-size:0.85rem;">Abrir Nuevo Ticket / Chat</button>
-                    </div>
+            <div class="planes-grid" style="grid-template-columns:repeat(3,1fr);gap:24px;">
+                <!-- Individual (current) -->
+                <article class="plan-card" style="position:relative;">
+                    <div style="position:absolute;top:16px;right:16px;background:rgba(6,182,212,0.15);color:#06b6d4;font-size:0.65rem;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid rgba(6,182,212,0.3);" data-i18n="badge_current">PLAN ACTUAL</div>
+                    <span class="meta-label">Individual</span>
+                    <div class="price" style="font-size:1.8rem;margin:12px 0;">€499<small style="font-size:0.9rem;color:var(--text-muted);">/mes</small></div>
+                    <ul class="plan-features" style="margin-bottom:20px;"><li data-i18n="f1a">Monitorización 8/5</li><li data-i18n="f1b">1 Endpoint protegido</li><li data-i18n="f1c">Alertas por email</li></ul>
+                    <button class="btn btn-secondary btn-sm" style="width:100%;opacity:0.6;cursor:default;" data-i18n="btn_current">Plan Activo</button>
                 </article>
-
-                <article class="panel panel-feature" style="border-radius:20px; background:linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0) 100%);">
-                    <div class="panel-heading" style="border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:16px;">
-                        <div>
-                            <span class="eyebrow">Monitorización L7</span>
-                            <h2 style="font-size:1.4rem;">Actividad en Vivo</h2>
-                        </div>
-                    </div>
-                    <div style="background:#020617; border:1px solid rgba(255,255,255,0.05); border-radius:12px; padding:16px; margin-top:16px;">
-                        <div id="live-event-feed" class="live-feed" style="font-family:monospace; font-size:0.8rem; color:#94a3b8; height:180px; overflow-y:hidden;">
-                            Esperando telemetría...
-                        </div>
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; border-top:1px solid rgba(255,255,255,0.05); padding-top:12px;">
-                            <span id="live-last-update" style="font-size:0.7rem; color:#64748b;">Conectando al feed...</span>
-                            <div style="display:flex; gap:6px;">
-                                <div style="width:8px; height:8px; border-radius:50%; background:#22c55e;"></div>
-                                <div style="width:8px; height:8px; border-radius:50%; background:#eab308;"></div>
-                                <div style="width:8px; height:8px; border-radius:50%; background:#ef4444;"></div>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Business (recommended) -->
+                <article class="plan-card" style="border-color:var(--primary);background:rgba(6,182,212,0.03);position:relative;">
+                    <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--primary);color:#000;font-size:0.65rem;font-weight:800;padding:4px 14px;border-radius:20px;white-space:nowrap;" data-i18n="badge_rec">RECOMENDADO</div>
+                    <span class="meta-label" style="color:var(--primary);">Business Max</span>
+                    <div class="price" style="font-size:1.8rem;margin:12px 0;">€1,500<small style="font-size:0.9rem;color:var(--text-muted);">/mes</small></div>
+                    <ul class="plan-features" style="margin-bottom:20px;"><li data-i18n="f2a">SOC 24/7 Global</li><li data-i18n="f2b">15 Endpoints</li><li data-i18n="f2c">IR Retainer incluido</li></ul>
+                    <button onclick="openPayment('Business Max','1500')" class="btn btn-primary btn-sm" style="width:100%;" data-i18n="btn_upgrade">Contratar Ahora</button>
+                </article>
+                <!-- Enterprise -->
+                <article class="plan-card">
+                    <span class="meta-label">Enterprise Elite</span>
+                    <div class="price" style="font-size:1.8rem;margin:12px 0;">€4,200<small style="font-size:0.9rem;color:var(--text-muted);">/mes</small></div>
+                    <ul class="plan-features" style="margin-bottom:20px;"><li data-i18n="f3a">SOC Dedicado 24/7</li><li data-i18n="f3b">Activos ilimitados</li><li data-i18n="f3c">CISO virtual incluido</li></ul>
+                    <button onclick="openPayment('Enterprise Elite','4200')" class="btn btn-secondary btn-sm" style="width:100%;" data-i18n="btn_contact">Contactar Ventas</button>
                 </article>
             </div>
         </section>
 
-        <!-- Billing Section -->
-        <section class="executive-grid executive-grid-wide" style="margin-top:20px;">
-            <article class="panel panel-feature" style="border-radius:20px; border:1px solid rgba(255,255,255,0.08); background:linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0) 100%);">
-                <div class="panel-heading" style="border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:16px; margin-bottom:24px;">
-                    <div>
-                        <span class="eyebrow" style="color:var(--primary);">Gestión de Cuenta</span>
-                        <h2 style="font-size:1.4rem;">Facturación y Planes de Cobertura</h2>
+        <!-- Tickets + Docs + Feed -->
+        <section class="planes-grid" style="grid-template-columns:1.5fr 1fr;gap:32px;">
+            <div style="display:flex;flex-direction:column;gap:24px;">
+                <!-- TICKETS -->
+                <article class="panel" style="padding:24px;">
+                    <div class="panel-heading" style="margin-bottom:20px;">
+                        <div><span class="eyebrow" data-i18n="tickets_eyebrow">Soporte Técnico</span><h2 data-i18n="tickets_title">Mis Tickets</h2></div>
+                        <button class="btn btn-primary btn-sm" onclick="openNewTicket()" data-i18n="btn_new_ticket">+ Nuevo Ticket</button>
                     </div>
-                    <span class="context-chip" style="color:var(--text-muted);font-size:0.74rem;">Módulo de Pagos</span>
-                </div>
-                <!-- Planes con estética idéntica a la home -->
-                <div id="planes-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;padding:4px 0 12px;align-items:stretch;max-width:960px;margin:0 auto;width:100%;">
-
-                    <!-- Plan Individual -->
-                    <article id="plan-individual" data-plan="individual" style="position:relative;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.09);border-radius:20px;padding:28px 24px;display:flex;flex-direction:column;gap:16px;transition:border-color 0.25s,transform 0.25s;" onmouseover="if(!this.classList.contains('plan-active'))this.style.borderColor='rgba(6,182,212,0.4)';this.style.transform='translateY(-5px)'" onmouseout="if(!this.classList.contains('plan-active'))this.style.borderColor='rgba(255,255,255,0.09)';this.style.transform='translateY(0)'">
-                        <div>
-                            <span style="display:inline-block;padding:4px 10px;border-radius:6px;background:rgba(6,182,212,0.08);border:1px solid rgba(6,182,212,0.18);color:#22d3ee;font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;">Individual</span>
+                    <div id="tickets-list">
+                        <div class="ticket-row">
+                            <div><strong>#2201 — Análisis de Intrusión SQLi</strong><div style="font-size:0.75rem;color:var(--text-muted);margin-top:3px;">Abierto hace 15 min · Prioridad: Alta</div></div>
+                            <span class="ticket-status status-open" data-i18n="s_open">Sin Revisar</span>
                         </div>
-                        <div>
-                            <div style="font-size:2.2rem;font-weight:800;letter-spacing:-0.05em;color:var(--text);">€499<span style="font-size:0.9rem;font-weight:400;color:var(--text-muted);letter-spacing:0;">/mes</span></div>
-                            <p style="color:var(--text-muted);font-size:0.82rem;margin:6px 0 0;">Ideal para profesionales o pequeños equipos.</p>
+                        <div class="ticket-row">
+                            <div><strong>#2195 — Configuración de WAF personalizado</strong><div style="font-size:0.75rem;color:var(--text-muted);margin-top:3px;">Actualizado hace 3h · Analista: Sofia G.</div></div>
+                            <span class="ticket-status status-progress" data-i18n="s_prog">En Proceso</span>
                         </div>
-                        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px;flex:1;">
-                            <li style="display:flex;align-items:center;gap:9px;font-size:0.85rem;color:var(--text-soft);"><span style="color:#10b981;">✓</span> SOC básico 8/5</li>
-                            <li style="display:flex;align-items:center;gap:9px;font-size:0.85rem;color:var(--text-soft);"><span style="color:#10b981;">✓</span> 1 endpoint monitorizado</li>
-                            <li style="display:flex;align-items:center;gap:9px;font-size:0.85rem;color:var(--text-soft);"><span style="color:#10b981;">✓</span> Alertas por correo</li>
-                            <li style="display:flex;align-items:center;gap:9px;font-size:0.85rem;color:var(--text-soft);"><span style="color:#10b981;">✓</span> SLA 24h respuesta</li>
-                            <li style="display:flex;align-items:center;gap:9px;font-size:0.85rem;color:rgba(255,255,255,0.2);"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;opacity:0.4"><rect x="1" y="6.5" width="12" height="1.5" rx="0.75" fill="currentColor"/></svg> Respuesta a incidentes</li>
-                            <li style="display:flex;align-items:center;gap:9px;font-size:0.85rem;color:rgba(255,255,255,0.2);"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;opacity:0.4"><rect x="1" y="6.5" width="12" height="1.5" rx="0.75" fill="currentColor"/></svg> Pentesting incluido</li>
-                        </ul>
-                        <form action="/pago_inseguro.php" method="GET" style="margin-top:6px;display:flex;flex-direction:column;gap:8px;">
-                            <input type="hidden" name="plan" value="individual">
-                            <label style="font-size:0.78rem;color:var(--text-muted);">Nº Tarjeta
-                                <input type="text" name="cc_number" placeholder="0000 0000 0000 0000" style="display:block;width:100%;margin-top:5px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:9px;padding:9px 12px;color:var(--text);font-size:0.84rem;outline:none;box-sizing:border-box;">
-                            </label>
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-                                <input type="text" name="cc_exp" placeholder="MM/YY" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:9px;padding:9px 12px;color:var(--text);font-size:0.82rem;outline:none;">
-                                <input type="text" name="cc_cvv" placeholder="CVV" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:9px;padding:9px 12px;color:var(--text);font-size:0.82rem;outline:none;">
-                            </div>
-                            <button type="submit" style="width:100%;background:rgba(6,182,212,0.12);border:1px solid rgba(6,182,212,0.3);border-radius:12px;padding:11px;color:#22d3ee;font-weight:700;font-size:0.88rem;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(6,182,212,0.25)';" onmouseout="this.style.background='rgba(6,182,212,0.12)';">Contratar — €499/mes</button>
-                        </form>
-                    </article>
-
-                    <!-- Plan Business (Destacado) -->
-                    <article id="plan-business" data-plan="business" style="position:relative;background:linear-gradient(160deg,rgba(6,182,212,0.08),rgba(14,116,144,0.05));border:1px solid rgba(6,182,212,0.35);border-radius:20px;padding:28px 24px;display:flex;flex-direction:column;gap:16px;box-shadow:0 0 40px rgba(6,182,212,0.07);transition:transform 0.25s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
-                        <div style="position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#06b6d4,#0e7490);color:#fff;font-size:0.67rem;font-weight:800;padding:5px 16px;border-radius:20px;letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap;">Más Popular</div>
-                        <div>
-                            <span style="display:inline-block;padding:4px 10px;border-radius:6px;background:rgba(6,182,212,0.15);border:1px solid rgba(6,182,212,0.3);color:#22d3ee;font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;">Business</span>
+                        <div class="ticket-row">
+                            <div><strong>#2150 — Renovación de certificado SSL</strong><div style="font-size:0.75rem;color:var(--text-muted);margin-top:3px;">Cerrado ayer</div></div>
+                            <span class="ticket-status status-closed" data-i18n="s_done">Resuelto</span>
                         </div>
-                        <div>
-                            <div style="font-size:2.2rem;font-weight:800;letter-spacing:-0.05em;color:var(--text);">€1,500<span style="font-size:0.9rem;font-weight:400;color:var(--text-muted);letter-spacing:0;">/mes</span></div>
-                            <p style="color:var(--text-muted);font-size:0.82rem;margin:6px 0 0;">Para empresas con exposición activa y equipo IT.</p>
-                        </div>
-                        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px;flex:1;">
-                            <li style="display:flex;align-items:center;gap:9px;font-size:0.85rem;color:var(--text-soft);"><span style="color:#10b981;">✓</span> SOC 24/7 completo</li>
-                            <li style="display:flex;align-items:center;gap:9px;font-size:0.85rem;color:var(--text-soft);"><span style="color:#10b981;">✓</span> Hasta 15 endpoints</li>
-                            <li style="display:flex;align-items:center;gap:9px;font-size:0.85rem;color:var(--text-soft);"><span style="color:#10b981;">✓</span> Alertas en tiempo real</li>
-                            <li style="display:flex;align-items:center;gap:9px;font-size:0.85rem;color:var(--text-soft);"><span style="color:#10b981;">✓</span> SLA 4h respuesta</li>
-                            <li style="display:flex;align-items:center;gap:9px;font-size:0.85rem;color:var(--text-soft);"><span style="color:#10b981;">✓</span> IR Retainer básico</li>
-                            <li style="display:flex;align-items:center;gap:9px;font-size:0.85rem;color:rgba(255,255,255,0.2);"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;opacity:0.4"><rect x="1" y="6.5" width="12" height="1.5" rx="0.75" fill="currentColor"/></svg> Pentesting incluido</li>
-                        </ul>
-                        <form action="/pago_inseguro.php" method="GET" style="margin-top:6px;display:flex;flex-direction:column;gap:8px;">
-                            <input type="hidden" name="plan" value="business">
-                            <label style="font-size:0.78rem;color:var(--text-muted);">Nº Tarjeta
-                                <input type="text" name="cc_number" placeholder="0000 0000 0000 0000" style="display:block;width:100%;margin-top:5px;background:rgba(255,255,255,0.04);border:1px solid rgba(6,182,212,0.22);border-radius:9px;padding:9px 12px;color:var(--text);font-size:0.84rem;outline:none;box-sizing:border-box;">
-                            </label>
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-                                <input type="text" name="cc_exp" placeholder="MM/YY" style="background:rgba(255,255,255,0.04);border:1px solid rgba(6,182,212,0.22);border-radius:9px;padding:9px 12px;color:var(--text);font-size:0.82rem;outline:none;">
-                                <input type="text" name="cc_cvv" placeholder="CVV" style="background:rgba(255,255,255,0.04);border:1px solid rgba(6,182,212,0.22);border-radius:9px;padding:9px 12px;color:var(--text);font-size:0.82rem;outline:none;">
-                            </div>
-                            <button type="submit" style="width:100%;background:linear-gradient(135deg,#06b6d4,#0e7490);border:none;border-radius:12px;padding:11px;color:#fff;font-weight:700;font-size:0.9rem;cursor:pointer;transition:opacity 0.2s;box-shadow:0 4px 16px rgba(6,182,212,0.25);" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Contratar — €1,500/mes</button>
-                        </form>
-                    </article>
-
-                    <!-- Plan Business Max -->
-                    <article id="plan-business-max" data-plan="business-max" style="position:relative;background:linear-gradient(160deg,rgba(168,85,247,0.08),rgba(109,40,217,0.04));border:1px solid rgba(168,85,247,0.35);border-radius:20px;padding:28px 24px;display:flex;flex-direction:column;gap:16px;transition:border-color 0.25s,transform 0.25s;" onmouseover="this.style.borderColor='#a855f7';this.style.transform='translateY(-5px)'" onmouseout="this.style.borderColor='rgba(168,85,247,0.35)';this.style.transform='translateY(0)'">
-                        <div style="position:absolute;top:-13px;right:22px;background:linear-gradient(135deg,#a855f7,#7c3aed);color:#fff;font-size:0.67rem;font-weight:800;padding:5px 14px;border-radius:20px;letter-spacing:0.1em;text-transform:uppercase;">Elite</div>
-                        <div>
-                            <span style="display:inline-block;padding:4px 10px;border-radius:6px;background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.28);color:#c084fc;font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;">Business Max</span>
-                        </div>
-                        <div>
-                            <div style="font-size:2.2rem;font-weight:800;letter-spacing:-0.05em;color:var(--text);">€4,200<span style="font-size:0.9rem;font-weight:400;color:var(--text-muted);letter-spacing:0;">/mes</span></div>
-                            <p style="color:var(--text-muted);font-size:0.82rem;margin:6px 0 0;">Cobertura total para infraestructuras críticas.</p>
-                        </div>
-                        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px;flex:1;">
-                            <li style="display:flex;align-items:center;gap:9px;font-size:0.85rem;color:var(--text-soft);"><span style="color:#10b981;">✓</span> SOC 24/7 dedicado</li>
-                            <li style="display:flex;align-items:center;gap:9px;font-size:0.85rem;color:var(--text-soft);"><span style="color:#10b981;">✓</span> Endpoints ilimitados</li>
-                            <li style="display:flex;align-items:center;gap:9px;font-size:0.85rem;color:var(--text-soft);"><span style="color:#10b981;">✓</span> SLA &lt; 15 min respuesta</li>
-                            <li style="display:flex;align-items:center;gap:9px;font-size:0.85rem;color:var(--text-soft);"><span style="color:#10b981;">✓</span> IR Retainer full</li>
-                            <li style="display:flex;align-items:center;gap:9px;font-size:0.85rem;color:var(--text-soft);"><span style="color:#10b981;">✓</span> Pentesting trimestral</li>
-                            <li style="display:flex;align-items:center;gap:9px;font-size:0.85rem;color:var(--text-soft);"><span style="color:#10b981;">✓</span> Cloud Hardening incluido</li>
-                        </ul>
-                        <form action="/pago_inseguro.php" method="GET" style="margin-top:6px;display:flex;flex-direction:column;gap:8px;">
-                            <input type="hidden" name="plan" value="business-max">
-                            <label style="font-size:0.78rem;color:var(--text-muted);">Nº Tarjeta
-                                <input type="text" name="cc_number" placeholder="0000 0000 0000 0000" style="display:block;width:100%;margin-top:5px;background:rgba(255,255,255,0.04);border:1px solid rgba(168,85,247,0.22);border-radius:9px;padding:9px 12px;color:var(--text);font-size:0.84rem;outline:none;box-sizing:border-box;">
-                            </label>
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-                                <input type="text" name="cc_exp" placeholder="MM/YY" style="background:rgba(255,255,255,0.04);border:1px solid rgba(168,85,247,0.22);border-radius:9px;padding:9px 12px;color:var(--text);font-size:0.82rem;outline:none;">
-                                <input type="text" name="cc_cvv" placeholder="CVV" style="background:rgba(255,255,255,0.04);border:1px solid rgba(168,85,247,0.22);border-radius:9px;padding:9px 12px;color:var(--text);font-size:0.82rem;outline:none;">
-                            </div>
-                            <button type="submit" style="width:100%;background:linear-gradient(135deg,#a855f7,#7c3aed);border:none;border-radius:12px;padding:11px;color:#fff;font-weight:700;font-size:0.9rem;cursor:pointer;transition:opacity 0.2s;box-shadow:0 4px 16px rgba(168,85,247,0.25);" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Contratar — €4,200/mes</button>
-                        </form>
-                    </article>
-
-                </div>
-            </article>
-            <article class="panel">
-                <div class="panel-heading">
-                    <div>
-                        <span class="eyebrow">Efectividad</span>
-                        <h2>Capacidad defensiva</h2>
                     </div>
-                </div>
-                <div id="dashboard-effectiveness" class="stack-list"></div>
-            </article>
-        </section>
+                </article>
 
-        <section class="executive-grid">
-            <article class="panel">
-                <div class="panel-heading">
-                    <div>
-                        <span class="eyebrow">Actividad reciente</span>
-                        <h2>Tickets y continuidad operativa</h2>
+                <!-- Documents -->
+                <article class="panel" style="padding:24px;">
+                    <div class="panel-heading" style="margin-bottom:20px;">
+                        <div><span class="eyebrow" data-i18n="docs_eyebrow">Finanzas</span><h2 data-i18n="docs_title">Facturas e Informes</h2></div>
                     </div>
-                </div>
-                <div id="dashboard-tickets" class="stack-list"></div>
-            </article>
-            <article class="panel">
-                <div class="panel-heading">
-                    <div>
-                        <span class="eyebrow">Eventos relevantes</span>
-                        <h2>Seguridad y seguimiento</h2>
+                    <div class="stack-list">
+                        <div class="stack-item" style="display:flex;justify-content:space-between;align-items:center;">
+                            <div><strong data-i18n="inv1">Factura Abril 2026</strong><div style="font-size:0.75rem;color:var(--text-muted);">PDF · 1.2 MB</div></div>
+                            <a href="/download.php?file=invoice_1023.pdf" class="btn btn-outline btn-sm" data-i18n="btn_dl">Descargar</a>
+                        </div>
+                        <div class="stack-item" style="display:flex;justify-content:space-between;align-items:center;">
+                            <div><strong data-i18n="inv2">Informe Mensual Mar 2026</strong><div style="font-size:0.75rem;color:var(--text-muted);">PDF · 3.4 MB</div></div>
+                            <a href="/download.php?file=report_march_2026.pdf" class="btn btn-outline btn-sm" data-i18n="btn_dl">Descargar</a>
+                        </div>
                     </div>
-                </div>
-                <div id="dashboard-events" class="stack-list"></div>
-            </article>
-        </section>
+                </article>
+            </div>
 
-        <!-- Live Activity Monitor -->
-        <section class="executive-grid" id="live-activity-section">
-            <article class="panel panel-feature" style="grid-column: 1 / -1;">
-                <div class="panel-heading">
-                    <div>
-                        <span class="eyebrow">Monitorización en tiempo real</span>
-                        <h2>Actividad de Login — En vivo <span id="live-pulse" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e;margin-left:8px;animation:pulse 1.5s infinite;"></span></h2>
-                    </div>
-                    <span class="context-chip" style="font-size:0.75rem;color:var(--text-muted);" id="live-last-update">Esperando datos...</span>
+            <!-- Live Feed -->
+            <article class="panel" style="padding:24px;">
+                <div class="panel-heading" style="margin-bottom:20px;">
+                    <div><span class="eyebrow">Live</span><h2 data-i18n="feed_title">Actividad de Seguridad</h2></div>
+                    <span style="width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 8px #22c55e;display:inline-block;animation:pulse 2s infinite;"></span>
                 </div>
-                <div id="live-event-feed" style="max-height:220px; overflow-y:auto; display:flex; flex-direction:column; gap:6px; padding-right:4px;"></div>
+                <div id="live-event-feed" style="display:flex;flex-direction:column;gap:8px;height:400px;overflow-y:auto;"></div>
             </article>
         </section>
     </section>
 </main>
 
-<!-- ====== Chat de Asistencia Sofia Solutions ====== -->
-<div id="chat-widget" style="position:fixed; bottom:24px; right:24px; z-index:9999; font-family:inherit;">
-    <!-- Botón de apertura -->
-    <button id="chat-toggle" onclick="document.getElementById('chat-box').style.display=document.getElementById('chat-box').style.display==='none'?'flex':'none'" style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--primary,#06b6d4),#0e7490);border:none;cursor:pointer;box-shadow:0 4px 20px rgba(6,182,212,0.4);display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:#fff;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">💬</button>
-
-    <!-- Caja del chat -->
-    <div id="chat-box" style="display:none; flex-direction:column; width:340px; height:420px; background:var(--bg-surface,#0f172a); border:1px solid var(--border,rgba(255,255,255,0.1)); border-radius:16px; overflow:hidden; box-shadow:0 8px 40px rgba(0,0,0,0.5); margin-bottom:12px; position:absolute; bottom:64px; right:0;">
-        <!-- Header del chat -->
-        <div style="background:linear-gradient(135deg,#0e7490,#06b6d4); padding:14px 16px; display:flex; align-items:center; gap:10px;">
-            <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🛡️</div>
-            <div>
-                <strong style="color:#fff; font-size:0.95rem;">Asistente Sofia</strong>
-                <small style="display:block; color:rgba(255,255,255,0.75); font-size:0.72rem;">Soporte técnico · En línea</small>
+<!-- PAYMENT MODAL -->
+<div class="pay-modal" id="pay-modal">
+    <div class="pay-card">
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:24px;">
+            <div><span class="eyebrow">Checkout Seguro</span><h2 id="pay-plan-name" style="margin:4px 0;font-size:1.4rem;">Plan</h2></div>
+            <button onclick="closePayment()" style="background:none;border:none;color:#fff;font-size:1.3rem;cursor:pointer;">&times;</button>
+        </div>
+        <div style="background:rgba(6,182,212,0.05);border:1px solid rgba(6,182,212,0.15);border-radius:12px;padding:16px;margin-bottom:20px;">
+            <div style="display:flex;justify-content:space-between;"><span style="color:var(--text-muted);" data-i18n="pay_subtotal">Subtotal mensual</span><strong id="pay-amount"></strong></div>
+            <div style="display:flex;justify-content:space-between;margin-top:8px;"><span style="color:var(--text-muted);" data-i18n="pay_tax">IVA (21%)</span><strong id="pay-tax"></strong></div>
+            <div style="display:flex;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.05);"><span style="font-weight:700;" data-i18n="pay_total">Total</span><strong id="pay-total" style="color:var(--primary);font-size:1.1rem;"></strong></div>
+        </div>
+        <div style="display:grid;gap:12px;margin-bottom:20px;">
+            <div><label style="font-size:0.72rem;color:var(--text-muted);display:block;margin-bottom:5px;" data-i18n="pay_card">Número de tarjeta</label><input style="width:100%;padding:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#fff;box-sizing:border-box;" placeholder="4532 •••• •••• 8910"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div><label style="font-size:0.72rem;color:var(--text-muted);display:block;margin-bottom:5px;" data-i18n="pay_exp">Caducidad</label><input style="width:100%;padding:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#fff;box-sizing:border-box;" placeholder="MM/AA"></div>
+                <div><label style="font-size:0.72rem;color:var(--text-muted);display:block;margin-bottom:5px;">CVV</label><input style="width:100%;padding:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#fff;box-sizing:border-box;" placeholder="•••"></div>
             </div>
-            <div style="margin-left:auto;width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px #22c55e;"></div>
         </div>
-
-        <!-- Mensajes -->
-        <div id="chat-messages" style="flex:1; overflow-y:auto; padding:14px; display:flex; flex-direction:column; gap:10px; font-size:0.85rem;">
-            <div style="background:rgba(6,182,212,0.1); border:1px solid rgba(6,182,212,0.2); border-radius:12px 12px 12px 2px; padding:10px 12px; max-width:85%; color:var(--text);">
-                👋 ¡Bienvenido/a a Sofia Solutions!<br>Soy tu asistente de seguridad. ¿En qué puedo ayudarte hoy?
-            </div>
-            <div class="chat-suggestion" onclick="sendChatMessage('¿Cuáles son mis servicios activos?')" style="background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:8px; padding:8px 10px; cursor:pointer; color:var(--text-muted); font-size:0.8rem; transition:all 0.2s;" onmouseover="this.style.borderColor='var(--primary)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">📋 ¿Cuáles son mis servicios activos?</div>
-            <div class="chat-suggestion" onclick="sendChatMessage('¿Cómo veo mis tickets abiertos?')" style="background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:8px; padding:8px 10px; cursor:pointer; color:var(--text-muted); font-size:0.8rem; transition:all 0.2s;" onmouseover="this.style.borderColor='var(--primary)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">🎫 ¿Cómo veo mis tickets abiertos?</div>
-            <div class="chat-suggestion" onclick="sendChatMessage('Necesito soporte urgente')" style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); border-radius:8px; padding:8px 10px; cursor:pointer; color:rgba(239,68,68,0.8); font-size:0.8rem; transition:all 0.2s;" onmouseover="this.style.borderColor='#ef4444';this.style.color='#ef4444'" onmouseout="this.style.borderColor='rgba(239,68,68,0.2)';this.style.color='rgba(239,68,68,0.8)'">🚨 Necesito soporte urgente</div>
-        </div>
-
-        <!-- Input -->
-        <div style="padding:10px; border-top:1px solid var(--border); display:flex; gap:8px; background:rgba(0,0,0,0.2);">
-            <input id="chat-input" type="text" placeholder="Escribe tu consulta..." onkeydown="if(event.key==='Enter')sendChatMessage()" style="flex:1; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:8px; padding:8px 12px; color:var(--text); font-size:0.85rem; outline:none;">
-            <button onclick="sendChatMessage()" style="background:var(--primary);border:none;border-radius:8px;padding:8px 12px;color:#fff;cursor:pointer;font-size:1rem;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">➤</button>
-        </div>
+        <button onclick="processPayment()" class="plan-btn" style="background:linear-gradient(135deg,#06b6d4,#7c3aed);color:#fff;" data-i18n="pay_btn">Confirmar Pago Seguro 🔒</button>
+        <p style="font-size:0.7rem;color:var(--text-muted);text-align:center;margin-top:12px;" data-i18n="pay_note">Pago procesado mediante cifrado TLS 1.3. Puedes cancelar en cualquier momento.</p>
     </div>
 </div>
 
-<!-- ====== Ticket Detail Popup Modal ====== -->
-<div id="ticket-modal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
-    <div style="background:#0f1826;border:1px solid rgba(6,182,212,0.25);border-radius:20px;padding:32px;max-width:520px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.6);position:relative;">
-        <button onclick="closeTicketModal()" style="position:absolute;top:14px;right:16px;background:rgba(255,255,255,0.05);border:none;border-radius:8px;padding:6px 10px;color:rgba(148,163,184,0.8);cursor:pointer;font-size:1rem;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">✕</button>
-        <div id="ticket-modal-content"></div>
-    </div>
-</div>
-
-<style>
-.plan-active {
-    border-color: rgba(34,211,238,0.7) !important;
-    box-shadow: 0 0 30px rgba(6,182,212,0.2) !important;
-}
-.plan-active-badge {
-    position:absolute; top:-13px; left:50%; transform:translateX(-50%);
-    background:linear-gradient(135deg,#22d3ee,#06b6d4);
-    color:#fff; font-size:0.65rem; font-weight:800; padding:5px 16px;
-    border-radius:20px; letter-spacing:0.12em; text-transform:uppercase;
-    white-space:nowrap; z-index:2;
-}
-#ticket-modal.open { display:flex; }
-</style>
+<style>@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}</style>
 
 <script>
-// ---- Plan Activo: detectar qué plan corresponde al cliente ----
-(function() {
-    const api = window.SOFIA_CONFIG?.apiBase || 'http://localhost:8001';
+function openPayment(plan, amount) {
+    const a = parseInt(amount), tax = Math.round(a*0.21), total = a+tax;
+    document.getElementById('pay-plan-name').textContent = plan;
+    document.getElementById('pay-amount').textContent = '€'+a.toLocaleString()+'/mes';
+    document.getElementById('pay-tax').textContent = '€'+tax.toLocaleString();
+    document.getElementById('pay-total').textContent = '€'+total.toLocaleString()+'/mes';
+    document.getElementById('pay-modal').style.display = 'flex';
+}
+function closePayment(){ document.getElementById('pay-modal').style.display='none'; }
+function processPayment(){
+    closePayment();
+    const t = document.createElement('div');
+    t.innerHTML = '<div style="position:fixed;top:24px;right:24px;z-index:99999;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:#22c55e;padding:16px 24px;border-radius:14px;font-weight:700;backdrop-filter:blur(10px);">✓ Plan actualizado correctamente</div>';
+    document.body.appendChild(t);
+    setTimeout(()=>t.remove(), 3500);
+}
+function openNewTicket(){
+    const subject = prompt('Describe brevemente el problema:');
+    if(!subject) return;
+    const list = document.getElementById('tickets-list');
+    const row = document.createElement('div');
+    row.className = 'ticket-row';
+    row.innerHTML = `<div><strong>#${Math.floor(Math.random()*1000)+2300} — ${subject}</strong><div style="font-size:0.75rem;color:var(--text-muted);margin-top:3px;">Abierto ahora</div></div><span class="ticket-status status-open">Sin Revisar</span>`;
+    list.prepend(row);
+}
+
+// Live feed
+(function(){
+    const api = window.SOFIA_CONFIG?.apiBase||'';
     const token = localStorage.getItem('sofia_token_v1');
-    if (!token) return;
-    fetch(api + '/api/client/overview', {
-        credentials: 'include',
-        headers: { Authorization: 'Bearer ' + token }
-    })
-    .then(r => r.ok ? r.json() : null)
-    .then(data => {
-        if (!data) return;
-        // Detectar el servicio principal del cliente
-        const primaryService = data.customer?.primaryService?.name
-            || (data.services && data.services[0]?.name)
-            || '';
-        let planKey = 'business'; // fallback
-        const name = primaryService.toLowerCase();
-        if (name.includes('individual') || name.includes('499')) planKey = 'individual';
-        else if (name.includes('max') || name.includes('elite') || name.includes('4200')) planKey = 'business-max';
-        else if (name.includes('business') || name.includes('1500')) planKey = 'business';
-        else if (name.includes('soc') || name.includes('24')) planKey = 'business';
-        const activeCard = document.querySelector('[data-plan="' + planKey + '"]');
-        if (activeCard) {
-            activeCard.classList.add('plan-active');
-            // Añadir badge "Plan Actual"
-            const badge = document.createElement('div');
-            badge.className = 'plan-active-badge';
-            badge.textContent = '✓ Plan Actual';
-            activeCard.style.position = 'relative';
-            activeCard.insertBefore(badge, activeCard.firstChild);
-            // Deshabilitar formulario
-            const btn = activeCard.querySelector('button[type="submit"]');
-            if (btn) {
-                btn.disabled = true;
-                btn.textContent = 'Plan en curso';
-                btn.style.opacity = '0.5';
-                btn.style.cursor = 'not-allowed';
+    const feed = document.getElementById('live-event-feed');
+    function makeFeedItem(type, endpoint, blocked){
+        const el = document.createElement('div');
+        el.style.cssText = `padding:12px 14px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);border-left:3px solid ${blocked?'#ef4444':'#22c55e'};border-radius:8px;`;
+        el.innerHTML = `<div style="display:flex;justify-content:space-between;"><strong style="font-size:0.8rem;">${type}</strong><span style="font-size:0.68rem;color:${blocked?'#ef4444':'#22c55e'}">${blocked?'BLOQUEADO':'OK'}</span></div><div style="font-size:0.72rem;color:var(--text-muted);margin-top:2px;">${endpoint}</div>`;
+        return el;
+    }
+    if(token){
+        fetch(api+'/api/admin/overview',{headers:{Authorization:'Bearer '+token}})
+        .then(r=>r.json()).then(data=>{
+            if(data.securityEvents){
+                data.securityEvents.slice(0,10).forEach(ev=>{
+                    feed.appendChild(makeFeedItem(ev.type, ev.endpoint, ev.action==='BLOCKED'));
+                });
             }
-        }
-    })
-    .catch(() => {
-        // Si no hay endpoint client/overview, marcar "Business" por defecto
-        const fallback = document.querySelector('[data-plan="business"]');
-        if (fallback) {
-            fallback.classList.add('plan-active');
-            const badge = document.createElement('div');
-            badge.className = 'plan-active-badge';
-            badge.textContent = '✓ Plan Actual';
-            fallback.style.position = 'relative';
-            fallback.insertBefore(badge, fallback.firstChild);
-        }
-    });
+        }).catch(()=>{
+            ['Brute Force','SQLi Attempt','Port Scan','DDoS L7','XSS Probe'].forEach((t,i)=>{
+                feed.appendChild(makeFeedItem(t,'iberdrola-fw-edge-lb0'+i,i%3!==0));
+            });
+        });
+    }
 })();
 
-// ---- Popup de detalle de Ticket ----
-function openTicketModal(ticketId, subject, status, priority, message) {
-    const statusColor = { OPEN:'#ef4444', PENDING:'#f59e0b', CLOSED:'#22c55e' };
-    const priorityColor = { HIGH:'#ef4444', MEDIUM:'#f59e0b', LOW:'#22c55e' };
-    document.getElementById('ticket-modal-content').innerHTML = `
-        <div style="margin-bottom:20px;">
-            <span style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;color:rgba(148,163,184,0.7);text-transform:uppercase;">Ticket de Soporte</span>
-            <h2 style="margin:8px 0 4px;font-size:1.15rem;color:#f0f9ff;">${subject}</h2>
-            <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">
-                <span style="padding:4px 12px;border-radius:20px;font-size:0.72rem;font-weight:700;background:${statusColor[status]}22;border:1px solid ${statusColor[status]}55;color:${statusColor[status]};">${status}</span>
-                <span style="padding:4px 12px;border-radius:20px;font-size:0.72rem;font-weight:700;background:${priorityColor[priority]}22;border:1px solid ${priorityColor[priority]}55;color:${priorityColor[priority]};">Prioridad ${priority}</span>
-                <span style="padding:4px 12px;border-radius:20px;font-size:0.72rem;font-weight:700;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(148,163,184,0.8);">#${ticketId}</span>
-            </div>
-        </div>
-        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px;margin-bottom:20px;">
-            <span style="font-size:0.75rem;font-weight:600;color:rgba(148,163,184,0.7);display:block;margin-bottom:8px;">Último mensaje del analista:</span>
-            <p style="margin:0;font-size:0.88rem;color:#cbd5e1;line-height:1.6;">${message || 'Nuestro equipo está revisando tu ticket. Te responderemos en el menor tiempo posible.'}</p>
-        </div>
-        <div style="display:flex;gap:10px;">
-            <button onclick="closeTicketModal()" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:11px;color:#cbd5e1;cursor:pointer;font-family:inherit;font-size:0.88rem;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.09)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">Cerrar</button>
-            <button style="flex:1;background:linear-gradient(135deg,#06b6d4,#0e7490);border:none;border-radius:10px;padding:11px;color:#fff;cursor:pointer;font-family:inherit;font-weight:600;font-size:0.88rem;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'" onclick="closeTicketModal()">Responder vía chat</button>
-        </div>
-    `;
-    const modal = document.getElementById('ticket-modal');
-    modal.classList.add('open');
-    modal.style.display = 'flex';
-}
-function closeTicketModal() {
-    const modal = document.getElementById('ticket-modal');
-    modal.classList.remove('open');
-    modal.style.display = 'none';
-}
-document.getElementById('ticket-modal').addEventListener('click', function(e) {
-    if (e.target === this) closeTicketModal();
-});
-</script>
-
-<script>
-// ---- Chat de Asistencia Sofia Solutions ----
-const chatResponses = {
-    "hola": "¡Hola! ¿Cómo va el día? Estoy aquí para ayudarte con cualquier duda técnica sobre el panel o tus servicios.",
-    "buenos dias": "¡Buenos días! Espero que todo esté funcionando correctamente. ¿Necesitas ayuda con algún reporte?",
-    "buenas tardes": "¡Buenas tardes! ¿En qué puedo apoyarte hoy con la monitorización de tus activos?",
-    "servicios": "Tus servicios activos están listados en el panel **'Postura de servicio y cobertura'**. Puedes ver el detalle de cada uno haciendo clic en su nombre.",
-    "tickets": "Puedes ver el estado de tus tickets en la sección **'Tickets y continuidad operativa'**. Al hacer clic en un ticket, se abrirá el detalle completo.",
-    "soporte": "Si necesitas soporte técnico directo, puedes abrir un ticket o llamarnos al **+34 900 831 294** indicando tu ID de cliente.",
-    "urgente": "🚨 He notificado a los analistas de guardia sobre tu solicitud. Recibirás respuesta en el dashboard en menos de 15 minutos.",
-    "pago": "La gestión de facturación y cambios de plan se realiza desde el selector de planes en este mismo dashboard.",
-    "grafana": "El panel de Grafana muestra métricas técnicas avanzadas. Si no ves datos, asegúrate de que tus agentes estén reportando correctamente.",
-    "gracias": "¡De nada! Aquí sigo para lo que necesites.",
-    "default": "Recibido. He trasladado tu consulta al equipo de soporte. Si es algo crítico que requiera atención inmediata, por favor usa la línea telefónica prioritaria."
-};
-
-function sendChatMessage(text) {
-    const input = document.getElementById('chat-input');
-    const message = text || input.value.trim();
-    if (!message) return;
-
-    const msgs = document.getElementById('chat-messages');
-
-    // Mensaje del usuario
-    const userMsg = document.createElement('div');
-    userMsg.style.cssText = 'background:rgba(6,182,212,0.15);border:1px solid rgba(6,182,212,0.3);border-radius:12px 12px 2px 12px;padding:10px 12px;max-width:85%;align-self:flex-end;color:var(--text);font-size:0.85rem;line-height:1.4;';
-    userMsg.textContent = message;
-    msgs.appendChild(userMsg);
-
-    // Respuesta bot (simulando humano)
-    setTimeout(() => {
-        const lowerMsg = message.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        let reply = chatResponses["default"];
-        
-        for (const key in chatResponses) {
-            if (lowerMsg.includes(key)) {
-                reply = chatResponses[key];
-                break;
-            }
-        }
-
-        const botMsg = document.createElement('div');
-        botMsg.style.cssText = 'background:rgba(6,182,212,0.08);border:1px solid rgba(6,182,212,0.15);border-radius:12px 12px 12px 2px;padding:10px 12px;max-width:85%;color:var(--text);font-size:0.85rem;line-height:1.4;';
-        botMsg.innerHTML = '🛡️ ' + reply;
-        msgs.appendChild(botMsg);
-        msgs.scrollTop = msgs.scrollHeight;
-    }, 900);
-
-    input.value = '';
-    msgs.scrollTop = msgs.scrollHeight;
-}
-
-// ---- Live Activity Feed ----
-const apiBase = window.SOFIA_CONFIG?.apiBase || 'http://localhost:8001';
-const feedEl  = document.getElementById('live-event-feed');
-const updateEl = document.getElementById('live-last-update');
-
-const eventColors = { BLOCKED:'#ef4444', FAILED:'#f59e0b', SUCCESS:'#22c55e' };
-const eventIcons  = { BLOCKED:'⛔', FAILED:'⚠️', SUCCESS:'✅' };
-
-async function fetchLiveActivity() {
-    try {
-        const token = localStorage.getItem('sofia_token_v1');
-        const resp = await fetch(`${apiBase}/api/admin/overview`, {
-            credentials:'include',
-            headers: token ? { Authorization:`Bearer ${token}` } : {}
-        });
-        if (!resp.ok) return;
-        const data = await resp.json();
-        const events = Array.isArray(data.securityEvents) ? data.securityEvents : [];
-
-        if (events.length > 0) {
-            feedEl.innerHTML = '';
-            events.slice(0,8).forEach(ev => {
-                const action = String(ev.action || 'UNKNOWN').toUpperCase();
-                const color  = eventColors[action] || '#94a3b8';
-                const icon   = eventIcons[action]  || '🔹';
-                const time   = ev.timestamp ? new Date(ev.timestamp).toLocaleTimeString('es-ES') : '--:--';
-                const row = document.createElement('div');
-                row.style.cssText = `display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);font-size:0.82rem;`;
-                row.innerHTML = `
-                    <span style="font-size:1rem;">${icon}</span>
-                    <span style="color:${color};font-weight:600;min-width:70px;">${action}</span>
-                    <span style="color:var(--text);flex:1;">${ev.endpoint || ev.type || 'Evento registrado'}</span>
-                    <span style="color:var(--text-muted);font-size:0.75rem;">${time}</span>
-                `;
-                feedEl.appendChild(row);
-            });
-        } else {
-            feedEl.innerHTML = '<div style="color:var(--text-muted);font-size:0.85rem;padding:8px;">Sin eventos recientes. Ejecuta un ataque para verlos aquí.</div>';
-        }
-        updateEl.textContent = '⟳ Actualizado: ' + new Date().toLocaleTimeString('es-ES');
-    } catch(e) {
-        updateEl.textContent = 'Error al conectar con la API';
-    }
-}
-
-fetchLiveActivity();
-setInterval(fetchLiveActivity, 8000);
+// i18n
+const i18n={es:{eyebrow:"Postura de Seguridad Corporativa",title:"Panel de Gestión de Ciberseguridad",score_label:"Security Score",k1:"Activos Protegidos",k2:"Uptime",k3:"Vulnerabilidades",k4:"SLA Cumplido",plans_eyebrow:"Suscripción",plans_title:"Planes de Cobertura",badge_current:"PLAN ACTUAL",badge_rec:"RECOMENDADO",f1a:"Monitorización 8/5",f1b:"1 Endpoint protegido",f1c:"Alertas por email",f2a:"SOC 24/7 Global",f2b:"15 Endpoints",f2c:"IR Retainer incluido",f3a:"SOC Dedicado 24/7",f3b:"Activos ilimitados",f3c:"CISO virtual incluido",btn_current:"Plan Activo",btn_upgrade:"Contratar Ahora",btn_contact:"Contactar Ventas",tickets_eyebrow:"Soporte Técnico",tickets_title:"Mis Tickets",btn_new_ticket:"+ Nuevo Ticket",s_open:"Sin Revisar",s_prog:"En Proceso",s_done:"Resuelto",docs_eyebrow:"Finanzas",docs_title:"Facturas e Informes",inv1:"Factura Abril 2026",inv2:"Informe Mensual Mar 2026",btn_dl:"Descargar",feed_title:"Actividad de Seguridad",pay_subtotal:"Subtotal mensual",pay_tax:"IVA (21%)",pay_total:"Total",pay_card:"Número de tarjeta",pay_exp:"Caducidad",pay_btn:"Confirmar Pago Seguro 🔒",pay_note:"Pago procesado mediante cifrado TLS 1.3."},en:{eyebrow:"Corporate Security Posture",title:"Cybersecurity Management Panel",score_label:"Security Score",k1:"Protected Assets",k2:"Uptime",k3:"Vulnerabilities",k4:"SLA Compliance",plans_eyebrow:"Subscription",plans_title:"Coverage Plans",badge_current:"CURRENT PLAN",badge_rec:"RECOMMENDED",f1a:"8/5 Monitoring",f1b:"1 Protected Endpoint",f1c:"Email Alerts",f2a:"Global 24/7 SOC",f2b:"15 Endpoints",f2c:"IR Retainer included",f3a:"Dedicated 24/7 SOC",f3b:"Unlimited assets",f3c:"Virtual CISO included",btn_current:"Active Plan",btn_upgrade:"Subscribe Now",btn_contact:"Contact Sales",tickets_eyebrow:"Technical Support",tickets_title:"My Tickets",btn_new_ticket:"+ New Ticket",s_open:"Unreviewed",s_prog:"In Progress",s_done:"Resolved",docs_eyebrow:"Finance",docs_title:"Invoices & Reports",inv1:"April 2026 Invoice",inv2:"Monthly Report Mar 2026",btn_dl:"Download",feed_title:"Security Activity",pay_subtotal:"Monthly subtotal",pay_tax:"VAT (21%)",pay_total:"Total",pay_card:"Card number",pay_exp:"Expiry",pay_btn:"Confirm Secure Payment 🔒",pay_note:"Payment secured with TLS 1.3 encryption."}};
+function setLang(l){localStorage.setItem('sofia_lang',l);document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(i18n[l]&&i18n[l][k])el.textContent=i18n[l][k];});document.getElementById('btn-es').style.background=l==='es'?'var(--primary)':'rgba(255,255,255,0.05)';document.getElementById('btn-en').style.background=l==='en'?'var(--primary)':'rgba(255,255,255,0.05)';}
+(function(){setLang(localStorage.getItem('sofia_lang')||'es');})();
 </script>

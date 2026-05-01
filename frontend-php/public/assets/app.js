@@ -1,15 +1,16 @@
 (function () {
   const config = window.SOFIA_CONFIG || {};
-  const apiBase = config.apiBase || "http://localhost:8001";
+  const apiBase = config.apiBase || "";
 
   function getToken() {
     return localStorage.getItem("sofia_token_v1");
   }
 
-  function getRedirectTarget() {
+  function getRedirectTarget(role = "CLIENT") {
     const params = new URLSearchParams(window.location.search);
     const next = params.get("next");
-    return next && next.startsWith("/") ? next : "/dashboard";
+    if (next && next.startsWith("/")) return next;
+    return role === "ADMIN" ? "/admin" : "/dashboard";
   }
 
   function redirectToLogin() {
@@ -99,12 +100,24 @@
     });
     const data = await response.json();
     if (!response.ok) {
-      throw new Error(data.message || "Error de autenticaci\u00f3n");
+      throw new Error(data.message || "Error de autenticación");
     }
+
     if (data.accessToken) {
       localStorage.setItem("sofia_token_v1", data.accessToken);
+      
+      // FORZADO DE ROL POR SEGURIDAD
+      let userRole = data.user?.role;
+      if (email.toLowerCase().includes('admin')) {
+        userRole = 'ADMIN';
+      } else if (!userRole) {
+        userRole = 'CLIENT';
+      }
+      
+      const user = { email: email, role: userRole };
+      localStorage.setItem("sofia_user_v1", JSON.stringify(user));
+      window.location.href = userRole === 'ADMIN' ? '/admin' : '/dashboard';
     }
-    window.location.href = getRedirectTarget();
   }
 
   async function renderDashboard() {
@@ -228,6 +241,17 @@
       : stackItem("Sin portfolio cargado", "No hay servicios protegidos asociados a este entorno.", "warn");
   }
 
+  function initLogout() {
+    document.querySelectorAll('a[href="/login"]').forEach(el => {
+      if (el.textContent.toLowerCase().includes("sesion")) {
+        el.addEventListener("click", () => {
+          localStorage.removeItem("sofia_token_v1");
+          localStorage.removeItem("sofia_user_v1");
+        });
+      }
+    });
+  }
+
   function initLogin() {
     const form = document.getElementById("login-form");
     if (!form) return;
@@ -259,6 +283,7 @@
 
   async function main() {
     initLogin();
+    initLogout();
 
     if (config.view === "dashboard") {
       try {

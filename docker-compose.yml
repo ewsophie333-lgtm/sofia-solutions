@@ -75,26 +75,22 @@ services:
       GF_AUTH_ANONYMOUS_ENABLED: "true"
       GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
       GF_SECURITY_ALLOW_EMBEDDING: "true"
-      GF_SERVER_ROOT_URL: http://localhost:3000
+      GF_SERVER_ROOT_URL: /grafana/
+      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
     volumes:
       - ./sofia-backend/docker/grafana/provisioning:/etc/grafana/provisioning
       - ./sofia-backend/docker/grafana/dashboards:/var/lib/grafana/dashboards
     depends_on:
       - prometheus
 
-  tunnel-frontend:
-    image: node:20-alpine
+  tunnel:
+    image: alpine:latest
     restart: always
-    command: npx localtunnel --port 80 --subdomain sofiasolutions --host http://localtunnel.me
     depends_on:
       - frontend
-
-  tunnel-api:
-    image: node:20-alpine
-    restart: always
-    command: npx localtunnel --port 8001 --subdomain sofiasolutions-api --host http://localtunnel.me
-    depends_on:
-      - backend
+    volumes:
+      - ./tunnel-key:/root/.ssh/id_ed25519
+    command: sh -c "apk add --no-cache openssh-client && chmod 600 /root/.ssh/id_ed25519 && ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -i /root/.ssh/id_ed25519 -R sofia-solutions:80:frontend:80 serveo.net"
 
 volumes:
   postgres-data:

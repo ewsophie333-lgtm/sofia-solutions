@@ -28,28 +28,41 @@ function renderTopNav(string $activeNav): void
 function renderAppNav(string $activeNav): void
 {
     $items = [
-        ['key' => 'dashboard', 'href' => '/dashboard', 'label' => 'Resumen ejecutivo', 'icon' => '◧'],
-        ['key' => 'soc', 'href' => '/admin/security-monitor', 'label' => 'Security monitor', 'icon' => '◎'],
-        ['key' => 'login', 'href' => '/login', 'label' => 'Cerrar sesión', 'icon' => '→'],
-        ['key' => 'grafana', 'href' => 'http://localhost:3000', 'label' => 'Grafana', 'icon' => '↗', 'external' => true],
+        ['key' => 'dashboard',       'href' => '/dashboard',           'label' => 'Dashboard Cliente',      'icon' => '◧', 'role' => 'CLIENT'],
+        ['key' => 'admin-dashboard', 'href' => '/admin',               'label' => 'Panel de Operaciones',   'icon' => '⊞', 'role' => 'ADMIN'],
+        ['key' => 'soc',             'href' => '/admin/security-monitor','label' => 'Security Monitor SOC',  'icon' => '◎', 'role' => 'ADMIN'],
+        ['key' => 'grafana',         'href' => '/grafana',             'label' => 'Metricas Grafana',       'icon' => '↗', 'external' => true, 'role' => 'ADMIN'],
+        ['key' => 'login',           'href' => '/login',               'label' => 'Cerrar sesion',          'icon' => '→'],
     ];
     ?>
     <nav class="sidebar-nav" aria-label="Navegación de aplicación">
         <?php foreach ($items as $item): ?>
             <?php 
                 $external = $item['external'] ?? false; 
-                $isAdminOnly = in_array($item['key'], ['soc', 'grafana']);
+                $roleRequired = $item['role'] ?? null;
             ?>
             <a
                 href="<?= htmlspecialchars($item['href'], ENT_QUOTES, 'UTF-8') ?>"
-                class="<?= $activeNav === $item['key'] ? 'active' : '' ?> <?= $isAdminOnly ? 'admin-only' : '' ?>"
+                class="<?= $activeNav === $item['key'] ? 'active' : '' ?>"
                 <?= $external ? 'target="_blank" rel="noreferrer"' : '' ?>
-                <?= $isAdminOnly ? 'style="display:none;"' : '' ?>
+                <?= $roleRequired ? 'data-role-required="' . $roleRequired . '"' : '' ?>
             >
                 <span class="nav-icon" aria-hidden="true"><?= htmlspecialchars($item['icon'], ENT_QUOTES, 'UTF-8') ?></span>
                 <span><?= htmlspecialchars($item['label'], ENT_QUOTES, 'UTF-8') ?></span>
             </a>
         <?php endforeach; ?>
     </nav>
+    <script>
+    // Cliente-side role filtering
+    (function() {
+        const user = JSON.parse(localStorage.getItem('sofia_user_v1') || '{}');
+        const role = user.role || 'GUEST';
+        document.querySelectorAll('.sidebar-nav [data-role-required]').forEach(el => {
+            const req = el.getAttribute('data-role-required');
+            if (role !== 'ADMIN' && req === 'ADMIN') el.style.display = 'none';
+            if (role === 'ADMIN' && req === 'CLIENT') el.style.display = 'none';
+        });
+    })();
+    </script>
     <?php
 }

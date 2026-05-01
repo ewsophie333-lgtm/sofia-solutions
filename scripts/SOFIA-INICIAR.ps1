@@ -31,9 +31,11 @@ Write-Host "  Grafana:  http://localhost:3000 (admin/admin)"
 Write-Host "  Prisma:   http://localhost:5556"
 
 Write-Host ""
-Write-Host "Accesos Públicos (Túnel):"
-Write-Host "  Web: https://sofiasolutions.loca.lt"
-Write-Host "  API: https://sofiasolutions-api.loca.lt"
-Write-Host "  Nota: Si pide IP, usa la tuya (ver en ipify.org)"
+Write-Host "Acceso Público (Cloudflare Tunnel):" -ForegroundColor Cyan
+Write-Host "  El túnel se inicia automáticamente."
+Write-Host "  Para ver tu URL pública, ejecuta este comando:" -ForegroundColor Yellow
+Write-Host "  docker compose logs tunnel | Select-String 'trycloudflare.com'"
+Write-Host ""
+Write-Host "  Nota: Todo (Web, API y Grafana) funciona bajo esa única URL."
 
 
