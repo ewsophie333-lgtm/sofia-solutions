@@ -67,7 +67,52 @@ $activeNav = 'admin-dashboard';
             </article>
         </section>
 
+        <!-- Client Server Health & Latency Analytics -->
+        <section class="panel" style="padding:24px;margin-bottom:32px;">
+            <div class="panel-heading" style="margin-bottom:20px;">
+                <div><span class="eyebrow">Infraestructura</span><h2>Estado de Servidores por Cliente (Latencia y Salud)</h2></div>
+            </div>
+            <div class="planes-grid" style="grid-template-columns:1fr 1fr 1fr;gap:20px;">
+                <!-- MAPFRE Server Health -->
+                <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:10px; padding:16px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <strong style="color:#e2e8f0;">MAPFRE (srv-prod-01)</strong>
+                        <span style="color:#22c55e; font-size:0.75rem; font-weight:bold; background:rgba(34,197,94,0.1); padding:4px 8px; border-radius:4px;">ONLINE</span>
+                    </div>
+                    <div style="height:100px;"><canvas id="mapfreLatencyChart"></canvas></div>
+                    <div style="display:flex; justify-content:space-between; margin-top:12px; font-size:0.75rem; color:var(--text-muted);">
+                        <span>Uptime: 99.9%</span>
+                        <span>Avg Ping: 12ms</span>
+                    </div>
+                </div>
 
+                <!-- IBERDROLA Server Health -->
+                <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:10px; padding:16px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <strong style="color:#e2e8f0;">IBERDROLA (scada-gw)</strong>
+                        <span style="color:#f59e0b; font-size:0.75rem; font-weight:bold; background:rgba(245,158,11,0.1); padding:4px 8px; border-radius:4px;">WARNING</span>
+                    </div>
+                    <div style="height:100px;"><canvas id="iberdrolaLatencyChart"></canvas></div>
+                    <div style="display:flex; justify-content:space-between; margin-top:12px; font-size:0.75rem; color:var(--text-muted);">
+                        <span>Uptime: 98.4%</span>
+                        <span>Avg Ping: 45ms</span>
+                    </div>
+                </div>
+
+                <!-- SABADELL Server Health -->
+                <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:10px; padding:16px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <strong style="color:#e2e8f0;">SABADELL (core-db)</strong>
+                        <span style="color:#22c55e; font-size:0.75rem; font-weight:bold; background:rgba(34,197,94,0.1); padding:4px 8px; border-radius:4px;">ONLINE</span>
+                    </div>
+                    <div style="height:100px;"><canvas id="sabadellLatencyChart"></canvas></div>
+                    <div style="display:flex; justify-content:space-between; margin-top:12px; font-size:0.75rem; color:var(--text-muted);">
+                        <span>Uptime: 99.9%</span>
+                        <span>Avg Ping: 8ms</span>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- Client Security Posture Ledger -->
         <section class="panel" style="padding:24px;margin-bottom:32px;">
@@ -186,6 +231,35 @@ function renderCharts(vectors, dist) {
         type: 'doughnut',
         data: { labels: dLabels, datasets: [{ data: dData, backgroundColor: dColors, borderWidth: 0 }] },
         options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom', labels:{ color:'#fff', padding:16, font:{size:11} } } } }
+    });
+
+    // Client Server Latency Charts
+    const commonLineOptions = {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { 
+            x: { display: false }, 
+            y: { display: false, min: 0 } 
+        },
+        elements: { point: { radius: 0 } }
+    };
+
+    new Chart(document.getElementById('mapfreLatencyChart'), {
+        type: 'line',
+        data: { labels: ['1','2','3','4','5','6','7','8','9','10'], datasets: [{ data: [11,12,15,10,13,12,11,14,12,12], borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.1)', fill: true, tension: 0.4 }] },
+        options: commonLineOptions
+    });
+
+    new Chart(document.getElementById('iberdrolaLatencyChart'), {
+        type: 'line',
+        data: { labels: ['1','2','3','4','5','6','7','8','9','10'], datasets: [{ data: [20,25,30,85,90,40,45,50,42,45], borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', fill: true, tension: 0.4 }] },
+        options: commonLineOptions
+    });
+
+    new Chart(document.getElementById('sabadellLatencyChart'), {
+        type: 'line',
+        data: { labels: ['1','2','3','4','5','6','7','8','9','10'], datasets: [{ data: [8,7,9,8,10,8,7,8,9,8], borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.1)', fill: true, tension: 0.4 }] },
+        options: commonLineOptions
     });
 }
 
