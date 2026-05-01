@@ -67,20 +67,7 @@ $operationalBenefits = [
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= htmlspecialchars($title, ENT_QUOTES, 'UTF-8') ?></title>
-    <link rel="stylesheet" href="/assets/app.css">
-    <script>
-    // GUARDIA GLOBAL DE ROLES (Se ejecuta antes que el body)
-    (function() {
-        const user = JSON.parse(localStorage.getItem('sofia_user_v1') || '{}');
-        const path = window.location.pathname;
-        if (user.role === 'ADMIN' && path === '/dashboard') {
-            window.location.href = '/admin';
-        }
-        if (user.role === 'CLIENT' && path === '/admin') {
-            window.location.href = '/dashboard';
-        }
-    })();
-    </script>
+    <link rel="stylesheet" href="/assets/app.css?v=1.0.3">
 </head>
 <body data-view="<?= htmlspecialchars($view, ENT_QUOTES, 'UTF-8') ?>" data-login-mode="<?= htmlspecialchars($mode, ENT_QUOTES, 'UTF-8') ?>">
 <?php require __DIR__ . '/views/' . $view . '.php'; ?>
@@ -92,7 +79,7 @@ window.SOFIA_CONFIG = {
   loginMode: "<?= htmlspecialchars($mode, ENT_QUOTES, 'UTF-8') ?>"
 };
 </script>
-<script src="/assets/app.js"></script>
+<script src="/assets/app.js?v=1.0.3"></script>
 <?php include __DIR__ . '/includes/ai-assistant.php'; ?>
 </body>
 </html>

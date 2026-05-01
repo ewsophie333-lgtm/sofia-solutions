@@ -23,18 +23,18 @@ $activeNav = 'soc';
                 <p class="panel-header-copy">Telemetría de red, vectores de ataque e incidentes en tiempo real.</p>
             </div>
             <div class="header-links">
-                <span class="signal-chip" style="background:rgba(239,68,68,0.1); color:#ef4444; border-color:rgba(239,68,68,0.2);">
-                    <span class="pulse-dot" style="background:#ef4444;"></span> 3 Alertas Activas
+                <span class="signal-chip" style="background:rgba(109,40,217,0.1); color:#a78bfa; border-color:rgba(109,40,217,0.2);">
+                    <span class="pulse-dot" style="background:#6d28d9;"></span> 3 Alertas Activas
                 </span>
             </div>
         </header>
 
         <!-- SOC KPIs -->
-        <section id="soc-kpis" class="planes-grid" style="grid-template-columns: repeat(4, 1fr); gap:20px; margin-bottom:32px;">
-            <div class="kpi-card" data-tone="ok"><span class="meta-label">Eventos Analizados</span><strong>—</strong><div class="tone-bar"></div></div>
-            <div class="kpi-card" data-tone="bad"><span class="meta-label">Incidentes Críticos</span><strong>—</strong><div class="tone-bar"></div></div>
-            <div class="kpi-card" data-tone="warn"><span class="meta-label">Amenazas Activas</span><strong>—</strong><div class="tone-bar"></div></div>
-            <div class="kpi-card" data-tone="ok"><span class="meta-label">Salud del Sistema</span><strong>—</strong><div class="tone-bar"></div></div>
+        <section id="soc-kpis" class="planes-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:20px; margin-bottom:32px;">
+            <div class="kpi-card" data-tone="ok" style="border-left:3px solid #6d28d9;"><span class="meta-label">Eventos Analizados</span><strong>4.1M</strong><div class="tone-bar" style="background:#6d28d9;"></div></div>
+            <div class="kpi-card" data-tone="ok" style="border-left:3px solid #6d28d9;"><span class="meta-label">Incidentes Críticos</span><strong>3</strong><div class="tone-bar" style="background:#6d28d9;"></div></div>
+            <div class="kpi-card" data-tone="ok" style="border-left:3px solid #6d28d9;"><span class="meta-label">Amenazas Activas</span><strong>12</strong><div class="tone-bar" style="background:#6d28d9;"></div></div>
+            <div class="kpi-card" data-tone="ok" style="border-left:3px solid #6d28d9;"><span class="meta-label">Salud del Sistema</span><strong>100%</strong><div class="tone-bar" style="background:#6d28d9;"></div></div>
         </section>
 
         <!-- Charts Row -->

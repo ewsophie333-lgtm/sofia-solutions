@@ -2,6 +2,33 @@
   const config = window.SOFIA_CONFIG || {};
   const apiBase = config.apiBase || "";
 
+  function setLang(lang) {
+    currentLang = lang;
+    localStorage.setItem("sofia_lang_v1", lang);
+    applyLang();
+    
+    // UI Update for sidebar buttons
+    const btnEs = document.getElementById('btn-es');
+    const btnEn = document.getElementById('btn-en');
+    if(btnEs && btnEn) {
+        if(lang === 'es') {
+            btnEs.style.background = 'rgba(139,92,246,0.15)';
+            btnEs.style.color = '#fff';
+            btnEs.style.border = '1px solid rgba(139,92,246,0.3)';
+            btnEn.style.background = 'transparent';
+            btnEn.style.color = 'var(--text-muted)';
+            btnEn.style.border = 'none';
+        } else {
+            btnEn.style.background = 'rgba(139,92,246,0.15)';
+            btnEn.style.color = '#fff';
+            btnEn.style.border = '1px solid rgba(139,92,246,0.3)';
+            btnEs.style.background = 'transparent';
+            btnEs.style.color = 'var(--text-muted)';
+            btnEs.style.border = 'none';
+        }
+    }
+  }
+
   function getToken() {
     return localStorage.getItem("sofia_token_v1");
   }
@@ -14,6 +41,7 @@
   }
 
   function redirectToLogin() {
+    if (window.location.pathname === "/login") return;
     const next = encodeURIComponent(`${window.location.pathname}${window.location.search}`);
     window.location.href = `/login?next=${next}&restricted=1`;
   }
@@ -129,6 +157,20 @@
 
     if (overview?.userRole === "ADMIN") {
       document.querySelectorAll(".admin-only").forEach(el => el.style.display = "");
+    }
+
+    // Personalización por cliente
+    const user = JSON.parse(localStorage.getItem('sofia_user_v1') || '{}');
+    const nameDisplay = document.getElementById('company-name-display');
+    if (nameDisplay) {
+        let companyName = "Ciberseguridad Corporativa";
+        const email = (user.email || "").toLowerCase();
+        if (email.includes('mapfre')) companyName = "MAPFRE Seguros";
+        else if (email.includes('iberdrola')) companyName = "Iberdrola S.A.";
+        else if (email.includes('sabadell')) companyName = "Banco Sabadell";
+        else if (email.includes('mercadona')) companyName = "Mercadona";
+        else if (email.includes('repsol')) companyName = "Repsol";
+        nameDisplay.textContent = companyName;
     }
 
     document.getElementById("dashboard-kpis").innerHTML = [

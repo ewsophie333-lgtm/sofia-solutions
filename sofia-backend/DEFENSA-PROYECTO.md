@@ -93,7 +93,7 @@ Respuesta recomendada:
 
 Respuesta recomendada:
 
-> Principalmente SQL Injection, XSS, path traversal, fuerza bruta y manipulación del checkout. La idea no es hacer ofensiva real sobre sistemas externos, sino mostrar cómo la versión vulnerable tolera o registra sin bloquear, mientras que la segura detecta, rechaza y genera evidencia.
+> Principalmente SQL Injection (Bypass y Exfiltración de PII como IBAN/Tarjetas/CVV), XSS, path traversal, fuerza bruta y manipulación del checkout. La idea no es hacer ofensiva real sobre sistemas externos, sino mostrar cómo la versión vulnerable tolera o registra sin bloquear, mientras que la segura detecta, rechaza y genera evidencia.
 
 ## 4.6 ¿Qué papel tiene Grafana?
 

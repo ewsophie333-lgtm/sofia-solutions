@@ -19,6 +19,24 @@
   --radius-md: 16px;
   --container: min(1200px, calc(100vw - 64px));
   --font-body: "Inter", "Segoe UI", sans-serif;
+  --primary: var(--brand);
+}
+
+/* Diagnostic console buttons */
+.diag-btn {
+    background: rgba(99,102,241,0.08);
+    border: 1px solid rgba(99,102,241,0.25);
+    color: #a5b4fc;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+}
+.diag-btn:hover {
+    background: rgba(99,102,241,0.18);
+    color: #c7d2fe;
 }
 
 * {
@@ -953,7 +971,7 @@ img {
 .btn-primary {
     background-size: 200% auto;
     transition: all 0.4s ease;
-    background-image: linear-gradient(135deg, #8b5cf6 0%, #d946ef 50%, #8b5cf6 100%);
+    background: #6d28d9;
 }
 .btn-primary:hover {
     background-position: right center;
@@ -978,9 +996,10 @@ img {
 /* PLANES Y PAGOS VULNERABLES */
 .planes-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 24px;
     margin-top: 24px;
+    align-items: start;
 }
 .plan-card {
     position: relative;
@@ -1023,7 +1042,6 @@ img {
     list-style: none;
     padding: 0;
     margin: 0 0 24px 0;
-    flex-grow: 1;
 }
 .plan-features li {
     padding: 8px 0;
@@ -1432,7 +1450,6 @@ img {
     }
 
     /* All grids become single column on mobile */
-    .planes-grid,
     .executive-grid,
     div[style*="grid-template-columns"],
     section[style*="grid-template-columns"] {
@@ -1441,11 +1458,39 @@ img {
         flex-direction: column !important;
     }
 
+    .app-shell {
+        display: block !important;
+        width: 100% !important;
+    }
+
+    .content {
+        width: 100% !important;
+        padding: 16px !important;
+        margin: 0 !important;
+    }
+
+    .planes-grid {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        width: 100% !important;
+        gap: 16px !important;
+    }
+
+    .panel, .kpi-card, .plan-card, article {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        box-sizing: border-box !important;
+    }
+
     /* Header */
     .panel-header {
         flex-direction: column !important;
         align-items: flex-start !important;
         gap: 12px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
 
     .panel-header h1 {
@@ -1502,6 +1547,35 @@ img {
 
     .auth-panel-form {
         padding: 20px !important;
+    }
+
+    /* Server status grid → stack on mobile */
+    #srv-api, #srv-db, #srv-soc {
+        font-size: 0.9rem !important;
+    }
+
+    /* Diag console buttons wrap properly */
+    .diag-btn {
+        font-size: 0.72rem !important;
+        padding: 6px 10px !important;
+    }
+
+    /* Grafana iframe */
+    #grafana-frame {
+        height: 300px !important;
+    }
+
+    /* Payment modal full width */
+    .pay-card {
+        padding: 20px !important;
+        width: calc(100vw - 32px) !important;
+        box-sizing: border-box !important;
+    }
+
+    /* KPI cards: 2 column on mobile instead of 4 */
+    section.planes-grid[style*="repeat(4"] {
+        grid-template-columns: 1fr 1fr !important;
+        display: grid !important;
     }
 
     /* Home page hero */
