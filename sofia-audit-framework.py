@@ -33,7 +33,8 @@ def print_banner():
  ___/ / /_/ / / / /_/ /   / ___ / /_/ / /_/ / / /_  
 /____/\____/_/_/\__,_/   /_/  |_\__,_/\__,_/_/\__/  
                                                     
-    {C_CYAN}Security Intelligence - Audit Framework v4.8{C_RESET}
+    {C_CYAN}Security Intelligence - Sofia Audit Kit v4.8{C_RESET}
+    {C_DIM}Proyecto Final ASIR 2026{C_RESET}
     """
     print(banner)
 
