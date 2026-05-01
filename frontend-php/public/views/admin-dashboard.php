@@ -1,9 +1,27 @@
-<?php $activeNav = 'admin-dashboard'; ?>
-<?php /* Redirigir clientes al dashboard cliente */ ?>
-<script>(function(){const u=JSON.parse(localStorage.getItem('sofia_user_v1')||'{}');if(u.role==='CLIENT')window.location.replace('/dashboard');})();</script>
+<?php 
+/**
+ * SOFIA SOLUTIONS - Administrative Operations Center (SOC)
+ * Central command center for multi-tenant security monitoring.
+ * 
+ * This module aggregates telemetry from all clients, embeds Grafana metrics,
+ * and provides a live administrative console for incident response.
+ */
+$activeNav = 'admin-dashboard'; 
+?>
+
+<!-- Security Guard: Ensure only ADMIN roles can access this view -->
+<script>
+(function(){
+    const u = JSON.parse(localStorage.getItem('sofia_user_v1') || '{}');
+    if (u.role === 'CLIENT') window.location.replace('/dashboard');
+})();
+</script>
+
+<!-- External Charting Dependency -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <main class="app-shell readdy-dashboard" id="main-app">
+    <!-- Sidebar Navigation -->
     <aside class="sidebar">
         <div class="sidebar-brand">
             <?php renderLogo('brand-mark brand-mark-sidebar'); ?>
@@ -19,7 +37,7 @@
     </aside>
 
     <section class="content">
-        <!-- Cabecera del panel -->
+        <!-- Global Operations Header -->
         <header class="panel-header" style="margin-bottom:32px;">
             <div>
                 <span class="eyebrow" data-i18n="eyebrow">Operaciones Globales</span>
@@ -29,7 +47,7 @@
             <span style="padding:8px 16px; border-radius:20px; font-size:0.75rem; font-weight:700; background:rgba(34,197,94,0.1); color:#22c55e; border:1px solid rgba(34,197,94,0.2);">● SISTEMA OPERATIVO</span>
         </header>
 
-        <!-- KPIs — cargados desde /api/admin/security-monitor -->
+        <!-- Global Performance Metrics (KPIs) -->
         <section class="planes-grid" style="grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:32px;">
             <div class="kpi-card" data-tone="ok" style="border-left:3px solid #6d28d9;" id="kpi-events"><span class="meta-label" data-i18n="k1">Eventos Analizados</span><strong>—</strong><div class="tone-bar" style="background:#6d28d9;"></div></div>
             <div class="kpi-card" data-tone="ok" style="border-left:3px solid #6d28d9;" id="kpi-incidents"><span class="meta-label" data-i18n="k2">Incidentes Activos</span><strong>—</strong><div class="tone-bar" style="background:#6d28d9;"></div></div>
@@ -37,7 +55,7 @@
             <div class="kpi-card" data-tone="ok" style="border-left:3px solid #6d28d9;" id="kpi-health"><span class="meta-label" data-i18n="k4">Salud del Sistema</span><strong>—</strong><div class="tone-bar" style="background:#6d28d9;"></div></div>
         </section>
 
-        <!-- Gráficos — datos inyectados via JS tras llamada a API -->
+        <!-- Threat Vector & Risk Distribution Analytics -->
         <section class="planes-grid" style="grid-template-columns:1.8fr 1fr;gap:32px;margin-bottom:32px;">
             <article class="panel" style="padding:24px;">
                 <div class="panel-heading"><div><span class="eyebrow">Telemetría</span><h2 data-i18n="chart1">Ataques por Vector (24h)</h2></div></div>
@@ -49,7 +67,7 @@
             </article>
         </section>
 
-        <!-- Panel de Grafana — embebido con URL dinámica (local o túnel) -->
+        <!-- Embedded Grafana Dashboard: Dynamic Environment Resolution -->
         <section class="panel" style="padding:24px;margin-bottom:32px;">
             <div class="panel-heading" style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;">
                 <div><span class="eyebrow">Monitorización</span><h2>Grafana — Live Metrics</h2></div>
@@ -63,7 +81,7 @@
             </p>
         </section>
 
-        <!-- Tabla de clientes — datos reales de customerExposure -->
+        <!-- Client Security Posture Ledger -->
         <section class="panel" style="padding:24px;margin-bottom:32px;">
             <div class="panel-heading" style="margin-bottom:20px;">
                 <div><span class="eyebrow">Portfolio</span><h2 data-i18n="table_title">Postura de Seguridad por Cliente</h2></div>
@@ -77,12 +95,12 @@
                     <th style="padding:14px 12px;">Servicio</th>
                 </tr></thead>
                 <tbody id="client-table-body">
-                    <tr><td colspan="5" style="padding:20px;text-align:center;color:var(--text-muted);">Cargando datos reales...</td></tr>
+                    <tr><td colspan="5" style="padding:20px;text-align:center;color:var(--text-muted);">Sincronizando con SOC...</td></tr>
                 </tbody>
             </table>
         </section>
 
-        <!-- Consola de eventos en vivo -->
+        <!-- Live Operations & Troubleshooting Console -->
         <section class="panel" style="padding:24px;margin-bottom:32px;">
             <div class="panel-heading" style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;">
                 <div><span class="eyebrow">Operaciones</span><h2>Consola de Eventos en Vivo</h2></div>
@@ -99,7 +117,7 @@
     </section>
 </main>
 
-<!-- Modal detalle cliente -->
+<!-- Client Deep-Dive Modal -->
 <div id="client-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);z-index:9999;align-items:center;justify-content:center;padding:40px;">
     <div class="panel" style="width:min(700px,100%);max-height:90vh;overflow-y:auto;position:relative;border:1px solid rgba(6,182,212,0.3);">
         <button onclick="closeModal()" style="position:absolute;top:20px;right:20px;background:none;border:none;color:#fff;cursor:pointer;font-size:1.5rem;">&times;</button>
@@ -108,14 +126,17 @@
 </div>
 
 <script>
-// ── Configuración base ────────────────────────────────────
+/**
+ * CORE ADMINISTRATIVE LOGIC
+ */
 const API    = window.SOFIA_CONFIG?.apiBase || '';
 const TOKEN  = () => localStorage.getItem('sofia_token_v1');
 const authHdr = () => ({ Authorization: 'Bearer ' + TOKEN() });
 
-// ── Grafana: URL dinámica según entorno ───────────────────
-// Si estamos en localhost usa el puerto 3000 directamente.
-// En producción (túnel serveo) añade el subpath /grafana.
+/**
+ * GRAFANA EMBEDDING ENGINE
+ * Resolves local vs tunnel URLs based on current origin.
+ */
 (function setupGrafana() {
     const isLocal = ['localhost','127.0.0.1'].includes(location.hostname);
     const base    = isLocal ? 'http://localhost:3000' : (location.origin + '/grafana');
@@ -129,37 +150,40 @@ const authHdr = () => ({ Authorization: 'Bearer ' + TOKEN() });
     openBtn.href = base;
     if (dirLink) dirLink.href = base;
 
-    // Si el iframe no carga (CORS u offline) mostramos enlace directo
     frame.addEventListener('error', () => {
         frame.style.display = 'none';
         errEl.style.display = 'block';
     });
-    // Timeout de 8s para detectar si quedó en blanco
+    
+    // Fallback detection for cross-origin failures
     setTimeout(() => {
         try {
             if (!frame.contentDocument || frame.contentDocument.title === '') {
                 frame.style.display = 'none';
                 errEl.style.display = 'block';
             }
-        } catch(e) { /* cross-origin — probablemente cargó bien */ }
+        } catch(e) {}
     }, 8000);
 })();
 
-// ── Carga de datos reales al iniciar ─────────────────────
+/**
+ * TELEMETRY SYNCHRONIZATION
+ * Fetches and processes real-time security data from the backend.
+ */
 (async function loadAdmin() {
     try {
         const r = await fetch(API + '/api/admin/security-monitor', { headers: authHdr() });
-        if (!r.ok) throw new Error('HTTP ' + r.status);
+        if (!r.ok) throw new Error('Security API Unreachable');
         const d = await r.json();
         const s = d.summary || {};
 
-        // KPIs
+        // Update KPI counters
         document.querySelector('#kpi-events strong').textContent    = s.totalEventsAnalyzed ? (s.totalEventsAnalyzed/1e6).toFixed(1)+'M' : '—';
         document.querySelector('#kpi-incidents strong').textContent = s.criticalIncidents ?? '—';
         document.querySelector('#kpi-customers strong').textContent = s.protectedCustomers ?? '—';
         document.querySelector('#kpi-health strong').textContent    = s.systemHealth != null ? s.systemHealth + '%' : '—';
 
-        // Tabla de clientes con datos reales
+        // Populate Client Ledger
         const rows = (d.customerExposure || []).map(c => {
             const inc   = c.incidents || 0;
             const color = inc === 0 ? '#22c55e' : inc <= 2 ? '#f59e0b' : '#ef4444';
@@ -176,20 +200,20 @@ const authHdr = () => ({ Authorization: 'Bearer ' + TOKEN() });
             </tr>`;
         }).join('');
         document.getElementById('client-table-body').innerHTML =
-            rows || '<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--text-muted);">Sin clientes registrados</td></tr>';
+            rows || '<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--text-muted);">No client records found</td></tr>';
 
-        // Gráficos con datos reales de la API
         renderCharts(d.topAttackVectors || [], d.alertDistribution || []);
 
     } catch(e) {
-        console.warn('Admin: fallo API, usando datos de demo.', e);
-        renderCharts([], []); // fallback con datos demo
+        console.warn('Admin Analytics Sync Failure', e);
+        renderCharts([], []); // Fallback to demo mode
     }
 })();
 
-// ── Gráficos (Chart.js) ───────────────────────────────────
+/**
+ * DATA VISUALIZATION (Chart.js Implementation)
+ */
 function renderCharts(vectors, dist) {
-    // Datos de demo si la API no devuelve nada
     const vLabels = vectors.length ? vectors.map(v => v.label) : ['DDoS','SQLi','Brute Force','Malware','XSS'];
     const vData   = vectors.length ? vectors.map(v => v.count) : [1200,1900,3000,500,800];
     const dLabels = dist.length ? dist.map(d => d.label) : ['Crítico','Alto','Medio','Bajo'];
@@ -208,7 +232,9 @@ function renderCharts(vectors, dist) {
     });
 }
 
-// ── Consola de Admin (comandos de diagnóstico) ────────────
+/**
+ * ADMINISTRATIVE CONSOLE COMMANDS
+ */
 const aLog = (msg, color = '#a5f3fc') => {
     const c  = document.getElementById('admin-console');
     const ts = new Date().toLocaleTimeString('es-ES');
@@ -228,35 +254,36 @@ async function adminCmd(cmd) {
                 const col = ev.severity === 'CRITICAL' ? '#ef4444' : ev.severity === 'HIGH' ? '#f59e0b' : '#22c55e';
                 aLog(`[${ev.severity}] ${ev.type} — ${ev.sourceIp} → ${ev.destination}`, col);
             });
-            if (!(d.liveFeed || []).length) aLog('Sin eventos recientes.', '#64748b');
+            if (!(d.liveFeed || []).length) aLog('No recent events recorded.', '#64748b');
         } else if (cmd === 'clients') {
             (d.customerExposure || []).forEach(c =>
-                aLog(`${c.name}: ${c.incidents} incidentes | ${c.assets} activos | ${c.service || '—'}`)
+                aLog(`${c.name}: ${c.incidents} active incidents | ${c.assets} IT assets | Tier: ${c.tier}`)
             );
         } else if (cmd === 'incidents') {
             const s = d.summary || {};
-            aLog('Incidentes críticos: ' + (s.criticalIncidents || 0), '#ef4444');
-            aLog('Amenazas activas:    ' + (s.activeThreats    || 0), '#f59e0b');
-            aLog('Salud del sistema:   ' + (s.systemHealth     || '?') + '%', '#22c55e');
+            aLog('Critical Incidents: ' + (s.criticalIncidents || 0), '#ef4444');
+            aLog('Active Threats:     ' + (s.activeThreats    || 0), '#f59e0b');
+            aLog('Overall Health:     ' + (s.systemHealth     || '?') + '%', '#22c55e');
         } else if (cmd === 'ping') {
             const t0 = Date.now();
             await fetch(API + '/api/admin/overview', { headers: authHdr() });
-            aLog('✓ Sistema operativo. Latencia: ' + (Date.now() - t0) + 'ms', '#22c55e');
+            aLog('✓ Operation Center online. Latency: ' + (Date.now() - t0) + 'ms', '#22c55e');
         }
     } catch(e) { aLog('✗ Error: ' + e.message, '#ef4444'); }
 }
 
-// ── Modal detalle cliente ─────────────────────────────────
 function openClient(name) {
     document.getElementById('modal-content').innerHTML =
         `<h2 style="font-size:1.6rem;margin-bottom:8px;">${name}</h2>
-         <p style="color:var(--text-muted);">Consulta el Monitor SOC para ver el detalle completo de incidentes y activos de este cliente en tiempo real.</p>
-         <a href="/soc" class="btn btn-primary" style="margin-top:16px;display:inline-block;">Ir al Monitor SOC →</a>`;
+         <p style="color:var(--text-muted);">Redirecting to SOC Monitor for detailed real-time incident mapping and asset inventory for this client.</p>
+         <a href="/soc" class="btn btn-primary" style="margin-top:16px;display:inline-block;">Launch SOC Monitor →</a>`;
     document.getElementById('client-modal').style.display = 'flex';
 }
 function closeModal() { document.getElementById('client-modal').style.display = 'none'; }
 
-// ── i18n (internacionalización ES/EN) ────────────────────
+/**
+ * INTERNATIONALIZATION (i18n)
+ */
 const i18n = {
     es: { eyebrow:"Operaciones Globales", title:"Panel de Operaciones", copy:"Visión unificada de ciberseguridad multi-cliente.", k1:"Eventos Analizados", k2:"Incidentes Activos", k3:"Clientes Protegidos", k4:"Salud del Sistema", chart1:"Ataques por Vector (24h)", chart2:"Distribución de Alertas", table_title:"Postura de Seguridad por Cliente" },
     en: { eyebrow:"Global Operations",  title:"Operations Panel",       copy:"Unified multi-client cybersecurity view.",           k1:"Events Analyzed",   k2:"Active Incidents",   k3:"Protected Clients",  k4:"System Health",      chart1:"Attacks by Vector (24h)",   chart2:"Alert Distribution",    table_title:"Security Posture by Client" }

@@ -1,10 +1,27 @@
-<?php $activeNav = 'dashboard'; ?>
-<script>(function(){const u=JSON.parse(localStorage.getItem('sofia_user_v1')||'{}');if(u.role==='ADMIN')window.location.href='/admin';})();</script>
-<style>
-.pay-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);z-index:9999;align-items:center;justify-content:center;}
-.pay-card{background:#0f0c1d;border:1px solid rgba(6,182,212,0.3);border-radius:20px;padding:40px;width:min(480px,90vw);}
+<?php 
+/**
+ * SOFIA SOLUTIONS - Client Dashboard
+ * Principal interface for corporate clients to manage their security posture.
+ * 
+ * This file implements a single-page application (SPA) architecture using 
+ * vanilla JavaScript to communicate with the Node.js backend.
+ */
+$activeNav = 'dashboard'; 
+?>
 
-/* Overrides agresivos para asegurar el diseño */
+<!-- Security Check: Redirect non-client roles -->
+<script>
+(function(){
+    const u = JSON.parse(localStorage.getItem('sofia_user_v1') || '{}');
+    if (u.role === 'ADMIN') window.location.href = '/admin';
+})();
+</script>
+
+<style>
+/* CSS Implementation for specialized dashboard components */
+.pay-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); z-index:9999; align-items:center; justify-content:center; }
+.pay-card { background:#0f0c1d; border:1px solid rgba(6,182,212,0.3); border-radius:20px; padding:40px; width:min(480px, 90vw); }
+
 .planes-grid { align-items: start !important; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important; }
 .plan-card { 
     height: auto !important; 
@@ -29,15 +46,16 @@
 }
 .btn-primary:hover { background: #7c3aed !important; transform: translateY(-2px) !important; }
 
-.ticket-row{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:10px;margin-bottom:8px;transition:background 0.15s;}
-.ticket-row:hover{background:rgba(255,255,255,0.04);}
-.ticket-status{font-size:0.72rem;font-weight:700;padding:3px 10px;border-radius:20px;}
-.status-open{background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.2);}
-.status-progress{background:rgba(245,158,11,0.1);color:#f59e0b;border:1px solid rgba(245,158,11,0.2);}
-.status-closed{background:rgba(34,197,94,0.1);color:#22c55e;border:1px solid rgba(34,197,94,0.2);}
+.ticket-row { display:flex; justify-content:space-between; align-items:center; padding:14px 16px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:10px; margin-bottom:8px; transition:background 0.15s; }
+.ticket-row:hover { background:rgba(255,255,255,0.04); }
+.ticket-status { font-size:0.72rem; font-weight:700; padding:3px 10px; border-radius:20px; }
+.status-open { background:rgba(239,68,68,0.1); color:#ef4444; border:1px solid rgba(239,68,68,0.2); }
+.status-progress { background:rgba(245,158,11,0.1); color:#f59e0b; border:1px solid rgba(245,158,11,0.2); }
+.status-closed { background:rgba(34,197,94,0.1); color:#22c55e; border:1px solid rgba(34,197,94,0.2); }
 </style>
 
 <main class="app-shell readdy-dashboard">
+    <!-- Main Sidebar Navigation -->
     <aside class="sidebar">
         <div class="sidebar-brand">
             <?php renderLogo('brand-mark brand-mark-sidebar'); ?>
@@ -50,16 +68,19 @@
     </aside>
 
     <section class="content">
+        <!-- Dashboard Header & Telemetry Summary -->
         <header class="panel-header" style="margin-bottom:32px; display:flex; justify-content:space-between; align-items:center;">
             <div>
                 <span class="eyebrow" data-i18n="eyebrow">Postura de Seguridad Corporativa</span>
                 <h1 data-i18n="title" style="margin:8px 0 0;">Panel de Gestión: <span id="company-name-display" style="color:var(--primary);">Cargando...</span></h1>
             </div>
             <div style="display:flex; align-items:center; gap:24px;">
+                <!-- Localization Switcher -->
                 <div style="display:flex;gap:4px;background:rgba(255,255,255,0.03);padding:4px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);">
                     <button onclick="setLang('es')" id="btn-es" class="btn" style="min-height:30px; min-width:40px; padding:0 8px; font-size:0.7rem; border-radius:6px; background:rgba(139,92,246,0.15); color:#fff; border:1px solid rgba(139,92,246,0.3);">ES</button>
                     <button onclick="setLang('en')" id="btn-en" class="btn" style="min-height:30px; min-width:40px; padding:0 8px; font-size:0.7rem; border-radius:6px; background:transparent; color:var(--text-muted); border:none;">EN</button>
                 </div>
+                <!-- Security Score Component -->
                 <div style="text-align:right;">
                     <div style="font-size:0.72rem;color:var(--text-muted);" data-i18n="score_label">Security Score</div>
                     <div style="font-size:2.2rem;font-weight:800;color:#22c55e;line-height:1;">94<span style="font-size:1rem;color:var(--text-muted);">/100</span></div>
@@ -67,7 +88,7 @@
             </div>
         </header>
 
-        <!-- KPIs Reales -->
+        <!-- KPI Grid: Dynamic values loaded via API -->
         <section class="planes-grid" style="grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:36px;">
             <div class="kpi-card" data-tone="ok" id="kpi-assets"><span class="meta-label" data-i18n="k1">Activos Protegidos</span><strong>—</strong><div class="tone-bar"></div></div>
             <div class="kpi-card" data-tone="ok" id="kpi-uptime"><span class="meta-label" data-i18n="k2">Estado Servidor</span><strong>—</strong><div class="tone-bar"></div></div>
@@ -75,7 +96,7 @@
             <div class="kpi-card" data-tone="ok" id="kpi-tickets"><span class="meta-label" data-i18n="k4">Tickets Abiertos</span><strong>—</strong><div class="tone-bar"></div></div>
         </section>
 
-        <!-- Estado del Servidor -->
+        <!-- System Health & Infrastructure Monitoring -->
         <section style="margin-bottom:32px;">
             <article class="panel" style="padding:24px;">
                 <div class="panel-heading" style="margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;">
@@ -102,13 +123,13 @@
             </article>
         </section>
 
-        <!-- Plans -->
+        <!-- Subscription Management Section -->
         <section style="margin-bottom:40px;">
             <div class="panel-heading" style="margin-bottom:24px;">
                 <div><span class="eyebrow" data-i18n="plans_eyebrow">Suscripción</span><h2 data-i18n="plans_title">Planes de Cobertura</h2></div>
             </div>
             <div class="planes-grid" style="grid-template-columns:repeat(3,1fr);gap:24px;">
-                <!-- Individual (current) -->
+                <!-- Individual Tier -->
                 <article class="plan-card" style="position:relative;">
                     <div style="position:absolute;top:16px;right:16px;background:rgba(109,40,217,0.2);color:#a78bfa;font-size:0.65rem;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid rgba(109,40,217,0.3);" data-i18n="badge_current">PLAN ACTUAL</div>
                     <span class="meta-label">Individual</span>
@@ -121,7 +142,7 @@
                     <button class="btn btn-block" style="background:rgba(255,255,255,0.05) !important; color:rgba(255,255,255,0.4) !important; border:1px solid rgba(255,255,255,0.1) !important; cursor:default !important; padding:12px; border-radius:10px; font-weight:700;" disabled data-i18n="btn_current">Plan Activo</button>
                 </article>
 
-                <!-- Business (recommended) -->
+                <!-- Business Tier (Marketing Focus) -->
                 <article class="plan-card" style="border-color:#6d28d9;background:rgba(109,40,217,0.03);position:relative;">
                     <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#6d28d9;color:#fff;font-size:0.65rem;font-weight:800;padding:4px 14px;border-radius:20px;white-space:nowrap;" data-i18n="badge_rec">RECOMENDADO</div>
                     <span class="meta-label" style="color:#a78bfa;">Business Max</span>
@@ -134,7 +155,7 @@
                     <button onclick="openPayment('Business Max','1500')" class="btn btn-block" style="background:#6d28d9 !important; color:#fff !important; border:none !important; padding:12px; border-radius:10px; font-weight:700; cursor:pointer;" data-i18n="btn_upgrade">Contratar Ahora</button>
                 </article>
 
-                <!-- Enterprise -->
+                <!-- Enterprise Tier -->
                 <article class="plan-card" style="position:relative;">
                     <span class="meta-label">Enterprise Elite</span>
                     <div class="price" style="font-size:1.8rem;margin:12px 0;">€4,200<small style="font-size:0.9rem;color:var(--text-muted);">/mes</small></div>
@@ -148,19 +169,19 @@
             </div>
         </section>
 
-        <!-- Tickets + Docs + Feed -->
+        <!-- Secondary Information Layer: Tickets, Docs & Real-time Activity -->
         <section class="planes-grid" style="grid-template-columns:1.5fr 1fr;gap:32px;">
             <div style="display:flex;flex-direction:column;gap:24px;">
-                <!-- TICKETS -->
+                <!-- Support Ticketing System -->
                 <article class="panel" style="padding:24px;">
                     <div class="panel-heading" style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
                         <div><span class="eyebrow" data-i18n="tickets_eyebrow">Soporte Técnico</span><h2 data-i18n="tickets_title">Mis Tickets</h2></div>
-                        <button class="btn btn-primary btn-sm" style="background:#6d28d9 !important; background-image:none !important; border:none !important;" onclick="openNewTicket()" data-i18n="btn_new_ticket">+ Nuevo Ticket</button>
+                        <button class="btn btn-primary btn-sm" style="background:#6d28d9 !important; border:none !important;" onclick="openNewTicket()" data-i18n="btn_new_ticket">+ Nuevo Ticket</button>
                     </div>
                     <div id="tickets-list"><div style="padding:20px;text-align:center;color:var(--text-muted);font-size:0.8rem;">Cargando tickets...</div></div>
                 </article>
 
-                <!-- Documents -->
+                <!-- Document Repository (Financials) -->
                 <article class="panel" style="padding:24px;">
                     <div class="panel-heading" style="margin-bottom:20px;">
                         <div><span class="eyebrow" data-i18n="docs_eyebrow">Finanzas</span><h2 data-i18n="docs_title">Facturas e Informes</h2></div>
@@ -178,7 +199,7 @@
                 </article>
             </div>
 
-            <!-- Live Feed -->
+            <!-- Real-time Security Activity Stream -->
             <article class="panel" style="padding:24px;">
                 <div class="panel-heading" style="margin-bottom:20px;">
                     <div><span class="eyebrow">Live</span><h2 data-i18n="feed_title">Actividad de Seguridad</h2></div>
@@ -188,7 +209,7 @@
             </article>
         </section>
 
-        <!-- Consola de Diagnóstico -->
+        <!-- Diagnostic Troubleshooting Console (Client Self-Service) -->
         <section style="margin-bottom:40px;">
             <article class="panel" style="padding:24px;">
                 <div class="panel-heading" style="margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;">
@@ -208,7 +229,7 @@
     </section>
 </main>
 
-<!-- PAYMENT MODAL -->
+<!-- Simulation: Payment Processing Modal -->
 <div class="pay-modal" id="pay-modal">
     <div class="pay-card">
         <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:24px;">
@@ -227,7 +248,7 @@
                 <div><label style="font-size:0.72rem;color:var(--text-muted);display:block;margin-bottom:5px;">CVV</label><input style="width:100%;padding:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#fff;box-sizing:border-box;" placeholder="•••"></div>
             </div>
         </div>
-        <button onclick="processPayment()" class="btn btn-primary btn-block" style="background:#6d28d9 !important; background-image:none !important; border:none !important;" data-i18n="pay_btn">Confirmar Pago Seguro 🔒</button>
+        <button onclick="processPayment()" class="btn btn-primary btn-block" data-i18n="pay_btn">Confirmar Pago Seguro 🔒</button>
         <p style="font-size:0.7rem;color:var(--text-muted);text-align:center;margin-top:12px;" data-i18n="pay_note">Pago procesado mediante cifrado TLS 1.3. Puedes cancelar en cualquier momento.</p>
     </div>
 </div>
@@ -235,6 +256,9 @@
 <style>@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}</style>
 
 <script>
+/**
+ * UI INTERACTION LOGIC
+ */
 function openPayment(plan, amount) {
     const a = parseInt(amount), tax = Math.round(a*0.21), total = a+tax;
     document.getElementById('pay-plan-name').textContent = plan;
@@ -243,7 +267,8 @@ function openPayment(plan, amount) {
     document.getElementById('pay-total').textContent = '€'+total.toLocaleString()+'/mes';
     document.getElementById('pay-modal').style.display = 'flex';
 }
-function closePayment(){ document.getElementById('pay-modal').style.display='none'; }
+function closePayment(){ document.getElementById('pay-modal').style.display = 'none'; }
+
 function processPayment(){
     closePayment();
     const t = document.createElement('div');
@@ -251,6 +276,7 @@ function processPayment(){
     document.body.appendChild(t);
     setTimeout(()=>t.remove(), 3500);
 }
+
 function openNewTicket(){
     const subject = prompt('Describe brevemente el problema:');
     if(!subject) return;
@@ -261,12 +287,16 @@ function openNewTicket(){
     list.prepend(row);
 }
 
-// ── Helpers ──────────────────────────────────────────────
+/**
+ * BACKEND INTEGRATION ENGINE
+ */
 const API = window.SOFIA_CONFIG?.apiBase || '';
 const TOKEN = () => localStorage.getItem('sofia_token_v1');
 function authHdr(){ return { Authorization: 'Bearer ' + TOKEN() }; }
 
-// ── Cargar datos reales al iniciar ───────────────────────
+/**
+ * Initializes the dashboard with live telemetry and data
+ */
 (async function loadDashboard(){
     const feed = document.getElementById('live-event-feed');
     try {
@@ -277,17 +307,19 @@ function authHdr(){ return { Authorization: 'Bearer ' + TOKEN() }; }
         const overview = await overviewRes.json();
         const ticketsData = await ticketsRes.json();
 
-        // KPIs
+        // Map KPI data from aggregate responses
         const kpiAssets = document.querySelector('#kpi-assets strong');
         const kpiBlocked = document.querySelector('#kpi-blocked strong');
         const kpiTickets = document.querySelector('#kpi-tickets strong');
         if(kpiAssets) kpiAssets.textContent = overview.secureLogins ?? '—';
         if(kpiBlocked) kpiBlocked.textContent = overview.blockedAttacks ?? '0';
         if(kpiTickets) kpiTickets.textContent = overview.openTickets ?? '0';
+        
+        // Identity synchronization
         document.getElementById('company-name-display').textContent =
             JSON.parse(localStorage.getItem('sofia_user_v1')||'{}').name || 'Mi Empresa';
 
-        // Tickets reales
+        // Render ticket backlog
         const tickets = Array.isArray(ticketsData) ? ticketsData : (ticketsData.tickets || []);
         const list = document.getElementById('tickets-list');
         if(tickets.length === 0){
@@ -305,7 +337,7 @@ function authHdr(){ return { Authorization: 'Bearer ' + TOKEN() }; }
             }).join('');
         }
 
-        // Live feed
+        // Populate Security Event stream
         if(overview.securityEvents){
             overview.securityEvents.slice(0,10).forEach(ev=>{
                 const blocked = ev.action === 'BLOCKED';
@@ -316,15 +348,17 @@ function authHdr(){ return { Authorization: 'Bearer ' + TOKEN() }; }
             });
         }
     } catch(e){
-        console.warn('Dashboard: usando datos de demostración', e);
+        console.warn('Dashboard Telemetry Sync Error', e);
         document.getElementById('company-name-display').textContent =
-            JSON.parse(localStorage.getItem('sofia_user_v1')||'{}').name || 'Mi Empresa';
+            JSON.parse(localStorage.getItem('sofia_user_v1')||'{}').name || 'Demo Client';
     }
 
-    // Estado del servidor (ping al backend)
     checkServerStatus();
 })();
 
+/**
+ * Monitors backend infrastructure availability and latency
+ */
 async function checkServerStatus(){
     const dot = document.getElementById('server-status-dot');
     const apiEl = document.getElementById('srv-api');
@@ -343,7 +377,7 @@ async function checkServerStatus(){
             dot.innerHTML = '<span style="width:8px;height:8px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite;display:inline-block;"></span> OPERATIVO';
             dot.style.color = '#22c55e';
             document.querySelector('#kpi-uptime strong').textContent = '● Online';
-        } else { throw new Error('HTTP ' + r.status); }
+        } else { throw new Error('Status Check Failed'); }
     } catch(e){
         apiEl.innerHTML = '<span style="color:#ef4444;">● Offline</span>';
         latEl.textContent = 'Sin respuesta';
@@ -355,7 +389,9 @@ async function checkServerStatus(){
     }
 }
 
-// ── Consola de Diagnóstico ────────────────────────────────
+/**
+ * DIAGNOSTIC CONSOLE ENGINE
+ */
 const diagLog = (msg, color='#a5f3fc') => {
     const c = document.getElementById('diag-console');
     const line = document.createElement('div');
@@ -364,7 +400,9 @@ const diagLog = (msg, color='#a5f3fc') => {
     c.appendChild(line);
     c.scrollTop = c.scrollHeight;
 };
+
 function clearConsole(){ document.getElementById('diag-console').innerHTML = ''; }
+
 async function runDiag(cmd){
     diagLog('> ' + cmd, '#818cf8');
     if(cmd === 'ping'){
@@ -405,8 +443,103 @@ async function runDiag(cmd){
     }
 }
 
-// i18n
-const i18n={es:{eyebrow:"Postura de Seguridad Corporativa",title:"Panel de Gestión de Ciberseguridad",score_label:"Security Score",k1:"Activos Protegidos",k2:"Uptime",k3:"Vulnerabilidades",k4:"SLA Cumplido",plans_eyebrow:"Suscripción",plans_title:"Planes de Cobertura",badge_current:"PLAN ACTUAL",badge_rec:"RECOMENDADO",f1a:"Monitorización 8/5",f1b:"1 Endpoint protegido",f1c:"Alertas por email",f2a:"SOC 24/7 Global",f2b:"15 Endpoints",f2c:"IR Retainer incluido",f3a:"SOC Dedicado 24/7",f3b:"Activos ilimitados",f3c:"CISO virtual incluido",btn_current:"Plan Activo",btn_upgrade:"Contratar Ahora",btn_contact:"Contactar Ventas",tickets_eyebrow:"Soporte Técnico",tickets_title:"Mis Tickets",btn_new_ticket:"+ Nuevo Ticket",s_open:"Sin Revisar",s_prog:"En Proceso",s_done:"Resuelto",docs_eyebrow:"Finanzas",docs_title:"Facturas e Informes",inv1:"Factura Abril 2026",inv2:"Informe Mensual Mar 2026",btn_dl:"Descargar",feed_title:"Actividad de Seguridad",pay_subtotal:"Subtotal mensual",pay_tax:"IVA (21%)",pay_total:"Total",pay_card:"Número de tarjeta",pay_exp:"Caducidad",pay_btn:"Confirmar Pago Seguro 🔒",pay_note:"Pago procesado mediante cifrado TLS 1.3."},en:{eyebrow:"Corporate Security Posture",title:"Cybersecurity Management Panel",score_label:"Security Score",k1:"Protected Assets",k2:"Uptime",k3:"Vulnerabilities",k4:"SLA Compliance",plans_eyebrow:"Subscription",plans_title:"Coverage Plans",badge_current:"CURRENT PLAN",badge_rec:"RECOMMENDED",f1a:"8/5 Monitoring",f1b:"1 Protected Endpoint",f1c:"Email Alerts",f2a:"Global 24/7 SOC",f2b:"15 Endpoints",f2c:"IR Retainer included",f3a:"Dedicated 24/7 SOC",f3b:"Unlimited assets",f3c:"Virtual CISO included",btn_current:"Active Plan",btn_upgrade:"Subscribe Now",btn_contact:"Contact Sales",tickets_eyebrow:"Technical Support",tickets_title:"My Tickets",btn_new_ticket:"+ New Ticket",s_open:"Unreviewed",s_prog:"In Progress",s_done:"Resolved",docs_eyebrow:"Finance",docs_title:"Invoices & Reports",inv1:"April 2026 Invoice",inv2:"Monthly Report Mar 2026",btn_dl:"Download",feed_title:"Security Activity",pay_subtotal:"Monthly subtotal",pay_tax:"VAT (21%)",pay_total:"Total",pay_card:"Card number",pay_exp:"Expiry",pay_btn:"Confirm Secure Payment 🔒",pay_note:"Payment secured with TLS 1.3 encryption."}};
-function setLang(l){localStorage.setItem('sofia_lang',l);document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(i18n[l]&&i18n[l][k])el.textContent=i18n[l][k];});document.getElementById('btn-es').style.background=l==='es'?'var(--primary)':'rgba(255,255,255,0.05)';document.getElementById('btn-en').style.background=l==='en'?'var(--primary)':'rgba(255,255,255,0.05)';}
-(function(){setLang(localStorage.getItem('sofia_lang')||'es');})();
+/**
+ * INTERNATIONALIZATION (i18n)
+ */
+const i18n = {
+    es: {
+        eyebrow: "Postura de Seguridad Corporativa",
+        title: "Panel de Gestión de Ciberseguridad",
+        score_label: "Security Score",
+        k1: "Activos Protegidos",
+        k2: "Estado Servidor",
+        k3: "Ataques Bloqueados",
+        k4: "Tickets Abiertos",
+        plans_eyebrow: "Suscripción",
+        plans_title: "Planes de Cobertura",
+        badge_current: "PLAN ACTUAL",
+        badge_rec: "RECOMENDADO",
+        f1a: "Monitorización 8/5",
+        f1b: "1 Endpoint protegido",
+        f1c: "Alertas por email",
+        f2a: "SOC 24/7 Global",
+        f2b: "15 Endpoints",
+        f2c: "IR Retainer incluido",
+        f3a: "SOC Dedicado 24/7",
+        f3b: "Activos ilimitados",
+        f3c: "CISO virtual incluido",
+        btn_current: "Plan Activo",
+        btn_upgrade: "Contratar Ahora",
+        btn_contact: "Contactar Ventas",
+        tickets_eyebrow: "Soporte Técnico",
+        tickets_title: "Mis Tickets",
+        btn_new_ticket: "+ Nuevo Ticket",
+        docs_eyebrow: "Finanzas",
+        docs_title: "Facturas e Informes",
+        inv1: "Factura Abril 2026",
+        inv2: "Informe Mensual Mar 2026",
+        btn_dl: "Descargar",
+        feed_title: "Actividad de Seguridad",
+        pay_subtotal: "Subtotal mensual",
+        pay_tax: "IVA (21%)",
+        pay_total: "Total",
+        pay_card: "Número de tarjeta",
+        pay_exp: "Caducidad",
+        pay_btn: "Confirmar Pago Seguro 🔒",
+        pay_note: "Pago procesado mediante cifrado TLS 1.3."
+    },
+    en: {
+        eyebrow: "Corporate Security Posture",
+        title: "Cybersecurity Management Panel",
+        score_label: "Security Score",
+        k1: "Protected Assets",
+        k2: "Server Status",
+        k3: "Blocked Attacks",
+        k4: "Open Tickets",
+        plans_eyebrow: "Subscription",
+        plans_title: "Coverage Plans",
+        badge_current: "CURRENT PLAN",
+        badge_rec: "RECOMMENDED",
+        f1a: "8/5 Monitoring",
+        f1b: "1 Protected Endpoint",
+        f1c: "Email Alerts",
+        f2a: "Global 24/7 SOC",
+        f2b: "15 Endpoints",
+        f2c: "IR Retainer included",
+        f3a: "Dedicated 24/7 SOC",
+        f3b: "Unlimited assets",
+        f3c: "Virtual CISO included",
+        btn_current: "Active Plan",
+        btn_upgrade: "Subscribe Now",
+        btn_contact: "Contact Sales",
+        tickets_eyebrow: "Technical Support",
+        tickets_title: "My Tickets",
+        btn_new_ticket: "+ New Ticket",
+        docs_eyebrow: "Finance",
+        docs_title: "Invoices & Reports",
+        inv1: "April 2026 Invoice",
+        inv2: "Monthly Report Mar 2026",
+        btn_dl: "Download",
+        feed_title: "Security Activity",
+        pay_subtotal: "Monthly subtotal",
+        pay_tax: "VAT (21%)",
+        pay_total: "Total",
+        pay_card: "Card number",
+        pay_exp: "Expiry",
+        pay_btn: "Confirm Secure Payment 🔒",
+        pay_note: "Payment secured with TLS 1.3 encryption."
+    }
+};
+
+function setLang(l){
+    localStorage.setItem('sofia_lang',l);
+    document.querySelectorAll('[data-i18n]').forEach(el=>{
+        const k=el.getAttribute('data-i18n');
+        if(i18n[l]&&i18n[l][k]) el.textContent = i18n[l][k];
+    });
+    document.getElementById('btn-es').style.background = l==='es' ? 'rgba(139,92,246,0.15)' : 'transparent';
+    document.getElementById('btn-en').style.background = l==='en' ? 'rgba(139,92,246,0.15)' : 'transparent';
+}
+
+(function(){ setLang(localStorage.getItem('sofia_lang')||'es'); })();
 </script>
