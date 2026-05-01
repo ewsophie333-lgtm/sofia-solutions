@@ -67,19 +67,7 @@ $activeNav = 'admin-dashboard';
             </article>
         </section>
 
-        <!-- Embedded Grafana Dashboard: Dynamic Environment Resolution -->
-        <section class="panel" style="padding:24px;margin-bottom:32px;">
-            <div class="panel-heading" style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;">
-                <div><span class="eyebrow">Monitorización</span><h2>Grafana — Live Metrics</h2></div>
-                <a id="grafana-open-btn" href="#" target="_blank" style="font-size:0.78rem;color:#818cf8;text-decoration:none;border:1px solid rgba(99,102,241,0.3);padding:6px 14px;border-radius:8px;">Abrir en pantalla completa ↗</a>
-            </div>
-            <div style="border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.06);background:#111;">
-                <iframe id="grafana-frame" src="" style="width:100%;height:450px;border:none;display:block;" loading="lazy"></iframe>
-            </div>
-            <p id="grafana-error" style="display:none;color:var(--text-muted);font-size:0.8rem;margin-top:12px;text-align:center;">
-                ⚠ Grafana no disponible. <a id="grafana-direct-link" href="#" target="_blank" style="color:#818cf8;">Abrirlo directamente</a>
-            </p>
-        </section>
+
 
         <!-- Client Security Posture Ledger -->
         <section class="panel" style="padding:24px;margin-bottom:32px;">
@@ -133,37 +121,7 @@ const API    = window.SOFIA_CONFIG?.apiBase || '';
 const TOKEN  = () => localStorage.getItem('sofia_token_v1');
 const authHdr = () => ({ Authorization: 'Bearer ' + TOKEN() });
 
-/**
- * GRAFANA EMBEDDING ENGINE
- * Resolves local vs tunnel URLs based on current origin.
- */
-(function setupGrafana() {
-    const base    = location.origin + '/grafana';
-    const panelUrl = `${base}/d/sofia-prometheus/sofia-security-overview?orgId=1&kiosk&theme=dark`;
-    const frame    = document.getElementById('grafana-frame');
-    const openBtn  = document.getElementById('grafana-open-btn');
-    const errEl    = document.getElementById('grafana-error');
-    const dirLink  = document.getElementById('grafana-direct-link');
 
-    frame.src = panelUrl;
-    openBtn.href = base;
-    if (dirLink) dirLink.href = base;
-
-    frame.addEventListener('error', () => {
-        frame.style.display = 'none';
-        errEl.style.display = 'block';
-    });
-    
-    // Fallback detection for cross-origin failures
-    setTimeout(() => {
-        try {
-            if (!frame.contentDocument || frame.contentDocument.title === '') {
-                frame.style.display = 'none';
-                errEl.style.display = 'block';
-            }
-        } catch(e) {}
-    }, 8000);
-})();
 
 /**
  * TELEMETRY SYNCHRONIZATION
