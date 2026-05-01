@@ -20,6 +20,10 @@ La solución representa una plataforma corporativa de servicios IT y ciberseguri
 - monitor SOC propio para la parte corporativa;
 - scripts de ataque para validar diferencias entre entornos;
 - **asistente Nova AI mejorado** en el Dashboard, con lenguaje natural y botones de sugerencia rápida;
+- **telemetría visual en tiempo real** mediante Chart.js, sustituyendo consolas de texto legacy por gráficos de latencia y salud;
+- **hub de tickets avanzado** con filtrado inteligente, priorización por cliente y seguimiento de analistas SOC;
+- **notificación SOS profesional** integrada, con sistema de alerta no intrusivo y triaje inmediato;
+- **visualización de plan activo** para clientes, detallando servicios contratados y facturación;
 - **feed de actividad en tiempo real** que muestra eventos de seguridad actualizados cada 8 segundos;
 - **diseño visual premium** Cyberpunk/Glassmorphism unificado en todas las vistas;
 - **3 planes de servicio** (Individual €499/mes, Business €1,500/mes, Business Max €4,200/mes) presentes tanto en la web pública como en el dashboard del cliente con la misma estética;
@@ -229,7 +233,7 @@ Sirve para mostrar:
 - exposición por cliente;
 - telemetría agregada de seguridad.
 
-*Nota de diseño*: Este panel se ha reacondicionado visualmente utilizando componentes avanzados CSS (glassmorphism, brillos de neón cyperpunk y gráficos de barras integrados por CSS puro).
+*Nota de diseño*: Este panel se ha reacondicionado visualmente utilizando componentes avanzados CSS y **Chart.js** (glassmorphism, brillos de neón cyperpunk y gráficos de telemetría integrados). Se ha implementado un **Monitor de Tickets Maestro** que permite a los analistas gestionar incidentes de múltiples clientes desde una sola vista técnica, con filtros de estado y prioridad.
 
 ### Consola Maestra (Audit Tool)
 
@@ -256,16 +260,23 @@ Se utiliza como panel técnico para enseñar:
 - sesiones activas;
 - evolución temporal de la actividad.
 
-### Visualización de Base de Datos (Prisma Studio)
+### Visualización de Base de Datos (Prisma Studio) — GUÍA PARA LA DEFENSA
 
 Ruta:
 - `http://localhost:5556`
 
-Para las demostraciones ante el tribunal, esta es la herramienta clave para mostrar la **integridad y seguridad de los datos**:
-1. Accede a la URL y selecciona la tabla **`User`**.
-2. **Modo Vulnerable**: Podrás mostrar cómo las contraseñas de los clientes están guardadas en **Texto Plano** (un fallo crítico de seguridad).
-3. **Modo Seguro**: Tras reiniciar el stack en modo seguro, podrás mostrar cómo las mismas contraseñas ahora son **Hashes Bcrypt** irreconocibles.
-4. Permite editar datos en tiempo real para demostrar cómo el sistema reacciona a cambios directos en la persistencia.
+Para las demostraciones ante el tribunal, **Prisma Studio** es la herramienta clave para mostrar la **integridad y seguridad de los datos** en tiempo real. Sigue estos pasos para una demostración efectiva:
+
+1. **Acceso**: Abre un navegador y dirígete a `http://localhost:5556`.
+2. **Navegación**: En el menú lateral izquierdo, selecciona la tabla **`User`**.
+3. **AUDITORÍA DE SEGURIDAD (Punto Clave)**:
+   - **Modo Vulnerable**: Muestra la columna `password`. Verás las contraseñas de clientes como MAPFRE o IBERDROLA en **Texto Plano** (ej: `S0f1a_Mapfre!_2026`). Explica que esto es un fallo crítico de seguridad.
+   - **Modo Seguro**: Tras reiniciar el sistema en modo seguro (`APP_MODE=secure`), vuelve a cargar Prisma Studio. Verás que las contraseñas ahora son **Hashes Bcrypt** (strings largos que empiezan por `$2b$...`). Explica que ahora, aunque un atacante robe la base de datos, no podrá obtener las contraseñas reales.
+4. **Inspección de Tickets**: Selecciona la tabla **`Ticket`** para mostrar cómo el SOC (Admin) y el Cliente están conectados. Puedes crear un ticket desde el Dashboard y ver cómo aparece instantáneamente en la base de datos.
+5. **Edición en Vivo**: Puedes cambiar el nombre de un usuario o el estado de un ticket directamente desde aquí y pulsar "Save 1 change" para mostrar la persistencia de datos.
+
+> [!TIP]
+> Si la página no carga, asegúrate de que el contenedor `sofia-backend` está corriendo y que el puerto `5556` no está bloqueado por otro servicio.
 
 
 ## Decisiones de UX/UI
