@@ -235,7 +235,7 @@ Sirve para mostrar:
 
 Ruta:
 
-- `/sistema/consola`
+- `/consola`
 
 Permite visualizar la ejecución práctica de los ataques en vivo:
 - Desarrollada 100% en español.

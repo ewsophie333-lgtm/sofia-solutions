@@ -17,6 +17,7 @@ $routes = [
     '/soc'                 => ['title' => 'SOC Monitor | Sofia Solutions', 'view' => 'soc'],
     '/admin/audit-tool'    => ['title' => 'Security Audit Kit | Sofia Solutions', 'view' => 'audit'],
     '/sistema/consola'     => ['title' => 'Consola Maestra | Sofia Solutions', 'view' => 'audit'],
+    '/consola'             => ['title' => 'Consola Maestra | Sofia Solutions', 'view' => 'audit'],
 ];
 
 $route = $routes[$path] ?? $routes['/'];
