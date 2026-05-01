@@ -75,9 +75,8 @@ services:
       GF_AUTH_ANONYMOUS_ENABLED: "true"
       GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
       GF_SECURITY_ALLOW_EMBEDDING: "true"
-      GF_SERVER_ROOT_URL: https://sofia-solutions.serveousercontent.com/grafana/
+      GF_SERVER_ROOT_URL: "%(protocol)s://%(domain)s:%(http_port)s/grafana/"
       GF_SERVER_SERVE_FROM_SUB_PATH: "true"
-      GF_SERVER_DOMAIN: sofia-solutions.serveousercontent.com
     volumes:
       - ./sofia-backend/docker/grafana/provisioning:/etc/grafana/provisioning
       - ./sofia-backend/docker/grafana/dashboards:/var/lib/grafana/dashboards
