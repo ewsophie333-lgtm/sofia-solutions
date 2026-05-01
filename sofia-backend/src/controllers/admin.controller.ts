@@ -1,7 +1,21 @@
+/**
+ * SOFIA SOLUTIONS - Cyber-Security Monitoring Backend
+ * Administrative and SOC Monitoring Controller
+ * 
+ * This controller handles high-level data aggregation for both the administrative
+ * dashboard and the real-time Security Operations Center (SOC) monitor.
+ * It interfaces with Prisma ORM to fetch security incidents, assets, and telemetry.
+ * 
+ * @version 3.0.0
+ * @author Sofia Solutions Engineering
+ */
+
 import type { Request, Response } from "express";
 import { prisma } from "../config/prisma";
 import { env } from "../config/env";
 import { getSocNotifications } from "../services/soc.service";
+
+// --- Type Definitions for Internal Logic ---
 
 type IncidentRecord = {
   id: number;
@@ -49,6 +63,11 @@ type SecurityEventRecord = {
 
 const trendLabels = ["00", "04", "08", "12", "16", "20", "24"];
 
+/**
+ * Normalizes severity levels to a numeric rank for sorting and priority logic.
+ * @param value String representation of severity (CRITICAL, HIGH, etc.)
+ * @returns numeric rank (1-4)
+ */
 function severityRank(value: string) {
   switch (value.toUpperCase()) {
     case "CRITICAL":
@@ -62,6 +81,11 @@ function severityRank(value: string) {
   }
 }
 
+/**
+ * GET /api/admin/overview
+ * Provides a high-level summary of the system state, adjusted for user roles.
+ * Clients see only their data; Admins see global aggregates.
+ */
 export async function overview(req: Request & { user?: { id: number; role: string } }, res: Response) {
   const userId = req.user?.id;
   const isClient = req.user?.role === "CLIENT";
@@ -78,7 +102,7 @@ export async function overview(req: Request & { user?: { id: number; role: strin
     year: 2026,
     userRole: req.user?.role ?? "ADMIN",
     revenue: payments.reduce((sum, item) => sum + item.amount, 0),
-    secureLogins: users.length * 24,
+    secureLogins: users.length * 24, // Mocked telemetry for presentation
     blockedAttacks: securityEvents.filter((item) => item.action === "BLOCKED").length,
     openTickets: tickets.filter((item) => item.status !== "CLOSED").length,
     appMode: env.APP_MODE,
@@ -89,11 +113,20 @@ export async function overview(req: Request & { user?: { id: number; role: strin
   });
 }
 
+/**
+ * GET /api/admin/security-events
+ * Returns a list of the most recent security events recorded in the system.
+ */
 export async function securityEvents(_req: Request, res: Response) {
   const events = await prisma.securityEvent.findMany({ orderBy: { timestamp: "desc" } });
   res.json(events);
 }
 
+/**
+ * GET /api/admin/security-monitor
+ * The core engine for the SOC Dashboard. Calculates live metrics,
+ * attack distributions, and customer exposure rankings.
+ */
 export async function securityMonitor(_req: Request, res: Response) {
   const db = prisma as unknown as {
     incident: { findMany: (args: unknown) => Promise<IncidentRecord[]> };
@@ -103,6 +136,7 @@ export async function securityMonitor(_req: Request, res: Response) {
     securityEvent: { findMany: (args?: unknown) => Promise<SecurityEventRecord[]> };
   };
 
+  // Parallel data fetching for optimal latency
   const [incidents, assets, customers, services, events] = await Promise.all([
     db.incident.findMany({
       include: {
@@ -121,13 +155,15 @@ export async function securityMonitor(_req: Request, res: Response) {
     db.securityEvent.findMany({ orderBy: { timestamp: "desc" } }),
   ]);
 
-  const totalEventsAnalyzed = Math.max(events.length * 20134, 1200000);
+  // Telemetry Aggregation
+  const totalEventsAnalyzed = Math.max(events.length * 20134, 1200000); // Scale factor for presentation
   const criticalIncidents = incidents.filter((incident: IncidentRecord) => incident.severity === "CRITICAL" && incident.status !== "RESOLVED").length;
   const activeThreats = incidents.filter((incident: IncidentRecord) => incident.status === "TRIAGE" || incident.status === "INVESTIGATING").length;
   const systemHealth = incidents.length === 0 ? 100 : Number((100 - activeThreats * 0.3).toFixed(1));
   const managedAssets = assets.length;
   const protectedCustomers = customers.length;
 
+  // Time-series Trend Calculation (Mocked slots for visual consistency)
   const eventTrend = trendLabels.map((label, index) => {
     const slotStart = index * 2;
     const slotEnd = slotStart + 2;
@@ -140,6 +176,7 @@ export async function securityMonitor(_req: Request, res: Response) {
     };
   });
 
+  // Geographical Data Mapping
   const countryMap = new Map<string, number>();
   for (const incident of incidents as IncidentRecord[]) {
     countryMap.set(incident.sourceCountry, (countryMap.get(incident.sourceCountry) ?? 0) + 1);
@@ -149,6 +186,7 @@ export async function securityMonitor(_req: Request, res: Response) {
     .sort((left, right) => right.count - left.count)
     .slice(0, 5);
 
+  // Attack Vector Distribution
   const vectorMap = new Map<string, number>();
   for (const incident of incidents as IncidentRecord[]) {
     vectorMap.set(incident.vector, (vectorMap.get(incident.vector) ?? 0) + 1);
@@ -163,6 +201,7 @@ export async function securityMonitor(_req: Request, res: Response) {
       accent: index === 0 ? "critical" : index === 1 ? "warning" : index === 2 ? "info" : "healthy",
     }));
 
+  // Attack Surface Breakdown
   const alertSurfaceMap = new Map<string, number>();
   for (const incident of incidents as IncidentRecord[]) {
     alertSurfaceMap.set(incident.attackSurface, (alertSurfaceMap.get(incident.attackSurface) ?? 0) + 1);
@@ -183,6 +222,7 @@ export async function securityMonitor(_req: Request, res: Response) {
     }))
     .sort((left, right) => right.value - left.value);
 
+  // Real-time Event Feed Logic (Priority: Severity -> Date)
   const liveFeed = incidents
     .slice()
       .sort((left: IncidentRecord, right: IncidentRecord) => {
@@ -208,6 +248,7 @@ export async function securityMonitor(_req: Request, res: Response) {
               : "Resolved",
     }));
 
+  // Customer Exposure Calculations
   const customerExposure = customers.map((customer: CustomerRecord) => ({
     name: customer.name,
     service: customer.primaryService?.name ?? "No service",
@@ -216,6 +257,7 @@ export async function securityMonitor(_req: Request, res: Response) {
     incidents: incidents.filter((incident: IncidentRecord) => incident.customerId === customer.id && incident.status !== "RESOLVED").length,
   }));
 
+  // Final API Response Construction
   res.json({
     header: {
       title: "SOC SECURITY MONITOR",
