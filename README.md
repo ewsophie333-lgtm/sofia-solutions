@@ -241,6 +241,7 @@ Permite visualizar la ejecución práctica de los ataques en vivo:
 - Desarrollada 100% en español.
 - Intefaz hacker in-browser, con *Leak Viewer* en modal para saltar los bloqueos de pop-ups del navegador durante la explotación LFI.
 - **Log detallado de auditoría**: Muestra los comandos y payloads reales (`[#]`) ejecutados contra el servidor para una mejor comprensión técnica del ataque.
+- **Exfiltración de Datos Bancarios (PII)**: Módulo SQLi capaz de extraer IBAN, Números de Tarjeta y CVV de la base de datos simulada.
 - Diseño "Mobile First", preparado para presentaciones fluidas desde cualquier dispositivo o navegador.
 
 ### Grafana
