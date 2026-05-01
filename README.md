@@ -247,16 +247,25 @@ Permite visualizar la ejecución práctica de los ataques en vivo:
 ### Grafana
 
 Ruta:
-
 - `http://localhost:3000`
 
 Se utiliza como panel técnico para enseñar:
-
 - volumen de peticiones;
 - ataques bloqueados;
 - intentos de login;
 - sesiones activas;
 - evolución temporal de la actividad.
+
+### Visualización de Base de Datos (Prisma Studio)
+
+Ruta:
+- `http://localhost:5556`
+
+Para las demostraciones ante el tribunal, esta es la herramienta clave para mostrar la **integridad y seguridad de los datos**:
+1. Accede a la URL y selecciona la tabla **`User`**.
+2. **Modo Vulnerable**: Podrás mostrar cómo las contraseñas de los clientes están guardadas en **Texto Plano** (un fallo crítico de seguridad).
+3. **Modo Seguro**: Tras reiniciar el stack en modo seguro, podrás mostrar cómo las mismas contraseñas ahora son **Hashes Bcrypt** irreconocibles.
+4. Permite editar datos en tiempo real para demostrar cómo el sistema reacciona a cambios directos en la persistencia.
 
 
 ## Decisiones de UX/UI

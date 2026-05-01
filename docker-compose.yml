@@ -5,6 +5,9 @@ services:
       dockerfile: frontend-php/Dockerfile
     ports:
       - "8000:80"
+    volumes:
+      - ./frontend-php/public:/var/www/html
+      - ./frontend-php/apache.conf:/etc/apache2/sites-available/000-default.conf
     depends_on:
       - backend
 
