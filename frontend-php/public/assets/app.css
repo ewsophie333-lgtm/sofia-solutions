@@ -1460,11 +1460,21 @@ img {
 
     /* All grids become single column on mobile */
     .executive-grid,
+    .hero-section,
+    .auth-shell,
+    .planes-grid,
+    .kpi-grid,
+    .service-grid,
+    .reviews-grid,
+    .credibility-strip,
+    .section-split,
+    .cta-band,
     div[style*="grid-template-columns"],
     section[style*="grid-template-columns"] {
         grid-template-columns: 1fr !important;
         display: flex !important;
         flex-direction: column !important;
+        gap: 16px !important;
     }
 
     .app-shell {
@@ -1542,20 +1552,31 @@ img {
 
     /* Auth pages */
     .auth-shell {
+        display: flex !important;
         flex-direction: column !important;
+        min-height: 100vh !important;
+    }
+
+    .auth-panel {
+        min-height: auto !important;
+        height: auto !important;
+        padding: 40px 20px !important;
     }
 
     .auth-panel-brand {
-        min-height: 180px !important;
-        padding: 24px !important;
+        min-height: auto !important;
+        padding: 32px 24px !important;
+        border-right: none !important;
+        border-bottom: 1px solid var(--border) !important;
     }
 
     .auth-panel-brand h1 {
-        font-size: 1.4rem !important;
+        font-size: 1.6rem !important;
     }
 
     .auth-panel-form {
-        padding: 20px !important;
+        padding: 32px 20px !important;
+        flex: 1 !important;
     }
 
     /* Server status grid → stack on mobile */
