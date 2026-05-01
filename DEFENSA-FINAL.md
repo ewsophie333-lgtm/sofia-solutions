@@ -16,6 +16,7 @@ Este documento es tu guion estratégico para una defensa de 10. Está diseñado 
 *   **Contenerización:** Todo el stack corre en **Docker**. Hemos orquestado 5 servicios: Backend (Node.js), Frontend (Apache/PHP), Base de Datos (PostgreSQL), Monitorización (Grafana) y un Proxy/Túnel para acceso externo.
 *   **Backend Escalable:** Node.js con TypeScript para un tipado fuerte, usando **Prisma ORM** para interactuar con la DB de forma segura (prevención nativa de SQLi).
 *   **Frontend Corporativo:** PHP para la lógica de servidor y una interfaz moderna basada en **Glassmorphism**, optimizada para visualización de datos masivos.
+    *   *Mobile-First:* La plataforma es 100% responsiva (Grid/Flexbox) adaptándose a dispositivos móviles y tablets sin romper la interfaz, garantizando acceso al SOC en cualquier lugar.
 *   **Seguridad:** Implementación de **JWT (JSON Web Tokens)** para sesiones, **Bcrypt** (coste 12) para contraseñas y middlewares de **Rate Limiting** para frenar ataques DoS y Brute Force.
 
 ---
