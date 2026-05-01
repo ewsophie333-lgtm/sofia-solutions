@@ -74,8 +74,8 @@ $activeNav = 'soc';
             </article>
         </section>
 
-        <!-- Live Feed & Countries -->
-        <section class="planes-grid" style="grid-template-columns: 1fr 1fr; gap:32px;">
+        <!-- Live Feed & Geo & WAF -->
+        <section class="planes-grid" style="grid-template-columns: 1fr 1fr 1fr; gap:32px;">
             <article class="panel" style="padding:24px;">
                 <div class="panel-heading">
                     <div><span class="eyebrow">Live</span><h2>Feed de Incidentes en Vivo</h2></div>
@@ -90,6 +90,23 @@ $activeNav = 'soc';
                 </div>
                 <div id="soc-countries" class="stack-list" style="margin-top:20px; height:350px; overflow-y:auto;">
                     <div class="stack-item">Cargando datos geográficos...</div>
+                </div>
+            </article>
+            <article class="panel" style="padding:24px;">
+                <div class="panel-heading">
+                    <div><span class="eyebrow">Defensa Activa</span><h2>Firewall WAF (Bloqueo IP)</h2></div>
+                </div>
+                <div style="margin-top:20px;">
+                    <div style="display:flex; gap:8px; margin-bottom:16px;">
+                        <input type="text" id="ip-to-block" placeholder="Ej: 192.168.1.50" style="flex:1; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); padding:10px; border-radius:6px; color:#fff; font-family:monospace;">
+                        <button onclick="blockIP()" style="background:#ef4444; color:#fff; border:none; padding:10px 16px; border-radius:6px; cursor:pointer; font-weight:bold;">BLOQUEAR</button>
+                    </div>
+                    <div id="waf-rules" class="stack-list" style="height:270px; overflow-y:auto;">
+                        <div class="stack-item" style="border-left: 2px solid #ef4444; display:flex; justify-content:space-between; align-items:center;">
+                            <div><strong style="color:#ef4444; font-family:monospace;">185.220.101.4</strong><br><small>Bloqueo automático (DDoS)</small></div>
+                            <span style="font-size:0.7rem; opacity:0.5;">Activo</span>
+                        </div>
+                    </div>
                 </div>
             </article>
         </section>
@@ -215,4 +232,36 @@ new Chart(document.getElementById('incidentTimelineChart'), {
         `).join('');
     });
 })();
+
+// WAF IP Blocking logic
+function blockIP() {
+    const input = document.getElementById('ip-to-block');
+    const ip = input.value.trim();
+    if(!ip) return;
+    
+    // Validate basic IP format
+    const ipRegex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
+    if(!ipRegex.test(ip)) {
+        alert("Formato de IP inválido.");
+        return;
+    }
+
+    const rulesEl = document.getElementById('waf-rules');
+    const newRule = document.createElement('div');
+    newRule.className = 'stack-item';
+    newRule.style.borderLeft = '2px solid #ef4444';
+    newRule.style.display = 'flex';
+    newRule.style.justifyContent = 'space-between';
+    newRule.style.alignItems = 'center';
+    newRule.innerHTML = `
+        <div><strong style="color:#ef4444; font-family:monospace;">${ip}</strong><br><small>Bloqueo manual (Admin)</small></div>
+        <span style="font-size:0.7rem; opacity:0.5;">Activo</span>
+    `;
+    
+    rulesEl.insertBefore(newRule, rulesEl.firstChild);
+    input.value = '';
+    
+    // Simulate API call
+    console.log(`[WAF] Regla insertada para dropear tráfico de ${ip}`);
+}
 </script>
