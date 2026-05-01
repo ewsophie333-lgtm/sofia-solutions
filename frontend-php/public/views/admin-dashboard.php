@@ -133,20 +133,29 @@ $activeNav = 'admin-dashboard';
             </table>
         </section>
 
-        <!-- Live Operations & Troubleshooting Console -->
+        <!-- Visual Incident Response Panel -->
         <section class="panel" style="padding:24px;margin-bottom:32px;">
-            <div class="panel-heading" style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;">
-                <div><span class="eyebrow">Operaciones</span><h2>Consola de Eventos en Vivo</h2></div>
-                <button onclick="document.getElementById('admin-console').innerHTML=''" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:var(--text-muted);padding:6px 14px;border-radius:8px;cursor:pointer;font-size:0.75rem;">Limpiar</button>
+            <div class="panel-heading" style="margin-bottom:24px;">
+                <div><span class="eyebrow">Operaciones IR</span><h2>Respuesta a Incidentes (IR)</h2></div>
             </div>
-            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
-                <button class="diag-btn" onclick="adminCmd('live')">&#128225; Eventos Recientes</button>
-                <button class="diag-btn" onclick="adminCmd('clients')">&#128101; Estado Clientes</button>
-                <button class="diag-btn" onclick="adminCmd('incidents')">&#128680; Incidentes Activos</button>
-                <button class="diag-btn" onclick="adminCmd('pcap')" style="border-color:rgba(168,85,247,0.5); color:#c084fc;">&#128190; Exportar PCAP</button>
-                <button class="diag-btn" onclick="adminCmd('rotate-keys')" style="border-color:rgba(239,68,68,0.5); color:#fca5a5; margin-left:auto;">&#9888; Rotación de Claves</button>
+            
+            <!-- IR Tabs -->
+            <div style="display:flex; gap:12px; margin-bottom:24px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:16px;" id="ir-tabs">
+                <button onclick="setIRTab('global')" class="ir-tab active" data-tab="global" style="background:var(--primary); color:#fff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:bold;">GLOBAL</button>
+                <button onclick="setIRTab('mapfre')" class="ir-tab" data-tab="mapfre" style="background:rgba(255,255,255,0.05); color:var(--text-muted); border:1px solid rgba(255,255,255,0.05); padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:bold;">MAPFRE</button>
+                <button onclick="setIRTab('iberdrola')" class="ir-tab" data-tab="iberdrola" style="background:rgba(255,255,255,0.05); color:var(--text-muted); border:1px solid rgba(255,255,255,0.05); padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:bold;">IBERDROLA</button>
+                <button onclick="setIRTab('sabadell')" class="ir-tab" data-tab="sabadell" style="background:rgba(255,255,255,0.05); color:var(--text-muted); border:1px solid rgba(255,255,255,0.05); padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:bold;">SABADELL</button>
             </div>
-            <div id="admin-console" style="background:#0a0e1a;border:1px solid rgba(99,102,241,0.2);border-radius:10px;padding:16px;font-family:monospace;font-size:0.78rem;color:#a5f3fc;height:220px;overflow-y:auto;line-height:1.8;"></div>
+
+            <!-- IR Actions Toolbar -->
+            <div id="ir-actions" style="display:flex; flex-wrap:wrap; gap:12px; margin-bottom:24px; background:rgba(0,0,0,0.2); padding:16px; border-radius:8px;">
+                <!-- Actions rendered via JS -->
+            </div>
+
+            <!-- IR Visual Event Feed -->
+            <div id="ir-feed" class="stack-list" style="height:300px; overflow-y:auto; padding-right:8px;">
+                <!-- Feed rendered via JS -->
+            </div>
         </section>
     </section>
 </main>
@@ -265,65 +274,115 @@ function renderCharts(vectors, dist) {
 }
 
 /**
- * ADMINISTRATIVE CONSOLE COMMANDS
+ * INCIDENT RESPONSE (IR) VISUAL LOGIC
  */
-const aLog = (msg, color = '#a5f3fc') => {
-    const c  = document.getElementById('admin-console');
-    const ts = new Date().toLocaleTimeString('es-ES');
-    const el = document.createElement('div');
-    el.innerHTML = `<span style="color:#475569">[${ts}]</span> <span style="color:${color}">${msg}</span>`;
-    c.appendChild(el);
-    c.scrollTop = c.scrollHeight;
+const mockFeed = {
+    global: [
+        { time:'Hace 2 min', type:'Alerta Global: Intento de Brute Force Distribuido', sev:'warning', node:'API Gateway' },
+        { time:'Hace 15 min', type:'Actualización WAF desplegada con éxito', sev:'success', node:'Core Firewall' },
+        { time:'Hace 1 hora', type:'Detección de anomalía en tráfico de Europa del Este', sev:'danger', node:'N/A' }
+    ],
+    mapfre: [
+        { time:'Hace 5 min', type:'Escaneo de puertos bloqueado', sev:'success', node:'srv-prod-01' },
+        { time:'Hace 30 min', type:'Aumento inusual de latencia en base de datos', sev:'warning', node:'db-mapfre-cluster' }
+    ],
+    iberdrola: [
+        { time:'Hace 1 min', type:'Intento de inyección SCADA-Modbus detectado', sev:'danger', node:'scada-gw' },
+        { time:'Hace 10 min', type:'Fallo de autenticación de operador industrial', sev:'warning', node:'scada-auth' }
+    ],
+    sabadell: [
+        { time:'Hace 8 min', type:'Transacción anómala retenida por anti-fraude', sev:'warning', node:'core-db' },
+        { time:'Hace 45 min', type:'Sincronización de HSM completada', sev:'success', node:'hsm-cluster' }
+    ]
 };
 
-async function adminCmd(cmd) {
-    aLog('> ' + cmd, '#818cf8');
-    try {
-        const r = await fetch(API + '/api/admin/security-monitor', { headers: authHdr() });
-        const d = await r.json();
-        if (cmd === 'live') {
-            (d.liveFeed || []).forEach(ev => {
-                const col = ev.severity === 'CRITICAL' ? '#ef4444' : ev.severity === 'HIGH' ? '#f59e0b' : '#22c55e';
-                aLog(`[${ev.severity}] ${ev.type} — ${ev.sourceIp} → ${ev.destination}`, col);
-            });
-            if (!(d.liveFeed || []).length) aLog('No recent events recorded.', '#64748b');
-        } else if (cmd === 'clients') {
-            (d.customerExposure || []).forEach(c =>
-                aLog(`${c.name}: ${c.incidents} active incidents | ${c.assets} IT assets | Tier: ${c.tier}`)
-            );
-        } else if (cmd === 'incidents') {
-            const s = d.summary || {};
-            aLog('Critical Incidents: ' + (s.criticalIncidents || 0), '#ef4444');
-            aLog('Active Threats:     ' + (s.activeThreats    || 0), '#f59e0b');
-            aLog('Overall Health:     ' + (s.systemHealth     || '?') + '%', '#22c55e');
-        } else if (cmd === 'pcap') {
-            aLog('[PCAP] Generando captura de red profunda de los últimos 5 minutos...', '#c084fc');
-            setTimeout(() => {
-                aLog('[PCAP] vol-0x9a8f.pcap (45.2 MB) generado. Protegido con GPG.', '#22c55e');
-                aLog('[PCAP] Hash SHA256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', '#94a3b8');
-            }, 1500);
-        } else if (cmd === 'rotate-keys') {
-            aLog('[ALERTA ROJA] Iniciando rotación de claves maestras globales (Panic Mode)...', '#ef4444');
-            setTimeout(() => {
-                aLog('[AUTH] JWT HMAC Secrets regenerados.', '#22c55e');
-                aLog('[DB] Contraseñas de conexión a PostgreSQL rotadas (Zero-Downtime proxy).', '#22c55e');
-                aLog('[AUTH] Todas las sesiones activas han sido invalidadas.', '#ef4444');
-            }, 2000);
-        } else if (cmd.startsWith('kill-switch-')) {
-            const client = cmd.split('-')[2].toUpperCase();
-            aLog(`[AISLAMIENTO ZERO TRUST] Ejecutando Kill-Switch en el nodo de ${client}...`, '#ef4444');
-            setTimeout(() => {
-                aLog(`[DOCKER API] Red de contenedores desconectada para el tenant ${client}.`, '#f59e0b');
-                aLog(`[WAF] Tráfico entrante a ${client} redirigido a un sumidero (Blackhole).`, '#f59e0b');
-                aLog(`[AISLAMIENTO] Contención exitosa. Riesgo de movimiento lateral mitigado.`, '#22c55e');
-            }, 1200);
-        } else if (cmd === 'ping') {
-            const t0 = Date.now();
-            await fetch(API + '/api/admin/overview', { headers: authHdr() });
-            aLog('✓ Operation Center online. Latency: ' + (Date.now() - t0) + 'ms', '#22c55e');
-        }
-    } catch(e) { aLog('✗ Error: ' + e.message, '#ef4444'); }
+function renderFeed(tab) {
+    const feed = mockFeed[tab] || [];
+    const html = feed.map(f => {
+        const c = f.sev === 'danger' ? '#ef4444' : f.sev === 'warning' ? '#f59e0b' : '#22c55e';
+        const icon = f.sev === 'danger' ? '🔥' : f.sev === 'warning' ? '⚠️' : '✅';
+        return `
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:8px;margin-bottom:8px;">
+            <div style="font-size:1.2rem;">${icon}</div>
+            <div style="flex:1;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                    <strong style="color:${c};font-size:0.85rem;">${f.type}</strong>
+                    <span style="font-size:0.7rem;color:var(--text-muted);">${f.time}</span>
+                </div>
+                <div style="font-size:0.75rem;color:#94a3b8;">Afecta a: <span style="color:#e2e8f0;">${f.node}</span></div>
+            </div>
+        </div>`;
+    }).join('');
+    document.getElementById('ir-feed').innerHTML = html || '<div style="color:var(--text-muted);padding:20px;text-align:center;">No hay eventos recientes.</div>';
 }
+
+function renderActions(tab) {
+    const act = document.getElementById('ir-actions');
+    if (tab === 'global') {
+        act.innerHTML = `
+            <button class="diag-btn" onclick="triggerIRAction('export-global-logs')" style="border-color:rgba(148,163,184,0.5); color:#cbd5e1;">📥 Exportar Logs Globales</button>
+            <button class="diag-btn" onclick="triggerIRAction('rotate-keys')" style="border-color:rgba(239,68,68,0.5); color:#fca5a5; margin-left:auto; background:rgba(239,68,68,0.1);">🚨 Rotación de Claves (Panic Mode)</button>
+        `;
+    } else {
+        const T = tab.toUpperCase();
+        act.innerHTML = `
+            <button class="diag-btn" onclick="triggerIRAction('pcap-${tab}')" style="border-color:rgba(168,85,247,0.5); color:#c084fc;">🖧 Exportar PCAP (${T})</button>
+            <button class="diag-btn" onclick="triggerIRAction('fw-${tab}')" style="border-color:rgba(56,189,248,0.5); color:#7dd3fc;">🛡️ Ajustar WAF (${T})</button>
+            <button class="diag-btn" onclick="triggerIRAction('kill-${tab}')" style="border-color:rgba(239,68,68,0.5); color:#fca5a5; margin-left:auto; background:rgba(239,68,68,0.1);">🛑 AISLAMIENTO KILL-SWITCH (${T})</button>
+        `;
+    }
+}
+
+function setIRTab(tab) {
+    document.querySelectorAll('.ir-tab').forEach(b => {
+        if (b.dataset.tab === tab) {
+            b.style.background = 'var(--primary)';
+            b.style.color = '#fff';
+            b.style.border = 'none';
+        } else {
+            b.style.background = 'rgba(255,255,255,0.05)';
+            b.style.color = 'var(--text-muted)';
+            b.style.border = '1px solid rgba(255,255,255,0.05)';
+        }
+    });
+    renderActions(tab);
+    renderFeed(tab);
+}
+
+function triggerIRAction(action) {
+    // Add visual feedback directly to the feed
+    const feedEl = document.getElementById('ir-feed');
+    let title, sev = 'success', icon = '✅';
+    
+    if (action === 'rotate-keys') {
+        title = 'ALERTA ROJA: Claves JWT y BD regeneradas. Sesiones invalidadas.'; sev = 'danger'; icon = '🚨';
+    } else if (action.startsWith('kill-')) {
+        title = `AISLAMIENTO ZERO TRUST: Red de ${action.split('-')[1].toUpperCase()} desconectada exitosamente.`; sev = 'danger'; icon = '🛑';
+    } else if (action.startsWith('pcap-')) {
+        title = `Captura PCAP Forense generada y cifrada con GPG (${action.split('-')[1].toUpperCase()}).`;
+    } else if (action.startsWith('fw-')) {
+        title = `Reglas WAF estrictas aplicadas al tenant ${action.split('-')[1].toUpperCase()}.`;
+    } else {
+        title = `Acción ejecutada: ${action}`;
+    }
+
+    const html = `
+    <div style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:rgba(${sev==='danger'?'239,68,68':'34,197,94'},0.1);border:1px solid rgba(${sev==='danger'?'239,68,68':'34,197,94'},0.4);border-radius:8px;margin-bottom:8px;animation:pulse 2s;">
+        <div style="font-size:1.2rem;">${icon}</div>
+        <div style="flex:1;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                <strong style="color:${sev==='danger'?'#fca5a5':'#86efac'};font-size:0.85rem;">[ACCIÓN DEL SOC] ${title}</strong>
+                <span style="font-size:0.7rem;color:var(--text-muted);">Ahora mismo</span>
+            </div>
+            <div style="font-size:0.75rem;color:#e2e8f0;">Ejecutado por Administrador SOC.</div>
+        </div>
+    </div>`;
+    
+    feedEl.insertAdjacentHTML('afterbegin', html);
+}
+
+// Initialize IR panel
+setTimeout(() => setIRTab('global'), 100);
 
 function openClient(name) {
     document.getElementById('modal-content').innerHTML =
