@@ -45,6 +45,7 @@ model User {
   customerId   Int?
   customer     Customer?       @relation(fields: [customerId], references: [id])
   incidents    Incident[]      @relation("IncidentAnalyst")
+  alerts       Alert[]
 }
 
 model Service {
@@ -151,4 +152,17 @@ model Incident {
   customer       Customer         @relation(fields: [customerId], references: [id])
   asset          Asset            @relation(fields: [assetId], references: [id])
   analyst        User?            @relation("IncidentAnalyst", fields: [analystId], references: [id])
+}
+
+model Alert {
+  id            Int       @id @default(autoincrement())
+  userId        Int?
+  title         String
+  description   String
+  severity      String    @default("MEDIUM")
+  status        String    @default("ACTIVE")
+  notifiedAt    DateTime  @default(now())
+  acknowledgedAt DateTime?
+  acknowledgedBy Int?
+  user          User?     @relation(fields: [userId], references: [id])
 }

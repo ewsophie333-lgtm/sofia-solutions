@@ -31,21 +31,21 @@ $customerReviews = [
         'rating' => '4.9/5',
         'quote' => 'El SOC de Sofia redujo el tiempo de escalado en incidentes críticos y nos dio visibilidad real sobre nuestra infraestructura eléctrica y activos SCADA.',
         'service' => 'SOC 24/7',
-        'avatar' => 'https://randomuser.me/api/portraits/men/51.jpg'
+        'avatar' => 'https://readdy.ai/api/search-image?query=professional%20male%20executive%20portrait%20corporate%20headshot%20dark%20background%20confident%20smile&width=80&height=80&seq=t1&orientation=squarish'
     ],
     [
         'company' => 'MAPFRE Seguros',
         'rating' => '4.8/5',
         'quote' => 'El servicio de IR Retainer y la cobertura de identidad nos permitieron contener una brecha en menos de 2 horas. Operación impecable.',
         'service' => 'IR Retainer',
-        'avatar' => 'https://randomuser.me/api/portraits/women/68.jpg'
+        'avatar' => 'https://readdy.ai/api/search-image?query=professional%20female%20executive%20portrait%20corporate%20headshot%20confident%20business%20woman&width=80&height=80&seq=t2&orientation=squarish'
     ],
     [
         'company' => 'Banco Sabadell',
         'rating' => '5.0/5',
         'quote' => 'Sofia Solutions gestiona la seguridad de nuestro sistema de banca central con un SLA de respuesta que supera cualquier expectativa del sector.',
         'service' => 'SOC 24/7',
-        'avatar' => 'https://randomuser.me/api/portraits/men/33.jpg'
+        'avatar' => 'https://readdy.ai/api/search-image?query=professional%20male%20IT%20director%20portrait%20corporate%20headshot%20mature%20executive&width=80&height=80&seq=t3&orientation=squarish'
     ],
 ];
 

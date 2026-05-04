@@ -5,9 +5,6 @@ services:
       dockerfile: frontend-php/Dockerfile
     ports:
       - "8000:80"
-    volumes:
-      - ./frontend-php/public:/var/www/html
-      - ./frontend-php/apache.conf:/etc/apache2/sites-available/000-default.conf
     depends_on:
       - backend
 
@@ -95,5 +92,26 @@ services:
       - ./tunnel-key:/root/.ssh/id_ed25519
     command: sh -c "apk add --no-cache openssh-client && chmod 600 /root/.ssh/id_ed25519 && ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -i /root/.ssh/id_ed25519 -R sofia-solutions:80:frontend:80 serveo.net"
 
+  n8n:
+    image: n8nio/n8n:latest
+    ports:
+      - "5678:5678"
+    environment:
+      N8N_HOST: localhost:5678
+      N8N_PROTOCOL: http
+      WEBHOOK_TUNNEL_URL: http://localhost:5678/
+      GENERIC_TIMEZONE: Europe/Madrid
+      N8N_ENCRYPTION_KEY: sofia-solutions-encryption-key-2026
+      N8N_EDITOR_BASE_URL: http://localhost:5678/
+      N8N_API_DELICIOUS_API_ERROR_RESPONSE_BODY_PROPERTY: message
+      N8N_DEFAULT_LOCALE: es
+      N8N_DEFAULT_TIMEZONE: Europe/Madrid
+      DB_TYPE: sqlite
+      DB_SQLITE_DATABASE: /home/node/.n8n/database.sqlite
+    volumes:
+      - n8n-data:/home/node/.n8n
+    restart: unless-stopped
+
 volumes:
   postgres-data:
+  n8n-data:

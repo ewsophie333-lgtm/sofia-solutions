@@ -4,6 +4,7 @@ import servicesRoutes from "./services.routes";
 import paymentsRoutes from "./payments.routes";
 import ticketsRoutes from "./tickets.routes";
 import adminRoutes from "./admin.routes";
+import alertsRoutes from "./alerts.routes";
 
 const router = Router();
 
@@ -12,5 +13,6 @@ router.use("/services", servicesRoutes);
 router.use("/payments", paymentsRoutes);
 router.use("/tickets", ticketsRoutes);
 router.use("/admin", adminRoutes);
+router.use("/alerts", alertsRoutes);
 
 export default router;

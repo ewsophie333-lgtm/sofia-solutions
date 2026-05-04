@@ -243,7 +243,7 @@
             <?php foreach ($customerReviews as $review): ?>
                 <article class="review-card">
                     <div class="review-top">
-                        <img src="<?= htmlspecialchars($review['avatar'], ENT_QUOTES, 'UTF-8') ?>" alt="Avatar CEO" class="review-avatar">
+                        <img src="<?= htmlspecialchars($review['avatar'], ENT_QUOTES, 'UTF-8') ?>" alt="Avatar CEO" class="review-avatar" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Cliente&background=64748b&color=ffffff&size=128'">
                         <div class="review-info">
                             <strong><?= htmlspecialchars($review['company'], ENT_QUOTES, 'UTF-8') ?></strong>
                             <span><?= htmlspecialchars($review['service'], ENT_QUOTES, 'UTF-8') ?></span>
