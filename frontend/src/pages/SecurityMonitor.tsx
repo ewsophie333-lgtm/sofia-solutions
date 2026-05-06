@@ -1,9 +1,32 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Logo from "../components/Logo";
+import ClientStatusCard from "../components/ClientStatusCard";
+import EmergencyModal from "../components/EmergencyModal";
+import { 
+  Activity, 
+  Shield, 
+  ShieldAlert, 
+  Zap, 
+  Search, 
+  Bell, 
+  User, 
+  LayoutDashboard, 
+  Map as MapIcon, 
+  BarChart3, 
+  Database, 
+  Flame, 
+  ChevronRight,
+  Eye,
+  CheckCircle,
+  XCircle,
+  MoreHorizontal,
+  Clock
+} from "lucide-react";
 import {
   fetchSecurityMonitor,
   fetchServiceEffectiveness,
+  createUrgentAlert,
   type SecurityMonitorResponse,
   type ServiceEffectivenessResponse,
 } from "../lib/api";
@@ -46,542 +69,298 @@ const fallbackMonitor: SecurityMonitorResponse = {
 };
 
 const fallbackEffectiveness: ServiceEffectivenessResponse = {
-  overall: {
-    customers: 3,
-    assets: 6,
-    incidents: 6,
-  },
+  overall: { customers: 3, assets: 6, incidents: 6 },
   byService: [],
 };
 
-const worldMapPaths = [
-  "M10 182C86 162 138 148 205 138C278 127 346 132 409 119C477 104 526 74 588 52C625 39 669 37 706 52C741 65 769 86 794 114C816 139 836 165 867 174C901 184 934 177 966 167",
-  "M111 109C149 90 188 87 231 88C271 89 310 101 349 111C387 121 427 129 466 125C503 121 540 109 579 104C612 100 646 98 676 112C707 126 726 153 752 174",
-  "M314 218C348 199 377 177 407 161C433 147 466 139 493 153C520 166 530 195 551 214C577 238 617 249 653 247C692 244 726 226 760 216",
-  "M566 143C590 128 616 120 645 123C674 126 700 143 720 164C740 184 757 207 782 217",
+const clientMockData = [
+  { name: "MAPFRE", health: "healthy" as const, uptime: 99.99, cpu: 24, ram: 42, ssl: true, latency: 12 },
+  { name: "IBERDROLA", health: "warning" as const, uptime: 98.45, cpu: 68, ram: 75, ssl: true, latency: 45 },
+  { name: "SABADELL", health: "critical" as const, uptime: 94.20, cpu: 89, ram: 92, ssl: false, latency: 120 },
 ];
-
-const countryPositions: Record<string, { left: string; top: string }> = {
-  "Russian Federation": { left: "74%", top: "28%" },
-  "United States": { left: "17%", top: "32%" },
-  Germany: { left: "51%", top: "28%" },
-  Brazil: { left: "30%", top: "62%" },
-  Singapore: { left: "77%", top: "56%" },
-  Netherlands: { left: "49%", top: "25%" },
-};
-
-const destinationNodes = [
-  { left: "68%", top: "43%" },
-  { left: "71%", top: "48%" },
-  { left: "74%", top: "54%" },
-];
-
-function trendPoints(values: number[], maxValue: number) {
-  const width = 300;
-  const height = 112;
-  return values
-    .map((value, index) => {
-      const x = (index / Math.max(values.length - 1, 1)) * width;
-      const y = height - (value / Math.max(maxValue, 1)) * height;
-      return `${x},${y}`;
-    })
-    .join(" ");
-}
-
-function donutSegments(items: SecurityMonitorResponse["alertDistribution"]) {
-  const total = items.reduce((sum, item) => sum + item.value, 0) || 1;
-  let offset = 0;
-  return items.map((item) => {
-    const length = (item.value / total) * 282.743;
-    const segment = {
-      ...item,
-      dasharray: `${length} ${282.743 - length}`,
-      dashoffset: -offset,
-    };
-    offset += length;
-    return segment;
-  });
-}
-
-function severityTone(value: string) {
-  const normalized = value.toLowerCase();
-  if (normalized.includes("critical") || normalized.includes("high")) return "critical";
-  if (normalized.includes("triage") || normalized.includes("medium")) return "warning";
-  if (normalized.includes("contain")) return "info";
-  return "healthy";
-}
 
 export default function SecurityMonitor() {
   const [monitor, setMonitor] = useState<SecurityMonitorResponse>(fallbackMonitor);
   const [effectiveness, setEffectiveness] = useState<ServiceEffectivenessResponse>(fallbackEffectiveness);
-  const statusStrip = [
-    { label: "Data sources", value: "8/8 online" },
-    { label: "Retention", value: "365 days" },
-    { label: "Parsers", value: "Healthy" },
-    { label: "Escalation SLA", value: "< 15 min" },
-  ];
-
-  const navItems = [
-    { label: "Overview", href: "#soc-overview", type: "anchor" as const },
-    { label: "Threat Intel", href: "#soc-threat-map", type: "anchor" as const },
-    { label: "Logs", href: "#soc-trends", type: "anchor" as const },
-    { label: "Assets", href: "#soc-customers", type: "anchor" as const },
-    { label: "Incidents", href: "#soc-incidents", type: "anchor" as const },
-    { label: "Reports", href: "#soc-coverage", type: "anchor" as const },
-    { label: "Settings", href: "/dashboard", type: "route" as const },
-  ];
+  const [isEmergencyModalOpen, setIsEmergencyModalOpen] = useState(false);
 
   useEffect(() => {
-    fetchSecurityMonitor()
-      .then(setMonitor)
-      .catch(() => setMonitor(fallbackMonitor));
-
-    fetchServiceEffectiveness()
-      .then(setEffectiveness)
-      .catch(() => setEffectiveness(fallbackEffectiveness));
+    fetchSecurityMonitor().then(setMonitor).catch(() => setMonitor(fallbackMonitor));
+    fetchServiceEffectiveness().then(setEffectiveness).catch(() => setEffectiveness(fallbackEffectiveness));
   }, []);
 
-  const lowSeries = monitor.eventTrend.map((point) => point.low);
-  const mediumSeries = monitor.eventTrend.map((point) => point.medium);
-  const highSeries = monitor.eventTrend.map((point) => point.high);
-  const maxTrend = Math.max(...lowSeries, ...mediumSeries, ...highSeries, 1);
-  const donut = donutSegments(monitor.alertDistribution);
-  const topCountryBaseline = monitor.topCountries[0]?.count ?? 1;
+  const handleEmergencySubmit = async (reason: string) => {
+    try {
+      await createUrgentAlert({
+        title: "EMERGENCIA MANUAL SOC",
+        description: reason,
+        severity: "CRITICAL"
+      });
+      setIsEmergencyModalOpen(false);
+      // Refresh feed
+      fetchSecurityMonitor().then(setMonitor);
+    } catch (error) {
+      console.error("Failed to send alert", error);
+    }
+  };
+
+  const getSeverityStyles = (severity: string) => {
+    const s = severity.toLowerCase();
+    if (s.includes("critical") || s.includes("high")) return "bg-red-500/10 text-red-500 border-red-500/20";
+    if (s.includes("medium") || s.includes("triage")) return "bg-amber-500/10 text-amber-500 border-amber-500/20";
+    return "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
+  };
 
   return (
-    <main className="soc-shell">
-      <aside className="soc-sidebar">
-        <div className="soc-sidebar-brand">
-          <Logo className="soc-logo-lockup" />
-          <span>SOC Command</span>
+    <div className="min-h-screen bg-[#0a0514] text-slate-200 font-sans selection:bg-brand-500/30">
+      {/* Sidebar Overlay for desktop */}
+      <aside className="fixed left-0 top-0 bottom-0 w-64 bg-slate-950/50 border-r border-white/5 backdrop-blur-xl z-40 hidden lg:flex flex-col">
+        <div className="p-8 flex items-center gap-3">
+          <Logo className="w-10 h-10" />
+          <span className="text-lg font-bold tracking-tighter text-white">SOC Command</span>
         </div>
 
-        <nav className="soc-nav">
-          <Link className="soc-nav-item" to="/dashboard">
-            <span className="soc-nav-icon" />
-            <span>Home</span>
-          </Link>
-          {navItems.map((item, index) =>
-            item.type === "route" ? (
-              <Link key={item.label} className="soc-nav-item" to={item.href}>
-                <span className="soc-nav-icon" />
-                <span>{item.label}</span>
-              </Link>
-            ) : (
-              <a
-                key={item.label}
-                className={`soc-nav-item ${index === 0 ? "is-active" : ""}`}
-                href={item.href}
-              >
-                <span className="soc-nav-icon" />
-                <span>{item.label}</span>
-              </a>
-            ),
-          )}
+        <nav className="flex-1 px-4 py-4 space-y-2">
+          {[
+            { label: "Dashboard", icon: LayoutDashboard, active: true },
+            { label: "Threat Map", icon: MapIcon },
+            { label: "SIEM Trends", icon: BarChart3 },
+            { label: "Asset Center", icon: Database },
+            { label: "Incidents", icon: ShieldAlert },
+          ].map((item) => (
+            <button key={item.label} className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all ${item.active ? 'bg-brand-500/10 text-brand-400' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
+              <item.icon size={18} />
+              {item.label}
+            </button>
+          ))}
         </nav>
 
-        <div className="soc-sidebar-footer">
-          <span>Realtime status</span>
-          <strong>{monitor.telemetry.totalEvents} normalized events</strong>
+        <div className="p-6">
+          <button 
+            onClick={() => setIsEmergencyModalOpen(true)}
+            className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-500 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-red-900/20 active:scale-95"
+          >
+            <Flame size={18} />
+            EMERGENCIA SOC
+          </button>
         </div>
       </aside>
 
-      <section className="soc-content">
-        <header className="soc-header">
+      {/* Main Content Area */}
+      <main className="lg:ml-64 p-8">
+        {/* Header */}
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
           <div>
-            <p className="soc-eyebrow">{monitor.header.title}</p>
-            <h1>{monitor.header.subtitle}</h1>
-            <div className="soc-source-row">
-              <span>Elastic / Wazuh</span>
-              <span>Firewall + VPN</span>
-              <span>EDR + Cloud Audit</span>
-            </div>
+            <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-brand-500 mb-1">SOFIA SOLUTIONS OPERATIONAL INTELLIGENCE</h2>
+            <h1 className="text-4xl font-extrabold tracking-tight text-white italic">Security Command Center</h1>
           </div>
 
-          <div className="soc-header-tools">
-            <label className="soc-search">
-              <input type="search" placeholder="Search alerts, IP, MITRE technique..." />
-            </label>
-            <button className="soc-icon-button" type="button" aria-label="Notifications">
-              <span className="soc-dot" />
-            </button>
-            <button className="soc-user-pill" type="button">
-              <span>Analyst Alex</span>
-            </button>
+          <div className="flex items-center gap-4 bg-slate-900/50 p-2 rounded-3xl border border-white/5 backdrop-blur-md">
+            <div className="flex items-center gap-3 px-4">
+              <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">SIEM Engine Active</span>
+            </div>
+            <div className="h-8 w-px bg-white/10" />
+            <div className="flex items-center gap-2 px-2">
+              <button className="p-2.5 rounded-full hover:bg-white/5 text-slate-400 transition-all">
+                <Search size={20} />
+              </button>
+              <button className="p-2.5 rounded-full hover:bg-white/5 text-slate-400 transition-all relative">
+                <Bell size={20} />
+                <span className="absolute top-2 right-2 h-2 w-2 bg-red-500 rounded-full border-2 border-slate-900" />
+              </button>
+              <button className="flex items-center gap-3 pl-3 pr-2 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition-all">
+                <span className="text-sm font-bold text-white">Analyst Alex</span>
+                <div className="h-8 w-8 rounded-full bg-brand-500/20 flex items-center justify-center text-brand-400 ring-1 ring-brand-500/50">
+                  <User size={18} />
+                </div>
+              </button>
+            </div>
           </div>
         </header>
 
-        <div className="soc-toolbar">
-          <div className="soc-pill is-live">{monitor.header.timeframe}</div>
-          <Link className="soc-back-link" to="/dashboard">
-            Return to dashboard
-          </Link>
-        </div>
-
-        <section className="soc-status-strip">
-          {statusStrip.map((item) => (
-            <article key={item.label} className="soc-status-card">
-              <span>{item.label}</span>
-              <strong>{item.value}</strong>
-            </article>
-          ))}
-        </section>
-
-        <section className="soc-kpi-grid" id="soc-overview">
-          <article className="soc-kpi-card accent-blue">
-            <span className="soc-kpi-accent" aria-hidden="true" />
-            <div>
-              <span>Total Events Analyzed</span>
-              <strong>{monitor.summary.totalEventsAnalyzed >= 1000000 ? `${(monitor.summary.totalEventsAnalyzed / 1000000).toFixed(1)}M` : monitor.summary.totalEventsAnalyzed}</strong>
-              <small>{monitor.summary.managedAssets} managed assets across {monitor.summary.protectedCustomers} customers</small>
+        {/* 1. Grid de Estado de Clientes (NUEVA SECCIÓN) */}
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-6 px-1">
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-1 bg-brand-500 rounded-full" />
+              <h2 className="text-xl font-bold tracking-tight text-white uppercase italic">Monitoreo de Salud - Tenants Principales</h2>
             </div>
-            <div className="soc-mini-line">
-              {lowSeries.slice(0, 6).map((value, index) => (
-                <span key={`low-${index}`} style={{ height: `${Math.max(20, (value / maxTrend) * 100)}%` }} />
-              ))}
-            </div>
-          </article>
-
-          <article className="soc-kpi-card accent-red">
-            <span className="soc-kpi-accent" aria-hidden="true" />
-            <div>
-              <span>Critical Incidents</span>
-              <strong>{monitor.summary.criticalIncidents} Open</strong>
-              <small>{monitor.summary.criticalIncidents === 0 ? "No escalation required" : "Immediate analyst action"}</small>
-            </div>
-            <div className="soc-mini-line">
-              {highSeries.slice(0, 6).map((value, index) => (
-                <span key={`high-${index}`} style={{ height: `${Math.max(14, (value / maxTrend) * 100)}%` }} />
-              ))}
-            </div>
-          </article>
-
-          <article className="soc-kpi-card accent-amber">
-            <span className="soc-kpi-accent" aria-hidden="true" />
-            <div>
-              <span>Active Threats Detected</span>
-              <strong>{monitor.summary.activeThreats}</strong>
-              <small>{monitor.telemetry.totalIncidents} correlated incidents in the queue</small>
-            </div>
-            <div className="soc-mini-line">
-              {mediumSeries.slice(0, 6).map((value, index) => (
-                <span key={`medium-${index}`} style={{ height: `${Math.max(18, (value / maxTrend) * 100)}%` }} />
-              ))}
-            </div>
-          </article>
-
-          <article className="soc-kpi-card accent-green">
-            <span className="soc-kpi-accent" aria-hidden="true" />
-            <div>
-              <span>System Health</span>
-              <strong>{monitor.summary.systemHealth}%</strong>
-              <small>Collectors, parsers and pipelines healthy</small>
-            </div>
-            <div className="soc-mini-line">
-              {[72, 76, 78, 82, 84, 88].map((value, index) => (
-                <span key={`health-${index}`} style={{ height: `${value}%` }} />
-              ))}
-            </div>
-          </article>
-        </section>
-
-        <section className="soc-main-grid">
-          <article className="soc-panel soc-map-panel" id="soc-threat-map">
-            <div className="soc-panel-head">
-              <div>
-                <p className="soc-panel-kicker">Threat map</p>
-                <h2>Threat map & geolocation</h2>
-              </div>
-              <span className="soc-tag">Live telemetry</span>
-            </div>
-
-            <div className="soc-map-layout">
-              <div className="soc-world-map">
-                <svg viewBox="0 0 980 290" aria-hidden="true">
-                  {worldMapPaths.map((path) => (
-                    <path key={path} d={path} />
-                  ))}
-                  <path d="M164 95C284 122 524 155 709 144C769 141 828 132 906 110" className="arc arc-red" />
-                  <path d="M537 70C603 109 656 124 708 148" className="arc arc-red-soft" />
-                  <path d="M283 244C402 190 603 169 717 157" className="arc arc-blue" />
-                </svg>
-
-                {destinationNodes.map((node) => (
-                  <span
-                    key={`${node.left}-${node.top}`}
-                    className="soc-map-node destination"
-                    style={{ left: node.left, top: node.top }}
-                  />
-                ))}
-
-                {monitor.topCountries.map((country) => {
-                  const position = countryPositions[country.name];
-                  if (!position) return null;
-                  return (
-                    <span
-                      key={country.name}
-                      className="soc-map-node source"
-                      style={{ left: position.left, top: position.top }}
-                    />
-                  );
-                })}
-              </div>
-
-              <div className="soc-country-list">
-                <h3>Top attacking countries</h3>
-                {monitor.topCountries.map((country, index) => (
-                  <div key={country.name} className="soc-country-item">
-                    <div>
-                      <strong>{country.name}</strong>
-                      <span className={`soc-severity ${index === 0 ? "critical" : index === 1 ? "warning" : "info"}`}>
-                        {country.count.toLocaleString("en-US")} incidents
-                      </span>
-                    </div>
-                    <div className="soc-country-meter">
-                      <span style={{ width: `${Math.round((country.count / topCountryBaseline) * 100)}%` }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </article>
-
-          <div className="soc-right-stack">
-            <article className="soc-panel" id="soc-trends">
-              <div className="soc-panel-head">
-                <div>
-                  <p className="soc-panel-kicker">SIEM event trend</p>
-                  <h2>Logstash / Splunk event volume</h2>
-                </div>
-                <span className="soc-tag">Last 24h</span>
-              </div>
-
-              <div className="soc-line-chart">
-                <svg viewBox="0 0 300 140" aria-hidden="true">
-                  <polyline points={trendPoints(lowSeries, maxTrend)} className="soc-line low" />
-                  <polyline points={trendPoints(mediumSeries, maxTrend)} className="soc-line medium" />
-                  <polyline points={trendPoints(highSeries, maxTrend)} className="soc-line high" />
-                </svg>
-                <div className="soc-line-axis">
-                  {monitor.eventTrend.map((point) => (
-                    <span key={point.hour}>{point.hour}</span>
-                  ))}
-                </div>
-                <div className="soc-legend">
-                  <span className="low">Low</span>
-                  <span className="medium">Medium</span>
-                  <span className="high">High</span>
-                </div>
-              </div>
-            </article>
-
-            <article className="soc-panel">
-              <div className="soc-panel-head">
-                <div>
-                  <p className="soc-panel-kicker">Top attack vectors</p>
-                  <h2>Attack surface pressure</h2>
-                </div>
-                <span className="soc-tag">Current</span>
-              </div>
-
-              <div className="soc-vector-list">
-                {monitor.topAttackVectors.map((vector) => (
-                  <div key={vector.label} className="soc-vector-item">
-                    <div className="soc-vector-meta">
-                      <strong>{vector.label}</strong>
-                      <span>{vector.count} cases</span>
-                    </div>
-                    <div className="soc-vector-bar">
-                      <span className={vector.accent} style={{ width: `${vector.value}%` }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </article>
+            <Link to="/dashboard" className="text-sm font-bold text-brand-400 hover:text-brand-300 flex items-center gap-1 transition-all">
+              Ver todos los activos <ChevronRight size={16} />
+            </Link>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {clientMockData.map((client) => (
+              <ClientStatusCard key={client.name} {...client} />
+            ))}
           </div>
         </section>
 
-        <section className="soc-bottom-grid">
-          <article className="soc-panel" id="soc-incidents">
-            <div className="soc-panel-head">
-              <div>
-                <p className="soc-panel-kicker">Live incident feed</p>
-                <h2>Incident timeline</h2>
-              </div>
+        {/* SIEM Summary Metrics */}
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {[
+            { label: "Eventos Analizados", value: monitor.summary.totalEventsAnalyzed >= 1000000 ? `${(monitor.summary.totalEventsAnalyzed / 1000000).toFixed(1)}M` : monitor.summary.totalEventsAnalyzed, sub: "Últimas 24h", color: "text-blue-400" },
+            { label: "Incidentes Críticos", value: monitor.summary.criticalIncidents, sub: "Requieren acción", color: "text-red-500" },
+            { label: "Amenazas Activas", value: monitor.summary.activeThreats, sub: "En cola de triaje", color: "text-amber-500" },
+            { label: "Salud del Sistema", value: `${monitor.summary.systemHealth}%`, sub: "Collectors Online", color: "text-emerald-400" },
+          ].map((metric) => (
+            <div key={metric.label} className="bg-slate-900/30 border border-white/5 p-6 rounded-3xl backdrop-blur-sm">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">{metric.label}</p>
+              <p className={`text-3xl font-black italic tracking-tighter ${metric.color} mb-1`}>{metric.value}</p>
+              <p className="text-xs text-slate-400 font-medium">{metric.sub}</p>
             </div>
+          ))}
+        </section>
 
-            <div className="soc-incident-table compact">
-              <div className="soc-table-head">
-                <span>Time</span>
-                <span>Severity</span>
-                <span>Type</span>
-                <span>Source IP</span>
-                <span>Destination Asset</span>
-                <span>Status</span>
-              </div>
-              {monitor.liveFeed.map((item) => (
-                <div key={item.id} className="soc-table-row">
-                  <span>{item.time}</span>
-                  <span className={`soc-severity ${severityTone(item.severity)}`}>{item.severity}</span>
-                  <span>{item.type}</span>
-                  <span>{item.sourceIp}</span>
-                  <span>{item.destination}</span>
-                  <span className="soc-status">{item.status}</span>
-                </div>
-              ))}
+        {/* 2. Feed de Incidentes Mejorado */}
+        <section id="soc-incidents">
+          <div className="flex items-center justify-between mb-6 px-1">
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-1 bg-red-500 rounded-full" />
+              <h2 className="text-xl font-bold tracking-tight text-white uppercase italic">Feed de Incidentes en Tiempo Real (SIEM)</h2>
             </div>
-          </article>
-
-          <article className="soc-panel">
-            <div className="soc-panel-head">
-              <div>
-                <p className="soc-panel-kicker">Alert distribution by type</p>
-                <h2>Alert taxonomy</h2>
-              </div>
+            <div className="flex gap-2">
+              <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold text-slate-400 uppercase tracking-wider">Live Telemetry Feed</span>
             </div>
+          </div>
 
-            <div className="soc-donut-wrap">
-              <svg viewBox="0 0 140 140" className="soc-donut" aria-hidden="true">
-                <circle cx="70" cy="70" r="45" className="soc-donut-track" />
-                {donut.map((segment) => (
-                  <circle
-                    key={segment.label}
-                    cx="70"
-                    cy="70"
-                    r="45"
-                    stroke={segment.color}
-                    strokeDasharray={segment.dasharray}
-                    strokeDashoffset={segment.dashoffset}
-                    className="soc-donut-segment"
-                  />
+          <div className="overflow-hidden rounded-3xl border border-white/5 bg-slate-950/40 backdrop-blur-md shadow-2xl">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-white/[0.02] border-b border-white/5 text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500">
+                    <th className="px-6 py-5">Timestamp</th>
+                    <th className="px-6 py-5">Severidad</th>
+                    <th className="px-6 py-5">Tipo de Evento</th>
+                    <th className="px-6 py-5">Origen / IP</th>
+                    <th className="px-6 py-5">Destino</th>
+                    <th className="px-6 py-5">Estado</th>
+                    <th className="px-6 py-5 text-right">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {monitor.liveFeed.length > 0 ? (
+                    monitor.liveFeed.map((item) => (
+                      <tr key={item.id} className="group hover:bg-white/[0.02] transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
+                            <Clock size={12} className="text-brand-500" />
+                            {item.time}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border ${getSeverityStyles(item.severity)}`}>
+                            {item.severity}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-sm font-bold text-slate-200">{item.type}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <code className="text-xs bg-slate-900 px-2 py-1 rounded border border-white/5 text-brand-300 font-mono">
+                            {item.sourceIp}
+                          </code>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-sm text-slate-400 font-medium italic">{item.destination}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <div className={`h-1.5 w-1.5 rounded-full ${item.status === 'ACTIVE' ? 'bg-red-500 animate-pulse' : 'bg-brand-500'}`} />
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{item.status}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button title="Investigar" className="p-2 rounded-xl bg-brand-500/10 text-brand-400 hover:bg-brand-500/20 transition-all border border-brand-500/20">
+                              <Eye size={16} />
+                            </button>
+                            <button title="Resolver" className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-all border border-emerald-500/20">
+                              <CheckCircle size={16} />
+                            </button>
+                            <button title="Ignorar" className="p-2 rounded-xl bg-slate-800 text-slate-400 hover:bg-slate-700 transition-all border border-white/5">
+                              <XCircle size={16} />
+                            </button>
+                            <button className="p-2 text-slate-500 hover:text-white transition-all">
+                              <MoreHorizontal size={16} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={7} className="px-6 py-20 text-center text-slate-500">
+                        <div className="flex flex-col items-center gap-3">
+                          <Shield size={40} className="opacity-20" />
+                          <p className="text-sm font-medium">No se han detectado incidentes en las últimas 24h.</p>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        {/* Operational Rationale Grid */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12 mb-12">
+           <article className="bg-slate-900/40 border border-white/5 p-8 rounded-3xl backdrop-blur-md">
+              <div className="flex items-center gap-3 mb-6">
+                <BarChart3 className="text-brand-400" />
+                <h3 className="text-lg font-bold uppercase tracking-tight italic">Matriz de Efectividad SOC</h3>
+              </div>
+              <div className="space-y-4">
+                {effectiveness.byService.map((service) => (
+                  <div key={service.serviceId} className="flex items-center justify-between p-4 bg-white/[0.03] rounded-2xl border border-white/5">
+                    <div>
+                      <p className="text-sm font-bold text-slate-200">{service.serviceName}</p>
+                      <p className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">{service.detectionCoverage} Vectores Cubiertos</p>
+                    </div>
+                    <div className="text-right">
+                      <p className={`text-xl font-black ${service.effectivenessScore > 80 ? 'text-emerald-400' : 'text-amber-400'}`}>{service.effectivenessScore}%</p>
+                      <p className="text-[10px] text-slate-500 uppercase font-bold">Health Score</p>
+                    </div>
+                  </div>
                 ))}
-              </svg>
-              <div className="soc-donut-center">
-                <strong>{monitor.telemetry.totalIncidents}</strong>
-                <span>Open cases</span>
               </div>
-            </div>
+           </article>
 
-            <div className="soc-donut-legend">
-              {monitor.alertDistribution.map((item) => (
-                <div key={item.label} className="soc-donut-item">
-                  <span className="swatch" style={{ backgroundColor: item.color }} />
-                  <strong>{item.label}</strong>
-                  <span>{item.value}%</span>
-                </div>
-              ))}
-            </div>
-          </article>
-        </section>
-
-        <section className="soc-bottom-grid soc-bottom-grid-extended">
-          <article className="soc-panel" id="soc-customers">
-            <div className="soc-panel-head">
-              <div>
-                <p className="soc-panel-kicker">Customer exposure</p>
-                <h2>Protected tenants</h2>
+           <article className="bg-slate-900/40 border border-white/5 p-8 rounded-3xl backdrop-blur-md">
+              <div className="flex items-center gap-3 mb-6">
+                <Database className="text-brand-400" />
+                <h3 className="text-lg font-bold uppercase tracking-tight italic">Tenants en Monitorización</h3>
               </div>
-            </div>
-
-            <div className="soc-incident-table">
-              <div className="soc-table-head">
-                <span>Customer</span>
-                <span>Primary service</span>
-                <span>Tier</span>
-                <span>Assets</span>
-                <span>Open incidents</span>
-              </div>
-              {monitor.customerExposure.map((customer) => (
-                <div key={customer.name} className="soc-table-row">
-                  <span>{customer.name}</span>
-                  <span>{customer.service}</span>
-                  <span>{customer.tier}</span>
-                  <span>{customer.assets}</span>
-                  <span className={`soc-severity ${customer.incidents > 1 ? "warning" : "healthy"}`}>{customer.incidents}</span>
-                </div>
-              ))}
-            </div>
-          </article>
-
-          <article className="soc-panel">
-            <div className="soc-panel-head">
-              <div>
-                <p className="soc-panel-kicker">Service portfolio</p>
-                <h2>Operational offerings</h2>
-              </div>
-            </div>
-
-            <div className="soc-service-grid">
-              {monitor.servicePortfolio.map((service) => (
-                <article key={service.id} className="soc-service-card">
-                  <span>{service.category}</span>
-                  <strong>{service.name}</strong>
-                  <small>{service.tier} tier</small>
-                  <div className="soc-service-meta">
-                    <span>SLA {service.slaHours}h</span>
-                    <span>{service.price.toLocaleString("es-ES")} EUR</span>
+              <div className="space-y-4">
+                {monitor.customerExposure.map((tenant) => (
+                  <div key={tenant.name} className="flex items-center justify-between p-4 bg-white/[0.03] rounded-2xl border border-white/5">
+                    <div className="flex items-center gap-3">
+                      <div className="h-2 w-2 rounded-full bg-brand-500 shadow-[0_0_8px_rgba(139,92,246,0.5)]" />
+                      <p className="text-sm font-bold text-slate-200">{tenant.name}</p>
+                    </div>
+                    <div className="flex gap-4 items-center">
+                      <div className="text-right">
+                        <p className="text-xs font-bold text-slate-300">{tenant.assets} Activos</p>
+                        <p className="text-[10px] text-slate-500 uppercase font-bold">{tenant.service}</p>
+                      </div>
+                      <ChevronRight size={16} className="text-slate-600" />
+                    </div>
                   </div>
-                </article>
-              ))}
-            </div>
-          </article>
+                ))}
+              </div>
+           </article>
         </section>
+      </main>
 
-        <section className="soc-bottom-grid soc-bottom-grid-extended">
-          <article className="soc-panel" id="soc-coverage">
-            <div className="soc-panel-head">
-              <div>
-                <p className="soc-panel-kicker">Defense posture</p>
-                <h2>Service effectiveness matrix</h2>
-              </div>
-            </div>
-
-            <div className="soc-incident-table compact">
-              <div className="soc-table-head">
-                <span>Service</span>
-                <span>Coverage</span>
-                <span>Mitigated</span>
-                <span>Active</span>
-                <span>Score</span>
-              </div>
-              {effectiveness.byService.map((service) => (
-                <div key={service.serviceId} className="soc-table-row">
-                  <span>{service.serviceName}</span>
-                  <span>{service.detectionCoverage} vectors</span>
-                  <span>{service.mitigatedIncidents}</span>
-                  <span>{service.activeIncidents}</span>
-                  <span className={`soc-severity ${service.effectivenessScore < 50 ? "critical" : service.effectivenessScore < 80 ? "warning" : "healthy"}`}>
-                    {service.effectivenessScore}%
-                  </span>
-                </div>
-              ))}
-            </div>
-          </article>
-
-          <article className="soc-panel">
-            <div className="soc-panel-head">
-              <div>
-                <p className="soc-panel-kicker">Coverage rationale</p>
-                <h2>Why each service exists</h2>
-              </div>
-            </div>
-
-            <div className="soc-service-grid">
-              {effectiveness.byService.map((service) => (
-                <article key={`rationale-${service.serviceId}`} className="soc-service-card">
-                  <span>{service.line}</span>
-                  <strong>{service.serviceName}</strong>
-                  <small>{service.coveredVectors.join(", ")}</small>
-                  <div className="soc-service-meta">
-                    <span>{service.protectedAssets} assets</span>
-                    <span>{service.protectedCustomers} customers</span>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </article>
-        </section>
-      </section>
-    </main>
+      {/* 3. Rediseño del Modal de Emergencia */}
+      <EmergencyModal 
+        isOpen={isEmergencyModalOpen} 
+        onClose={() => setIsEmergencyModalOpen(false)}
+        onSubmit={handleEmergencySubmit}
+      />
+    </div>
   );
 }

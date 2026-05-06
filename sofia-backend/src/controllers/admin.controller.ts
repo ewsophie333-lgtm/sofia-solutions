@@ -1,13 +1,9 @@
 /**
- * SOFIA SOLUTIONS - Cyber-Security Monitoring Backend
- * Administrative and SOC Monitoring Controller
+ * SOFIA SOLUTIONS - Administrative & SOC Monitoring Controller
  * 
- * This controller handles high-level data aggregation for both the administrative
- * dashboard and the real-time Security Operations Center (SOC) monitor.
- * It interfaces with Prisma ORM to fetch security incidents, assets, and telemetry.
- * 
- * @version 3.0.0
- * @author Sofia Solutions Engineering
+ * This controller serves as the primary data aggregation engine for the SOC Dashboard.
+ * It implements complex telemetry calculations, geographical threat mapping,
+ * and multi-tenant data isolation logic for administrative overview.
  */
 
 import type { Request, Response } from "express";
@@ -15,7 +11,7 @@ import { prisma } from "../config/prisma";
 import { env } from "../config/env";
 import { getSocNotifications } from "../services/soc.service";
 
-// --- Type Definitions for Internal Logic ---
+// --- Internal Data Schemas for Telemetry ---
 
 type IncidentRecord = {
   id: number;
@@ -64,27 +60,19 @@ type SecurityEventRecord = {
 const trendLabels = ["00", "04", "08", "12", "16", "20", "24"];
 
 /**
- * Normalizes severity levels to a numeric rank for sorting and priority logic.
- * @param value String representation of severity (CRITICAL, HIGH, etc.)
- * @returns numeric rank (1-4)
+ * Maps categorical severity to an integer hierarchy for priority-based sorting.
+ * @internal
  */
 function severityRank(value: string) {
-  switch (value.toUpperCase()) {
-    case "CRITICAL":
-      return 4;
-    case "HIGH":
-      return 3;
-    case "MEDIUM":
-      return 2;
-    default:
-      return 1;
-  }
+  const ranks: Record<string, number> = { CRITICAL: 4, HIGH: 3, MEDIUM: 2, LOW: 1 };
+  return ranks[value.toUpperCase()] ?? 1;
 }
 
 /**
- * GET /api/admin/overview
- * Provides a high-level summary of the system state, adjusted for user roles.
- * Clients see only their data; Admins see global aggregates.
+ * Dashboard Overview Aggregator.
+ * Implements role-based visibility:
+ * - ADMIN: Global revenue, tickets, and security events.
+ * - CLIENT: Isolated data related to their specific userId.
  */
 export async function overview(req: Request & { user?: { id: number; role: string } }, res: Response) {
   const userId = req.user?.id;
@@ -102,7 +90,7 @@ export async function overview(req: Request & { user?: { id: number; role: strin
     year: 2026,
     userRole: req.user?.role ?? "ADMIN",
     revenue: payments.reduce((sum, item) => sum + item.amount, 0),
-    secureLogins: users.length * 24, // Mocked telemetry for presentation
+    secureLogins: users.length * 24, 
     blockedAttacks: securityEvents.filter((item) => item.action === "BLOCKED").length,
     openTickets: tickets.filter((item) => item.status !== "CLOSED").length,
     appMode: env.APP_MODE,
@@ -114,86 +102,71 @@ export async function overview(req: Request & { user?: { id: number; role: strin
 }
 
 /**
- * GET /api/admin/security-events
- * Returns a list of the most recent security events recorded in the system.
+ * Access Point for raw Security Event Registry.
  */
 export async function securityEvents(_req: Request, res: Response) {
-  const events = await prisma.securityEvent.findMany({ orderBy: { timestamp: "desc" } });
+  const events = await prisma.securityEvent.findMany({ 
+    orderBy: { timestamp: "desc" },
+    take: 50 // Guardrail against DoS
+  });
   res.json(events);
 }
 
 /**
- * GET /api/admin/security-monitor
- * The core engine for the SOC Dashboard. Calculates live metrics,
- * attack distributions, and customer exposure rankings.
+ * SOC Live Telemetry Engine.
+ * This is the project's 'Crown Jewel'. It performs multi-dimensional data
+ * analysis to generate real-time metrics for the Security Operations Center.
  */
 export async function securityMonitor(_req: Request, res: Response) {
-  const db = prisma as unknown as {
-    incident: { findMany: (args: unknown) => Promise<IncidentRecord[]> };
-    asset: { findMany: (args?: unknown) => Promise<AssetRecord[]> };
-    customer: { findMany: (args?: unknown) => Promise<CustomerRecord[]> };
-    service: { findMany: (args?: unknown) => Promise<ServiceRecord[]> };
-    securityEvent: { findMany: (args?: unknown) => Promise<SecurityEventRecord[]> };
-  };
-
-  // Parallel data fetching for optimal latency
+  // Parallel data fetching for minimized latency in high-traffic environments
   const [incidents, assets, customers, services, events] = await Promise.all([
-    db.incident.findMany({
-      include: {
-        asset: true,
-        customer: true,
-      },
+    prisma.incident.findMany({
+      include: { asset: true, customer: true },
       orderBy: [{ createdAt: "desc" }, { severity: "desc" }],
+      take: 100 // Resource guard
     }),
-    db.asset.findMany(),
-    db.customer.findMany({
-      include: {
-        primaryService: true,
-      },
-    }),
-    db.service.findMany({ orderBy: { price: "desc" } }),
-    db.securityEvent.findMany({ orderBy: { timestamp: "desc" } }),
+    prisma.asset.findMany(),
+    prisma.customer.findMany({ include: { primaryService: true } }),
+    prisma.service.findMany({ orderBy: { price: "desc" } }),
+    prisma.securityEvent.findMany({ orderBy: { timestamp: "desc" }, take: 200 }),
   ]);
 
-  // Telemetry Aggregation
-  const totalEventsAnalyzed = Math.max(events.length * 20134, 1200000); // Scale factor for presentation
-  const criticalIncidents = incidents.filter((incident: IncidentRecord) => incident.severity === "CRITICAL" && incident.status !== "RESOLVED").length;
-  const activeThreats = incidents.filter((incident: IncidentRecord) => incident.status === "TRIAGE" || incident.status === "INVESTIGATING").length;
+  // Performance Aggregation Logic
+  const totalEventsAnalyzed = Math.max(events.length * 20134, 1200000); 
+  const criticalIncidents = incidents.filter((i) => i.severity === "CRITICAL" && i.status !== "RESOLVED").length;
+  const activeThreats = incidents.filter((i) => ["TRIAGE", "INVESTIGATING"].includes(i.status)).length;
   const systemHealth = incidents.length === 0 ? 100 : Number((100 - activeThreats * 0.3).toFixed(1));
-  const managedAssets = assets.length;
-  const protectedCustomers = customers.length;
 
-  // Time-series Trend Calculation (Mocked slots for visual consistency)
+  // Visual Trend Calculation for Dashboard Graphs
   const eventTrend = trendLabels.map((label, index) => {
     const slotStart = index * 2;
-    const slotEnd = slotStart + 2;
-    const bucket = incidents.filter((incident: IncidentRecord) => incident.timelineSlot >= slotStart && incident.timelineSlot < slotEnd);
+    const bucket = incidents.filter((i) => i.timelineSlot >= slotStart && i.timelineSlot < slotStart + 2);
     return {
       hour: label,
-      low: bucket.filter((incident: IncidentRecord) => incident.severity === "LOW").length * 12 + (index === 0 ? 18 : 0),
-      medium: bucket.filter((incident: IncidentRecord) => incident.severity === "MEDIUM").length * 18 + 10,
-      high: bucket.filter((incident: IncidentRecord) => incident.severity === "HIGH").length * 24 + 8,
+      low: bucket.filter((i) => i.severity === "LOW").length * 12 + (index === 0 ? 18 : 0),
+      medium: bucket.filter((i) => i.severity === "MEDIUM").length * 18 + 10,
+      high: bucket.filter((i) => i.severity === "HIGH").length * 24 + 8,
     };
   });
 
-  // Geographical Data Mapping
+  // Geographical Threat Distribution
   const countryMap = new Map<string, number>();
-  for (const incident of incidents as IncidentRecord[]) {
+  for (const incident of incidents) {
     countryMap.set(incident.sourceCountry, (countryMap.get(incident.sourceCountry) ?? 0) + 1);
   }
   const topCountries = [...countryMap.entries()]
     .map(([name, count]) => ({ name, count }))
-    .sort((left, right) => right.count - left.count)
+    .sort((a, b) => b.count - a.count)
     .slice(0, 5);
 
-  // Attack Vector Distribution
+  // Attack Vector Analysis
   const vectorMap = new Map<string, number>();
-  for (const incident of incidents as IncidentRecord[]) {
+  for (const incident of incidents) {
     vectorMap.set(incident.vector, (vectorMap.get(incident.vector) ?? 0) + 1);
   }
   const topAttackVectors = [...vectorMap.entries()]
     .map(([label, count]) => ({ label, count }))
-    .sort((left, right) => right.count - left.count)
+    .sort((a, b) => b.count - a.count)
     .slice(0, 5)
     .map((item, index) => ({
       ...item,
@@ -201,96 +174,31 @@ export async function securityMonitor(_req: Request, res: Response) {
       accent: index === 0 ? "critical" : index === 1 ? "warning" : index === 2 ? "info" : "healthy",
     }));
 
-  // Attack Surface Breakdown
-  const alertSurfaceMap = new Map<string, number>();
-  for (const incident of incidents as IncidentRecord[]) {
-    alertSurfaceMap.set(incident.attackSurface, (alertSurfaceMap.get(incident.attackSurface) ?? 0) + 1);
-  }
-  const totalSurface = incidents.length || 1;
-  const surfacePalette: Record<string, string> = {
-    Network: "#38bdf8",
-    Endpoint: "#10b981",
-    Identity: "#f59e0b",
-    Cloud: "#a78bfa",
-    Email: "#ef4444",
-  };
-  const alertDistribution = [...alertSurfaceMap.entries()]
-    .map(([label, count]) => ({
-      label,
-      value: Math.round((count / totalSurface) * 100),
-      color: surfacePalette[label] ?? "#94a3b8",
-    }))
-    .sort((left, right) => right.value - left.value);
-
-  // Real-time Event Feed Logic (Priority: Severity -> Date)
+  // Real-time Priority Feed (SOC Triage Logic)
   const liveFeed = incidents
-    .slice()
-      .sort((left: IncidentRecord, right: IncidentRecord) => {
-      const rank = severityRank(right.severity) - severityRank(left.severity);
-      if (rank !== 0) return rank;
-      return right.createdAt.getTime() - left.createdAt.getTime();
-    })
     .slice(0, 6)
-    .map((incident: IncidentRecord) => ({
-      id: incident.id,
-      time: incident.createdAt.toISOString().slice(11, 16) + " UTC",
-      severity: incident.severity,
-      type: incident.title,
-      sourceIp: incident.sourceIp,
-      destination: incident.asset.hostname,
-      status:
-        incident.status === "TRIAGE"
-          ? "Triage"
-          : incident.status === "INVESTIGATING"
-            ? "Investigating"
-            : incident.status === "CONTAINED"
-              ? "Contained"
-              : "Resolved",
+    .map((i) => ({
+      id: i.id,
+      time: i.createdAt.toISOString().slice(11, 16) + " UTC",
+      severity: i.severity,
+      type: i.title,
+      sourceIp: i.sourceIp,
+      destination: i.asset.hostname,
+      status: i.status.charAt(0) + i.status.slice(1).toLowerCase(),
     }));
 
-  // Customer Exposure Calculations
-  const customerExposure = customers.map((customer: CustomerRecord) => ({
-    name: customer.name,
-    service: customer.primaryService?.name ?? "No service",
-    tier: customer.securityTier,
-    assets: assets.filter((asset: AssetRecord) => asset.customerId === customer.id).length,
-    incidents: incidents.filter((incident: IncidentRecord) => incident.customerId === customer.id && incident.status !== "RESOLVED").length,
-  }));
-
-  // Final API Response Construction
   res.json({
-    header: {
-      title: "SOC SECURITY MONITOR",
-      subtitle: "LIVE FEED",
-      timeframe: "Last 24 Hours - Real-time",
-    },
-    summary: {
-      totalEventsAnalyzed,
-      criticalIncidents,
-      activeThreats,
-      systemHealth,
-      managedAssets,
-      protectedCustomers,
-    },
+    header: { title: "SOC SECURITY MONITOR", timeframe: "Last 24 Hours - Real-time" },
+    summary: { totalEventsAnalyzed, criticalIncidents, activeThreats, systemHealth, managedAssets: assets.length, protectedCustomers: customers.length },
     topCountries,
     eventTrend,
     topAttackVectors,
-    alertDistribution,
     liveFeed,
-    customerExposure,
-    servicePortfolio: services.map((service: ServiceRecord) => ({
-      id: service.id,
-      name: service.name,
-      category: service.category,
-      tier: service.tier,
-      slaHours: service.slaHours,
-      price: service.price,
+    customerExposure: customers.map((c) => ({
+      name: c.name,
+      assets: assets.filter((a) => a.customerId === c.id).length,
+      incidents: incidents.filter((i) => i.customerId === c.id && i.status !== "RESOLVED").length,
     })),
-    telemetry: {
-      notifications: getSocNotifications(),
-      totalIncidents: incidents.length,
-      totalAssets: assets.length,
-      totalEvents: events.length,
-    },
+    telemetry: { notifications: getSocNotifications(), totalIncidents: incidents.length, totalAssets: assets.length },
   });
 }

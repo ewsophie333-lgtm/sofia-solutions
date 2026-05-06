@@ -1,31 +1,35 @@
+/**
+ * SOFIA SOLUTIONS - Financial Transactions & Billing Controller
+ * 
+ * Manages the checkout lifecycle, transaction history, and payment status.
+ * Ensures data integrity between service catalog pricing and final billing.
+ */
+
 import type { Request, Response } from "express";
 import { prisma } from "../config/prisma";
 import { ApiError } from "../utils/errors";
-import { isSecureMode } from "../utils/mode";
 
+/**
+ * Executes a secure checkout transaction.
+ * Validates service existence and enforces server-side pricing integrity.
+ */
 export async function checkout(req: Request, res: Response) {
-  const { serviceId, amount, currency = "EUR", last4 = "4242", brand = "visa" } = req.body as {
-    serviceId: number;
-    amount?: number;
-    currency?: string;
-    last4?: string;
-    brand?: string;
-  };
+  const { serviceId, last4 = "4242", brand = "visa" } = req.body;
 
   const service = await prisma.service.findUnique({ where: { id: serviceId } });
   if (!service) {
-    throw new ApiError(404, "Service not found");
+    throw new ApiError(404, "Target service definition not found in registry");
   }
 
-  // VULNERABLE: acepta el amount enviado por cliente y permite manipulación del cargo.
-  const finalAmount = isSecureMode() ? service.price : amount ?? service.price;
-  const transactionId = `txn_${Date.now()}`;
+  // Final amount is strictly derived from the persistent service catalog to prevent client-side manipulation.
+  const finalAmount = service.price;
+  const transactionId = `txn_${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
   const payment = await prisma.payment.create({
     data: {
-      userId: req.user?.id ?? 1,
+      userId: req.user!.id,
       amount: finalAmount,
-      currency,
+      currency: "EUR",
       status: "SUCCEEDED",
       last4,
       brand,
@@ -34,13 +38,14 @@ export async function checkout(req: Request, res: Response) {
   });
 
   res.status(201).json({
-    message: isSecureMode()
-      ? "Secure checkout completed using server-side price validation."
-      : "Vulnerable checkout completed with client-controlled amount.",
+    message: "Financial transaction settled via server-side verification.",
     payment
   });
 }
 
+/**
+ * Retrieves the billing history associated with the current principal identifier.
+ */
 export async function history(req: Request, res: Response) {
   const payments = await prisma.payment.findMany({
     where: { userId: req.user?.id },

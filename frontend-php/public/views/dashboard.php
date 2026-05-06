@@ -379,9 +379,21 @@ function authHdr(){ return { Authorization: 'Bearer ' + TOKEN() }; }
 (async function loadDashboard(){
     try {
         const user = JSON.parse(localStorage.getItem('sofia_user_v1') || '{}');
-        // Fix welcome message logic
-        const rawName = user.name || user.companyName || user.email || 'Usuario';
-        const cleanName = rawName.split('@')[0].toUpperCase();
+        
+        // Robust welcome message logic
+        let rawName = user.companyName || user.name || user.email || 'Cliente';
+        
+        // If it's an email, take the part before @
+        if (rawName.includes('@')) {
+            rawName = rawName.split('@')[0];
+        }
+        
+        // Avoid "USUARIO" as a name if it's just the email prefix
+        if (rawName.toLowerCase() === 'usuario' && user.email) {
+            rawName = user.email.split('@')[0];
+        }
+
+        const cleanName = rawName.toUpperCase();
         document.getElementById('welcome-user-name').textContent = cleanName;
 
         // Render Active Plan

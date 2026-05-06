@@ -185,3 +185,18 @@ export async function fetchServiceEffectiveness(): Promise<ServiceEffectivenessR
 
   return response.json();
 }
+
+export async function createUrgentAlert(payload: { title: string; description: string; severity?: string }) {
+  const response = await fetch(`${API_URL}/api/alerts/urgent`, {
+    method: "POST",
+    credentials: "include",
+    headers: authHeaders(),
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Alert creation failed with status ${response.status}`);
+  }
+
+  return response.json();
+}

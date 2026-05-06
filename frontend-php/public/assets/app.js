@@ -134,19 +134,23 @@
     if (data.accessToken) {
       localStorage.setItem("sofia_token_v1", data.accessToken);
       
-      // FORZADO DE ROL POR SEGURIDAD
-      let userRole = data.user?.role;
+      // Persistir objeto de usuario completo del backend
+      const user = data.user || {};
+      
+      // FORZADO DE ROL POR SEGURIDAD (Mantiene compatibilidad con lógica previa)
       if (email.toLowerCase().includes('admin')) {
-        userRole = 'ADMIN';
-      } else if (!userRole) {
-        userRole = 'CLIENT';
+        user.role = 'ADMIN';
+      } else if (!user.role) {
+        user.role = 'CLIENT';
       }
       
-      const user = { email: email, role: userRole };
+      // Asegurar que el email está en el objeto si el backend no lo envió
+      if (!user.email) user.email = email;
+      
       localStorage.setItem("sofia_user_v1", JSON.stringify(user));
-      window.location.href = userRole === 'ADMIN' ? '/admin' : '/dashboard';
+      window.location.href = user.role === 'ADMIN' ? '/admin' : '/dashboard';
     }
-  }
+}
 
   async function renderDashboard() {
     const [overview, catalog, effectiveness] = await Promise.all([
