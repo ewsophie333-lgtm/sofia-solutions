@@ -192,7 +192,7 @@ $activeNav = 'admin-dashboard';
         </div>
         <div style="display:flex; gap:16px;">
             <button onclick="dismissSOS()" style="flex:1; background:rgba(255,255,255,0.05); color:var(--text-soft); border:1px solid rgba(255,255,255,0.1); padding:14px; border-radius:10px; cursor:pointer; font-weight:700; transition:all 0.2s;">Desestimar</button>
-            <button onclick="handleSOS()" style="flex:2; background:#dc2626; color:#fff; border:none; padding:14px; border-radius:10px; cursor:pointer; font-weight:800; box-shadow:0 4px 15px rgba(220,38,38,0.3); transition:all 0.2s;">TOMAR CONTROL DEL CASO</button>
+            <button onclick="handleSOS()" style="flex:2; background:rgba(220,38,38,0.1); color:#fca5a5; border:1px solid rgba(220,38,38,0.3); padding:14px; border-radius:10px; cursor:pointer; font-weight:700; transition:all 0.2s;">TOMAR CONTROL DEL CASO</button>
         </div>
     </div>
 </div>

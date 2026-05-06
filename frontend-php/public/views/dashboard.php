@@ -81,10 +81,10 @@ $activeNav = 'dashboard';
                 <p style="color:var(--text-muted); font-size:0.9rem; margin-top:4px;">Tu infraestructura está bajo vigilancia activa por el equipo SOC.</p>
             </div>
             <div style="display:flex; align-items:center; gap:24px;">
-                <!-- SOS Panic Button -->
-                <button onclick="openSOS()" style="background:#dc2626; color:#fff; border:none; padding:10px 20px; border-radius:10px; font-weight:800; cursor:pointer; box-shadow:0 0 15px rgba(220,38,38,0.3); display:flex; align-items:center; gap:8px;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/><path d="m9.05 9 1.41 1.41"/><path d="M12 14v5"/><path d="m14.95 9-1.41 1.41"/></svg>
-                    AYUDA URGENTE (SOS)
+                <!-- Minimalist SOS Button -->
+                <button onclick="openSOS()" style="background:rgba(220,38,38,0.08); color:#fca5a5; border:1px solid rgba(220,38,38,0.3); padding:8px 16px; border-radius:10px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:8px; transition:all 0.3s;" onmouseover="this.style.background='rgba(220,38,38,0.15)'" onmouseout="this.style.background='rgba(220,38,38,0.08)'">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/><path d="m9.05 9 1.41 1.41"/><path d="M12 14v5"/><path d="m14.95 9-1.41 1.41"/></svg>
+                    SOS
                 </button>
                 <!-- Localization Switcher -->
                 <div style="display:flex;gap:4px;background:rgba(255,255,255,0.03);padding:4px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);">
@@ -213,7 +213,7 @@ $activeNav = 'dashboard';
             <textarea id="sos-reason" style="width:100%; height:100px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; padding:12px; font-family:inherit; font-size:0.9rem; resize:none;" placeholder="Ej: He detectado un acceso no autorizado en el servidor de producción..."></textarea>
             <div style="display:flex; gap:12px; margin-top:12px;">
                 <button onclick="closeSOS()" style="flex:1; background:rgba(255,255,255,0.05); color:#fff; border:1px solid rgba(255,255,255,0.1); padding:12px; border-radius:10px; cursor:pointer; font-weight:700;">Cancelar</button>
-                <button onclick="sendSOS()" style="flex:2; background:#ef4444; color:#fff; border:none; padding:12px; border-radius:10px; cursor:pointer; font-weight:800; box-shadow:0 4px 12px rgba(239,68,68,0.3);">ENVIAR ALERTA SOC</button>
+                <button onclick="sendSOS()" style="flex:2; background:rgba(220,38,38,0.15); color:#fca5a5; border:1px solid rgba(220,38,38,0.4); padding:12px; border-radius:10px; cursor:pointer; font-weight:700; transition:all 0.3s;" onmouseover="this.style.background='rgba(220,38,38,0.25)'" onmouseout="this.style.background='rgba(220,38,38,0.15)'">ENVIAR ALERTA SOC</button>
             </div>
         </div>
     </div>
@@ -222,29 +222,48 @@ $activeNav = 'dashboard';
 <script>
 function openSOS() { document.getElementById('sos-modal').style.display = 'flex'; }
 function closeSOS() { document.getElementById('sos-modal').style.display = 'none'; }
-function sendSOS() {
+async function sendSOS() {
     const reason = document.getElementById('sos-reason').value.trim();
     if (!reason) return alert('Por favor, indica una razón.');
     
     const user = JSON.parse(localStorage.getItem('sofia_user_v1') || '{}');
-    const alertData = {
-        id: Date.now(),
-        client: user.name || 'Cliente Desconocido',
-        reason: reason,
-        timestamp: new Date().toISOString()
-    };
+    const token = localStorage.getItem('sofia_token_v1');
     
-    // Guardamos la alerta en localStorage para que el panel de Admin la detecte
-    localStorage.setItem('sofia_sos_request', JSON.stringify(alertData));
-    
-    closeSOS();
-    document.getElementById('sos-reason').value = '';
-    
-    // Feedback visual
-    const t = document.createElement('div');
-    t.innerHTML = '<div style="position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:99999;background:#ef4444;color:#fff;padding:16px 32px;border-radius:14px;font-weight:800;box-shadow:0 10px 40px rgba(0,0,0,0.5);text-align:center;">🚨 ALERTA ENVIADA AL SOC<br><small style="font-weight:400;opacity:0.8;">Un analista contactará contigo de inmediato.</small></div>';
-    document.body.appendChild(t);
-    setTimeout(()=>t.remove(), 5000);
+    if (!token) {
+        alert('Sesión expirada. Por favor, vuelve a iniciar sesión.');
+        window.location.href = '/login.php';
+        return;
+    }
+
+    try {
+        const response = await fetch(API + '/api/alerts/urgent', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                title: 'ALERTA SOS - ' + (user.companyName || user.name || 'Cliente'),
+                description: reason,
+                severity: 'CRITICAL'
+            })
+        });
+
+        if (!response.ok) throw new Error('Error al enviar la alerta');
+
+        closeSOS();
+        document.getElementById('sos-reason').value = '';
+        
+        // Feedback visual
+        const t = document.createElement('div');
+        t.innerHTML = '<div style="position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:99999;background:#ef4444;color:#fff;padding:16px 32px;border-radius:14px;font-weight:800;box-shadow:0 10px 40px rgba(0,0,0,0.5);text-align:center;">🚨 ALERTA ENVIADA AL SOC<br><small style="font-weight:400;opacity:0.8;">Un analista contactará contigo de inmediato.</small></div>';
+        document.body.appendChild(t);
+        setTimeout(()=>t.remove(), 5000);
+
+    } catch (error) {
+        console.error('SOS Error:', error);
+        alert('Error crítico al conectar con el SOC. Contacta por teléfono.');
+    }
 }
 </script>
 

@@ -88,21 +88,22 @@ services:
     restart: always
     depends_on:
       - frontend
+      - n8n
     volumes:
       - ./tunnel-key:/root/.ssh/id_ed25519
-    command: sh -c "apk add --no-cache openssh-client && chmod 600 /root/.ssh/id_ed25519 && ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -i /root/.ssh/id_ed25519 -R sofia-solutions:80:frontend:80 serveo.net"
+    command: sh -c "apk add --no-cache openssh-client && chmod 600 /root/.ssh/id_ed25519 && ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -i /root/.ssh/id_ed25519 -R sofia-solutions:80:frontend:80 -R sofia-n8n:80:n8n:5678 serveo.net"
 
   n8n:
     image: n8nio/n8n:latest
     ports:
       - "5678:5678"
     environment:
-      N8N_HOST: localhost:5678
-      N8N_PROTOCOL: http
-      WEBHOOK_TUNNEL_URL: http://localhost:5678/
+      N8N_HOST: sofia-n8n.serveousercontent.com
+      N8N_PROTOCOL: https
+      WEBHOOK_URL: https://sofia-n8n.serveousercontent.com/
       GENERIC_TIMEZONE: Europe/Madrid
       N8N_ENCRYPTION_KEY: sofia-solutions-encryption-key-2026
-      N8N_EDITOR_BASE_URL: http://localhost:5678/
+      N8N_EDITOR_BASE_URL: https://sofia-n8n.serveousercontent.com/
       N8N_API_DELICIOUS_API_ERROR_RESPONSE_BODY_PROPERTY: message
       N8N_DEFAULT_LOCALE: es
       N8N_DEFAULT_TIMEZONE: Europe/Madrid
