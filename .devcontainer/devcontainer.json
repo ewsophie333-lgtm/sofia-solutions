@@ -1,13 +1,10 @@
 {
   "name": "Sofia Solutions - ASIX Dev Environment",
-  "dockerComposeFile": [
-    "../docker-compose.yml"
-  ],
-  "service": "frontend",
-  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  // Cambiamos compose por una imagen universal que ya tiene Node.js y herramientas
+  "image": "://microsoft.com",
   "features": {
-    // CORRECCIÓN: Permite al contenedor frontend usar el Docker de Codespaces
-    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+    // Esto te da el comando 'docker' y 'docker compose' en la terminal
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
       "version": "latest"
     }
   },
@@ -18,18 +15,9 @@
     5556
   ],
   "portsAttributes": {
-    "8000": {
-      "label": "Web Pública (Frontend)",
-      "onAutoForward": "notify"
-    },
-    "8001": {
-      "label": "API Backend",
-      "onAutoForward": "ignore"
-    },
-    "3000": {
-      "label": "Grafana SOC",
-      "onAutoForward": "notify"
-    }
+    "8000": { "label": "Web Pública (Frontend)", "onAutoForward": "notify" },
+    "8001": { "label": "API Backend", "onAutoForward": "ignore" },
+    "3000": { "label": "Grafana SOC", "onAutoForward": "notify" }
   },
   "customizations": {
     "vscode": {
@@ -41,5 +29,6 @@
       ]
     }
   },
+  // Aquí sí tiene sentido tu mensaje original
   "postCreateCommand": "npm install && echo 'Entorno listo. Usa docker compose up -d para arrancar.'"
 }
