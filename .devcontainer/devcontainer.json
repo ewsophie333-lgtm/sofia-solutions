@@ -10,7 +10,8 @@
     8000,
     8001,
     3000,
-    5556
+    5556,
+    5678
   ],
   "portsAttributes": {
     "8000": {
@@ -24,6 +25,14 @@
     "3000": {
       "label": "Grafana SOC",
       "onAutoForward": "notify"
+    },
+    "5556": {
+      "label": "Prisma Studio",
+      "onAutoForward": "notify"
+    },
+    "5678": {
+      "label": "n8n Workflows",
+      "onAutoForward": "notify"
     }
   },
   "customizations": {
@@ -36,5 +45,5 @@
       ]
     }
   },
-  "postCreateCommand": "npm install && echo '=== ENTORNO LISTO ===' && echo 'Usa de forma manual: docker compose up -d'"
+  "postCreateCommand": "echo 'Entorno listo. Usa docker compose up -d para arrancar.'"
 }
