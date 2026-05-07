@@ -297,12 +297,15 @@ async function runSQLi() {
             if (p.toLowerCase().includes('credentials')) {
                 tLog(`[*] Accediendo a tabla 'users'...`, 'cyan');
                 await delay(1200);
-                tLog(`[DATABASE] Query returned 2 rows:`, 'yellow');
+                tLog(`[DATABASE] Query returned 5 rows:`, 'yellow');
                 tLog(`+----------------------+--------------------------+`, 'dim');
                 tLog(`| email                | password (plain/hash)    |`, 'cyan');
                 tLog(`+----------------------+--------------------------+`, 'dim');
                 tLog(`| admin@sofia.local    | S0f1a_Secur3!_2026       |`, 'red');
                 tLog(`| mapfre@sofia.local   | S0f1a_Mapfre!_2026       |`, 'red');
+                tLog(`| iberdrola@sofia.local| S0f1a_Iberdrola!_2026    |`, 'red');
+                tLog(`| repsol@sofia.local   | S0f1a_Repsol!_2026       |`, 'red');
+                tLog(`| sabadell@sofia.local | S0f1a_Sabadell!_2026     |`, 'red');
                 tLog(`+----------------------+--------------------------+`, 'dim');
                 return;
             }
@@ -316,18 +319,18 @@ async function runSQLi() {
 
         // Caso 2: Blind Time-Based (SLEEP)
         if (p.toLowerCase().includes('sleep')) {
-            if (duration >= 5) {
+            if (duration >= 5 && ep.includes('v1')) {
                 tLog(`[+] EXPLOIT EXITOSO: Blind SQLi confirmado.`, 'green');
                 tLog(`[!] El servidor tardó ${duration.toFixed(2)}s en responder (Inyección basada en tiempo).`, 'green');
             } else {
-                tLog(`[-] Error: El servidor respondió demasiado rápido. ¿Protección activa?`, 'red');
+                tLog(`[-] Error: El servidor respondió en ${duration.toFixed(2)}s. ¿Protección activa?`, 'red');
             }
             return;
         }
 
         // Caso 3: Auth Bypass (Clásico)
         const d = await r.json();
-        if (r.ok && d.accessToken) {
+        if (r.ok && d.accessToken && ep.includes('v1')) {
             tLog(`[DATABASE] Query returned 1 row (Authentication bypassed)`, 'yellow');
             tLog(`[+] EXPLOIT EXITOSO: Sesión de ${d.user?.email || 'admin'} secuestrada.`, 'green');
             const res = tLog(`[*] Acción disponible: `, 'cyan');
@@ -339,7 +342,7 @@ async function runSQLi() {
         } else { 
             tLog(`[DATABASE] Executing (Parameterized/Escaped): SELECT * FROM users WHERE email=$1 AND password=$2`, 'dim');
             tLog(`[DATABASE] Query returned 0 rows.`, 'yellow');
-            tLog(`[-] Error: El sistema ha bloqueado el payload. No vulnerable a SQLi.`, 'red'); 
+            tLog(`[-] Error: El sistema ha bloqueado el payload. No vulnerable a SQLi en ${ep}.`, 'red'); 
         }
     } catch(e) { tLog(`[!] Error de red.`, 'red'); }
 }

@@ -13,6 +13,9 @@ import { metrics } from "../config/prometheus";
 import { hashPassword, verifyPassword } from "../utils/hash";
 import { ApiError } from "../utils/errors";
 import { signAccessToken, signRefreshToken, verifyRefreshToken } from "../utils/jwt";
+import axios from "axios";
+
+const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL || "http://n8n:5678/webhook/alert";
 
 /**
  * Persists secure HTTP-only cookies for session management.
@@ -74,6 +77,27 @@ export async function login(req: Request, res: Response) {
 
   if (!user || !(await verifyPassword(password, user.passwordHash, "secure"))) {
     metrics.loginAttemptsTotal.inc({ mode: "secure", result: "failed" });
+    
+    // Auto-Alert on Critical Failure
+    await prisma.alert.create({
+      data: {
+        title: "Intento de Acceso No Autorizado",
+        description: `Fallo de autenticación para el usuario: ${email}. Posible ataque de Fuerza Bruta detectado.`,
+        severity: "URGENT",
+        status: "ACTIVE"
+      }
+    });
+
+    try {
+      await axios.post(N8N_WEBHOOK_URL, {
+        title: "ALERTA DE SEGURIDAD: Brute Force",
+        description: `Se ha detectado un intento de acceso fallido para ${email}. El sistema ha bloqueado la peticion.`,
+        severity: "URGENT",
+        recipientEmail: "ewsophie333@gmail.com",
+        clientName: "S. SOLUTIONS MONITOR"
+      });
+    } catch(e) {}
+
     throw new ApiError(401, "Invalid identity credentials");
   }
 
@@ -98,6 +122,60 @@ export async function login(req: Request, res: Response) {
     role: user.role,
     sessionId
   }, "secure");
+
+  applyAuthCookies(res, accessToken, refreshToken);
+
+  res.json({
+    accessToken,
+    user: { 
+      id: user.id, 
+      email: user.email, 
+      role: user.role,
+      companyName: userWithCustomer?.customer?.name || null
+    }
+  });
+}
+
+/**
+ * V1 Authentication Engine (Vulnerable Mode).
+ * Demonstrates insecure identity validation (plaintext comparison simulation).
+ */
+export async function loginV1(req: Request, res: Response) {
+  const { email, password } = req.body;
+
+  // VULNERABLE: Direct string concatenation to allow SQL Injection demo
+  const users: any[] = await prisma.$queryRawUnsafe(
+    `SELECT * FROM "User" WHERE "email" = '${email}'`
+  );
+  const user = users[0];
+
+  // Note: verifyPassword uses 'vulnerable' mode here to simulate legacy behavior
+  if (!user || !(await verifyPassword(password, user.passwordHash, "vulnerable"))) {
+    metrics.loginAttemptsTotal.inc({ mode: "vulnerable", result: "failed" });
+    throw new ApiError(401, "Invalid identity credentials");
+  }
+
+  metrics.loginAttemptsTotal.inc({ mode: "vulnerable", result: "success" });
+
+  const userWithCustomer = await prisma.user.findUnique({
+    where: { id: user.id },
+    include: { customer: true }
+  });
+
+  const sessionId = randomUUID();
+  const accessToken = signAccessToken({
+    sub: user.id,
+    email: user.email,
+    role: user.role,
+    sessionId
+  }, "vulnerable");
+
+  const refreshToken = signRefreshToken({
+    sub: user.id,
+    email: user.email,
+    role: user.role,
+    sessionId
+  }, "vulnerable");
 
   applyAuthCookies(res, accessToken, refreshToken);
 
@@ -180,6 +258,27 @@ export async function loginV2(req: Request, res: Response) {
 
   if (!user || !(await verifyPassword(password, user.passwordHash, "secure"))) {
     metrics.loginAttemptsTotal.inc({ mode: "secure", result: "failed" });
+
+    // Auto-Alert on Secure Login Failure
+    await prisma.alert.create({
+      data: {
+        title: "Alerta de Seguridad V2",
+        description: `Fallo de login securizado para ${email}. El sistema de Rate Limiting ha sido activado.`,
+        severity: "CRITICAL",
+        status: "ACTIVE"
+      }
+    });
+
+    try {
+      await axios.post(N8N_WEBHOOK_URL, {
+        title: "CRITICAL: Fallo en Login Seguro",
+        description: `Intento de compromiso detectado contra el endpoint v2 para ${email}.`,
+        severity: "CRITICAL",
+        recipientEmail: "ewsophie333@gmail.com",
+        clientName: "S. SOLUTIONS SECURITY"
+      });
+    } catch(e) {}
+
     throw new ApiError(401, "Invalid identity credentials");
   }
 

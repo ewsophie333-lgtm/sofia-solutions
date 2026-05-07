@@ -23,7 +23,7 @@ echo.
 echo Iniciando framework...
 echo.
 
-python sofia-audit-framework.py -t http://localhost:8000
+python "%~dp0sofia-audit-framework.py" -t http://localhost:8000
 
 echo.
 pause

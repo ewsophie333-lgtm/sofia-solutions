@@ -90,7 +90,7 @@ services:
       - prometheus
 
   tunnel:
-    image: linuxserver/openssh-client
+    image: alpine
     restart: always
     depends_on:
       - frontend
@@ -99,13 +99,15 @@ services:
       - ./tunnel-key:/root/.ssh/id_ed25519
     entrypoint: ""
     command: >
+      sh -c "apk add --no-cache openssh-client && 
       ssh -o StrictHostKeyChecking=no 
-      -o ServerAliveInterval=30 
+      -o ServerAliveInterval=15 
       -o ServerAliveCountMax=3 
+      -o TCPKeepAlive=yes 
       -i /root/.ssh/id_ed25519 
       -R sofia-solutions:80:frontend:80 
       -R sofia-n8n:80:n8n:5678 
-      serveo.net
+      serveo.net"
 
   n8n:
     image: n8nio/n8n:latest

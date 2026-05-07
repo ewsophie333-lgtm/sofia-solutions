@@ -55,6 +55,98 @@ $activeNav = 'admin-dashboard';
             <div class="kpi-card" data-tone="ok" style="border-left:3px solid #6d28d9;" id="kpi-health"><span class="meta-label" data-i18n="k4">Salud del Sistema</span><strong>—</strong><div class="tone-bar" style="background:#6d28d9;"></div></div>
         </section>
 
+        <!-- System Health Summary (Real-time Status) -->
+        <section class="panel" style="padding:24px; margin-bottom:32px;">
+            <div class="panel-heading" style="margin-bottom:20px;">
+                <div><span class="eyebrow">Estado</span><h2>Resumen de Salud</h2></div>
+            </div>
+            <div class="planes-grid" style="grid-template-columns:repeat(3,1fr); gap:16px;">
+                <div class="health-card ok" id="health-api">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <span class="meta-label">API Backend</span>
+                            <div class="status-indicator"><span class="dot"></span> <span class="status-text">Operacional</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="health-card ok" id="health-db">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <span class="meta-label">Base de Datos</span>
+                            <div class="status-indicator"><span class="dot"></span> <span class="status-text">Conectado</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="health-card ok" id="health-gateway">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <span class="meta-label">SOC Gateway</span>
+                            <div class="status-indicator"><span class="dot"></span> <span class="status-text">Activo</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <style>
+        .health-card { background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:12px; padding:20px; transition:all 0.3s ease; }
+        .health-card .status-indicator { display:flex; align-items:center; gap:8px; margin-top:8px; font-weight:800; font-size:1.1rem; }
+        .health-card .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+        
+        .health-card.ok .dot { background:#22c55e; box-shadow:0 0 10px #22c55e; }
+        .health-card.ok .status-text { color:#22c55e; }
+        
+        .health-card.error { background:rgba(239,68,68,0.05); border:1px solid rgba(239,68,68,0.2); animation: pulseRed 2s infinite; }
+        .health-card.error .dot { background:#ef4444; box-shadow:0 0 10px #ef4444; }
+        .health-card.error .status-text { color:#ef4444; }
+
+        @keyframes pulseRed {
+            0% { border-color:rgba(239,68,68,0.2); }
+            50% { border-color:rgba(239,68,68,0.5); }
+            100% { border-color:rgba(239,68,68,0.2); }
+        }
+        </style>
+
+        <script>
+        async function monitorHealth() {
+            const apiCard = document.getElementById('health-api');
+            const dbCard = document.getElementById('health-db');
+            const gwCard = document.getElementById('health-gateway');
+
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s timeout for DDoS detection
+
+                const res = await fetch(API + '/api/admin/security-monitor', { 
+                    headers: authHdr(),
+                    signal: controller.signal 
+                });
+                
+                clearTimeout(timeoutId);
+
+                if (res.ok) {
+                    [apiCard, dbCard, gwCard].forEach(c => {
+                        c.classList.remove('error');
+                        c.classList.add('ok');
+                        c.querySelector('.status-text').textContent = c.id === 'health-api' ? 'Operacional' : (c.id === 'health-db' ? 'Conectado' : 'Activo');
+                    });
+                } else {
+                    throw new Error('Down');
+                }
+            } catch (e) {
+                // DDoS Detected or Server Down
+                [apiCard, dbCard, gwCard].forEach(c => {
+                    c.classList.remove('ok');
+                    c.classList.add('error');
+                    c.querySelector('.status-text').textContent = 'CAÍDO / DDoS';
+                });
+                console.warn('CRITICAL: Backend unresponsive. Possible DDoS in progress.');
+            }
+        }
+        setInterval(monitorHealth, 5000);
+        monitorHealth();
+        </script>
+
         <!-- Threat Vector & Risk Distribution Analytics -->
         <section class="planes-grid" style="grid-template-columns:1.8fr 1fr;gap:32px;margin-bottom:32px;">
             <article class="panel" style="padding:24px;">
@@ -149,10 +241,18 @@ $activeNav = 'admin-dashboard';
             
             <!-- IR Tabs -->
             <div style="display:flex; gap:12px; margin-bottom:24px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:16px;" id="ir-tabs">
-                <button onclick="setIRTab('global')" class="ir-tab active" data-tab="global">GLOBAL</button>
-                <button onclick="setIRTab('mapfre')" class="ir-tab" data-tab="mapfre">MAPFRE</button>
-                <button onclick="setIRTab('iberdrola')" class="ir-tab" data-tab="iberdrola">IBERDROLA</button>
-                <button onclick="setIRTab('sabadell')" class="ir-tab" data-tab="sabadell">SABADELL</button>
+                <button onclick="setIRTab('global')" class="ir-tab active" data-tab="global">
+                    GLOBAL <span style="font-size:0.65rem; margin-left:8px; color:#22c55e;">● 99.8%</span>
+                </button>
+                <button onclick="setIRTab('mapfre')" class="ir-tab" data-tab="mapfre">
+                    MAPFRE <span style="font-size:0.65rem; margin-left:8px; color:#22c55e;">● 99.9%</span>
+                </button>
+                <button onclick="setIRTab('iberdrola')" class="ir-tab" data-tab="iberdrola">
+                    IBERDROLA <span style="font-size:0.65rem; margin-left:8px; color:#f59e0b;">● 98.4%</span>
+                </button>
+                <button onclick="setIRTab('sabadell')" class="ir-tab" data-tab="sabadell">
+                    SABADELL <span style="font-size:0.65rem; margin-left:8px; color:#22c55e;">● 99.9%</span>
+                </button>
             </div>
 
             <!-- IR Actions Toolbar -->
@@ -308,18 +408,33 @@ function renderAdminTickets(tickets) {
         return;
     }
     body.innerHTML = tickets.map(t => {
-        const statusMap = { OPEN:'status-open-admin', IN_PROGRESS:'status-progress-admin', CLOSED:'status-closed-admin' };
-        const labelMap  = { OPEN:'Nuevo', IN_PROGRESS:'Analizando', CLOSED:'Cerrado' };
-        const prio = t.priority || 'NORMAL';
-        const prioColor = prio === 'ALTA' ? '#fca5a5' : '#fcd34d';
+        // Robust Status Mapping
+        const s = (t.status || 'OPEN').toUpperCase();
+        const statusMap = { 
+            OPEN: 'status-open-admin', NEW: 'status-open-admin', 
+            IN_PROGRESS: 'status-progress-admin', PENDING: 'status-progress-admin',
+            CLOSED: 'status-closed-admin', RESOLVED: 'status-closed-admin' 
+        };
+        const labelMap = { 
+            OPEN: 'Nuevo', NEW: 'Nuevo', 
+            IN_PROGRESS: 'Analizando', PENDING: 'Pendiente',
+            CLOSED: 'Cerrado', RESOLVED: 'Resuelto' 
+        };
+
+        // Priority Mapping
+        const p = (t.priority || 'NORMAL').toUpperCase();
+        const isHigh = ['ALTA', 'HIGH', 'URGENT', 'CRITICAL'].includes(p);
+        const prioColor = isHigh ? '#fca5a5' : '#fcd34d';
         
+        const client = t.clientName || t.customer?.name || 'S. SOLUTIONS TIER 1';
+
         return `<tr style="border-bottom:1px solid rgba(255,255,255,0.03); transition:all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.01)'" onmouseout="this.style.background=''">
-            <td style="padding:16px 12px;"><strong style="color:#a78bfa; font-size:0.9rem;">${t.clientName || 'CLIENTE GENÉRICO'}</strong></td>
+            <td style="padding:16px 12px;"><strong style="color:#a78bfa; font-size:0.9rem;">${client}</strong></td>
             <td style="padding:16px 12px; color:#fff; font-weight:600;">${t.subject || t.title}</td>
-            <td style="padding:16px 12px;"><span class="ticket-status-admin ${statusMap[t.status]}">${labelMap[t.status]}</span></td>
-            <td style="padding:16px 12px; color:${prioColor}; font-weight:800; font-size:0.7rem; letter-spacing:0.5px;">${prio}</td>
+            <td style="padding:16px 12px;"><span class="ticket-status-admin ${statusMap[s] || 'status-open-admin'}">${labelMap[s] || 'Pendiente'}</span></td>
+            <td style="padding:16px 12px; color:${prioColor}; font-weight:800; font-size:0.7rem; letter-spacing:0.5px;">${p}</td>
             <td style="padding:16px 12px;">
-                <button onclick="openClient('${t.clientName||'MAPFRE'}')" class="btn btn-outline btn-sm" style="font-size:0.65rem; padding:6px 12px; border-radius:6px; border-color:rgba(255,255,255,0.1);">Gestionar</button>
+                <button onclick="openClient('${client}')" class="btn btn-outline btn-sm" style="font-size:0.65rem; padding:6px 12px; border-radius:6px; border-color:rgba(255,255,255,0.1);">Gestionar</button>
             </td>
         </tr>`;
     }).join('');

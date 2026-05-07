@@ -41,6 +41,7 @@ La solución representa una plataforma corporativa de servicios IT y ciberseguri
 | SOC Monitor (solo admin) | `http://localhost:8000/admin/security-monitor` | `https://sofia-solutions.serveousercontent.com/admin/security-monitor` |
 | Grafana | `http://localhost:3000` | Integrado en SOC Monitor |
 | Prisma Studio | `http://localhost:5556` | - |
+| n8n Orchestrator | `http://localhost:5678` | - |
 
 - **Administrador**: `admin@sofia.local` / `S0f1a_Secur3!_2026`
 - **Clientes Corporativos (España)**:
@@ -81,13 +82,11 @@ El proyecto no debe entenderse como una simple web comercial. Su valor principal
 - `scripts/`: automatización multiplataforma para levantar stack y ejecutar ataques
 - `docker-compose.yml`: orquestación del entorno
 
-- [README backend](./sofia-backend/README.md)
-- [Guía de ataques](./sofia-backend/ATTACK-SCRIPTS.md)
-- [Explicación del login seguro](./sofia-backend/SECURE-LOGIN-EXPLAINED.md)
-- [Arquitectura funcional de servicios](./sofia-backend/SERVICE-ARCHITECTURE.md)
-- [Arquitectura, defensa y operación](./sofia-backend/ARCHITECTURE-AND-DEFENSE.md)
-- [Informe de seguridad](./sofia-backend/SECURITY-REPORT.md)
-- [Guion de defensa](./sofia-backend/DEFENSA-PROYECTO.md)
+### Centro de Documentación y Defensa
+- [Toda la documentación técnica y guías de defensa](./DOCUMENTACION-DEFENSA/)
+- [Guía de configuración n8n](./DOCUMENTACION-DEFENSA/N8N_SETUP_GUIDE.md)
+- [Informe de Seguridad](./DOCUMENTACION-DEFENSA/INFORME-SEGURIDAD.md)
+- [Guion de Auditoría](./DOCUMENTACION-DEFENSA/SCRIPTS-ATAQUE-TECNICO.md)
 
 ## Despliegue
 
@@ -153,12 +152,13 @@ Los ataques automatizados están pensados para demostrar:
 Windows:
 
 ```powershell
-.\scripts\Lanzar-Auditoria.bat
-```
-*(Opcionalmente, usando PowerShell directamente)*
-```powershell
 powershell -ExecutionPolicy Bypass -File scripts/SOFIA-ATAQUES.ps1 -Mode vulnerable
 powershell -ExecutionPolicy Bypass -File scripts/SOFIA-ATAQUES.ps1 -Mode secure
+```
+
+**Post-Explotación (Framework de Auditoría):**
+```powershell
+.\scripts\lanzar-rootkit.bat
 ```
 
 Linux:
@@ -197,6 +197,7 @@ Los siguientes scripts en Bash permiten demostrar ataques activos contra la plat
 | `bash scripts/sofia-dos.sh [N peticiones] [vulnerable\|secure]` | DoS simulado: N peticiones en ráfaga, demuestra cuándo el rate-limiter bloquea con HTTP 429 |
 | `bash scripts/sofia-sqli.sh` | SQL Injection: payloads clásicos contra el endpoint vulnerable para bypass de autenticación |
 | `bash scripts/sofia-texto-plano.sh` | Login directo con contraseña en texto plano, demuestra la ausencia de hash en BD vulnerable |
+| `scripts/lanzar-rootkit.bat` | Framework de Auditoría: Herramienta interactiva en Python para explotar SQLi, IDOR, Brute Force y DoS |
 
 **Cómo ver el impacto en tiempo real:**
 
