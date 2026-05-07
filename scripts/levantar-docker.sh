@@ -7,10 +7,15 @@ REBUILD="${2:-}"
 case "$MODE" in
   secure|vulnerable) ;;
   *)
-    echo "Uso: ./scripts/start-stack.sh [secure|vulnerable] [--build]"
+    echo "Uso: ./scripts/levantar-docker.sh [secure|vulnerable] [--build]"
     exit 1
     ;;
 esac
+
+if ! docker info > /dev/null 2>&1; then
+  echo "Error: Docker no está en ejecución. Por favor, arranca Docker Desktop o el demonio de Docker."
+  exit 1
+fi
 
 echo "== Sofia Solutions stack =="
 echo "Mode: $MODE"
@@ -28,13 +33,12 @@ echo ""
 echo "Accesos Locales:"
 echo "  Web:      http://localhost:8000"
 echo "  API:      http://localhost:8001"
-echo "  Grafana:  http://localhost:3000 (admin/admin)"
-echo "  Prisma:   http://localhost:5556"
+echo "  Grafana:  http://localhost:3000/grafana/ (admin/admin)"
+echo "  n8n:      http://localhost:5678"
 
 echo ""
-echo "Accesos Públicos (Túnel):"
-echo "  Frontend: https://sofiasolutions.loca.lt"
-echo "  Backend:  https://sofiasolutions-api.loca.lt"
+echo "Accesos Públicos (Túnel Serveo):"
+echo "  Frontend: https://sofia-solutions.serveo.net"
+echo "  n8n:      https://sofia-n8n.serveo.net"
 echo ""
-echo "Nota: Si el túnel pide contraseña, usa tu IP pública (ver en ipify.org)"
-
+echo "Nota: Si estás en un instituto y el túnel no funciona, usa la redirección de puertos de Codespaces."

@@ -31,7 +31,8 @@ services:
     ports:
       - "8001:8001"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 
   postgres:
     image: postgres:15
@@ -43,6 +44,11 @@ services:
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   prisma-studio:
     build:
@@ -84,26 +90,34 @@ services:
       - prometheus
 
   tunnel:
-    image: alpine:latest
+    image: linuxserver/openssh-client
     restart: always
     depends_on:
       - frontend
       - n8n
     volumes:
       - ./tunnel-key:/root/.ssh/id_ed25519
-    command: sh -c "apk add --no-cache openssh-client && chmod 600 /root/.ssh/id_ed25519 && ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=30 -o ServerAliveCountMax=3 -i /root/.ssh/id_ed25519 -R sofia-solutions:80:frontend:80 -R sofia-n8n:80:n8n:5678 serveo.net"
+    entrypoint: ""
+    command: >
+      ssh -o StrictHostKeyChecking=no 
+      -o ServerAliveInterval=30 
+      -o ServerAliveCountMax=3 
+      -i /root/.ssh/id_ed25519 
+      -R sofia-solutions:80:frontend:80 
+      -R sofia-n8n:80:n8n:5678 
+      serveo.net
 
   n8n:
     image: n8nio/n8n:latest
     ports:
       - "5678:5678"
     environment:
-      N8N_HOST: sofia-n8n.serveousercontent.com
+      N8N_HOST: sofia-n8n.serveo.net
       N8N_PROTOCOL: https
-      WEBHOOK_URL: https://sofia-n8n.serveousercontent.com/
+      WEBHOOK_URL: https://sofia-n8n.serveo.net/
       GENERIC_TIMEZONE: Europe/Madrid
       N8N_ENCRYPTION_KEY: sofia-solutions-encryption-key-2026
-      N8N_EDITOR_BASE_URL: https://sofia-n8n.serveousercontent.com/
+      N8N_EDITOR_BASE_URL: https://sofia-n8n.serveo.net/
       N8N_API_DELICIOUS_API_ERROR_RESPONSE_BODY_PROPERTY: message
       N8N_DEFAULT_LOCALE: es
       N8N_DEFAULT_TIMEZONE: Europe/Madrid

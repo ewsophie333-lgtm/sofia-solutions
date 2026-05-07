@@ -1,6 +1,10 @@
 {
   "name": "Sofia Solutions - ASIX Dev Environment",
-  "image": "://microsoft.com",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:20",
+  "dockerComposeFile": [
+    "../docker-compose.yml"
+  ],
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": {
       "version": "latest"
@@ -10,8 +14,7 @@
     8000,
     8001,
     3000,
-    5556,
-    5678
+    5556
   ],
   "portsAttributes": {
     "8000": {
@@ -25,14 +28,6 @@
     "3000": {
       "label": "Grafana SOC",
       "onAutoForward": "notify"
-    },
-    "5556": {
-      "label": "Prisma Studio",
-      "onAutoForward": "notify"
-    },
-    "5678": {
-      "label": "n8n Workflows",
-      "onAutoForward": "notify"
     }
   },
   "customizations": {
@@ -45,5 +40,5 @@
       ]
     }
   },
-  "postCreateCommand": "echo 'Entorno listo. Usa docker compose up -d para arrancar.'"
+  "postCreateCommand": "npm install && echo 'Entorno listo. Usa docker compose up -d para arrancar.'"
 }
