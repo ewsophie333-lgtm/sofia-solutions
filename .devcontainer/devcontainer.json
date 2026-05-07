@@ -6,7 +6,8 @@
   "service": "frontend",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "features": {
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+    // CORRECCIÓN: Permite al contenedor frontend usar el Docker de Codespaces
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
       "version": "latest"
     }
   },
