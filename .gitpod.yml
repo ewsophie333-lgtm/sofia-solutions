@@ -1,0 +1,45 @@
+image: gitpod/workspace-full
+
+tasks:
+  - name: Sofia Solutions Agent Setup
+    init: |
+      echo "Iniciando instalación y preparación de entorno..."
+      # Asegurar permisos de ejecución en los scripts
+      chmod +x scripts/*.sh sofia-backend/docker/*.sh
+      # Instalar dependencias locales del backend por si se necesitan herramientas CLI
+      cd sofia-backend && npm install && cd ..
+    command: |
+      echo "Arrancando servicios e infraestructura en Docker..."
+      # Gitpod levanta el demonio Docker automáticamente con workspace-full
+      # Levantamos el stack con nuestro script
+      ./scripts/levantar-docker.sh secure --build
+      echo "🚀 ¡Entorno Autónomo Listo y Operativo!"
+
+ports:
+  - port: 8000
+    name: Frontend Web
+    visibility: public
+    onOpen: open-preview
+  - port: 8001
+    name: Backend API
+    visibility: public
+    onOpen: ignore
+  - port: 3000
+    name: Grafana SOC
+    visibility: public
+    onOpen: ignore
+  - port: 5678
+    name: n8n Workflow
+    visibility: public
+    onOpen: ignore
+  - port: 5556
+    name: Prisma Studio
+    visibility: public
+    onOpen: ignore
+
+# RECORDATORIO DE SEGURIDAD (API KEYS Y VARIABLES DE ENTORNO):
+# Para que tu agente funcione sin problemas de autenticación:
+# 1. NO expongas tus claves en el código fuente.
+# 2. Ve a https://gitpod.io/variables en tu cuenta de Gitpod.
+# 3. Añade las claves (ej. OPENAI_API_KEY, ANTHROPIC_API_KEY) con el scope "*/*" o el nombre de este repo.
+# 4. Gitpod inyectará estas variables de forma segura y automática en tu entorno al iniciar.
