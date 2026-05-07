@@ -1,14 +1,12 @@
 {
   "id": "kTtBAby2peiAemTp",
-  "name": "Sofia Solutions - Emergency Alert System V16 (Grand Identity)",
+  "name": "Sofia Solutions - Delivery Test",
   "nodes": [
     {
       "parameters": {
         "httpMethod": "POST",
         "path": "alert",
-        "options": {
-          "rawBody": false
-        }
+        "options": {}
       },
       "id": "f8a1a2b3-c4d5-4e6f-8a9b-0c1d2e3f4g5h",
       "name": "Webhook Sofia",
@@ -22,42 +20,18 @@
     },
     {
       "parameters": {
-        "conditions": {
-          "string": [
-            {
-              "value1": "={{ ($json.body?.severity || $json.severity || $json.alert_level || \"\").toLowerCase() }}",
-              "operation": "regex",
-              "value2": "high|urgent|critical"
-            }
-          ]
-        }
-      },
-      "id": "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e",
-      "name": "Urgent/High",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 1,
-      "position": [
-        620,
-        300
-      ]
-    },
-    {
-      "parameters": {
         "fromEmail": "ewsophie333@gmail.com",
         "toEmail": "ewsophie333@gmail.com",
-        "subject": "={{ '[SOC] ' + ({high:'ALTA', critical:'CRÍTICA', urgent:'URGENTE'}[($json.body?.severity || $json.severity || 'urgent').toLowerCase()] || 'ALTA') + ' | ' + ($json.body?.clientName || $json.clientName || 'Global') + ': ' + ($json.body?.title || $json.title || 'Alerta de Seguridad').replace(/\\\\u([0-9a-fA-F]{4})/g, (m,g)=>String.fromCharCode(parseInt(g,16))) }}",
-        "html": "=<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <style>\n        body { font-family: 'Segoe UI', Helvetica, Arial, sans-serif; background-color: #f4f7fa; color: #1e293b; margin: 0; padding: 0; }\n        .wrapper { background-color: #f4f7fa; padding: 30px 10px; }\n        .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid #e2e8f0; }\n        .header { background: #1a0a2e; padding: 40px 20px 30px; text-align: center; }\n        /* Logo optimizado para emails */\n        .logo-img {\n            width: 320px !important;\n            height: auto !important;\n            max-width: 100%;\n            display: block;\n            margin: 0 auto;\n            border: 0;\n            outline: none;\n            text-decoration: none;\n        }\n        .slogan { font-size: 12px; color: #a78bfa; letter-spacing: 4px; margin-top: 15px; text-transform: uppercase; font-weight: 700; }\n        .content { padding: 40px 35px; }\n        .badge { display: inline-block; padding: 6px 14px; border-radius: 6px; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 25px; }\n        .badge-critical { background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; }\n        .badge-high { background: #fef3c7; color: #f59e0b; border: 1px solid #fcd34d; }\n        .title { font-size: 28px; font-weight: 800; color: #0f172a; margin: 0 0 15px; letter-spacing: -0.5px; }\n        .alert-box { background: #f8fafc; border-radius: 10px; padding: 25px; margin-bottom: 35px; border: 1px solid #e2e8f0; border-left: 6px solid #8b5cf6; }\n        .description { font-size: 16px; color: #475569; line-height: 1.6; margin: 0; }\n        .tech-table { width: 100%; border-collapse: collapse; margin-bottom: 35px; }\n        .tech-row { border-bottom: 1px solid #f1f5f9; }\n        .tech-label { padding: 15px 0; color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; width: 120px; }\n        .tech-value { padding: 15px 0; color: #1e293b; font-size: 15px; font-weight: 600; }\n        .btn { display: inline-block; background: #1a0a2e; color: #ffffff !important; text-decoration: none; padding: 20px 45px; border-radius: 8px; font-weight: 700; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; }\n\n        @media only screen and (max-width: 600px) {\n            .logo-img { width: 260px !important; }\n            .header { padding: 30px 15px 20px; }\n            .content { padding: 30px 20px; }\n            .btn { width: 100%; text-align: center; box-sizing: border-box; }\n        }\n    </style>\n</head>\n<body>\n    <div class=\"wrapper\">\n        <div class=\"container\">\n            <div class=\"header\">\n                <!-- Logo Sofia Solutions - URL pública de GitHub (evita bloqueos de clientes de correo como Gmail por Base64) -->\n                <img src=\"https://raw.githubusercontent.com/ewsophie333-lgtm/sofia-solutions/main/frontend-php/public/assets/logo-soc-final.png\" alt=\"Sofia Solutions\" width=\"320\" class=\"logo-img\">\n                <div class=\"slogan\">Tu Seguridad, Nuestra Misión</div>\n            </div>\n            <div class=\"content\">\n                <div class=\"badge badge-{{ ($json.body?.severity || $json.severity || 'urgent').toLowerCase() === 'high' ? 'high' : 'critical' }}\">\n                    {{ {high:'ALTA', critical:'CRÍTICA', urgent:'URGENTE'}[($json.body?.severity || $json.severity || 'urgent').toLowerCase()] || 'ALTA' }}\n                </div>\n                <h2 class=\"title\">Alerta de Seguridad SOC</h2>\n                <div class=\"alert-box\">\n                    <p class=\"description\">{{ ($json.body?.description || $json.description || 'Se ha detectado un evento de seguridad crítico que requiere atención inmediata.').replace(/\\\\u([0-9a-fA-F]{4})/g, (m,g)=>String.fromCharCode(parseInt(g,16))) }}</p>\n                </div>\n\n                <table class=\"tech-table\">\n                    <tr class=\"tech-row\">\n                        <td class=\"tech-label\">Cliente</td>\n                        <td class=\"tech-value\">{{ $json.body?.clientName || $json.clientName || 'Global / Internal' }}</td>\n                    </tr>\n                    <tr class=\"tech-row\">\n                        <td class=\"tech-label\">Usuario</td>\n                        <td class=\"tech-value\">{{ $json.body?.userName || $json.userName || 'System-Monitor' }}</td>\n                    </tr>\n                    <tr class=\"tech-row\">\n                        <td class=\"tech-label\">Incidente</td>\n                        <td class=\"tech-value\">{{ ($json.body?.title || $json.title || 'Alerta de Seguridad').replace(/\\\\u([0-9a-fA-F]{4})/g, (m,g)=>String.fromCharCode(parseInt(g,16))) }}</td>\n                    </tr>\n                    <tr class=\"tech-row\">\n                        <td class=\"tech-label\">ID Evento</td>\n                        <td class=\"tech-value\">#SOC-{{ $json.body?.alertId || $json.alertId || '5120' }}</td>\n                    </tr>\n                    <tr class=\"tech-row\">\n                        <td class=\"tech-label\">Monitorización</td>\n                        <td class=\"tech-value\">Sofia AI Sentinel v4.0</td>\n                    </tr>\n                    <tr class=\"tech-row\">\n                        <td class=\"tech-label\">Timestamp</td>\n                        <td class=\"tech-value\">{{ $json.body?.timestamp || $json.timestamp || '2026-05-06 22:52' }}</td>\n                    </tr>\n                </table>\n\n                <div style=\"text-align: center;\">\n                    <a href=\"https://sofia-solutions.serveo.net\" class=\"btn\">ACCEDER AL PANEL SOC</a>\n                </div>\n            </div>\n            <div class=\"footer\" style=\"padding: 20px; text-align: center; color: #64748b; font-size: 12px; background: #f8fafc;\">\n                CENTRO DE SEGURIDAD SOFIA SOLUTIONS (SOC) 24/7<br>\n                &copy; 2026 Sofia Solutions Security Group.\n            </div>\n        </div>\n    </div>\n</body>\n</html>",
-        "options": {
-          "appendAttributions": false
-        }
+        "subject": "TEST DE ENTREGA - SIMPLE",
+        "html": "<h1>Test de Entrega</h1><p>Si recibes esto, el sistema de correo funciona.</p>"
       },
       "id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
       "name": "Enviar Email SOC",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 1,
       "position": [
-        850,
-        280
+        800,
+        300
       ],
       "credentials": {
         "smtp": {
@@ -69,17 +43,6 @@
   ],
   "connections": {
     "Webhook Sofia": {
-      "main": [
-        [
-          {
-            "node": "Urgent/High",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Urgent/High": {
       "main": [
         [
           {
@@ -95,5 +58,5 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "hash": "sofia-n8n-integration-2026-v16"
+  "hash": "delivery-test"
 }
