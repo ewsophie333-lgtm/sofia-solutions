@@ -2,10 +2,10 @@
 
 Este es el punto donde más nota puedes sacar. Debes enfatizar el **antes** y el **después**.
 
-### 1. Gestión de Contraseñas
-- **Modo Vulnerable:** Texto Plano. Si alguien accede a la DB (vía SQLi), ve todo.
-- **Modo Seguro:** Hasheo con **BCrypt (12 rounds)**.
-- **Punto Clave:** "En el modo seguro, aunque la base de datos sea exfiltrada, la información del cliente es ilegible. Hemos pasado de una seguridad inexistente a un estándar bancario."
+### 1. Gestión de Contraseñas y Criptografía
+- **Modo Vulnerable:** Texto Plano. Almacenamiento directo que permite la lectura inmediata de secretos en caso de fuga de datos.
+- **Modo Seguro:** Hasheo mediante **BCrypt con Work Factor de 12**.
+- **Detalle Técnico:** "No solo guardamos el hash; BCrypt añade un **Salt** aleatorio por cada usuario, lo que anula los ataques de Rainbow Tables (tablas precomputadas). El factor de coste 12 asegura que un ataque de fuerza bruta offline sea computacionalmente inviable."
 
 ### 2. Autenticación y SQL Injection
 - **Explicación:** En el modo vulnerable, el login concatena strings directamente en la query SQL.

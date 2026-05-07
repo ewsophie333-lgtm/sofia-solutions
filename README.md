@@ -83,12 +83,19 @@ El proyecto no debe entenderse como una simple web comercial. Su valor principal
 - `docker-compose.yml`: orquestación del entorno
 
 ### Centro de Documentación y Defensa
+- [07-Integración Grafana y Métricas](./DOCUMENTACION-DEFENSA/07-INTEGRACION-GRAFANA-Y-METRICAS.md)
+- [06-Guía de Ataques Manuales](./DOCUMENTACION-DEFENSA/06-ATAQUES-MANUALES.md)
 - [Toda la documentación técnica y guías de defensa](./DOCUMENTACION-DEFENSA/)
 - [Guía de configuración n8n](./DOCUMENTACION-DEFENSA/N8N_SETUP_GUIDE.md)
-- [Informe de Seguridad](./DOCUMENTACION-DEFENSA/INFORME-SEGURIDAD.md)
-- [Guion de Auditoría](./DOCUMENTACION-DEFENSA/SCRIPTS-ATAQUE-TECNICO.md)
 
-## Despliegue
+## Despliegue en GitHub Codespaces (Recomendado para Defensa)
+
+Si vas a presentar el proyecto desde el instituto, **Codespaces es la mejor opción** por su estabilidad y velocidad:
+
+1. **Iniciar:** Abre el repositorio en GitHub y haz clic en `Code` > `Codespaces` > `Create codespace on main`.
+2. **Levantar:** En la terminal de Codespaces, ejecuta: `.\scripts\SOFIA-INICIAR.sh` (o `docker compose up -d`).
+3. **Puertos:** GitHub abrirá una notificación. Asegúrate de poner los puertos **8000** y **8001** como **Public** en la pestaña `Ports`.
+4. **URL Dinámica:** Codespaces te dará una URL única (ej. `...-8000.app.github.dev`). ¡Esta URL vuela y es perfecta para la demo!
 
 ### Opción rápida con Docker
 

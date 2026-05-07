@@ -4,13 +4,14 @@ Ejecutar ataques manualmente demuestra que tienes un dominio total de la ciberse
 
 ---
 
-### 1. SQL Injection Manual (Bypass de Login)
-Este ataque sirve para entrar al sistema sin conocer ninguna contraseña.
-1. **Paso:** Ve a la página de Login (`/login`).
+### 1. SQL Injection Manual (Bypass de Autenticación por Comentario)
+Este ataque es mucho más técnico: permite suplantar a cualquier usuario (incluido el administrador) sin saber su clave.
+1. **Paso:** Ve a la página de Login (`/login`) en modo **vulnerable**.
 2. **Acción:** En el campo de **Email**, escribe exactamente esto:
-   `' OR '1'='1'--`
-3. **Acción:** En el campo de contraseña, escribe cualquier cosa (ej: `123`).
-4. **Explicación:** "Estoy inyectando una condición lógica que siempre es verdadera (`1=1`). El `--` comenta el resto de la query original, haciendo que la base de datos me deje pasar sin validar la contraseña real."
+   `admin@sofia.local'--`
+3. **Acción:** En el campo de contraseña, escribe cualquier palabra aleatoria.
+4. **Resultado:** Entrarás directamente al dashboard como administrador.
+5. **Explicación:** "No estoy usando un '1=1' genérico. Estoy cerrando la cadena de búsqueda del email con una comilla (`'`) y luego usando el operador de comentario de SQL (`--`). Esto hace que el motor de base de datos ignore el resto de la consulta original, que es la que verifica la contraseña. He forzado al sistema a que acepte al administrador sin validar sus credenciales."
 
 ### 2. IDOR Manual (Robo de información por URL)
 Este ataque demuestra falta de control de autorización en los objetos.

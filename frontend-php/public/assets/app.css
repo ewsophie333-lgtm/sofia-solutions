@@ -1503,12 +1503,12 @@ img {
         padding: 8px 16px !important;
         gap: 12px !important;
     }
-    .brand-mark {
+    .brand-mark-header {
         width: 42px !important;
         height: 42px !important;
     }
-    .brand-mark-header {
-        width: 240px !important;
+    .brand-mark-login {
+        width: min(260px, 80vw) !important;
         height: auto !important;
     }
 

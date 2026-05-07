@@ -11,8 +11,10 @@ Este es el cimiento de tu proyecto. Aquí demuestras que sabes gestionar infraes
   - **SOC Gateway**: n8n para la automatización de alertas.
   - **Tunnel**: Acceso público seguro mediante túneles DNS.
 
-### 2. Acceso Público (Túnel)
-- **Punto Clave:** Explica que no has abierto puertos en tu router, sino que usas un túnel seguro que expone la app a internet con una URL profesional (`sofia-solutions.serveousercontent.com`). Esto demuestra conocimientos de redes y conectividad.
+### 2. Acceso Público Seguro (TLS 1.3)
+- **Cifrado en Tránsito:** La aplicación es servida mediante un túnel SSH reverso con cifrado **TLS 1.3**. Esto garantiza que todas las credenciales y datos de clientes viajen cifrados desde el navegador hasta nuestro nodo de salida.
+- **Certificado SSL:** "Como pueden observar en el candado verde del navegador, el dominio `serveousercontent.com` utiliza un certificado válido emitido por una CA reconocida, protegiendo contra ataques de Man-in-the-Middle (MitM)."
 
-### 3. Persistencia con Prisma ORM
-- **Qué decir:** "Para la gestión de datos utilizo Prisma. No escribo SQL manual para las operaciones comunes, lo que reduce errores y facilita el mantenimiento de la base de datos PostgreSQL."
+### 3. Persistencia y Modelado de Datos
+- **Prisma ORM:** "Para la gestión de datos utilizo Prisma. Esto no solo facilita el desarrollo, sino que añade una capa de abstracción de seguridad (Query Sanitization) por defecto en todos los módulos, excepto en aquellos que he dejado vulnerables deliberadamente para la demostración."
+- **PostgreSQL:** El motor de base de datos está aislado dentro de la red interna de Docker, por lo que no es accesible desde el exterior si no es a través de nuestra API controlada.
