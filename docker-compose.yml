@@ -18,24 +18,15 @@ services:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/sofia_solutions
       APP_MODE: ${APP_MODE:-secure}
       CORS_ORIGIN: http://localhost:8000
-      JWT_ACCESS_SECRET: change_me_access
-      JWT_REFRESH_SECRET: change_me_refresh
-      JWT_ACCESS_EXPIRES_IN: 15m
-      JWT_REFRESH_EXPIRES_IN: 7d
-      COOKIE_SECURE: false
-      PROMETHEUS_PREFIX: sofia_
-      RATE_LIMIT_WINDOW_MS: 900000
-      RATE_LIMIT_MAX: 10
-      ADMIN_EMAIL: admin@sofia.local
-      ADMIN_PASSWORD: S0f1a_Secur3!_2026
+      JWT_SECRET: ${JWT_SECRET:-sofia-super-secret-key-2026}
+      N8N_WEBHOOK_URL: http://n8n:5678/webhook/alert
     ports:
       - "8001:8001"
     depends_on:
-      postgres:
-        condition: service_healthy
+      - postgres
 
   postgres:
-    image: postgres:15
+    image: postgres:15-alpine
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -44,48 +35,22 @@ services:
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  prisma-studio:
-    build:
-      context: ./sofia-backend
-      dockerfile: docker/Dockerfile
-    environment:
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/sofia_solutions
-    command: npx prisma studio --port 5555 --hostname 0.0.0.0
-    ports:
-      - "5556:5555"
-    depends_on:
-      - postgres
-      - backend
 
   prometheus:
-    image: prom/prometheus
+    image: prom/prometheus:latest
     volumes:
-      - ./sofia-backend/docker/prometheus.yml:/etc/prometheus/prometheus.yml
-    depends_on:
-      - backend
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
 
   grafana:
-    image: grafana/grafana:11.1.0
+    image: grafana/grafana:latest
     ports:
       - "3000:3000"
     environment:
-      GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: admin
-      GF_USERS_ALLOW_SIGN_UP: false
       GF_AUTH_ANONYMOUS_ENABLED: "true"
-      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_AUTH_ANONYMOUS_ORG_ROLE: "Viewer"
       GF_SECURITY_ALLOW_EMBEDDING: "true"
-      GF_SERVER_ROOT_URL: "%(protocol)s://%(domain)s:%(http_port)s/grafana/"
-      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
-    volumes:
-      - ./sofia-backend/docker/grafana/provisioning:/etc/grafana/provisioning
-      - ./sofia-backend/docker/grafana/dashboards:/var/lib/grafana/dashboards
     depends_on:
       - prometheus
 
@@ -120,7 +85,6 @@ services:
       GENERIC_TIMEZONE: Europe/Madrid
       N8N_ENCRYPTION_KEY: sofia-solutions-encryption-key-2026
       N8N_EDITOR_BASE_URL: https://sofia-n8n.serveo.net/
-      N8N_API_DELICIOUS_API_ERROR_RESPONSE_BODY_PROPERTY: message
       N8N_DEFAULT_LOCALE: es
       N8N_DEFAULT_TIMEZONE: Europe/Madrid
       DB_TYPE: sqlite
