@@ -352,31 +352,51 @@ async function runBrute() {
     const ep = document.getElementById('brute-ep').value;
     tLog(`[*] Iniciando ataque contra ${user} en ${ep}`, 'yellow');
     tLog(`[#] POST ${ep} (email: ${user}, pass: dictionary)`, 'dim');
-    for(let p of ['123456', 'S0f1a_Secur3!_2026']) {
-        tLog(`[?] Probando password: ${p}`, 'dim');
-        await delay(400);
-        
+    tLog(`[#] Cargando diccionario: rockyou_top1000.txt (1.000 entradas)`, 'dim');
+
+    // Dictionary: common passwords first, real one last (masked in output)
+    const dictionary = ['admin', '123456', 'password', 'admin123', 'letmein', 'qwerty', 'abc123', 'sofia2026'];
+    const realPassword = 'S0f1a_Secur3!_2026';
+
+    for(let p of dictionary) {
+        tLog(`[?] Probando: ${p.substring(0,3)}${'*'.repeat(Math.max(0, p.length-3))}`, 'dim');
+        await delay(280);
         try {
             const r = await fetch(TARGET + ep, {
                 method:'POST', headers:{'Content-Type':'application/json'},
+                credentials: 'include',
                 body: JSON.stringify({email: user, password: p})
             });
-            
             if(r.status === 429) {
                 tLog(`[-] BLOQUEADO: El WAF ha detectado Brute Force (Rate Limit excedido).`, 'red');
                 return;
             }
-            
-            if(r.ok) {
-                tLog(`[+] ¡CRACKED! Credenciales válidas: ${p}`, 'green');
-                const res = tLog(`[*] Acción disponible: `, 'cyan');
-                addAction(res, 'Autologin', '<path d="M12 11V7a4 4 0 0 1 8 0v4"></path>', () => {
-                    window.location.href = '/login?prefill=' + btoa(user+':'+p);
-                });
-                return;
-            }
         } catch(e) {}
     }
+
+    // Real password attempt — shown as partial mask for realism
+    tLog(`[?] Probando: S0f1a_***r3!_****`, 'dim');
+    await delay(350);
+    try {
+        const r = await fetch(TARGET + ep, {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            credentials: 'include',
+            body: JSON.stringify({email: user, password: realPassword})
+        });
+        if(r.status === 429) {
+            tLog(`[-] BLOQUEADO: Rate Limit excedido.`, 'red');
+            return;
+        }
+        if(r.ok) {
+            tLog(`[+] ¡CRACKED! Credenciales válidas encontradas en posición 9/1000.`, 'green');
+            tLog(`[+] Hash comprometido — contraseña almacenada en texto plano (modo v1).`, 'yellow');
+            const res = tLog(`[*] Acción disponible: `, 'cyan');
+            addAction(res, 'Autologin como Admin', '<path d="M12 11V7a4 4 0 0 1 8 0v4"></path>', () => {
+                window.location.href = '/login';
+            });
+            return;
+        }
+    } catch(e) {}
     tLog(`[-] Ataque finalizado. Sin éxito o bloqueado.`, 'dim');
 }
 

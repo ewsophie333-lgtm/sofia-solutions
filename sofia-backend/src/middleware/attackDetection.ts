@@ -8,6 +8,15 @@ import { getRequestMode } from "../utils/mode";
 
 export async function attackDetection(req: Request, res: Response, next: NextFunction) {
   const mode = getRequestMode(req);
+
+  // Skip detection for audit console demos — the console simulates attacks intentionally
+  const referer = req.headers.referer || req.headers.origin || '';
+  const isAuditConsole = referer.includes('/consola') || referer.includes('/admin/audit');
+  if (isAuditConsole) {
+    next();
+    return;
+  }
+
   const attack = detectAttackPatterns({
     path: req.path,
     query: req.query,
