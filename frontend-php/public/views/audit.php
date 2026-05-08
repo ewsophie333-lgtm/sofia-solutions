@@ -158,9 +158,9 @@ const TOOLS = {
     sqli: {
         title: 'Inyección SQL',
         config: `<label class="cfg-label">OBJETIVO</label>
-                 <select class="cfg-input" id="sqli-ep" style="margin-bottom:8px;">
-                    <option value="/api/v1/auth/login">Login Inseguro (v1)</option>
-                    <option value="/api/v2/auth/login">Login Seguro (v2)</option>
+                  <select class="cfg-input" id="sqli-ep" style="margin-bottom:8px;">
+                    <option value="/api/v1/auth/login/vulnerable">Login Inseguro (v1)</option>
+                    <option value="/api/v1/auth/login/v2">Login Seguro (v2 + MFA)</option>
                  </select>
                  <label class="cfg-label">PAYLOAD (Avanzado)</label>
                  <select class="cfg-input" id="sqli-payload">
@@ -176,9 +176,9 @@ const TOOLS = {
     brute: {
         title: 'Fuerza Bruta',
         config: `<label class="cfg-label">OBJETIVO</label>
-                 <select class="cfg-input" id="brute-ep" style="margin-bottom:8px;">
-                    <option value="/api/v1/auth/login">Login Inseguro (v1)</option>
-                    <option value="/api/v2/auth/login">Login Seguro (v2)</option>
+                  <select class="cfg-input" id="brute-ep" style="margin-bottom:8px;">
+                    <option value="/api/v1/auth/login/vulnerable">Login Inseguro (v1)</option>
+                    <option value="/api/v1/auth/login/v2">Login Seguro (v2 + MFA)</option>
                  </select>
                  <label class="cfg-label">USUARIO OBJETIVO</label>
                  <input class="cfg-input" id="brute-user" value="admin@sofia.local">`,
