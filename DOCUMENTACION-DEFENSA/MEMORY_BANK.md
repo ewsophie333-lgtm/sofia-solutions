@@ -13,17 +13,16 @@
   - **Estrategia SSL**: Propuesta de Cloudflare Proxy para asegurar el dominio sin coste y mitigar ataques en el borde.
   - **Guion de Defensa**: Estructuración de exposición de 20 minutos con preguntas tipo examen resueltas.
 - **Por qué:** Preparación para defensa de grado ASIR, transformando un prototipo en una plataforma SOC profesional y auditable.
-### [2026-05-07] Docker & Codespaces Compatibility Fixes
+### [2026-05-08] Grafana & Prometheus Infrastructure Fix
 - **Qué se hizo:**
-  - **Estandarización de Line Endings**: Conversión de todos los archivos `.sh` a formato LF para evitar errores de ejecución en contenedores Linux desde Windows.
-  - **Robustez del Túnel**: Actualización del servicio `tunnel` a una imagen especializada (`linuxserver/openssh-client`) para evitar fallos de instalación de dependencias en redes restringidas.
-  - **Compatibilidad Multiplataforma**: Migración de scripts de `package.json` a `cross-env` para que funcionen tanto en Windows como en Linux (Docker/Codespaces).
-  - **Mejora de Infraestructura**: Implementación de `healthchecks` en PostgreSQL y dependencias condicionales para asegurar un arranque ordenado del stack.
-  - **Optimización de Codespaces**: Actualización de `.devcontainer/devcontainer.json` para usar una imagen base de Node.js robusta en lugar de intentar usar el contenedor de PHP como entorno de trabajo principal, evitando errores de comandos no encontrados (`npm`).
-- **Por qué:** Resolver problemas de arranque en GitHub Codespaces donde el contenedor de desarrollo fallaba al no tener las herramientas necesarias para la inicialización.
+  - **Corrección de Rutas**: Se actualizó `docker-compose.yml` para apuntar a `./sofia-backend/docker/prometheus.yml`, ya que el archivo no existía en la raíz.
+  - **Configuración de Proxy**: Se habilitó `GF_SERVER_SERVE_FROM_SUB_PATH` y `GF_SERVER_ROOT_URL` en Grafana para que funcione correctamente detrás del proxy Apache (`/grafana`).
+  - **Provisionamiento Automático**: Se mapearon los volúmenes de `provisioning` y `dashboards` para que Grafana cargue los paneles SOC de forma nativa sin configuración manual.
+- **Por qué:** Resolver el error de carga de Grafana (404/Crash) reportado por el usuario al intentar acceder desde Codespaces/Local.
 - **Pendientes técnicos (Tech Debt):**
   - Considerar una alternativa a Serveo si los subdominios `sofia-solutions` están ocupados.
   - Implementar un modo "offline" real que desactive los servicios de túnel si no hay internet.
+  - Verificar la persistencia de datos de Grafana (añadir volumen para `/var/lib/grafana` si es necesario).
 
 ## 3. ESTADO DEL PROYECTO
 - **Infraestructura:** Docker Compose (Vite + Node + Postgres + n8n) - **Optimizado para Codespaces**.
