@@ -174,13 +174,26 @@ export async function securityMonitor(_req: Request, res: Response) {
       accent: index === 0 ? "critical" : index === 1 ? "warning" : index === 2 ? "info" : "healthy",
     }));
 
+  // SOC Telemetry Aggregation (Alerts + Incidents)
+  const [dbAlerts] = await Promise.all([
+    prisma.alert.findMany()
+  ]);
+
+  const allAlerts = [
+    ...incidents.map(i => ({ severity: i.severity })),
+    ...dbAlerts.map(a => ({ severity: a.severity }))
+  ];
+
   // Alert Distribution by Severity (Doughnut Chart)
   const alertDistribution = [
-    { label: "Critical", value: incidents.filter(i => i.severity === "CRITICAL").length, color: "#ef4444" },
-    { label: "High",     value: incidents.filter(i => i.severity === "HIGH").length,     color: "#f97316" },
-    { label: "Medium",   value: incidents.filter(i => i.severity === "MEDIUM").length,   color: "#f59e0b" },
-    { label: "Low",      value: incidents.filter(i => i.severity === "LOW").length,      color: "#3b82f6" }
+    { label: "Critical", value: allAlerts.filter(a => a.severity.toUpperCase() === "CRITICAL" || a.severity.toUpperCase() === "URGENT").length, color: "#ef4444" },
+    { label: "High",     value: allAlerts.filter(a => a.severity.toUpperCase() === "HIGH" || a.severity.toUpperCase() === "ALTA").length,     color: "#f97316" },
+    { label: "Medium",   value: allAlerts.filter(a => a.severity.toUpperCase() === "MEDIUM" || a.severity.toUpperCase() === "MEDIA").length,   color: "#f59e0b" },
+    { label: "Low",      value: allAlerts.filter(a => a.severity.toUpperCase() === "LOW" || a.severity.toUpperCase() === "BAJA").length,      color: "#3b82f6" }
   ];
+
+  console.log(`[SOC DEBUG] Total telemetry items: ${allAlerts.length}`);
+  console.log(`[SOC DEBUG] Alert Distribution:`, JSON.stringify(alertDistribution));
 
   // Real-time Priority Feed (SOC Triage Logic)
   const liveFeed = incidents
