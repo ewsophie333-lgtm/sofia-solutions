@@ -297,6 +297,6 @@ add_body(doc,
     'y contenedores Docker como infraestructura de despliegue.')
 
 # ─── Guardar ────────────────────────────────────────────────────────────────
-output_path = r'C:\Users\shair\Downloads\Memoria_Sofia_COMPLETA.docx'
+output_path = r'C:\Users\shair\Downloads\Memoria_v2.0_Sofia.docx'
 doc.save(output_path)
 print(f'OK - Documento guardado en: {output_path}')
