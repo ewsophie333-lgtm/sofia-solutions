@@ -20,7 +20,8 @@
   - **Provisionamiento Automático**: Se mapearon los volúmenes de `provisioning` y `dashboards` para que Grafana cargue los paneles SOC de forma nativa sin configuración manual.
   - **Fix de Telemetría**: Se añadió la clave `alertDistribution` en `admin.controller.ts` que faltaba para alimentar el gráfico de dona en el panel administrativo.
   - **Restauración de Vulnerabilidad**: Se corrigió el archivo `auth.routes.ts` donde la ruta `/login/vulnerable` estaba erróneamente apuntando al controlador seguro, impidiendo la demostración de SQL Injection.
-- **Por qué:** Asegurar que las demostraciones de ataque (SQLi) funcionen correctamente para la defensa del proyecto.
+  - **Unificación de Telemetría**: Se actualizó `admin.controller.ts` para sumar tanto `incidents` como `alerts` en el gráfico de distribución, asegurando que ataques automáticos (Fuerza Bruta) aparezcan en el dashboard.
+- **Por qué:** Asegurar que los ataques simulados (Brute Force, SQLi) generen feedback visual inmediato en el SOC.
 - **Pendientes técnicos (Tech Debt):**
   - Considerar una alternativa a Serveo si los subdominios `sofia-solutions` están ocupados.
   - Implementar un modo "offline" real que desactive los servicios de túnel si no hay internet.
