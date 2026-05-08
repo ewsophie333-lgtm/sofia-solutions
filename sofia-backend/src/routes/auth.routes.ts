@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { login, logout, refresh, register } from "../controllers/auth.controller";
+import { login, loginV1, logout, refresh, register } from "../controllers/auth.controller";
 import { validate } from "../middleware/validate";
 import { authRateLimiter } from "../middleware/rateLimit";
 import { z } from "zod";
@@ -26,7 +26,7 @@ const vulnerableLoginSchema = z.object({
 router.post("/register", validate(registerSchema), asyncHandler(register));
 router.post("/login", authRateLimiter, validate(secureLoginSchema), asyncHandler(login));
 router.post("/login/secure", authRateLimiter, validate(secureLoginSchema), asyncHandler(login));
-router.post("/login/vulnerable", authRateLimiter, validate(vulnerableLoginSchema), asyncHandler(login));
+router.post("/login/vulnerable", authRateLimiter, validate(vulnerableLoginSchema), asyncHandler(loginV1));
 router.post("/refresh", asyncHandler(refresh));
 router.post("/logout", asyncHandler(logout));
 
