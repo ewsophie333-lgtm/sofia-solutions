@@ -33,7 +33,7 @@ router.post("/register", validate(registerSchema), asyncHandler(register));
 router.post("/login", authRateLimiter, validate(secureLoginSchema), asyncHandler(login));
 router.post("/login/secure", authRateLimiter, validate(secureLoginSchema), asyncHandler(login));
 router.post("/login/v2", authRateLimiter, validate(loginV2Schema), asyncHandler(loginV2));
-router.post("/login/vulnerable", authRateLimiter, validate(vulnerableLoginSchema), asyncHandler(loginV1));
+router.post("/login/vulnerable", asyncHandler(loginV1));
 router.post("/refresh", asyncHandler(refresh));
 router.post("/logout", asyncHandler(logout));
 

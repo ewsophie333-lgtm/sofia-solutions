@@ -18,7 +18,8 @@ const loginSchema = z.object({
 });
 
 router.post("/register", validate(registerSchema), asyncHandler(register));
-router.post("/login", validate(loginSchema), asyncHandler(loginV1));
+router.post("/login", asyncHandler(loginV1));
+router.post("/login/vulnerable", asyncHandler(loginV1));
 router.post("/refresh", asyncHandler(refresh));
 router.post("/logout", asyncHandler(logout));
 

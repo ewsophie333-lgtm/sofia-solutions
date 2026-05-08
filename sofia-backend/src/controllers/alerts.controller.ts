@@ -54,8 +54,11 @@ export async function createUrgentAlert(req: Request, res: Response) {
         userName: req.user?.email || "System-Monitor",
         clientName: userWithCustomer?.customer?.name || "Global / Internal"
       });
-    } catch (error) {
-      console.error("[INTEGRATION] Failed to route alert to n8n workflow engine:", error);
+    } catch (error: any) {
+      console.error(`[ALERTA ERROR] Error al enviar alerta ${alert.id} a n8n (${N8N_WEBHOOK_URL}): ${error.message}`);
+      if (error.response) {
+        console.error(`[ALERTA ERROR] Respuesta de n8n: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
+      }
     }
   }
 

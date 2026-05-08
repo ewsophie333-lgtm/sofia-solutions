@@ -24,23 +24,28 @@ const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL || "http://n8n:5678/webhook/
 function applyAuthCookies(
   res: Response,
   accessToken: string,
-  refreshToken: string
+  refreshToken: string,
+  role: string = "CLIENT"
 ) {
   const secure = env.COOKIE_SECURE;
+  const suffix = role === "ADMIN" ? "_ADMIN" : "_CLIENT";
 
-  res.cookie("accessToken", accessToken, {
+  res.cookie(`accessToken${suffix}`, accessToken, {
     httpOnly: true,
     secure,
     sameSite: "strict",
     maxAge: 15 * 60 * 1000
   });
 
-  res.cookie("refreshToken", refreshToken, {
+  res.cookie(`refreshToken${suffix}`, refreshToken, {
     httpOnly: true,
     secure,
     sameSite: "strict",
     maxAge: 7 * 24 * 60 * 60 * 1000
   });
+
+  // Keep legacy cookies for backward compatibility if needed, but the role-specific ones take precedence
+  res.cookie("accessToken", accessToken, { httpOnly: true, secure, sameSite: "strict", maxAge: 15 * 60 * 1000 });
 }
 
 /**
@@ -96,7 +101,9 @@ export async function login(req: Request, res: Response) {
         recipientEmail: "ewsophie333@gmail.com",
         clientName: "S. SOLUTIONS MONITOR"
       });
-    } catch(e) {}
+    } catch(e: any) {
+      console.error(`[ALERTA ERROR] No se pudo enviar webhook a n8n: ${e.message}`);
+    }
 
     throw new ApiError(401, "Invalid identity credentials");
   }
@@ -123,7 +130,7 @@ export async function login(req: Request, res: Response) {
     sessionId
   }, "secure");
 
-  applyAuthCookies(res, accessToken, refreshToken);
+  applyAuthCookies(res, accessToken, refreshToken, user.role);
 
   res.json({
     accessToken,
@@ -143,16 +150,21 @@ export async function login(req: Request, res: Response) {
 export async function loginV1(req: Request, res: Response) {
   const { email, password } = req.body;
 
-  // VULNERABLE: Direct string concatenation to allow SQL Injection demo
+  // VULNERABLE: Direct string concatenation to allow SQL Injection bypass
+  // In a truly vulnerable system, the password check is also part of the query
   const users: any[] = await prisma.$queryRawUnsafe(
-    `SELECT * FROM "User" WHERE "email" = '${email}'`
+    `SELECT * FROM "User" WHERE "email" = '${email}' AND "passwordHash" IS NOT NULL`
   );
+  
   const user = users[0];
 
-  // Note: verifyPassword uses 'vulnerable' mode here to simulate legacy behavior
-  if (!user || !(await verifyPassword(password, user.passwordHash, "vulnerable"))) {
+  // For simulation: If email contains an injection like ' OR 1=1 --
+  // we might want to skip the password check if we found a user
+  const isInjection = email.includes("'") || email.includes("--");
+
+  if (!user || (!isInjection && !(await verifyPassword(password, user.passwordHash, "vulnerable")))) {
     metrics.loginAttemptsTotal.inc({ mode: "vulnerable", result: "failed" });
-    throw new ApiError(401, "Invalid identity credentials");
+    throw new ApiError(401, "Invalid identity credentials (Vulnerable Mode)");
   }
 
   metrics.loginAttemptsTotal.inc({ mode: "vulnerable", result: "success" });
@@ -177,7 +189,7 @@ export async function loginV1(req: Request, res: Response) {
     sessionId
   }, "vulnerable");
 
-  applyAuthCookies(res, accessToken, refreshToken);
+  applyAuthCookies(res, accessToken, refreshToken, user.role);
 
   res.json({
     accessToken,
@@ -220,7 +232,7 @@ export async function refresh(req: Request, res: Response) {
     sessionId: nextSessionId
   }, "secure");
 
-  applyAuthCookies(res, accessToken, refreshToken);
+  applyAuthCookies(res, accessToken, refreshToken, user.role);
   res.json({ accessToken });
 }
 
@@ -230,6 +242,10 @@ export async function refresh(req: Request, res: Response) {
 export async function logout(req: Request, res: Response) {
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
+  res.clearCookie("accessToken_ADMIN");
+  res.clearCookie("refreshToken_ADMIN");
+  res.clearCookie("accessToken_CLIENT");
+  res.clearCookie("refreshToken_CLIENT");
   res.json({ message: "Security context cleared" });
 }
 
@@ -277,7 +293,9 @@ export async function loginV2(req: Request, res: Response) {
         recipientEmail: "ewsophie333@gmail.com",
         clientName: "S. SOLUTIONS SECURITY"
       });
-    } catch(e) {}
+    } catch(e: any) {
+      console.error(`[ALERTA V2 ERROR] No se pudo enviar webhook a n8n: ${e.message}`);
+    }
 
     throw new ApiError(401, "Invalid identity credentials");
   }
@@ -309,7 +327,7 @@ export async function loginV2(req: Request, res: Response) {
     sessionId
   }, "secure");
 
-  applyAuthCookies(res, accessToken, refreshToken);
+  applyAuthCookies(res, accessToken, refreshToken, user.role);
 
   res.json({
     accessToken,

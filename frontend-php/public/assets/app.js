@@ -30,7 +30,9 @@
   }
 
   function getToken() {
-    return localStorage.getItem("sofia_token_v1");
+    const user = JSON.parse(localStorage.getItem("sofia_user_v1") || "{}");
+    const role = user.role || "CLIENT";
+    return localStorage.getItem(`sofia_token_${role}`);
   }
 
   function getRedirectTarget(role = "CLIENT") {
@@ -132,23 +134,23 @@
     }
 
     if (data.accessToken) {
-      localStorage.setItem("sofia_token_v1", data.accessToken);
+      // Determine role for storage
+      let role = data.user?.role;
+      if (!role) {
+        role = email.toLowerCase().includes('admin') ? 'ADMIN' : 'CLIENT';
+      }
+
+      localStorage.setItem(`sofia_token_${role}`, data.accessToken);
       
       // Persistir objeto de usuario completo del backend
       const user = data.user || {};
-      
-      // FORZADO DE ROL POR SEGURIDAD (Mantiene compatibilidad con lógica previa)
-      if (email.toLowerCase().includes('admin')) {
-        user.role = 'ADMIN';
-      } else if (!user.role) {
-        user.role = 'CLIENT';
-      }
+      user.role = role;
       
       // Asegurar que el email está en el objeto si el backend no lo envió
       if (!user.email) user.email = email;
       
       localStorage.setItem("sofia_user_v1", JSON.stringify(user));
-      window.location.href = user.role === 'ADMIN' ? '/admin' : '/dashboard';
+      window.location.href = role === 'ADMIN' ? '/admin' : '/dashboard';
     }
 }
 
@@ -291,7 +293,9 @@
     document.querySelectorAll('a[href="/login"]').forEach(el => {
       if (el.textContent.toLowerCase().includes("sesion")) {
         el.addEventListener("click", () => {
-          localStorage.removeItem("sofia_token_v1");
+          const user = JSON.parse(localStorage.getItem("sofia_user_v1") || "{}");
+          const role = user.role || "CLIENT";
+          localStorage.removeItem(`sofia_token_${role}`);
           localStorage.removeItem("sofia_user_v1");
         });
       }

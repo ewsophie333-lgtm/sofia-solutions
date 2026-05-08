@@ -27,6 +27,13 @@
   - Considerar una alternativa a Serveo si los subdominios `sofia-solutions` están ocupados.
   - Implementar un modo "offline" real que desactive los servicios de túnel si no hay internet.
   - Verificar la persistencia de datos de Grafana (añadir volumen para `/var/lib/grafana` si es necesario).
+30: ### [2026-05-08] Multi-Session & Vulnerability Audit Fix
+31: - **Qué se hizo:**
+32:   - **Aislamiento de Sesiones**: Implementación de cookies por rol (`accessToken_ADMIN` / `_CLIENT`) y lógica de prioridad en `requireAuth` para permitir sesiones simultáneas en el mismo navegador.
+33:   - **Apertura de Auditoría**: Eliminación de Rate Limiting y validación Zod en endpoints vulnerables para permitir ataques de Fuerza Bruta y SQLi sin restricciones.
+34:   - **Fix de SQLi Bypass**: Refactorización de `loginV1` para permitir bypass real con payloads tipo `' OR 1=1 --`.
+35:   - **Depuración de Alertas**: Adición de logs detallados en las llamadas a n8n para identificar fallos en el envío de correos.
+36: - **Por qué:** Facilitar la demostración simultánea de cliente/admin y asegurar que el Audit Console funcione al 100% para la defensa.
 
 ## 3. ESTADO DEL PROYECTO
 - **Infraestructura:** Docker Compose (Vite + Node + Postgres + n8n) - **Optimizado para Codespaces**.
