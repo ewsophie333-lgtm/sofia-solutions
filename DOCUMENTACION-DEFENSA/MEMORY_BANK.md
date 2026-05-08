@@ -18,7 +18,8 @@
   - **Corrección de Rutas**: Se actualizó `docker-compose.yml` para apuntar a `./sofia-backend/docker/prometheus.yml`, ya que el archivo no existía en la raíz.
   - **Configuración de Proxy**: Se habilitó `GF_SERVER_SERVE_FROM_SUB_PATH` y `GF_SERVER_ROOT_URL` en Grafana para que funcione correctamente detrás del proxy Apache (`/grafana`).
   - **Provisionamiento Automático**: Se mapearon los volúmenes de `provisioning` y `dashboards` para que Grafana cargue los paneles SOC de forma nativa sin configuración manual.
-- **Por qué:** Resolver el error de carga de Grafana (404/Crash) reportado por el usuario al intentar acceder desde Codespaces/Local.
+  - **Fix de Telemetría**: Se añadió la clave `alertDistribution` en `admin.controller.ts` que faltaba para alimentar el gráfico de dona en el panel administrativo.
+- **Por qué:** Resolver el error de carga de Grafana (404/Crash) y la falta de datos visuales en el gráfico de riesgo.
 - **Pendientes técnicos (Tech Debt):**
   - Considerar una alternativa a Serveo si los subdominios `sofia-solutions` están ocupados.
   - Implementar un modo "offline" real que desactive los servicios de túnel si no hay internet.
