@@ -175,6 +175,15 @@ sh ./scripts/sofia-ataques.sh vulnerable
 sh ./scripts/sofia-ataques.sh secure
 ```
 
+**Framework de Auditoría Interactivo (Rootkit):**
+```bash
+# Instalar dependencias (solo la primera vez)
+pip3 install requests
+
+# Ejecutar framework
+python3 ./scripts/sofia-audit-framework.py -t http://localhost:8000
+```
+
 También puedes usar los scripts de `npm`:
 
 - `npm run attack:sqli:vuln`
@@ -204,7 +213,8 @@ Los siguientes scripts en Bash permiten demostrar ataques activos contra la plat
 | `bash scripts/sofia-dos.sh [N peticiones] [vulnerable\|secure]` | DoS simulado: N peticiones en ráfaga, demuestra cuándo el rate-limiter bloquea con HTTP 429 |
 | `bash scripts/sofia-sqli.sh` | SQL Injection: payloads clásicos contra el endpoint vulnerable para bypass de autenticación |
 | `bash scripts/sofia-texto-plano.sh` | Login directo con contraseña en texto plano, demuestra la ausencia de hash en BD vulnerable |
-| `scripts/lanzar-rootkit.bat` | Framework de Auditoría: Herramienta interactiva en Python para explotar SQLi, IDOR, Brute Force y DoS |
+| `python3 scripts/sofia-audit-framework.py` | Framework de Auditoría: Herramienta interactiva en Python (SQLi, IDOR, Brute Force y DoS) |
+| `scripts/lanzar-rootkit.bat` | Lanzador del Framework de Auditoría para Windows |
 
 **Cómo ver el impacto en tiempo real:**
 
