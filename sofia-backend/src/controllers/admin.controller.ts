@@ -174,6 +174,14 @@ export async function securityMonitor(_req: Request, res: Response) {
       accent: index === 0 ? "critical" : index === 1 ? "warning" : index === 2 ? "info" : "healthy",
     }));
 
+  // Alert Distribution by Severity (Doughnut Chart)
+  const alertDistribution = [
+    { label: "Critical", value: incidents.filter(i => i.severity === "CRITICAL").length, color: "#ef4444" },
+    { label: "High",     value: incidents.filter(i => i.severity === "HIGH").length,     color: "#f97316" },
+    { label: "Medium",   value: incidents.filter(i => i.severity === "MEDIUM").length,   color: "#f59e0b" },
+    { label: "Low",      value: incidents.filter(i => i.severity === "LOW").length,      color: "#3b82f6" }
+  ];
+
   // Real-time Priority Feed (SOC Triage Logic)
   const liveFeed = incidents
     .slice(0, 6)
@@ -193,6 +201,7 @@ export async function securityMonitor(_req: Request, res: Response) {
     topCountries,
     eventTrend,
     topAttackVectors,
+    alertDistribution,
     liveFeed,
     customerExposure: customers.map((c) => ({
       name: c.name,
