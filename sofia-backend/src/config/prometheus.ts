@@ -29,5 +29,17 @@ export const metrics = {
     help: "Active refresh sessions",
     labelNames: ["mode"],
     registers: [registry]
+  }),
+  threatLocationTotal: new client.Counter({
+    name: "threat_location_total",
+    help: "Attacks by simulated country location",
+    labelNames: ["country_code", "type"],
+    registers: [registry]
+  }),
+  alertsSentTotal: new client.Counter({
+    name: "alerts_sent_total",
+    help: "Total security alerts sent to external channels",
+    labelNames: ["destination", "type", "severity"],
+    registers: [registry]
   })
 };

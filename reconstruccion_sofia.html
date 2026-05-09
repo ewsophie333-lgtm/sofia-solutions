@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reconstrucción Técnica: Identidad Sofia</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 { color: #00ff00; margin-bottom: 30px; }
+        .gallery {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+        }
+        .capture-card {
+            background-color: #2d2d2d;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            max-width: 95%;
+        }
+        .capture-card img {
+            max-width: 100%;
+            border: 1px solid #444;
+            display: block;
+        }
+        .caption {
+            margin-top: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #aaa;
+        }
+        .meta {
+            font-size: 0.9em;
+            color: #777;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>📂 Capturas Reconstruidas: Proyecto Mail Sofia</h1>
+    <p>Utiliza este archivo para tomar capturas de pantalla limpias de cada paso.</p>
+
+    <div class="gallery">
+        <!-- BATCH 1 -->
+        <div class="capture-card">
+            <div class="meta">Captura #1</div>
+            <img src="sofia_capturas/ubuntu_terminal_postfix_install_1778331539834.png" alt="Instalación Postfix">
+            <div class="caption">Instalación de Postfix</div>
+        </div>
+
+        <div class="capture-card">
+            <div class="meta">Captura #2</div>
+            <img src="sofia_capturas/ubuntu_terminal_mailname_nano_1778331556578.png" alt="Mailname">
+            <div class="caption">Configuración de /etc/mailname</div>
+        </div>
+
+        <div class="capture-card">
+            <div class="meta">Captura #3</div>
+            <img src="sofia_capturas/ubuntu_terminal_postfix_config_nano_1778331576382.png" alt="Config main.cf">
+            <div class="caption">Edición de /etc/postfix/main.cf</div>
+        </div>
+
+        <div class="capture-card">
+            <div class="meta">Captura #4</div>
+            <img src="sofia_capturas/ubuntu_terminal_postfix_reload_1778331589879.png" alt="Reload Postfix">
+            <div class="caption">Reinicio de Postfix</div>
+        </div>
+
+        <div class="capture-card">
+            <div class="meta">Captura #5</div>
+            <img src="sofia_capturas/ubuntu_terminal_adduser_sofia_mail_1778331609908.png" alt="Adduser Sofia Mail">
+            <div class="caption">Creación del usuario sofia_mail</div>
+        </div>
+
+        <!-- BATCH 2 -->
+        <div class="capture-card">
+            <div class="meta">Captura #6</div>
+            <img src="sofia_capturas/ubuntu_terminal_dovecot_install_fixed_1778331991875.png" alt="Instalación Dovecot">
+            <div class="caption">Instalación de Dovecot IMAP/POP3</div>
+        </div>
+
+        <div class="capture-card">
+            <div class="meta">Captura #7</div>
+            <img src="sofia_capturas/ubuntu_terminal_dovecot_master_nano_fixed_1778332006910.png" alt="Master Conf">
+            <div class="caption">Configuración 10-master.conf</div>
+        </div>
+
+        <div class="capture-card">
+            <div class="meta">Captura #8</div>
+            <img src="sofia_capturas/ubuntu_terminal_dovecot_auth_nano_fixed_1778332022744.png" alt="Auth Conf">
+            <div class="caption">Configuración 10-auth.conf</div>
+        </div>
+
+        <div class="capture-card">
+            <div class="meta">Captura #9</div>
+            <img src="sofia_capturas/ubuntu_terminal_dovecot_mail_nano_fixed_1778332039240.png" alt="Mail Conf">
+            <div class="caption">Configuración 10-mail.conf</div>
+        </div>
+
+        <div class="capture-card">
+            <div class="meta">Captura #10</div>
+            <img src="sofia_capturas/ubuntu_terminal_dovecot_restart_fixed_1778332053876.png" alt="Restart Dovecot">
+            <div class="caption">Reinicio de Dovecot</div>
+        </div>
+
+        <!-- BATCH 3 -->
+        <div class="capture-card">
+            <div class="meta">Captura #11</div>
+            <img src="sofia_capturas/ubuntu_terminal_telnet_pop3_test_1778332070177.png" alt="Telnet POP3">
+            <div class="caption">Prueba de conexión POP3 (Telnet)</div>
+        </div>
+
+        <div class="capture-card">
+            <div class="meta">Captura #12</div>
+            <img src="sofia_capturas/ubuntu_terminal_telnet_imap_test_1778332091533.png" alt="Telnet IMAP">
+            <div class="caption">Prueba de conexión IMAP (Telnet)</div>
+        </div>
+
+        <div class="capture-card">
+            <div class="meta">Captura #13</div>
+            <img src="sofia_capturas/ubuntu_terminal_mail_log_test_1778332106307.png" alt="Mail Logs">
+            <div class="caption">Verificación de logs en /var/log/mail.log</div>
+        </div>
+
+        <div class="capture-card">
+            <div class="meta">Captura #14</div>
+            <img src="sofia_capturas/roundcube_login_sofia_fixed_1778332122357.png" alt="Roundcube Login">
+            <div class="caption">Login en Roundcube Webmail</div>
+        </div>
+
+        <div class="capture-card">
+            <div class="meta">Captura #15</div>
+            <img src="sofia_capturas/roundcube_inbox_sofia_fixed_1778332144578.png" alt="Roundcube Inbox">
+            <div class="caption">Bandeja de entrada con mensaje de test</div>
+        </div>
+    </div>
+</body>
+</html>

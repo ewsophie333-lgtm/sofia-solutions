@@ -8,6 +8,7 @@
 import type { Request, Response } from "express";
 import { prisma } from "../config/prisma";
 import { ApiError } from "../utils/errors";
+import { metrics } from "../config/prometheus";
 import axios from "axios";
 
 const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL || "http://n8n:5678/webhook/alert";
@@ -53,6 +54,13 @@ export async function createUrgentAlert(req: Request, res: Response) {
         recipientEmail: ALERT_EMAIL,
         userName: req.user?.email || "System-Monitor",
         clientName: userWithCustomer?.customer?.name || "Global / Internal"
+      });
+
+      // Record metric for Grafana dashboard
+      metrics.alertsSentTotal.inc({ 
+        destination: "GMAIL/N8N", 
+        type: alert.title.includes("SQL") ? "SQL_INJECTION" : "GENERAL_ALERT",
+        severity: alert.severity 
       });
     } catch (error: any) {
       console.error(`[ALERTA ERROR] Error al enviar alerta ${alert.id} a n8n (${N8N_WEBHOOK_URL}): ${error.message}`);

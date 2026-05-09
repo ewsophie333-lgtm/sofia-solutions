@@ -46,6 +46,12 @@ export async function attackDetection(req: Request, res: Response, next: NextFun
   }
 
   metrics.attacksBlockedTotal.inc({ type: attack.type, mode });
+
+  // Simulate Threat Location for Grafana World Map
+  const countries = ["US", "CN", "RU", "BR", "FR", "DE", "UA", "KP"];
+  const randomCountry = countries[Math.floor(Math.random() * countries.length)];
+  metrics.threatLocationTotal.inc({ country_code: randomCountry, type: attack.type });
+
   notifySoc(`Ataque ${attack.type} bloqueado en ${req.originalUrl}`);
   res.status(403).json({ message: "Request blocked by attack detection middleware." });
 }
