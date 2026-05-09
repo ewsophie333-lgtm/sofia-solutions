@@ -44,7 +44,10 @@ $activeNav = 'admin-dashboard';
                 <h1 data-i18n="title">Panel de Operaciones</h1>
                 <p class="panel-header-copy" data-i18n="copy">Visión unificada de ciberseguridad multi-cliente.</p>
             </div>
-            <span style="padding:8px 16px; border-radius:20px; font-size:0.75rem; font-weight:700; background:rgba(34,197,94,0.1); color:#22c55e; border:1px solid rgba(34,197,94,0.2);">● SISTEMA OPERATIVO</span>
+            <div style="display:flex; gap:12px; align-items:center;">
+                <button onclick="testSocAlert()" style="padding:8px 16px; border-radius:8px; font-size:0.7rem; font-weight:700; background:rgba(139,92,246,0.1); color:#a78bfa; border:1px solid rgba(139,92,246,0.2); cursor:pointer;">TEST SOC ALERT</button>
+                <span style="padding:8px 16px; border-radius:20px; font-size:0.75rem; font-weight:700; background:rgba(34,197,94,0.1); color:#22c55e; border:1px solid rgba(34,197,94,0.2);">● SISTEMA OPERATIVO</span>
+            </div>
         </header>
 
         <!-- Global Performance Metrics (KPIs) -->
@@ -131,16 +134,19 @@ $activeNav = 'admin-dashboard';
                         c.querySelector('.status-text').textContent = c.id === 'health-api' ? 'Operacional' : (c.id === 'health-db' ? 'Conectado' : 'Activo');
                     });
                 } else {
-                    throw new Error('Down');
+                    const txt = res.status === 401 ? 'Error Auth' : 'Error API';
+                    [apiCard, dbCard, gwCard].forEach(c => {
+                        c.classList.remove('ok');
+                        c.classList.add('error');
+                        c.querySelector('.status-text').textContent = txt;
+                    });
                 }
             } catch (e) {
-                // DDoS Detected or Server Down
                 [apiCard, dbCard, gwCard].forEach(c => {
                     c.classList.remove('ok');
                     c.classList.add('error');
-                    c.querySelector('.status-text').textContent = 'CAÍDO / DDoS';
+                    c.querySelector('.status-text').textContent = 'FALLO DE RED';
                 });
-                console.warn('CRITICAL: Backend unresponsive. Possible DDoS in progress.');
             }
         }
         setInterval(monitorHealth, 5000);
@@ -426,7 +432,7 @@ function renderAdminTickets(tickets) {
         const isHigh = ['ALTA', 'HIGH', 'URGENT', 'CRITICAL'].includes(p);
         const prioColor = isHigh ? '#fca5a5' : '#fcd34d';
         
-        const client = t.clientName || t.customer?.name || 'S. SOLUTIONS TIER 1';
+        const client = t.user?.companyName || t.user?.name || 'Cliente Desconocido';
 
         return `<tr style="border-bottom:1px solid rgba(255,255,255,0.03); transition:all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.01)'" onmouseout="this.style.background=''">
             <td style="padding:16px 12px;"><strong style="color:#a78bfa; font-size:0.9rem;">${client}</strong></td>
@@ -587,6 +593,23 @@ function setLang(l) {
     });
     document.getElementById('btn-es').style.background = l === 'es' ? 'var(--primary)' : 'rgba(255,255,255,0.05)';
     document.getElementById('btn-en').style.background = l === 'en' ? 'var(--primary)' : 'rgba(255,255,255,0.05)';
+}
+async function testSocAlert() {
+    try {
+        const res = await fetch(API + '/api/alerts', {
+            method: 'POST',
+            headers: { ...authHdr(), 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                title: 'PRUEBA DE CONEXIÓN SOC',
+                description: 'Esta es una alerta de prueba generada manualmente desde el panel de control para verificar el flujo n8n -> Gmail.',
+                severity: 'HIGH'
+            })
+        });
+        if (res.ok) alert('✅ Alerta de prueba enviada al SOC. Revisa n8n y tu correo.');
+        else alert('❌ Error al enviar alerta: ' + res.status);
+    } catch (e) {
+        alert('❌ Error de red: ' + e.message);
+    }
 }
 (function(){ setLang(localStorage.getItem('sofia_lang') || 'es'); })();
 </script>

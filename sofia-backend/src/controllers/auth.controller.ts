@@ -109,6 +109,7 @@ export async function login(req: Request, res: Response) {
   }
 
   metrics.loginAttemptsTotal.inc({ mode: "secure", result: "success" });
+  metrics.activeSessions.inc({ mode: "secure" });
 
   const userWithCustomer = await prisma.user.findUnique({
     where: { id: user.id },
@@ -168,6 +169,7 @@ export async function loginV1(req: Request, res: Response) {
   }
 
   metrics.loginAttemptsTotal.inc({ mode: "vulnerable", result: "success" });
+  metrics.activeSessions.inc({ mode: "vulnerable" });
 
   const userWithCustomer = await prisma.user.findUnique({
     where: { id: user.id },
@@ -246,6 +248,11 @@ export async function logout(req: Request, res: Response) {
   res.clearCookie("refreshToken_ADMIN");
   res.clearCookie("accessToken_CLIENT");
   res.clearCookie("refreshToken_CLIENT");
+  
+  // Update metrics
+  const mode = env.APP_MODE === "vulnerable" ? "vulnerable" : "secure";
+  metrics.activeSessions.dec({ mode });
+
   res.json({ message: "Security context cleared" });
 }
 

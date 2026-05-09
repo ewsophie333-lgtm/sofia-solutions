@@ -546,12 +546,12 @@
           "expr": "up{job=~\"sofia-.*|cadvisor\"}",
           "format": "table",
           "instant": true,
-          "legendFormat": "{{instance}}",
+          "legendFormat": "{{job}}",
           "range": false,
           "refId": "A"
         }
       ],
-      "title": "Container Health Status",
+      "title": "Service Health Status (Real-time)",
       "type": "table"
     },
     {

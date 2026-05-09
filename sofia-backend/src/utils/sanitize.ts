@@ -6,5 +6,6 @@ const suspiciousPatterns = [
 
 export function detectAttackPatterns(payload: unknown) {
   const serialized = JSON.stringify(payload ?? {});
+  console.log(`[DEBUG] Analyzing payload: ${serialized}`);
   return suspiciousPatterns.find((pattern) => pattern.regex.test(serialized));
 }

@@ -86,14 +86,6 @@ $activeNav = 'soc';
             </article>
             <article class="panel" style="padding:24px;">
                 <div class="panel-heading">
-                    <div><span class="eyebrow">Geo</span><h2>Orígenes de Ataque por País</h2></div>
-                </div>
-                <div id="soc-countries" class="stack-list" style="margin-top:20px; height:350px; overflow-y:auto;">
-                    <div class="stack-item">Cargando datos geográficos...</div>
-                </div>
-            </article>
-            <article class="panel" style="padding:24px;">
-                <div class="panel-heading">
                     <div><span class="eyebrow">Defensa Activa</span><h2>Firewall WAF (Bloqueo IP)</h2></div>
                 </div>
                 <div style="margin-top:20px;">
@@ -101,7 +93,7 @@ $activeNav = 'soc';
                         <input type="text" id="ip-to-block" placeholder="Ej: 192.168.1.50" style="flex:1; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); padding:10px; border-radius:6px; color:#fff; font-family:monospace;">
                         <button onclick="blockIP()" style="background:#ef4444; color:#fff; border:none; padding:10px 16px; border-radius:6px; cursor:pointer; font-weight:bold;">BLOQUEAR</button>
                     </div>
-                    <div id="waf-rules" class="stack-list" style="height:270px; overflow-y:auto;">
+                    <div id="waf-rules" class="stack-list" style="height:310px; overflow-y:auto;">
                         <div class="stack-item" style="border-left: 2px solid #ef4444; display:flex; justify-content:space-between; align-items:center;">
                             <div><strong style="color:#ef4444; font-family:monospace;">185.220.101.4</strong><br><small>Bloqueo automático (DDoS)</small></div>
                             <span style="font-size:0.7rem; opacity:0.5;">Activo</span>

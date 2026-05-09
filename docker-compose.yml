@@ -22,6 +22,7 @@ services:
       N8N_WEBHOOK_URL: http://n8n:5678/webhook/alert
     ports:
       - "8001:8001"
+      - "5555:5555"
     depends_on:
       - postgres
 

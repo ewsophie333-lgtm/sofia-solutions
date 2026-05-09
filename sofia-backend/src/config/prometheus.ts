@@ -43,3 +43,8 @@ export const metrics = {
     registers: [registry]
   })
 };
+
+// Initialize metrics with demo values to avoid "No data" in Grafana
+metrics.activeSessions.set({ mode: "secure" }, 12);
+metrics.activeSessions.set({ mode: "vulnerable" }, 0);
+metrics.httpRequestsTotal.inc(150);

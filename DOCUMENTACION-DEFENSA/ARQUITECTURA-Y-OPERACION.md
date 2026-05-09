@@ -104,3 +104,12 @@ El proyecto puede defenderse como una plataforma de servicios IT y cibersegurida
 - atacarse de forma controlada;
 - observar su comportamiento;
 - explicar por qué una configuración segura responde mejor que una vulnerable.
+
+## 8. Monitorización Avanzada y SOC
+
+El sistema integra una pila de observabilidad enriquecida para la detección proactiva:
+
+- **Mapa de Amenazas:** Visualización geográfica de ataques bloqueados basada en geolocalización simulada.
+- **Salud de Microservicios:** Monitorización mediante **cAdvisor** que supervisa el estado de salud y recursos de cada contenedor (Backend, DB, n8n).
+- **Integración n8n/Gmail:** Sistema de alertado crítico que redirige incidentes hacia canales externos (Email).
+- **Métricas de Seguridad:** Panel de estadísticas de ataques por tipo y tasa de bloqueo en tiempo real.

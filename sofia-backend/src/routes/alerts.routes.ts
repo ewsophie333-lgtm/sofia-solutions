@@ -12,6 +12,9 @@ const router = Router();
 // Crear alerta urgente
 router.post("/urgent", requireAuth, createUrgentAlert);
 
+// Ruta de prueba para n8n/Gmail (sin auth para testing rápido)
+router.post("/test", createUrgentAlert);
+
 // Listar alertas del usuario/admin
 router.get("/", requireAuth, listAlerts);
 

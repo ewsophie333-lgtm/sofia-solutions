@@ -55,10 +55,25 @@
 }
 .launch-btn:hover:not(:disabled) { background:#4f46e5; transform:translateY(-1px); }
 .launch-btn:disabled { opacity:0.3; cursor:not-allowed; }
-@media (max-width: 900px) {
     .audit-grid { grid-template-columns: 1fr !important; }
     .audit-container { padding: 20px; }
 }
+
+/* Burp Suite UI Simulation */
+.burp-window {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 600px; background: #2b2b2b; border: 1px solid #444; border-radius: 8px;
+    z-index: 200000; box-shadow: 0 30px 60px rgba(0,0,0,0.8); display: none;
+    font-family: 'Consolas', monospace; color: #ccc;
+}
+.burp-header { background: #3c3f41; padding: 10px 15px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+.burp-tabs { background: #323232; padding: 0 10px; display: flex; gap: 2px; }
+.burp-tab { padding: 8px 15px; font-size: 0.75rem; background: #3c3f41; cursor: pointer; border-bottom: 2px solid #f97316; }
+.burp-body { padding: 15px; background: #2b2b2b; }
+.burp-request { background: #1e1e1e; padding: 15px; border-radius: 4px; font-size: 0.8rem; color: #fff; line-height: 1.4; border: 1px solid #444; min-height: 200px; outline: none; }
+.burp-actions { padding: 10px 15px; display: flex; gap: 10px; background: #323232; }
+.burp-btn { padding: 6px 15px; font-size: 0.75rem; border: 1px solid #555; background: #4e5052; color: #fff; cursor: pointer; border-radius: 3px; }
+.burp-btn.forward { background: #f97316; border-color: #c2410c; font-weight: bold; }
 </style>
 
 <div class="audit-container">
@@ -116,6 +131,13 @@
                         <p>Agotamiento de Rate Limit</p>
                     </div>
                 </div>
+                <div class="module-card" onclick="loadModule('cookie', this)">
+                    <div class="icon-wrap"><svg class="icon" style="color:#f97316;"><path d="M12 2L2 7l10 5 10-5-10-5z"></path></svg></div>
+                    <div class="module-card-text">
+                        <h4>Secuestro de Cookies</h4>
+                        <p>Simulación Burp Suite (PrivEsc)</p>
+                    </div>
+                </div>
             </div>
 
             <div id="cfg-panel" class="cfg-panel" style="margin-top:24px; display:none;">
@@ -125,31 +147,61 @@
         </aside>
 
         <!-- Terminal -->
-        <div class="terminal">
+        <div class="terminal" style="display:flex; flex-direction:column;">
             <div class="terminal-bar">
                 <div class="t-dot" style="background:#ff5f56;"></div>
                 <div class="t-dot" style="background:#ffbd2e;"></div>
                 <div class="t-dot" style="background:#27c93f;"></div>
                 <span style="margin-left:12px; font-size:0.6rem; color:#444; font-weight:800; text-transform:uppercase; font-family:sans-serif;">bash — audit-v4.8</span>
             </div>
-            <div id="t-out" class="t-out">
-                <div class="t-line-cyan">Sofia Solutions Audit Framework inicializado.</div>
-                <div class="t-line-dim">Esperando selección de módulo...</div>
-                <div id="t-cursor" class="t-cursor"></div>
+            <div style="display:grid; grid-template-columns: 1fr 280px; flex:1;">
+                <div id="t-out" class="t-out" style="height:550px;">
+                    <div class="t-line-cyan">Sofia Solutions Audit Framework inicializado.</div>
+                    <div class="t-line-dim">Esperando selección de módulo...</div>
+                    <div id="t-cursor" class="t-cursor"></div>
+                </div>
+                <!-- Panel Lateral de Evidencias -->
+                <div style="background:#080808; border-left:1px solid rgba(255,255,255,0.05); padding:20px;">
+                    <span class="cfg-label" style="color:#4ade80;">Evidencias Capturadas</span>
+                    <div id="evidence-panel" style="display:flex; flex-direction:column; gap:12px; margin-top:10px;">
+                        <div style="color:rgba(255,255,255,0.2); font-size:0.7rem; text-align:center; padding:20px; border:1px dashed rgba(255,255,255,0.1); border-radius:8px;">
+                            Sin datos capturados
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal para Leak Viewer -->
-<div id="leak-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:999999; align-items:center; justify-content:center; padding:20px;">
-    <div style="background:#000; border:1px solid #333; border-radius:10px; width:100%; max-width:800px; height:80vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.8);">
-        <div style="background:#111; padding:10px 16px; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center;">
-            <span style="color:#22c55e; font-family:monospace; font-weight:800; font-size:0.85rem;">LEAK VIEWER</span>
-            <button onclick="document.getElementById('leak-modal').style.display='none'" style="background:none; border:none; color:#ef4444; font-size:1.2rem; cursor:pointer;">&times;</button>
+<!-- Burp Suite Simulation Window -->
+<div id="burp-suite" class="burp-window">
+    <div class="burp-header">
+        <span style="font-size:0.7rem; font-weight:bold;">Burp Suite Professional - Sofia Edition</span>
+        <div style="display:flex; gap:5px;">
+            <div style="width:12px; height:12px; border-radius:50%; background:#444;"></div>
+            <div style="width:12px; height:12px; border-radius:50%; background:#444;"></div>
         </div>
-        <pre id="leak-content" style="flex:1; margin:0; padding:20px; overflow:auto; color:#0f0; font-family:monospace; font-size:0.85rem; background:#000;"></pre>
     </div>
+    <div class="burp-tabs">
+        <div class="burp-tab">Intercept</div>
+        <div style="padding:8px 15px; font-size:0.75rem; color:#888;">HTTP history</div>
+        <div style="padding:8px 15px; font-size:0.75rem; color:#888;">WebSockets</div>
+    </div>
+    <div class="burp-body">
+        <div style="margin-bottom:10px; font-size:0.7rem; color:#f97316; font-weight:bold;">[INTERCEPTED] Request to sofia-solutions.local</div>
+        <div id="burp-request-area" class="burp-request" contenteditable="true"></div>
+    </div>
+    <div class="burp-actions">
+        <button class="burp-btn forward" onclick="forwardRequest()">Forward</button>
+        <button class="burp-btn" onclick="dropRequest()">Drop</button>
+        <button class="burp-btn" style="color:#f97316;">Action</button>
+    </div>
+</div>
+
+<!-- Hacker Alert Overlay -->
+<div id="hacker-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,255,0,0.05); z-index:100000; pointer-events:none; border: 4px solid #4ade80; box-shadow: inset 0 0 100px rgba(0,255,0,0.2);">
+    <div style="position:absolute; top:20px; left:50%; transform:translateX(-50%); background:#4ade80; color:#000; padding:10px 30px; font-weight:900; font-family:monospace; font-size:1.5rem;">ALERTA SOC: XSS EJECUTADO</div>
 </div>
 
 <script>
@@ -180,6 +232,11 @@ const TOOLS = {
                     <option value="/api/v1/auth/login/vulnerable">Login Inseguro (v1)</option>
                     <option value="/api/v1/auth/login/v2">Login Seguro (v2 + MFA)</option>
                  </select>
+                 <label class="cfg-label">DICCIONARIO</label>
+                 <select class="cfg-input" id="brute-dict">
+                    <option value="rockyou_top20">RockYou (Top 20 - Demo)</option>
+                    <option value="common">Contraseñas Corporativas</option>
+                 </select>
                  <label class="cfg-label">USUARIO OBJETIVO</label>
                  <input class="cfg-input" id="brute-user" value="admin@sofia.local">`,
         run: runBrute
@@ -191,7 +248,6 @@ const TOOLS = {
                     <option value="../../../../../../../etc/hostname">/etc/hostname (Sistema)</option>
                     <option value="../../../../../../../etc/passwd">/etc/passwd (Usuarios)</option>
                     <option value="../../../../../../../var/www/html/index.php">index.php (Código Fuente)</option>
-                    <option value="../../../../../../../proc/self/environ">proc/self/environ (Envenenamiento)</option>
                  </select>`,
         run: runLFI
     },
@@ -207,11 +263,11 @@ const TOOLS = {
     },
     xss: {
         title: 'XSS Reflejado',
-        config: `<label class="cfg-label">PAYLOAD (Evasión)</label>
-                 <select class="cfg-input" id="xss-payload">
-                    <option value="<script>alert('XSS_Ejecutado')<\/script>">Básico: <script> alert</option>
-                    <option value="<img src=x onerror=alert('XSS_Image_Bypass')>">Evasión: <img> onerror</option>
-                    <option value="<script>fetch('/api/v2/auth/csrf').then(r=>r.json()).then(d=>alert('XSS Exfiltrado (CSRF Token): ' + d.csrfToken))<\/script>">Avanzado: Exfiltración CSRF</option>
+        config: `<label class="cfg-label">ACCIÓN MALICIOSA</label>
+                 <select class="cfg-input" id="xss-action">
+                    <option value="cookie">Robo de Cookies (Session Hijacking)</option>
+                    <option value="redirect">Redirección a Phishing (Evil Proxy)</option>
+                    <option value="alert">Prueba de Concepto (Alert)</option>
                  </select>`,
         run: runXSS
     },
@@ -219,6 +275,17 @@ const TOOLS = {
         title: 'Inundación HTTP (DoS)',
         config: `<label class="cfg-label">CONCURRENCIA (PETICIONES)</label><input class="cfg-input" id="dos-count" value="200">`,
         run: runDoS
+    },
+    cookie: {
+        title: 'Secuestro de Cookies',
+        config: `<label class="cfg-label">VÍCTIMA</label>
+                 <select class="cfg-input" id="cookie-victim">
+                    <option value="admin">Administrador del Sistema</option>
+                    <option value="mapfre">Analista MAPFRE</option>
+                 </select>
+                 <label class="cfg-label">MODO PROXY</label>
+                 <div style="color:#f97316; font-size:0.7rem; font-weight:bold;">[!] Intercepción Activada (BURP SIM)</div>`,
+        run: runCookieHijack
     }
 };
 
@@ -231,6 +298,26 @@ function tLog(msg, type='green') {
     out.insertBefore(div, document.getElementById('t-cursor'));
     out.scrollTop = out.scrollHeight;
     return div;
+}
+
+window.addEventListener('message', (e) => {
+    if (e.data.type === 'XSS_SUCCESS') {
+        showEvidence('XSS: Cookies & LocalStorage Robados', e.data.data);
+    }
+});
+
+function showEvidence(title, data) {
+    addEvidence(title, data, 'red');
+}
+
+function addEvidence(title, content, type='green') {
+    const panel = document.getElementById('evidence-panel');
+    if (panel.querySelector('div[style*="dashed"]')) panel.innerHTML = '';
+    
+    const card = document.createElement('div');
+    card.style = `background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:10px; font-size:0.7rem; border-left:3px solid ${type==='red'?'#ef4444':'#4ade80'}; animation: slideIn 0.3s ease;`;
+    card.innerHTML = `<strong style="display:block; margin-bottom:4px; color:#fff;">${title}</strong><pre style="margin:0; color:${type==='red'?'#fca5a5':'#86efac'}; white-space:pre-wrap; font-family:monospace;">${content}</pre>`;
+    panel.prepend(card);
 }
 
 function addAction(container, text, icon, callback) {
@@ -262,11 +349,9 @@ async function runSQLi() {
     tLog(`[*] Iniciando SQLi en ${ep}`, 'yellow');
     tLog(`[#] Payload: ${p}`, 'dim');
     
-    // Simular la construcción de la query SQL (como si el backend fuera interceptado)
     let querySimulada = `SELECT * FROM users WHERE email = '${p}' AND password = 'x'`;
     tLog(`[DATABASE] Executing: ${querySimulada}`, 'cyan');
     
-    const start = Date.now();
     await delay(800);
     
     try {
@@ -274,75 +359,29 @@ async function runSQLi() {
             method:'POST', headers:{'Content-Type':'application/json'},
             body: JSON.stringify({email: p, password: 'x'})
         });
-        const duration = (Date.now() - start) / 1000;
+        const duration = (Date.now() - (Date.now()-800)) / 1000;
 
-        // Caso 1: UNION Select (Extracción de datos)
         if (p.toLowerCase().includes('union')) {
             tLog(`[+] EXPLOIT EXITOSO: UNION Select detectado.`, 'green');
-            
-            if (p.toLowerCase().includes('bank')) {
-                tLog(`[*] Accediendo a tabla restringida 'customer_billing'...`, 'cyan');
-                await delay(1200);
-                tLog(`[DATABASE] Query returned 3 rows:`, 'yellow');
-                tLog(`+----------------+--------------------------+------+`, 'dim');
-                tLog(`| company        | iban                     | cvv  |`, 'cyan');
-                tLog(`+----------------+--------------------------+------+`, 'dim');
-                tLog(`| IBERDROLA      | ES89 2100 ... 4492       | 221  |`, 'red');
-                tLog(`| MAPFRE         | ES21 0049 ... 1102       | 554  |`, 'red');
-                tLog(`| SABADELL       | ES44 0081 ... 9901       | 018  |`, 'red');
-                tLog(`+----------------+--------------------------+------+`, 'dim');
-                return;
-            }
-
             if (p.toLowerCase().includes('credentials')) {
-                tLog(`[*] Accediendo a tabla 'users'...`, 'cyan');
-                await delay(1200);
-                tLog(`[DATABASE] Query returned 5 rows:`, 'yellow');
-                tLog(`+----------------------+--------------------------+`, 'dim');
-                tLog(`| email                | password (plain/hash)    |`, 'cyan');
-                tLog(`+----------------------+--------------------------+`, 'dim');
-                tLog(`| admin@sofia.local    | S0f1a_Secur3!_2026       |`, 'red');
-                tLog(`| mapfre@sofia.local   | S0f1a_Mapfre!_2026       |`, 'red');
-                tLog(`| iberdrola@sofia.local| S0f1a_Iberdrola!_2026    |`, 'red');
-                tLog(`| repsol@sofia.local   | S0f1a_Repsol!_2026       |`, 'red');
-                tLog(`| sabadell@sofia.local | S0f1a_Sabadell!_2026     |`, 'red');
-                tLog(`+----------------------+--------------------------+`, 'dim');
-                return;
-            }
-
-            tLog(`[*] Extrayendo esquema de base de datos...`, 'cyan');
-            await delay(1000);
-            const tables = ["users", "tickets", "services", "customer_billing", "system_logs"];
-            tLog(`[DATABASE] Found tables: ${tables.join(', ')}`, 'green');
-            return;
-        }
-
-        // Caso 2: Blind Time-Based (SLEEP)
-        if (p.toLowerCase().includes('sleep')) {
-            if (duration >= 5 && ep.includes('v1')) {
-                tLog(`[+] EXPLOIT EXITOSO: Blind SQLi confirmado.`, 'green');
-                tLog(`[!] El servidor tardó ${duration.toFixed(2)}s en responder (Inyección basada en tiempo).`, 'green');
-            } else {
-                tLog(`[-] Error: El servidor respondió en ${duration.toFixed(2)}s. ¿Protección activa?`, 'red');
+                addEvidence('User Credentials Leak', 'admin@sofia.local:admin123\nmapfre@sofia.local:mapfre123\nmercadona@sofia.local:mercadona123');
+                tLog(`[+] Datos exfiltrados guardados en panel de evidencias.`, 'green');
             }
             return;
         }
 
-        // Caso 3: Auth Bypass (Clásico)
         const d = await r.json();
-        if (r.ok && d.accessToken && ep.includes('v1')) {
-            tLog(`[DATABASE] Query returned 1 row (Authentication bypassed)`, 'yellow');
-            tLog(`[+] EXPLOIT EXITOSO: Sesión de ${d.user?.email || 'admin'} secuestrada.`, 'green');
-            const res = tLog(`[*] Acción disponible: `, 'cyan');
-            addAction(res, 'Acceder al Dashboard como Admin', '<path d="M12 2L2 7l10 5 10-5-10-5z"></path>', () => {
+        if (r.ok && d.accessToken && ep.includes('vulnerable')) {
+            tLog(`[+] EXPLOIT EXITOSO: Autenticación omitida mediante inyección.`, 'green');
+            addEvidence('Session Hijacked', `User: ${d.user?.email}\nToken: ${d.accessToken.substring(0,32)}...`);
+            const res = tLog(`[*] Acción: `, 'cyan');
+            addAction(res, 'Acceder al Panel', '<path d="M12 2L2 7l10 5 10-5-10-5z"></path>', () => {
                 localStorage.setItem('sofia_token_v1', d.accessToken);
-                localStorage.setItem('sofia_user_v1', JSON.stringify({email: d.user?.email || 'admin@sofia.local', role: d.user?.role || 'ADMIN'}));
+                localStorage.setItem('sofia_user_v1', JSON.stringify(d.user));
                 window.location.href = '/admin';
             });
         } else { 
-            tLog(`[DATABASE] Executing (Parameterized/Escaped): SELECT * FROM users WHERE email=$1 AND password=$2`, 'dim');
-            tLog(`[DATABASE] Query returned 0 rows.`, 'yellow');
-            tLog(`[-] Error: El sistema ha bloqueado el payload. No vulnerable a SQLi en ${ep}.`, 'red'); 
+            tLog(`[-] Error: El servidor ha filtrado el payload o usa parámetros.`, 'red'); 
         }
     } catch(e) { tLog(`[!] Error de red.`, 'red'); }
 }
@@ -350,132 +389,154 @@ async function runSQLi() {
 async function runBrute() {
     const user = document.getElementById('brute-user').value;
     const ep = document.getElementById('brute-ep').value;
-    tLog(`[*] Iniciando ataque contra ${user} en ${ep}`, 'yellow');
-    tLog(`[#] POST ${ep} (email: ${user}, pass: dictionary)`, 'dim');
-    tLog(`[#] Cargando diccionario: rockyou_top1000.txt (1.000 entradas)`, 'dim');
-
-    // Dictionary: common passwords first, real one last (masked in output)
-    const dictionary = ['admin', '123456', 'password', 'admin123', 'letmein', 'qwerty', 'abc123', 'sofia2026'];
-    const realPassword = 'S0f1a_Secur3!_2026';
-
+    tLog(`[*] Iniciando Brute Force contra ${user}`, 'yellow');
+    
+    const dictionary = ['admin', '123456', 'password', 'welcome', 'root', 'qwerty', 'admin123', 'mapfre123', 'mercadona123'];
+    
     for(let p of dictionary) {
-        tLog(`[?] Probando: ${p.substring(0,3)}${'*'.repeat(Math.max(0, p.length-3))}`, 'dim');
-        await delay(280);
+        tLog(`[TRY] Password: ${p}...`, 'dim');
+        await delay(200);
+        
         try {
             const r = await fetch(TARGET + ep, {
                 method:'POST', headers:{'Content-Type':'application/json'},
-                credentials: 'include',
                 body: JSON.stringify({email: user, password: p})
             });
-            if(r.status === 429) {
-                tLog(`[-] BLOQUEADO: El WAF ha detectado Brute Force (Rate Limit excedido).`, 'red');
+            
+            if (r.ok) {
+                const d = await r.json();
+                tLog(`[+] ¡CRACKED! Contraseña encontrada: ${p}`, 'green');
+                addEvidence('Cracked Credentials', `${user}:${p}`);
+                const res = tLog(`[*] Acción: `, 'cyan');
+                addAction(res, 'Autologin Admin', '<path d="M12 11V7a4 4 0 0 1 8 0v4"></path>', () => {
+                    localStorage.setItem('sofia_token_v1', d.accessToken);
+                    localStorage.setItem('sofia_user_v1', JSON.stringify(d.user));
+                    window.location.href = '/admin';
+                });
+                return;
+            }
+            if (r.status === 429) {
+                tLog(`[-] BLOQUEADO: El IPS/WAF ha detectado demasiados intentos.`, 'red');
                 return;
             }
         } catch(e) {}
     }
+    tLog(`[-] Diccionario agotado sin éxito.`, 'red');
+}
 
-    // Real password attempt — shown as partial mask for realism
-    tLog(`[?] Probando: S0f1a_***r3!_****`, 'dim');
-    await delay(350);
-    try {
-        const r = await fetch(TARGET + ep, {
-            method:'POST', headers:{'Content-Type':'application/json'},
-            credentials: 'include',
-            body: JSON.stringify({email: user, password: realPassword})
-        });
-        if(r.status === 429) {
-            tLog(`[-] BLOQUEADO: Rate Limit excedido.`, 'red');
-            return;
-        }
-        if(r.ok) {
-            tLog(`[+] ¡CRACKED! Credenciales válidas encontradas en posición 9/1000.`, 'green');
-            tLog(`[+] Hash comprometido — contraseña almacenada en texto plano (modo v1).`, 'yellow');
-            const res = tLog(`[*] Acción disponible: `, 'cyan');
-            addAction(res, 'Autologin como Admin', '<path d="M12 11V7a4 4 0 0 1 8 0v4"></path>', () => {
-                window.location.href = '/login';
-            });
-            return;
-        }
-    } catch(e) {}
-    tLog(`[-] Ataque finalizado. Sin éxito o bloqueado.`, 'dim');
+async function runXSS() {
+    const action = document.getElementById('xss-action').value;
+    tLog(`[*] Lanzando ataque XSS Reflejado...`, 'yellow');
+    await delay(600);
+    
+    document.getElementById('hacker-overlay').style.display = 'block';
+    setTimeout(() => document.getElementById('hacker-overlay').style.display = 'none', 3000);
+    
+    if (action === 'cookie') {
+        tLog(`[+] Cookies capturadas con éxito.`, 'green');
+        const fakeCookie = `sofia_session=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...; user_id=1; role=ADMIN`;
+        addEvidence('Stolen Cookies', fakeCookie, 'green');
+    } else if (action === 'alert') {
+        alert('XSS Reflejado: Dominio sofia-solutions.local comprometido.');
+    } else {
+        tLog(`[+] Redireccionando tráfico a servidor controlado por atacante...`, 'yellow');
+        addEvidence('Redirección Forzada', 'Target: https://evil-sofia.attacker.com/login');
+    }
 }
 
 async function runLFI() {
     const file = document.getElementById('lfi-file').value;
-    tLog(`[*] Leyendo archivo sensible: ${file}`, 'yellow');
-    tLog(`[#] GET /download.php?file=${file}`, 'dim');
-    await delay(600);
+    tLog(`[*] LFI: Intentando leer ${file}`, 'yellow');
+    await delay(800);
     try {
         const r = await fetch(TARGET + '/download.php?file=' + encodeURIComponent(file));
         const txt = await r.text();
-        if(r.ok && !txt.includes('Access Denied')) {
-            tLog(`[+] Leak de información exitoso.`, 'green');
-            const res = tLog(`[*] Acción disponible: `, 'cyan');
-            addAction(res, 'Ver Código Fuente', '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>', () => {
-                document.getElementById('leak-content').innerHTML = txt.replace(/</g,'&lt;');
-                document.getElementById('leak-modal').style.display = 'flex';
-            });
-        } else { tLog(`[-] El servidor ha filtrado la ruta.`, 'red'); }
-    } catch(e) { tLog(`[!] Error de red.`, 'red'); }
+        if (r.ok && !txt.includes('Access Denied')) {
+            tLog(`[+] Archivo exfiltrado.`, 'green');
+            addEvidence('Sensitive File Content', txt.substring(0,100) + '...');
+        } else {
+            tLog(`[-] Acceso denegado por políticas de servidor.`, 'red');
+        }
+    } catch(e) {}
 }
 
 async function runIDOR() {
     const id = document.getElementById('idor-id').value;
-    tLog(`[*] Consultando registro ajeno ID: ${id}`, 'yellow');
-    tLog(`[#] GET /api/v1/tickets/${id}`, 'dim');
+    tLog(`[*] IDOR: Accediendo a recurso ID ${id}`, 'yellow');
     await delay(500);
-    tLog(`[+] Acceso concedido (Falta de control BOLA).`, 'green');
-    const res = tLog(`[*] Acción disponible: `, 'cyan');
-    addAction(res, 'Extraer Datos', '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path>', () => {
-        let fakeData = {};
-        if (id === "1024") {
-            fakeData = {
-                "ticket_id": 1024, "client": "MAPFRE Seguros", "subject": "Vulnerabilidad Crítica",
-                "sensitive_data": { "server_ip": "192.168.100.45", "root_password": "mapfre_admin_2024!" }
-            };
-        } else if (id === "1") {
-            fakeData = {
-                "ticket_id": 1, "client": "SYSTEM ROOT", "subject": "Master Key Rotation",
-                "sensitive_data": { "ssh_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC...", "admin_pass": "root_master_2026" }
-            };
-        } else {
-            fakeData = {
-                "ticket_id": parseInt(id), "client": "Iberdrola S.A.", "subject": "Activos SCADA Expuestos",
-                "sensitive_data": { "plc_ip": "10.0.45.12", "access_code": "4432-8812" }
-            };
-        }
-        document.getElementById('leak-content').innerHTML = JSON.stringify(fakeData, null, 4);
-        document.getElementById('leak-modal').style.display = 'flex';
-    });
-}
-
-async function runXSS() {
-    const p = document.getElementById('xss-payload').value;
-    tLog(`[*] Inyectando payload en parámetro 'q'...`, 'yellow');
-    tLog(`[#] Param q: ${p}`, 'dim');
-    await delay(400);
-    tLog(`[+] Payload reflejado en el DOM. Ejecutando JS...`, 'green');
-    const res = tLog(`[*] Acción disponible: `, 'cyan');
-    addAction(res, 'Disparar Payload', '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>', () => {
-        eval(p.replace('<script>','').replace(/<\/script>/g,''));
-    });
+    tLog(`[+] Acceso BOLA/IDOR exitoso.`, 'green');
+    addEvidence('Private Resource Access', `Ticket #${id}\nClient: MAPFRE\nStatus: CRITICAL`);
 }
 
 async function runDoS() {
     const count = parseInt(document.getElementById('dos-count').value);
-    tLog(`[*] Iniciando Flood: ${count} peticiones en ráfaga...`, 'yellow');
-    tLog(`[#] flooding: GET /api/public/health (x${count})`, 'dim');
+    tLog(`[*] DoS: Iniciando ráfaga de ${count} peticiones...`, 'red');
     let blocked = 0;
     for(let i=0; i<count; i++) {
         fetch(TARGET + '/api/public/health').then(r => { if(r.status === 429) blocked++; });
-        if(i % 20 === 0) await delay(10);
+        if(i % 10 === 0) await delay(5);
     }
     await delay(1000);
-    tLog(`[+] Ataque finalizado.`, 'green');
-    tLog(`[!] Estadísticas: ${count-blocked} OK, ${blocked} bloqueadas por Rate Limit.`, 'dim');
-    const res = tLog(`[*] Acción disponible: `, 'cyan');
-    addAction(res, 'Ver Estado Servidor', '<path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>', () => {
-        window.location.href = '/admin/security-monitor';
-    });
+    tLog(`[+] Inundación finalizada. ${blocked} bloqueadas.`, 'cyan');
 }
+
+let hijackedUser = null;
+
+async function runCookieHijack() {
+    const victim = document.getElementById('cookie-victim').value;
+    tLog(`[*] Iniciando simulación de Interceptor (Proxy)...`, 'yellow');
+    tLog(`[*] Esperando tráfico de red de la víctima: ${victim}...`, 'dim');
+    
+    await delay(1500);
+    
+    const tokenDemo = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImVtYWlsIjoibWFwZnJlQHNvZmlhLmxvY2FsIiwicm9sZSI6IkNMSUVOVCJ9...";
+    const requestText = `POST /api/v1/auth/me HTTP/1.1
+Host: sofia-solutions.local
+User-Agent: Mozilla/5.0 (X11; Linux x86_64)
+Accept: application/json
+Cookie: sofia_session=${tokenDemo}; user_id=12; role=CLIENT
+Content-Length: 0
+
+`;
+
+    document.getElementById('burp-request-area').innerText = requestText;
+    document.getElementById('burp-suite').style.display = 'block';
+    
+    tLog(`[!] ¡PETICIÓN INTERCEPTADA! Revisa la ventana de Burp Suite.`, 'yellow');
+}
+
+function forwardRequest() {
+    const text = document.getElementById('burp-request-area').innerText;
+    document.getElementById('burp-suite').style.display = 'none';
+    
+    tLog(`[*] Enviando petición modificada al servidor...`, 'cyan');
+    
+    if (text.includes('role=ADMIN') || text.includes('role:ADMIN')) {
+        tLog(`[+] EXPLOIT EXITOSO: Privilege Escalation detectado.`, 'green');
+        tLog(`[+] El servidor ha aceptado el token modificado por falta de validación de firma.`, 'green');
+        
+        addEvidence('Cookie Hijacking / PrivEsc', 'Original: role=CLIENT\nModified: role=ADMIN\nResult: Full Admin Access');
+        
+        const res = tLog(`[*] Acción: `, 'cyan');
+        addAction(res, 'Entrar como Admin (Cookie)', '<path d="M12 2L2 7l10 5 10-5-10-5z"></path>', () => {
+            // Simulación de sesión admin por cookie robada
+            localStorage.setItem('sofia_token_v1', 'STOLEN_ADMIN_TOKEN_MOCK');
+            localStorage.setItem('sofia_user_v1', JSON.stringify({id:1, email:'admin@sofia.local', role:'ADMIN'}));
+            window.location.href = '/admin';
+        });
+    } else {
+        tLog(`[-] Petición enviada sin cambios. Acceso denegado a funciones admin.`, 'red');
+    }
+}
+
+function dropRequest() {
+    document.getElementById('burp-suite').style.display = 'none';
+    tLog(`[-] Petición descartada por el atacante (Drop).`, 'dim');
+}
+</script>
+
+<style>
+@keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+</style>
 </script>

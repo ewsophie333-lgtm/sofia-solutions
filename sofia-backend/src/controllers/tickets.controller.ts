@@ -17,7 +17,15 @@ export async function listTickets(req: Request, res: Response) {
   const where = req.user?.role === "ADMIN" ? {} : { userId: req.user?.id };
   const tickets = await prisma.ticket.findMany({
     where,
-    include: { messages: true },
+    include: { 
+      messages: true,
+      user: {
+        select: {
+          companyName: true,
+          name: true
+        }
+      }
+    },
     orderBy: { createdAt: "desc" }
   });
 

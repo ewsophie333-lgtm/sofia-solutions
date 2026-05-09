@@ -10,7 +10,7 @@ const prisma = new PrismaClient();
 async function main() {
   const adminPassword =
     process.env.APP_MODE === "vulnerable"
-      ? (process.env.ADMIN_PASSWORD ?? "S0f1a_Secur3!_2026")
+      ? "admin123"
       : await bcrypt.hash(process.env.ADMIN_PASSWORD ?? "S0f1a_Secur3!_2026", 12);
 
   console.log("Cleaning up database...");
@@ -41,12 +41,17 @@ async function main() {
   for (const email of clientEmails) {
     const companyName = email.split('@')[0];
     const capitalizedName = companyName.charAt(0).toUpperCase() + companyName.slice(1);
-    const rawPassword = `S0f1a_${capitalizedName}!_2026`;
+    
+    // Contraseñas ultra-simples para modo vulnerable para facilitar Brute Force / Demo
+    const rawPassword = process.env.APP_MODE === "vulnerable" 
+        ? `${companyName}123` 
+        : `S0f1a_${capitalizedName}!_2026`;
+
     const clientPassword = process.env.APP_MODE === "vulnerable" 
         ? rawPassword 
         : await bcrypt.hash(rawPassword, 12);
 
-    console.log(`Creating client user: ${email} with password: ${rawPassword}`);
+    console.log(`Creating client user: ${email} with password: ${rawPassword} (Mode: ${process.env.APP_MODE})`);
     await prisma.user.upsert({
       where: { email },
       update: { passwordHash: clientPassword, role: "CLIENT" },
@@ -195,11 +200,10 @@ async function main() {
     ],
   });
 
-  await prisma.ticket.createMany({
-    data: [
       { userId: client.id, subject: "Revisión de alertas en Microsoft 365", status: "OPEN", priority: "HIGH" },
       { userId: client.id, subject: "Validación de webhook de pagos en producción", status: "PENDING", priority: "MEDIUM" },
       { userId: admin.id, subject: "Refuerzo de MFA en cuentas de administración", status: "OPEN", priority: "HIGH" },
+      { userId: mercadonaUser.id, subject: "Incidente: Fuga de credenciales en POS", status: "OPEN", priority: "CRITICAL" },
     ],
   });
 
