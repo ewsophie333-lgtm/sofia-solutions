@@ -200,6 +200,8 @@ async function main() {
     ],
   });
 
+  await prisma.ticket.createMany({
+    data: [
       { userId: client.id, subject: "Revisión de alertas en Microsoft 365", status: "OPEN", priority: "HIGH" },
       { userId: client.id, subject: "Validación de webhook de pagos en producción", status: "PENDING", priority: "MEDIUM" },
       { userId: admin.id, subject: "Refuerzo de MFA en cuentas de administración", status: "OPEN", priority: "HIGH" },
