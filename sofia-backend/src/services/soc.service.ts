@@ -1,8 +1,12 @@
 import { logger } from "../config/logger";
 import axios from "axios";
+import { metrics } from "../config/prometheus";
 
 const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL || "http://n8n:5678/webhook/alert";
 const ALERT_EMAIL = "ewsophie333@gmail.com";
+
+// Severidades que disparan notificación externa por email (n8n → Gmail)
+const EMAIL_SEVERITIES = ["CRITICAL", "HIGH", "URGENT"];
 
 const socNotifications: string[] = [];
 
@@ -12,11 +16,17 @@ export async function notifySoc(message: string, type: string = "SECURITY_EVENT"
     socNotifications.pop();
   }
 
-  logger.warn({ message: "soc_notification", detail: message });
+  logger.warn({ message: "soc_notification", detail: message, type, severity });
+
+  // Solo enviar email para severidades de impacto alto
+  if (!EMAIL_SEVERITIES.includes(severity.toUpperCase())) {
+    console.log(`[SOC] Alerta ${type} (${severity}) registrada localmente. No se envía email.`);
+    return;
+  }
 
   // Notificación externa a n8n -> Gmail
   try {
-    console.log(`[SOC] Intentando enviar alerta a n8n: ${N8N_WEBHOOK_URL} | Sev: ${severity}`);
+    console.log(`[SOC] Enviando alerta ${severity} a n8n: ${N8N_WEBHOOK_URL}`);
     const response = await axios.post(N8N_WEBHOOK_URL, {
       title: `ALERTA SOC [${severity}]: ${type}`,
       description: message,
@@ -27,6 +37,7 @@ export async function notifySoc(message: string, type: string = "SECURITY_EVENT"
       clientName: "Internal Infrastructure"
     });
     console.log(`[SOC SUCCESS] n8n respondió: ${response.status} ${response.statusText}`);
+    metrics.alertsSentTotal.inc({ destination: "GMAIL/N8N", type, severity });
   } catch (error: any) {
     console.error(`[SOC ERROR] Fallo al enviar a n8n: ${error.message}`);
     if (error.response) {

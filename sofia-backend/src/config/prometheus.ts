@@ -48,3 +48,24 @@ export const metrics = {
 metrics.activeSessions.set({ mode: "secure" }, 12);
 metrics.activeSessions.set({ mode: "vulnerable" }, 0);
 metrics.httpRequestsTotal.inc(150);
+
+// Pre-populate threat location data for Grafana map/chart
+const demoCountries = [
+  { code: "RU", count: 14 }, { code: "CN", count: 11 },
+  { code: "US", count: 8 },  { code: "BR", count: 6 },
+  { code: "DE", count: 4 },  { code: "UA", count: 3 },
+  { code: "KP", count: 2 },  { code: "FR", count: 1 }
+];
+for (const c of demoCountries) {
+  metrics.threatLocationTotal.inc({ country_code: c.code, type: "SQL Injection" }, c.count);
+}
+
+// Pre-populate attack blocked data
+metrics.attacksBlockedTotal.inc({ type: "SQLI_ATTEMPT", mode: "secure" }, 7);
+metrics.attacksBlockedTotal.inc({ type: "XSS_ATTEMPT", mode: "secure" }, 4);
+metrics.attacksBlockedTotal.inc({ type: "PATH_TRAVERSAL", mode: "secure" }, 3);
+
+// Pre-populate alert sent data
+metrics.alertsSentTotal.inc({ destination: "GMAIL/N8N", type: "SQL Injection", severity: "CRITICAL" }, 3);
+metrics.alertsSentTotal.inc({ destination: "GMAIL/N8N", type: "Brute Force", severity: "HIGH" }, 2);
+

