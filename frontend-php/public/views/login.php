@@ -1,3 +1,21 @@
+<?php
+/**
+ * LOGIN.PHP — Formulario de autenticación dual de Sofia Solutions
+ *
+ * Este archivo renderiza DOS versiones del login según la variable $mode:
+ *   - $mode = 'vulnerable' → Login V1: sin captcha, contraseñas en texto plano.
+ *     La ruta /login apunta aquí. El endpoint del backend es /api/v1/auth/login
+ *     que es vulnerable a SQL Injection, fuerza bruta, etc.
+ *
+ *   - $mode = 'secure' → Login V2: incluye checkbox captcha, requiere token CSRF.
+ *     La ruta /login-seguro apunta aquí. El endpoint es /api/v2/auth/login
+ *     con rate limiting, bcrypt, y validación estricta.
+ *
+ * La variable $mode se define en index.php según la ruta actual del usuario.
+ * El JavaScript de app.js se encarga de enviar el formulario al endpoint correcto.
+ */
+?>
+<!-- Panel izquierdo: branding corporativo con indicadores de estado -->
 <main class="auth-shell">
 
     <section class="auth-panel auth-panel-brand">
@@ -8,6 +26,7 @@
                 Inteligencia activa.<br>Operación sin interrupciones.
             </h1>
 
+            <!-- Indicadores de estado del sistema (estáticos, decorativos) -->
             <div style="display:flex;flex-direction:column;gap:10px;margin-top:38px;">
                 <div style="display:flex;align-items:center;gap:10px;">
                     <span style="width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 8px #10b981;flex-shrink:0;"></span>
@@ -21,13 +40,14 @@
         </div>
     </section>
 
-    <!-- Panel derecho del formulario -->
+    <!-- Panel derecho: formulario de login con campos de email y contraseña -->
     <section class="auth-panel auth-panel-form">
         <div class="auth-card" style="width:min(460px,100%);padding:40px 36px;border-radius:18px;background:rgba(10,14,24,0.92);border:1px solid rgba(255,255,255,0.09);box-shadow:0 8px 40px rgba(0,0,0,0.5);">
 
             <span class="card-kicker" style="color:rgba(148,163,184,0.7);">Acceso a plataforma</span>
             <h2 style="margin:12px 0 24px;font-size:1.65rem;letter-spacing:-0.03em;color:#f1f5f9;">Iniciar sesión</h2>
 
+            <!-- Formulario: app.js intercepta el submit y envía via fetch() al backend -->
             <form id="login-form" class="login-form" novalidate style="gap:14px;">
                 <label style="display:grid;gap:7px;">
                     <span style="font-size:0.82rem;font-weight:600;color:rgba(148,163,184,0.9);">Correo electrónico</span>
@@ -40,7 +60,13 @@
                            style="min-height:48px;padding:0 15px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#f1f5f9;font-size:0.9rem;">
                 </label>
 
-                <?php if (isset($mode) && $mode === 'secure'): ?>
+                <?php
+                /**
+                 * MODO SEGURO: Checkbox de verificación humana (simula hCaptcha/reCAPTCHA).
+                 * Solo se muestra en /login-seguro. Obliga al usuario a marcar "No soy un robot"
+                 * antes de enviar el formulario, como capa anti-bot.
+                 */
+                if (isset($mode) && $mode === 'secure'): ?>
                 <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid rgba(255,255,255,0.1);border-radius:10px;background:rgba(255,255,255,0.03);">
                     <input type="checkbox" id="hcaptcha" name="hcaptcha" required style="width:17px;height:17px;cursor:pointer;flex-shrink:0;">
                     <div style="flex:1;">
@@ -60,14 +86,19 @@
             </form>
 
             <div style="margin-top:20px;display:flex;justify-content:center;">
-                <a href="/" style="color:rgba(100,116,139,0.8);font-size:0.83rem;text-decoration:none;" onmouseover="this.style.color='rgba(203,213,225,0.9)'" onmouseout="this.style.color='rgba(100,116,139,0.8)'">&#8592; Volver al inicio</a>
+                <a href="/" style="color:rgba(100,116,139,0.8);font-size:0.83rem;text-decoration:none;" onmouseover="this.style.color='rgba(203,213,225,0.9)'" onmouseout="this.style.color='rgba(100,116,139,0.8)'">&larr; Volver al inicio</a>
             </div>
         </div>
     </section>
 
 </main>
 <script>
-// LIMPIEZA DE SESION AL LLEGAR AL LOGIN
+/**
+ * LIMPIEZA DE SESIÓN: Al llegar a la página de login, se eliminan
+ * los tokens JWT almacenados en localStorage. Esto asegura que
+ * no queden sesiones residuales de ataques anteriores (ej: cookie hijack).
+ */
 localStorage.removeItem('sofia_token_v1');
 localStorage.removeItem('sofia_user_v1');
 </script>
+

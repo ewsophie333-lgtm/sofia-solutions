@@ -1,7 +1,27 @@
+<?php
+/**
+ * HOME.PHP — Página de aterrizaje pública de Sofia Solutions
+ *
+ * Estructura:
+ *   1. Header con logo y navegación (renderizado con helper PHP)
+ *   2. Hero section: propuesta de valor + métricas operativas
+ *   3. Credibilidad: sectores que protegemos + servicios principales
+ *   4. Planes de suscripción (Individual, Business, Enterprise Elite)
+ *   5. Beneficios operativos + arquitectura del sistema
+ *   6. Valoraciones de clientes reales (datos inyectados desde index.php)
+ *   7. CTA de contacto + script de internacionalización ES/EN
+ *
+ * Los datos ($customerReviews, $serviceHighlights, etc.) se definen en index.php
+ * y se pasan a esta vista mediante variables PHP.
+ * Todas las salidas de usuario se sanitizan con htmlspecialchars() para prevenir XSS.
+ */
+?>
 <main class="home-shell">
+    <!-- Fondo degradado animado con CSS (definido en app.css) -->
     <div class="page-backdrop"></div>
 
-    <!-- ===== HEADER ===== -->
+    <!-- ===== HEADER: Barra de navegación superior con logo corporativo ===== -->
+    <!-- renderLogo() y renderTopNav() son funciones PHP definidas en helpers.php -->
     <header class="site-header page-container">
         <a class="brand-lockup brand-lockup-header" href="/">
             <?php renderLogo('brand-mark brand-mark-header'); ?>
@@ -15,7 +35,8 @@
         </div>
     </header>
 
-    <!-- ===== HERO ===== -->
+    <!-- ===== HERO: Sección principal con propuesta de valor y métricas clave ===== -->
+    <!-- Usa clamp() de CSS para tipografía responsive sin media queries -->
     <section class="hero-section page-container">
         <div class="hero-copy">
             <span class="eyebrow" style="color:rgba(148,163,184,0.75);">Cybersecurity &amp; Threat Intelligence</span>
@@ -80,7 +101,8 @@
         </aside>
     </section>
 
-    <!-- ===== CREDIBILITY ===== -->
+    <!-- ===== CREDIBILIDAD: Sectores protegidos (badges renderizados con bucle PHP) ===== -->
+    <!-- $sectorBadges es un array definido en index.php -->
     <section class="credibility-strip page-container" style="margin-top:32px;">
         <div class="credibility-copy">
             <span class="eyebrow">Entornos que protegemos</span>
@@ -93,7 +115,8 @@
         </div>
     </section>
 
-    <!-- ===== SERVICIOS ===== -->
+    <!-- ===== SERVICIOS: 4 líneas de servicio renderizadas dinámicamente con PHP ===== -->
+    <!-- Cada servicio viene del array $serviceHighlights definido en index.php -->
     <section class="section-shell page-container">
         <div class="section-heading">
             <span class="eyebrow">Servicios principales</span>
@@ -110,7 +133,8 @@
         </div>
     </section>
 
-    <!-- ===== PLANES ===== -->
+    <!-- ===== PLANES DE SERVICIO: 3 tiers de precio con CSS Grid responsive ===== -->
+    <!-- Cada tarjeta usa hover effects inline (onmouseover/onmouseout) para la demo -->
     <section class="section-shell page-container planes-shell" id="planes">
         <div class="section-heading" style="text-align:center;margin:0 auto 36px;max-width:640px;">
             <span class="eyebrow">Planes de Servicio</span>
@@ -227,7 +251,8 @@
         </article>
     </section>
 
-    <!-- ===== VALORACIONES ===== -->
+    <!-- ===== VALORACIONES: Testimonios de clientes (datos de $customerReviews) ===== -->
+    <!-- Los avatares se cargan desde una API externa con fallback a ui-avatars.com -->
     <section class="section-shell page-container reviews-shell">
         <div class="section-heading section-heading-inline">
             <div>
@@ -286,7 +311,12 @@
 
 
 <script>
-// ---- Language Toggle ES / EN ----
+/**
+ * INTERNACIONALIZACIÓN (i18n) — Toggle ES/EN
+ * Implementación básica client-side: cambia textos del hero section
+ * entre español e inglés sin recargar la página.
+ * En producción se usaría una librería como i18next.
+ */
 var currentLang = 'es';
 var translations = {
   hero_title_es: 'Tu Seguridad,<br>Nuestra Misión.',

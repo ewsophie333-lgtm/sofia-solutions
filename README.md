@@ -40,18 +40,20 @@ Deberías ver 7 servicios activos: `frontend`, `backend`, `postgres`, `prometheu
 
 ---
 
-## 🌐 Puntos de Acceso (Local)
+## 🌐 Puntos de Acceso (Túnel Público Serveo)
+
+> **Nota para el Jurado**: Al levantar Docker, el contenedor `tunnel` establecerá automáticamente URLs públicas seguras a través de Serveo para acceder desde cualquier parte.
 
 | Servicio | URL | Descripción |
 |---|---|---|
-| **Web Principal** | [http://localhost:8000](http://localhost:8000) | Landing page corporativa |
-| **Login Vulnerable** | [http://localhost:8000/login](http://localhost:8000/login) | Login V1 (sin protecciones) |
-| **Login Seguro** | [http://localhost:8000/login-seguro](http://localhost:8000/login-seguro) | Login V2 (bcrypt + captcha) |
-| **Dashboard Cliente** | [http://localhost:8000/dashboard](http://localhost:8000/dashboard) | Panel ejecutivo del cliente |
-| **Panel SOC Admin** | [http://localhost:8000/admin](http://localhost:8000/admin) | Centro de operaciones de seguridad |
-| **Consola de Auditoría** | [http://localhost:8000/consola](http://localhost:8000/consola) | Framework de ataques visual |
-| **Grafana Metrics** | [http://localhost:3000](http://localhost:3000) | Métricas en tiempo real (admin/admin) |
-| **n8n Workflows** | [http://localhost:5678](http://localhost:5678) | Automatización de alertas |
+| **Web Principal** | [https://sofia-solutions.serveo.net](https://sofia-solutions.serveo.net) | Landing page corporativa |
+| **Login Vulnerable** | [https://sofia-solutions.serveo.net/login](https://sofia-solutions.serveo.net/login) | Login V1 (sin protecciones) |
+| **Login Seguro** | [https://sofia-solutions.serveo.net/login-seguro](https://sofia-solutions.serveo.net/login-seguro) | Login V2 (bcrypt + captcha) |
+| **Dashboard Cliente** | [https://sofia-solutions.serveo.net/dashboard](https://sofia-solutions.serveo.net/dashboard) | Panel ejecutivo del cliente |
+| **Panel SOC Admin** | [https://sofia-solutions.serveo.net/admin](https://sofia-solutions.serveo.net/admin) | Centro de operaciones de seguridad |
+| **Consola de Auditoría** | [https://sofia-solutions.serveo.net/consola](https://sofia-solutions.serveo.net/consola) | Framework de ataques visual |
+| **Grafana Metrics** | (interno) [http://localhost:3000](http://localhost:3000) | Métricas en tiempo real (admin/admin) |
+| **n8n Workflows** | [https://sofia-n8n.serveo.net](https://sofia-n8n.serveo.net) | Automatización de alertas |
 | **API Docs** | [http://localhost:8001/docs](http://localhost:8001/docs) | Swagger / OpenAPI |
 | **Database GUI** | [http://localhost:5555](http://localhost:5555) | Prisma Studio (ejecutar script) |
 
@@ -143,15 +145,15 @@ Framework interactivo por terminal con los mismos ataques.
 ```
 ┌─────────────┐    ┌──────────────┐    ┌───────────┐
 │  Frontend   │───▶│   Backend    │───▶│ PostgreSQL│
-│  PHP/Apache │    │ Node+Express │    │   15-alp  │
-│  :8000      │    │ :8001        │    │   :5432   │
+│ sofia-      │    │ Node+Express │    │   15-alp  │
+│ solutions...│    │ :8001        │    │   :5432   │
 └─────────────┘    └──────┬───────┘    └───────────┘
                           │
               ┌───────────┼───────────┐
               ▼           ▼           ▼
         ┌──────────┐ ┌────────┐ ┌─────────┐
         │Prometheus│ │  n8n   │ │ Grafana │
-        │  :9090   │ │ :5678  │ │  :3000  │
+        │  :9090   │ │sofia-n8│ │  :3000  │
         └──────────┘ └───┬────┘ └─────────┘
                          │
                          ▼

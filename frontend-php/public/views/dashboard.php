@@ -1,15 +1,16 @@
 <?php 
 /**
- * SOFIA SOLUTIONS - Client Dashboard
- * Principal interface for corporate clients to manage their security posture.
+ * SOFIA SOLUTIONS - Panel de Cliente (Dashboard)
+ * Interfaz principal para que los clientes corporativos gestionen su postura de seguridad.
  * 
- * This file implements a single-page application (SPA) architecture using 
- * vanilla JavaScript to communicate with the Node.js backend.
+ * Este archivo implementa una arquitectura SPA (Single Page Application) usando
+ * JavaScript vanilla para comunicarse con el backend de Node.js.
+ * Demuestra la separación de privilegios al bloquear el acceso a roles ADMIN.
  */
 $activeNav = 'dashboard'; 
 ?>
 
-<!-- Security Check: Redirect non-client roles -->
+<!-- Control de Acceso: Redirige a los roles que no son CLIENTE -->
 <script>
 (function(){
     const u = JSON.parse(localStorage.getItem('sofia_user_v1') || '{}');
@@ -21,7 +22,7 @@ $activeNav = 'dashboard';
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-/* CSS Implementation for specialized dashboard components */
+/* Implementación CSS para componentes especializados del dashboard */
 .pay-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); z-index:9999; align-items:center; justify-content:center; }
 .pay-card { background:#0f0c1d; border:1px solid rgba(255,255,255,0.08); border-radius:20px; padding:40px; width:min(480px, 90vw); }
 
@@ -295,7 +296,8 @@ async function sendSOS() {
 
 <script>
 /**
- * UI INTERACTION LOGIC
+ * LÓGICA DE INTERACCIÓN DE LA INTERFAZ (UI)
+ * Gestiona la simulación de pagos, apertura de tickets y cambio de estado visual.
  */
 function openPayment(plan, amount) {
     const a = parseInt(amount), tax = Math.round(a*0.21), total = a+tax;
@@ -370,7 +372,8 @@ function filterTickets(status) {
 }
 
 /**
- * BACKEND INTEGRATION
+ * INTEGRACIÓN CON EL BACKEND API
+ * Gestiona la autenticación JWT y las peticiones asíncronas para métricas.
  */
 const API = window.SOFIA_CONFIG?.apiBase || '';
 const TOKEN = () => localStorage.getItem('sofia_token_v1');

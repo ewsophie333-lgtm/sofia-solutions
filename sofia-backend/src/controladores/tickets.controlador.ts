@@ -1,0 +1,87 @@
+/**
+ * SOFIA SOLUTIONS - Controlador de Helpdesk y Tickets
+ * 
+ * Gestiona el ciclo de vida de las solicitudes de soporte y reportes de incidentes.
+ * Implementa lógica de aislamiento de datos basada en roles y mensajería en tiempo real.
+ */
+
+import type { Request, Response } from "express";
+import { prisma } from "../configuracion/prisma";
+import { ApiError } from "../utilidades/errores";
+
+/**
+ * Lista todos los tickets asociados con el contexto de sesión actual.
+ * Los administradores tienen acceso global; los clientes están restringidos a su userId.
+ */
+export async function listTickets(req: Request, res: Response) {
+  const where = req.user?.role === "ADMIN" ? {} : { userId: req.user?.id };
+  const tickets = await prisma.ticket.findMany({
+    where,
+    include: { 
+      messages: true,
+      user: {
+        select: {
+          email: true,
+          role: true
+        }
+      }
+    },
+    orderBy: { createdAt: "desc" }
+  });
+
+  res.json(tickets);
+}
+
+/**
+ * Capa de persistencia para nuevas solicitudes de soporte.
+ */
+export async function createTicket(req: Request, res: Response) {
+  const { subject, status, priority } = req.body;
+
+  const ticket = await prisma.ticket.create({
+    data: {
+      userId: req.user!.id,
+      subject,
+      status: status ?? "OPEN",
+      priority: priority ?? "MEDIUM"
+    }
+  });
+
+  res.status(201).json(ticket);
+}
+
+/**
+ * Lógica de Recuperación de Hilos.
+ * Obtiene los mensajes para un contenedor de incidentes específico.
+ */
+export async function listMessages(req: Request, res: Response) {
+  const ticketId = Number(req.params.id);
+  const messages = await prisma.ticketMessage.findMany({
+    where: { ticketId },
+    orderBy: { createdAt: "asc" }
+  });
+
+  res.json(messages);
+}
+
+/**
+ * Manejador de Comunicación Multi-parte.
+ */
+export async function createMessage(req: Request, res: Response) {
+  const ticketId = Number(req.params.id);
+  const ticket = await prisma.ticket.findUnique({ where: { id: ticketId } });
+  
+  if (!ticket) {
+    throw new ApiError(404, "Ticket objetivo no encontrado en el registro persistente");
+  }
+
+  const message = await prisma.ticketMessage.create({
+    data: {
+      ticketId,
+      senderId: req.user!.id,
+      content: req.body.content
+    }
+  });
+
+  res.status(201).json(message);
+}

@@ -1,15 +1,15 @@
 <?php 
 /**
- * SOFIA SOLUTIONS - Administrative Operations Center (SOC)
- * Central command center for multi-tenant security monitoring.
+ * SOFIA SOLUTIONS - Centro de Operaciones Administrativo (SOC)
+ * Centro de mando central para la monitorización de seguridad multi-cliente (multi-tenant).
  * 
- * This module aggregates telemetry from all clients, embeds Grafana metrics,
- * and provides a live administrative console for incident response.
+ * Este módulo agrega la telemetría de todos los clientes, integra métricas de Grafana,
+ * y proporciona una consola administrativa en vivo para la respuesta a incidentes (IR).
  */
 $activeNav = 'admin-dashboard'; 
 ?>
 
-<!-- Security Guard: Ensure only ADMIN roles can access this view -->
+<!-- Control de Acceso: Asegura que solo el rol ADMIN pueda acceder a esta vista -->
 <script>
 (function(){
     const u = JSON.parse(localStorage.getItem('sofia_user_v1') || '{}');
@@ -325,14 +325,16 @@ $activeNav = 'admin-dashboard';
 
 <script>
 /**
- * CORE ADMINISTRATIVE LOGIC
+ * LÓGICA ADMINISTRATIVA CENTRAL
+ * Maneja las peticiones a la API protegida por JWT para administradores.
  */
 const API    = window.SOFIA_CONFIG?.apiBase || '';
 const TOKEN  = () => localStorage.getItem('sofia_token_v1');
 const authHdr = () => ({ Authorization: 'Bearer ' + TOKEN() });
 
 /**
- * SOS EMERGENCY LISTENER (Simulated Real-time)
+ * LISTENER DE EMERGENCIAS SOS (Tiempo Real Simulado)
+ * Escucha peticiones urgentes de los clientes a través del canal de localStorage.
  */
 function checkSOS() {
     const sos = localStorage.getItem('sofia_sos_request');
@@ -373,7 +375,8 @@ function handleSOS() {
 }
 
 /**
- * TELEMETRY & TICKET ORCHESTRATION
+ * ORQUESTACIÓN DE TELEMETRÍA Y TICKETS
+ * Obtiene el resumen global y la lista de tickets del backend en TypeScript.
  */
 let adminTickets = [];
 
@@ -456,7 +459,8 @@ function filterAdminTickets(status) {
 loadAdmin();
 
 /**
- * DATA VISUALIZATION
+ * VISUALIZACIÓN DE DATOS (Chart.js)
+ * Renderiza gráficos interactivos para la defensa de vectores de ataque.
  */
 function renderCharts(vectors, dist) {
     const commonLineOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false, min: 0 } }, elements: { point: { radius: 0 } } };
@@ -468,7 +472,8 @@ function renderCharts(vectors, dist) {
 }
 
 /**
- * INCIDENT RESPONSE (IR) VISUAL LOGIC
+ * LÓGICA VISUAL DE RESPUESTA A INCIDENTES (IR)
+ * Proporciona un simulador de consola para la mitigación activa en la demo.
  */
 const mockFeed = {
     global: [

@@ -1,8 +1,26 @@
 <?php
 declare(strict_types=1);
 
-require __DIR__ . '/includes/helpers.php';
+/**
+ * INDEX.PHP — Router principal y punto de entrada de la aplicación web
+ *
+ * Este archivo actúa como "Front Controller": todas las peticiones HTTP pasan por
+ * aquí gracias a la configuración de Apache (.htaccess o vhost). Según la URL
+ * solicitada, carga la vista PHP correspondiente.
+ *
+ * Responsabilidades:
+ *   1. Definir las rutas disponibles y sus títulos SEO.
+ *   2. Determinar el modo de login (vulnerable / secure) según la ruta.
+ *   3. Inyectar datos de contexto (reseñas de clientes, servicios, beneficios)
+ *      que las vistas consumen mediante variables PHP.
+ *   4. Renderizar el layout HTML base (head, body, scripts) e incluir la vista.
+ *
+ * El modo de seguridad de la aplicación se controla con la variable de entorno
+ * APP_MODE en docker-compose.yml. El frontend usa la ruta (/login vs /login-seguro)
+ * para decidir a qué endpoint del backend enviar las credenciales.
+ */
 
+require __DIR__ . '/includes/helpers.php';
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 
 // Admin route is handled by the router below — no redirect needed

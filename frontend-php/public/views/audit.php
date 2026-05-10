@@ -1,6 +1,6 @@
 <?php $activeNav = 'audit'; ?>
 <style>
-/* Reset local para modo inmersivo */
+/* Estilos locales para el modo inmersivo del framework de auditoría */
 .audit-container {
     background: #050505;
     min-height: 100vh;

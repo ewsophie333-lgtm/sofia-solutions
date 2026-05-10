@@ -1,3 +1,18 @@
+<?php
+/**
+ * AI-ASSISTANT.PHP — Chatbot "Nova AI" integrado en todas las páginas
+ *
+ * Este componente añade un asistente virtual flotante (burbuja en esquina inferior derecha).
+ * NO usa APIs externas (ni OpenAI, ni GPT). Las respuestas provienen de un diccionario
+ * local (KNOWLEDGE_BASE) que se busca por palabras clave en el mensaje del usuario.
+ *
+ * Propósito: Demostrar la integración de un chatbot de soporte al cliente como valor
+ * añadido de la plataforma de ciberseguridad. En producción se conectaría a una API
+ * de NLP, pero para el proyecto académico funciona como FAQ interactivo.
+ *
+ * Tecnologías usadas: CSS puro para estilos + JavaScript vanilla para la lógica.
+ */
+?>
 <style>
 .ai-bubble {
     position: fixed; bottom: 30px; right: 30px; z-index: 10000;

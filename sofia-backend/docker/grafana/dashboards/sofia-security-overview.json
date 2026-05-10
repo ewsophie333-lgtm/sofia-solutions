@@ -561,62 +561,62 @@
       },
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "Attacks",
-            "axisPlacement": "auto",
-            "fillOpacity": 80,
-            "gradientMode": "scheme",
-            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
-            "lineWidth": 1,
-            "scaleDistribution": { "type": "linear" },
-            "thresholdsStyle": { "mode": "off" }
-          },
+          "color": { "mode": "thresholds" },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "yellow", "value": 5 },
+              { "color": "yellow", "value": null },
+              { "color": "orange", "value": 5 },
               { "color": "red", "value": 10 }
             ]
           }
         },
         "overrides": []
       },
-      "gridPos": {
-        "h": 12,
-        "w": 14,
-        "x": 0,
-        "y": 32
-      },
+      "gridPos": { "h": 12, "w": 14, "x": 0, "y": 32 },
       "id": 10,
       "options": {
-        "barRadius": 0.1,
-        "barWidth": 0.8,
-        "groupWidth": 0.7,
-        "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true },
-        "orientation": "horizontal",
-        "showValue": "always",
-        "stacking": "none",
-        "tooltip": { "mode": "single", "sort": "none" },
-        "xTickLabelRotation": 0
+        "basemap": { "config": {}, "type": "default" },
+        "controls": { "showAttribution": true, "showDebug": false, "showZoom": true },
+        "layers": [
+          {
+            "config": {
+              "showLegend": true,
+              "style": {
+                "color": { "field": "Value", "fixed": "red" },
+                "opacity": 0.7,
+                "rotation": { "fixed": 0 },
+                "size": { "field": "Value", "min": 4, "max": 18 },
+                "symbol": { "fixed": "circle" }
+              }
+            },
+            "location": {
+              "latitude": "latitude",
+              "longitude": "longitude",
+              "mode": "coords"
+            },
+            "name": "Attack Origins",
+            "type": "markers"
+          }
+        ],
+        "tooltip": { "mode": "details" },
+        "view": { "id": "coords", "lat": 30, "lon": 10, "zoom": 1.5 }
       },
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "sofia-prometheus" },
           "editorMode": "code",
-          "expr": "sum(threat_location_total) by (country_code)",
-          "legendFormat": "{{country_code}}",
+          "exemplar": false,
+          "expr": "threat_geo_attacks",
+          "format": "table",
           "instant": true,
+          "legendFormat": "{{country_code}}",
+          "range": false,
           "refId": "A"
         }
       ],
-      "title": "Attack Origins by Country (Real-time)",
-      "type": "barchart"
+      "title": "Threat Intelligence Map (Real-time)",
+      "type": "geomap"
     },
     {
       "datasource": {
