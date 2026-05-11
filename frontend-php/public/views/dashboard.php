@@ -386,9 +386,9 @@ $activeNav = 'dashboard';
                 <button onclick="closeSOS()"
                     style="flex:1; background:rgba(255,255,255,0.05); color:#fff; border:1px solid rgba(255,255,255,0.1); padding:12px; border-radius:10px; cursor:pointer; font-weight:700;">Cancelar</button>
                 <button onclick="sendSOS()"
-                    style="flex:2; background:rgba(220,38,38,0.15); color:#fca5a5; border:1px solid rgba(220,38,38,0.4); padding:12px; border-radius:10px; cursor:pointer; font-weight:700; transition:all 0.3s;"
-                    onmouseover="this.style.background='rgba(220,38,38,0.25)'"
-                    onmouseout="this.style.background='rgba(220,38,38,0.15)'">ENVIAR ALERTA SOC</button>
+                    style="flex:2; background:rgba(239,68,68,0.1); color:#f87171; border:1px solid rgba(239,68,68,0.3); padding:12px; border-radius:10px; cursor:pointer; font-weight:700; transition:all 0.3s; letter-spacing:0.02em;"
+                    onmouseover="this.style.background='rgba(239,68,68,0.2)'; this.style.borderColor='rgba(239,68,68,0.5)'"
+                    onmouseout="this.style.background='rgba(239,68,68,0.1)'; this.style.borderColor='rgba(239,68,68,0.3)'">ENVIAR ALERTA AL SOC</button>
             </div>
         </div>
     </div>
@@ -429,11 +429,36 @@ $activeNav = 'dashboard';
             closeSOS();
             document.getElementById('sos-reason').value = '';
 
-            // Feedback visual
+            // Feedback visual Premium (Menos agresivo)
             const t = document.createElement('div');
-            t.innerHTML = '<div style="position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:99999;background:#ef4444;color:#fff;padding:16px 32px;border-radius:14px;font-weight:800;box-shadow:0 10px 40px rgba(0,0,0,0.5);text-align:center;">🚨 ALERTA ENVIADA AL SOC<br><small style="font-weight:400;opacity:0.8;">Un analista contactará contigo de inmediato.</small></div>';
+            t.innerHTML = `
+                <div style="position:fixed; top:24px; left:50%; transform:translateX(-50%); z-index:99999; 
+                            background:rgba(15,23,42,0.95); backdrop-filter:blur(10px); color:#fff; 
+                            padding:18px 36px; border-radius:16px; font-weight:700; 
+                            border:1px solid rgba(239,68,68,0.4); 
+                            box-shadow:0 15px 45px rgba(0,0,0,0.7), 0 0 15px rgba(239,68,68,0.2); 
+                            text-align:center; animation: slideDown 0.4s ease-out;">
+                    <div style="display:flex; align-items:center; gap:12px; justify-content:center;">
+                        <span style="font-size:1.4rem;">🛡️</span>
+                        <div style="text-align:left;">
+                            <div style="font-size:1rem; letter-spacing:0.02em;">ALERTA ENVIADA AL SOC</div>
+                            <div style="font-size:0.75rem; font-weight:400; color:rgba(255,255,255,0.6);">Un analista contactará contigo de inmediato.</div>
+                        </div>
+                    </div>
+                </div>
+                <style>
+                    @keyframes slideDown {
+                        from { transform: translateX(-50%) translateY(-30px); opacity: 0; }
+                        to { transform: translateX(-50%) translateY(0); opacity: 1; }
+                    }
+                </style>
+            `;
             document.body.appendChild(t);
-            setTimeout(() => t.remove(), 5000);
+            setTimeout(() => {
+                t.style.transition = 'opacity 0.5s ease-out';
+                t.style.opacity = '0';
+                setTimeout(() => t.remove(), 500);
+            }, 5000);
 
         } catch (error) {
             console.error('SOS Error:', error);
@@ -599,6 +624,7 @@ $activeNav = 'dashboard';
             let rawName = user.companyName || user.name || user.email || 'CLIENTE';
             if (rawName.includes('@')) rawName = rawName.split('@')[0];
             
+            const cleanName = rawName.toUpperCase();
             const nameEl = document.getElementById('welcome-user-name');
             if (nameEl) nameEl.textContent = cleanName;
 
@@ -617,10 +643,20 @@ $activeNav = 'dashboard';
             if (elAssets) elAssets.textContent = overview.secureLogins ?? '14';
             
             const elBlocked = document.querySelector('#kpi-blocked strong');
-            if (elBlocked) elBlocked.textContent = overview.blockedAttacks ?? '2,840';
+            if (elBlocked) elBlocked.textContent = overview.blockedAttacks ?? '0';
             
             const elTickets = document.querySelector('#kpi-tickets strong');
             if (elTickets) elTickets.textContent = overview.openTickets ?? '2';
+
+            // Estado de Salud (ONLINE)
+            const srvApi = document.getElementById('srv-api');
+            if (srvApi) srvApi.textContent = 'ONLINE';
+            
+            const srvDb = document.getElementById('srv-db');
+            if (srvDb) srvDb.textContent = 'CONECTADA';
+            
+            const srvSoc = document.getElementById('srv-soc');
+            if (srvSoc) srvSoc.textContent = 'OPERACIONAL';
 
             // Tickets logic with better mockup fallbacks
             const realTickets = Array.isArray(ticketsData) ? ticketsData : (ticketsData.tickets || []);

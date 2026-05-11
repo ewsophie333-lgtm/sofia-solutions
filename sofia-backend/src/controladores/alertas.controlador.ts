@@ -30,49 +30,42 @@ export async function createUrgentAlert(req: Request, res: Response) {
       userId: req.user?.id,
       title,
       description,
-      severity,
+      severity: severity.toUpperCase(),
       status: "ACTIVE",
       notifiedAt: new Date(),
     },
   });
 
-  // Enrutamiento de Notificaciones Críticas (Integración con Flujo de Trabajo Externo)
-  if (["URGENT", "CRITICAL"].includes(severity.toUpperCase())) {
-    try {
-      // Obtener información del cliente del usuario para incluirla en la alerta
-      const userWithCustomer = req.user?.id ? await prisma.user.findUnique({
-        where: { id: req.user.id },
-        include: { customer: true }
-      }) : null;
+  // Notificación externa (SOS / n8n)
+  if (["URGENT", "CRITICAL"].includes(alert.severity)) {
+    console.log(`[SOS] Iniciando envío de alerta crítica ${alert.id} a n8n...`);
+    
+    // Obtenemos datos del cliente para n8n
+    const userWithCustomer = req.user?.id ? await prisma.user.findUnique({
+      where: { id: req.user.id },
+      include: { customer: true }
+    }) : null;
 
-      await axios.post(N8N_WEBHOOK_URL, {
-        alertId: alert.id,
-        title: alert.title,
-        description: alert.description,
-        severity: alert.severity,
-        timestamp: alert.notifiedAt,
-        recipientEmail: ALERT_EMAIL,
-        userName: req.user?.email || "System-Monitor",
-        clientName: userWithCustomer?.customer?.name || "Global / Internal"
-      });
-
-      // Registrar métrica para el dashboard de Grafana
-      metrics.alertsSentTotal.inc({ 
-        destination: "GMAIL/N8N", 
-        type: alert.title.includes("SQL") ? "SQL_INJECTION" : "GENERAL_ALERT",
-        severity: alert.severity 
-      });
-    } catch (error: any) {
-      console.error(`[ALERTA ERROR] Error al entornoiar alerta ${alert.id} a n8n (${N8N_WEBHOOK_URL}): ${error.message}`);
-      if (error.response) {
-        console.error(`[ALERTA ERROR] Respuesta de n8n: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
-      }
-    }
+    axios.post(N8N_WEBHOOK_URL, {
+      alertId: alert.id,
+      title: alert.title,
+      description: alert.description,
+      severity: alert.severity,
+      timestamp: alert.notifiedAt,
+      recipientEmail: ALERT_EMAIL,
+      userName: req.user?.email || "User-Demo",
+      clientName: userWithCustomer?.customer?.name || "Cliente Sofia Solutions"
+    }).then(() => {
+      console.log(`[SOS SUCCESS] Alerta ${alert.id} entregada correctamente a n8n.`);
+    }).catch((err) => {
+      console.error(`[SOS FAILURE] Alerta ${alert.id} no pudo entregarse a n8n: ${err.message}`);
+      console.error(`[SOS TIPS] Verifica que el flujo en n8n esté ACTIVO y que la URL ${N8N_WEBHOOK_URL} sea accesible.`);
+    });
   }
 
   res.status(201).json({
     ...alert,
-    webhookSent: ["URGENT", "CRITICAL"].includes(severity.toUpperCase()),
+    webhookSent: ["URGENT", "CRITICAL"].includes(alert.severity),
   });
 }
 
