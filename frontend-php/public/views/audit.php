@@ -487,7 +487,6 @@
                     <option value="' UNION SELECT 'admin','hash',NULL,NULL,NULL--">Union: Extracción de Columnas</option>
                     <option value="' UNION SELECT 'bank', iban, cc_number FROM customer_billing--">Union: Exfiltrar Datos Bancarios (PII)</option>
                     <option value="' UNION SELECT 'credentials', email, password FROM users--">Union: Exfiltrar Contraseñas de Usuarios</option>
-                    <option value="' AND (SELECT 1 FROM (SELECT(SLEEP(5)))a)--">Blind: Time-Based (5s Delay)</option>
                  </select>`,
             run: runSQLi
         },
@@ -501,7 +500,6 @@
                  <label class="cfg-label">DICCIONARIO</label>
                  <select class="cfg-input" id="brute-dict">
                     <option value="rockyou_top20">RockYou (Top 20 - Demo)</option>
-                    <option value="common">Contraseñas Corporativas</option>
                  </select>
                  <label class="cfg-label">USUARIO OBJETIVO</label>
                  <input class="cfg-input" id="brute-user" value="admin@sofia.local">`,
@@ -533,7 +531,6 @@
                  <select class="cfg-input" id="xss-action">
                     <option value="cookie">Robo de Cookies (Session Hijacking)</option>
                     <option value="redirect">Redirección a Phishing (Evil Proxy)</option>
-                    <option value="alert">Prueba de Concepto (Alert)</option>
                  </select>`,
             run: runXSS
         },
@@ -714,11 +711,15 @@
             addEvidence('Stolen Cookies', fakeCookie, 'green');
             await delay(1000);
             runCookieHijack();
-        } else if (action === 'alert') {
-            alert('XSS Reflejado: Dominio sofia-solutions.local comprometido.');
         } else {
-            tLog(`[INFO] JavaScript redirect triggered: window.location.href`, 'cyan');
-            addEvidence('Redirección Forzada', 'Target: https://evil-sofia.attacker.com/login');
+            tLog(`[INFO] Inyectando payload iframe/redirect en el DOM...`, 'dim');
+            await delay(600);
+            tLog(`[SUCCESS] Víctima interceptada por el portal de Phishing (Evilginx2)`, 'green');
+            addEvidence('Evil Proxy Activado', 'Target: https://login-sofia-solutions.attacker.com\nCredenciales capturadas:\nUser: admin@sofia.local\nPass: admin123', 'red');
+            const res = tLog(`[*] Acción: `, 'cyan');
+            addAction(res, 'Ver credenciales robadas', '<path d="M12 2L2 7l10 5 10-5-10-5z"></path>', () => {
+                alert("Simulación: Has exfiltrado con éxito las credenciales en texto plano desde el proxy inverso.");
+            });
         }
     }
 
