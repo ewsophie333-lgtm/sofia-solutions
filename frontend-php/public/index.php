@@ -82,7 +82,7 @@ $operationalBenefits = [
             loginMode: "<?= htmlspecialchars($mode, ENT_QUOTES, 'UTF-8') ?>"
         };
     </script>
-    <script src="/assets/app.js?v=1.0.6"></script>
+    <script src="/assets/app.js?v=final"></script>
     <?php include __DIR__ . '/includes/ai-assistant.php'; ?>
 </body>
 

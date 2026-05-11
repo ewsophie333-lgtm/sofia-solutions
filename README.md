@@ -50,7 +50,17 @@ Sofia Solutions está optimizado para ejecutarse en la nube de GitHub en segundo
 4. Lanza un ataque **XSS de Robo de Cookies**. Se abrirá un simulador de **Burp Suite**. Modifica el rol a `ADMIN` para demostrar la **Escalada de Privilegios**.
 
 ### 2. Fase Defensiva (Modo Seguro)
-1. Activa el **Modo Seguro** con `scripts/ACTIVAR-MODO-SEGURO.bat`.
+1. Activa el **Modo Seguro** con `scripts/ACTIVAR-MODO-SEGURO.bat`: Reactiva todas las capas de protección (Bcrypt, WAF, JWT stricts). Úsalo para demostrar la eficacia de las soluciones de Sofia Solutions frente a los mismos ataques realizados anteriormente.
+
+### 5. Post-Explotación: Sofia Kit Auditor
+Dentro de la carpeta `scripts/`, se encuentra el **Sofia Kit Auditor** (`sofia-audit-framework.py`). Esta herramienta permite:
+- **Persistencia**: Mantener el acceso al sistema tras el compromiso inicial.
+- **Exfiltración**: Automatizar la descarga de datos sensibles de la base de datos.
+- **Auditoría Silenciosa**: Ejecutar comandos en el backend sin disparar alertas inmediatas de nivel 1.
+- **Lanzador**: Puedes usar `lanzar-rootkit.bat` para iniciar el entorno de persistencia rápidamente.
+
+---
+
 2. Repite los ataques anteriores. El **WAF Shield** bloqueará las inyecciones y el **Rate Limiting** cortará la conexión tras 3 intentos.
 3. Explica el uso de **Bcrypt (12 rondas)** y la validación estricta de **Tokens JWT**.
 
