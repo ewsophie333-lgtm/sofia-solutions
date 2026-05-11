@@ -1,6 +1,6 @@
 /**
- * SOFIA SOLUTIONS - Administrative API Routes
- * Defines protected endpoints for system-wide monitoring and SOC management.
+ * SOFIA SOLUTIONS - Rutas de API Administrativa
+ * Define endpoints protegidos para monitorización a nivel de sistema y gestión SOC.
  */
 
 import { Router } from "express";
@@ -11,23 +11,23 @@ import { asyncHandler } from "../utilidades/http";
 const router = Router();
 
 /**
- * Global protection: All admin routes require a valid JWT session.
+ * Protección global: Todas las rutas de administración requieren una sesión JWT válida.
  */
 router.use(requireAuth);
 
 /**
- * General summary: Accessible by all authenticated users (Client/Admin).
- * Note: The controller internally filters data based on the user's role.
+ * Resumen general: Accesible por todos los usuarios autenticados (Cliente/Admin).
+ * Nota: El controlador filtra internamente los datos según el rol del usuario.
  */
 router.get("/overview", asyncHandler(overview));
 
 /**
- * SOC Dashboard Feed: Strictly reserved for users with ADMIN privileges.
+ * Feed del Dashboard SOC: Estrictamente reservado para usuarios con privilegios ADMIN.
  */
 router.get("/security-monitor", requireRole("ADMIN"), asyncHandler(securityMonitor));
 
 /**
- * Raw Event Log: Strictly reserved for users with ADMIN privileges.
+ * Registro de Eventos en Crudo: Estrictamente reservado para usuarios con privilegios ADMIN.
  */
 router.get("/security-events", requireRole("ADMIN"), asyncHandler(securityEvents));
 

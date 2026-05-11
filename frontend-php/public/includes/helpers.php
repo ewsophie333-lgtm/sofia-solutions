@@ -1,20 +1,6 @@
 <?php
 declare(strict_types=1);
 
-/**
- * HELPERS.PHP — Funciones reutilizables de renderizado para todas las vistas
- *
- * Contiene 3 funciones principales:
- *   - renderLogo(): Renderiza el logotipo SVG/PNG de la empresa.
- *   - renderTopNav(): Barra de navegación pública (Home, Login).
- *   - renderAppNav(): Sidebar de la aplicación autenticada con control de acceso
- *     basado en roles (ADMIN/CLIENT). El filtrado se hace client-side con
- *     JavaScript leyendo el rol del localStorage (JWT decodificado).
- *
- * Nota de seguridad: Todas las salidas usan htmlspecialchars() para prevenir XSS.
- * El control de acceso real se hace en el backend (middleware JWT), aquí solo se
- * oculta la UI para mejor UX.
- */
 function renderLogo(string $class = 'brand-mark'): void
 {
     ?>

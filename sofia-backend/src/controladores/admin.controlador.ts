@@ -102,7 +102,7 @@ export async function overview(req: Request & { user?: { id: number; role: strin
 }
 
 /**
- * Access Point for raw Security Event Registry.
+ * Punto de Acceso para el Registro de Eventos de Seguridad en bruto.
  */
 export async function securityEvents(_req: Request, res: Response) {
   const events = await prisma.securityEvent.findMany({ 
@@ -113,9 +113,9 @@ export async function securityEvents(_req: Request, res: Response) {
 }
 
 /**
- * SOC Live Telemetry Engine.
- * This is the project's 'Crown Jewel'. It performs multi-dimensional data
- * analysis to generate real-time metrics for the Security Operations Center.
+ * Motor de Telemetría SOC en Vivo.
+ * Esta es la pieza central del proyecto. Realiza análisis multidimensionales de
+ * datos para generar métricas en tiempo real para el Centro de Operaciones de Seguridad.
  */
 export async function securityMonitor(_req: Request, res: Response) {
   // Obtención de datos en paralelo para minimizar la latencia en entornos de alto tráfico

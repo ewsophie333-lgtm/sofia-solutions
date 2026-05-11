@@ -72,8 +72,8 @@ export async function register(req: Request, res: Response) {
 }
 
 /**
- * Secure Authentication Engine.
- * Implements password validation and session token generation.
+ * Motor de Autenticación Segura.
+ * Implementa validación de contraseñas y generación de tokens de sesión.
  */
 export async function login(req: Request, res: Response) {
   const { email, password } = req.body;
@@ -83,7 +83,7 @@ export async function login(req: Request, res: Response) {
   if (!user || !(await verifyPassword(password, user.passwordHash, "secure"))) {
     metrics.loginAttemptsTotal.inc({ modo: "secure", result: "failed" });
     
-    // Auto-Alert on Critical Failure
+    // Alerta automática por fallo crítico
     await prisma.alert.create({
       data: {
         title: "Intento de Acceso No Autorizado",
@@ -95,17 +95,17 @@ export async function login(req: Request, res: Response) {
 
     try {
       await axios.post(N8N_WEBHOOK_URL, {
-        title: "ALERTA DE SEGURIDAD: Brute Force",
-        description: `Se ha detectado un intento de acceso fallido para ${email}. El sistema ha bloqueado la peticion.`,
+        title: "ALERTA DE SEGURIDAD: Fuerza Bruta",
+        description: `Se ha detectado un intento de acceso fallido para ${email}. El sistema ha bloqueado la petición.`,
         severity: "URGENT",
         recipientEmail: "ewsophie333@gmail.com",
         clientName: "S. SOLUTIONS MONITOR"
       });
     } catch(e: any) {
-      console.error(`[ALERTA ERROR] No se pudo entornoiar webhook a n8n: ${e.message}`);
+      console.error(`[ALERTA ERROR] No se pudo enviar webhook a n8n: ${e.message}`);
     }
 
-    throw new ApiError(401, "Invalid identity credentials");
+    throw new ApiError(401, "Credenciales de identidad inválidas");
   }
 
   metrics.loginAttemptsTotal.inc({ modo: "secure", result: "success" });
@@ -145,27 +145,27 @@ export async function login(req: Request, res: Response) {
 }
 
 /**
- * V1 Authentication Engine (Vulnerable Mode).
- * Demonstrates insecure identity validation (plaintext comparison simulation).
+ * Motor de Autenticación V1 (Modo Vulnerable).
+ * Demuestra validación de identidad insegura (simulación de comparación de texto plano).
  */
 export async function loginV1(req: Request, res: Response) {
   const { email, password } = req.body;
 
-  // VULNERABLE: Direct string concatenation to allow SQL Injection bypass
-  // In a truly vulnerable system, the password check is also part of the query
+  // VULNERABLE: Concatenación directa de strings para permitir evasión por Inyección SQL
+  // En un sistema realmente vulnerable, la comprobación de clave también forma parte de la consulta
   const users: any[] = await prisma.$queryRawUnsafe(
     `SELECT * FROM "User" WHERE "email" = '${email}' AND "passwordHash" IS NOT NULL`
   );
   
   const user = users[0];
 
-  // For simulation: If email contains an injection like ' OR 1=1 --
-  // we might want to skip the password check if we found a user
+  // Para simulación: Si el email contiene una inyección como ' OR 1=1 --
+  // podríamos querer saltar la comprobación de contraseña si encontramos un usuario
   const isInjection = email.includes("'") || email.includes("--");
 
   if (!user || (!isInjection && !(await verifyPassword(password, user.passwordHash, "vulnerable")))) {
     metrics.loginAttemptsTotal.inc({ modo: "vulnerable", result: "failed" });
-    throw new ApiError(401, "Invalid identity credentials (Vulnerable Mode)");
+    throw new ApiError(401, "Credenciales de identidad inválidas (Modo Vulnerable)");
   }
 
   metrics.loginAttemptsTotal.inc({ modo: "vulnerable", result: "success" });
@@ -205,18 +205,18 @@ export async function loginV1(req: Request, res: Response) {
 }
 
 /**
- * Token Rotation Handler (Refresh Pattern).
+ * Manejador de Rotación de Tokens (Patrón Refresh).
  */
 export async function refresh(req: Request, res: Response) {
   const token = req.cookies?.refreshToken || req.body.refreshToken;
   if (!token) {
-    throw new ApiError(401, "Session recovery token missing");
+    throw new ApiError(401, "Falta el token de recuperación de sesión");
   }
 
   const payload = verifyRefreshToken(token);
   const user = await prisma.user.findUnique({ where: { id: payload.sub } });
   if (!user) {
-    throw new ApiError(404, "User context no longer exists");
+    throw new ApiError(404, "El contexto del usuario ya no existe");
   }
 
   const nextSessionId = randomUUID();
@@ -239,7 +239,7 @@ export async function refresh(req: Request, res: Response) {
 }
 
 /**
- * Session Termination Handler.
+ * Manejador de Terminación de Sesión.
  */
 export async function logout(req: Request, res: Response) {
   res.clearCookie("accessToken");
@@ -249,22 +249,22 @@ export async function logout(req: Request, res: Response) {
   res.clearCookie("accessToken_CLIENT");
   res.clearCookie("refreshToken_CLIENT");
   
-  // Update metrics
+  // Actualizar métricas
   const modo = entorno.APP_MODE === "vulnerable" ? "vulnerable" : "secure";
   metrics.activeSessions.dec({ modo });
 
-  res.json({ message: "Security context cleared" });
+  res.json({ message: "Contexto de seguridad limpiado" });
 }
 
 /**
- * Current Session Introspection.
+ * Introspección de Sesión Actual.
  */
 export async function me(req: Request, res: Response) {
   res.json(req.user);
 }
 
 /**
- * CSRF Token Generator for secure client-side sessions.
+ * Generador de Token CSRF para sesiones seguras en el lado del cliente.
  */
 export async function csrfToken(req: Request, res: Response) {
   const token = randomUUID();
@@ -272,8 +272,8 @@ export async function csrfToken(req: Request, res: Response) {
 }
 
 /**
- * V2 Authentication Engine (Secure Mode).
- * Includes CSRF validation and OTP processing.
+ * Motor de Autenticación V2 (Modo Seguro).
+ * Incluye validación CSRF y procesamiento OTP.
  */
 export async function loginV2(req: Request, res: Response) {
   const { email, password, otp } = req.body;
@@ -282,7 +282,7 @@ export async function loginV2(req: Request, res: Response) {
   if (!user || !(await verifyPassword(password, user.passwordHash, "secure"))) {
     metrics.loginAttemptsTotal.inc({ modo: "secure", result: "failed" });
 
-    // Auto-Alert on Secure Login Failure
+    // Alerta Automática en Fallo de Login Seguro
     await prisma.alert.create({
       data: {
         title: "Alerta de Seguridad V2",
@@ -301,15 +301,15 @@ export async function loginV2(req: Request, res: Response) {
         clientName: "S. SOLUTIONS SECURITY"
       });
     } catch(e: any) {
-      console.error(`[ALERTA V2 ERROR] No se pudo entornoiar webhook a n8n: ${e.message}`);
+      console.error(`[ALERTA V2 ERROR] No se pudo enviar webhook a n8n: ${e.message}`);
     }
 
-    throw new ApiError(401, "Invalid identity credentials");
+    throw new ApiError(401, "Credenciales de identidad inválidas");
   }
 
-  // OTP check simulation (for enterprise demo)
+  // Simulación de chequeo OTP (para demo empresarial)
   if (otp && otp !== "123456") {
-    throw new ApiError(401, "Invalid multi-factor authentication code");
+    throw new ApiError(401, "Código de autenticación multifactor inválido");
   }
 
   metrics.loginAttemptsTotal.inc({ modo: "secure", result: "success" });

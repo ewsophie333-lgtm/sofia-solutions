@@ -1,3 +1,17 @@
+/**
+ * ============================================================================
+ * SOFIA SOLUTIONS - SECURITY & MONITORING PLATFORM
+ * ============================================================================
+ * 
+ * Este archivo forma parte de la arquitectura base del backend de Sofia Solutions.
+ * Ha sido disenado siguiendo principios de codigo limpio, seguridad por diseno,
+ * y alta escalabilidad para entornos criticos e industriales.
+ * 
+ * @module SofiaSolutions
+ * @author Sofia Solutions Architecture Team
+ * @copyright 2026
+ * ============================================================================
+ */
 import type { Request, Response, NextFunction } from "express";
 import { verifyAccessToken } from "../utilidades/jwt";
 import { ApiError } from "../utilidades/errores";
@@ -15,17 +29,21 @@ export function requireAuth(req: Request, _res: Response, next: NextFunction) {
         token = req.cookies?.accessToken_CLIENT || req.cookies?.accessToken;
       }
     }
-    if (!token) {
-      throw new ApiError(401, "Missing access token");
+    if (!token || token === "null" || token === "undefined") {
+      throw new ApiError(401, "Missing or invalid access token");
     }
 
-    const payload = verifyAccessToken(token);
-    req.user = {
-      id: payload.sub,
-      email: payload.email,
-      role: payload.role as "ADMIN" | "CLIENT"
-    };
-    next();
+    try {
+      const payload = verifyAccessToken(token);
+      req.user = {
+        id: payload.sub,
+        email: payload.email,
+        role: payload.role as "ADMIN" | "CLIENT"
+      };
+      next();
+    } catch (error) {
+      throw new ApiError(401, "Invalid or expired session");
+    }
   } catch (error) {
     next(error);
   }

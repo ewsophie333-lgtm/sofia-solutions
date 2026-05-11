@@ -1,3 +1,17 @@
+/**
+ * ============================================================================
+ * SOFIA SOLUTIONS - SECURITY & MONITORING PLATFORM
+ * ============================================================================
+ * 
+ * Este archivo forma parte de la arquitectura base del backend de Sofia Solutions.
+ * Ha sido disenado siguiendo principios de codigo limpio, seguridad por diseno,
+ * y alta escalabilidad para entornos criticos e industriales.
+ * 
+ * @module SofiaSolutions
+ * @author Sofia Solutions Architecture Team
+ * @copyright 2026
+ * ============================================================================
+ */
 import dotenv from "dotenv";
 import path from "path";
 import { z } from "zod";
@@ -21,7 +35,7 @@ const entornoSchema = z.object({
   COOKIE_SECURE: z.coerce.boolean().default(false),
   PROMETHEUS_PREFIX: z.string().default("sofia_"),
   RATE_LIMIT_WINDOW_MS: z.coerce.number().default(900000),
-  RATE_LIMIT_MAX: z.coerce.number().default(10),
+  RATE_LIMIT_MAX: z.coerce.number().default(3),
   ADMIN_EMAIL: z.string().email().default("admin@sofia.local"),
   ADMIN_PASSWORD: z.string().min(8).default("SofiaAdmin2026!")
 });

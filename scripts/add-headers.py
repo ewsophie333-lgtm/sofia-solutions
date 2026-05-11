@@ -1,4 +1,9 @@
-/**
+﻿# -*- coding: utf-8 -*-
+import os
+
+directory = r'c:\Users\shair\Desktop\sofia-solutions\sofia-solutions\sofia-backend\src'
+
+standard_header = '''/**
  * ============================================================================
  * SOFIA SOLUTIONS - SECURITY & MONITORING PLATFORM
  * ============================================================================
@@ -12,12 +17,16 @@
  * @copyright 2026
  * ============================================================================
  */
-import { createLogger, format, transports } from "winston";
-import { entorno } from "./entorno";
+'''
 
-export const registro = createLogger({
-  level: entorno.NODE_ENV === "development" ? "debug" : "info",
-  format: format.combine(format.timestamp(), format.errors({ stack: true }), format.json()),
-  defaultMeta: { service: "sofia-backend", modo: entorno.APP_MODE },
-  transports: [new transports.Console()]
-});
+for root, _, files in os.walk(directory):
+    for file in files:
+        if file.endswith('.ts'):
+            path = os.path.join(root, file)
+            with open(path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            if not content.strip().startswith('/**'):
+                with open(path, 'w', encoding='utf-8') as f:
+                    f.write(standard_header + content)
+                print("Added header to " + file)

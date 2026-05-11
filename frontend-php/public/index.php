@@ -1,41 +1,23 @@
 <?php
 declare(strict_types=1);
 
-/**
- * INDEX.PHP — Router principal y punto de entrada de la aplicación web
- *
- * Este archivo actúa como "Front Controller": todas las peticiones HTTP pasan por
- * aquí gracias a la configuración de Apache (.htaccess o vhost). Según la URL
- * solicitada, carga la vista PHP correspondiente.
- *
- * Responsabilidades:
- *   1. Definir las rutas disponibles y sus títulos SEO.
- *   2. Determinar el modo de login (vulnerable / secure) según la ruta.
- *   3. Inyectar datos de contexto (reseñas de clientes, servicios, beneficios)
- *      que las vistas consumen mediante variables PHP.
- *   4. Renderizar el layout HTML base (head, body, scripts) e incluir la vista.
- *
- * El modo de seguridad de la aplicación se controla con la variable de entorno
- * APP_MODE en docker-compose.yml. El frontend usa la ruta (/login vs /login-seguro)
- * para decidir a qué endpoint del backend enviar las credenciales.
- */
-
 require __DIR__ . '/includes/helpers.php';
+
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 
 // Admin route is handled by the router below — no redirect needed
 
 $routes = [
-    '/'                    => ['title' => 'Sofia Solutions | Seguridad gestionada para entornos críticos', 'view' => 'home'],
-    '/login'               => ['title' => 'Acceso | Sofia Solutions', 'view' => 'login', 'mode' => 'vulnerable'],
-    '/login-seguro'        => ['title' => 'Acceso seguro | Sofia Solutions', 'view' => 'login', 'mode' => 'secure'],
-    '/dashboard'           => ['title' => 'Dashboard Ejecutivo | Sofia Solutions', 'view' => 'dashboard'],
-    '/admin'               => ['title' => 'Panel de Operaciones | Sofia Solutions', 'view' => 'admin-dashboard'],
+    '/' => ['title' => 'Sofia Solutions | Seguridad gestionada para entornos críticos', 'view' => 'home'],
+    '/login' => ['title' => 'Acceso | Sofia Solutions', 'view' => 'login', 'mode' => 'vulnerable'],
+    '/login-seguro' => ['title' => 'Acceso seguro | Sofia Solutions', 'view' => 'login', 'mode' => 'secure'],
+    '/dashboard' => ['title' => 'Dashboard Ejecutivo | Sofia Solutions', 'view' => 'dashboard'],
+    '/admin' => ['title' => 'Panel de Operaciones | Sofia Solutions', 'view' => 'admin-dashboard'],
     '/admin/security-monitor' => ['title' => 'SOC Monitor | Sofia Solutions', 'view' => 'soc'],
-    '/soc'                 => ['title' => 'SOC Monitor | Sofia Solutions', 'view' => 'soc'],
-    '/admin/audit-tool'    => ['title' => 'Security Audit Kit | Sofia Solutions', 'view' => 'audit'],
-    '/sistema/consola'     => ['title' => 'Consola Maestra | Sofia Solutions', 'view' => 'audit'],
-    '/consola'             => ['title' => 'Consola Maestra | Sofia Solutions', 'view' => 'audit'],
+    '/soc' => ['title' => 'SOC Monitor | Sofia Solutions', 'view' => 'soc'],
+    '/admin/audit-tool' => ['title' => 'Security Audit Kit | Sofia Solutions', 'view' => 'audit'],
+    '/sistema/consola' => ['title' => 'Consola Maestra | Sofia Solutions', 'view' => 'audit'],
+    '/consola' => ['title' => 'Consola Maestra | Sofia Solutions', 'view' => 'audit'],
 ];
 
 $route = $routes[$path] ?? $routes['/'];
@@ -81,23 +63,27 @@ $operationalBenefits = [
 ];
 ?><!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= htmlspecialchars($title, ENT_QUOTES, 'UTF-8') ?></title>
     <link rel="stylesheet" href="/assets/app.css?v=1.0.4">
 </head>
-<body data-view="<?= htmlspecialchars($view, ENT_QUOTES, 'UTF-8') ?>" data-login-mode="<?= htmlspecialchars($mode, ENT_QUOTES, 'UTF-8') ?>">
-<?php require __DIR__ . '/views/' . $view . '.php'; ?>
 
-<script>
-window.SOFIA_CONFIG = {
-  apiBase: window.location.origin, // Usa el mismo dominio para evitar problemas de túneles mixtos
-  view: "<?= htmlspecialchars($view, ENT_QUOTES, 'UTF-8') ?>",
-  loginMode: "<?= htmlspecialchars($mode, ENT_QUOTES, 'UTF-8') ?>"
-};
-</script>
-<script src="/assets/app.js?v=1.0.4"></script>
-<?php include __DIR__ . '/includes/ai-assistant.php'; ?>
+<body data-view="<?= htmlspecialchars($view, ENT_QUOTES, 'UTF-8') ?>"
+    data-login-mode="<?= htmlspecialchars($mode, ENT_QUOTES, 'UTF-8') ?>">
+    <?php require __DIR__ . '/views/' . $view . '.php'; ?>
+
+    <script>
+        window.SOFIA_CONFIG = {
+            apiBase: window.location.origin, // Usa el mismo dominio para evitar problemas de túneles mixtos
+            view: "<?= htmlspecialchars($view, ENT_QUOTES, 'UTF-8') ?>",
+            loginMode: "<?= htmlspecialchars($mode, ENT_QUOTES, 'UTF-8') ?>"
+        };
+    </script>
+    <script src="/assets/app.js?v=1.0.4"></script>
+    <?php include __DIR__ . '/includes/ai-assistant.php'; ?>
 </body>
+
 </html>

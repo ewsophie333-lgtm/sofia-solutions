@@ -4,5 +4,4 @@ RUN a2enmod rewrite proxy proxy_http headers
 
 COPY frontend-php/apache.conf /etc/apache2/sites-available/000-default.conf
 COPY frontend-php/public /var/www/html
-COPY frontend/public/sofia-logo-login.png /var/www/html/assets/sofia-logo-login.png
 

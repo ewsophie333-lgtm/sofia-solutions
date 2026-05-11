@@ -1,7 +1,7 @@
 /**
- * SOFIA SOLUTIONS - Controlador de Helpdesk y Tickets
+ * SOFIA SOLUTIONS - Controlador de Helpdesk & Tickets
  * 
- * Gestiona el ciclo de vida de las solicitudes de soporte y reportes de incidentes.
+ * Gestiona el ciclo de vida de las solicitudes de soporte e informes de incidentes.
  * Implementa lógica de aislamiento de datos basada en roles y mensajería en tiempo real.
  */
 
@@ -10,19 +10,18 @@ import { prisma } from "../configuracion/prisma";
 import { ApiError } from "../utilidades/errores";
 
 /**
- * Lista todos los tickets asociados con el contexto de sesión actual.
- * Los administradores tienen acceso global; los clientes están restringidos a su userId.
+ * Lista todos los tickets asociados al contexto de la sesión actual.
+ * Los administradores tienen acceso global; los clientes están restringidos a su propio userId.
  */
 export async function listTickets(req: Request, res: Response) {
   const where = req.user?.role === "ADMIN" ? {} : { userId: req.user?.id };
   const tickets = await prisma.ticket.findMany({
     where,
-    include: { 
+    include: {
       messages: true,
       user: {
         select: {
-          email: true,
-          role: true
+          email: true
         }
       }
     },
@@ -33,7 +32,7 @@ export async function listTickets(req: Request, res: Response) {
 }
 
 /**
- * Capa de persistencia para nuevas solicitudes de soporte.
+ * Capa de persistencia para nuevas peticiones de soporte.
  */
 export async function createTicket(req: Request, res: Response) {
   const { subject, status, priority } = req.body;
@@ -51,8 +50,8 @@ export async function createTicket(req: Request, res: Response) {
 }
 
 /**
- * Lógica de Recuperación de Hilos.
- * Obtiene los mensajes para un contenedor de incidentes específico.
+ * Lógica de recuperación de hilos.
+ * Obtiene mensajes para un contenedor de incidente específico.
  */
 export async function listMessages(req: Request, res: Response) {
   const ticketId = Number(req.params.id);
@@ -65,14 +64,14 @@ export async function listMessages(req: Request, res: Response) {
 }
 
 /**
- * Manejador de Comunicación Multi-parte.
+ * Manejador de comunicación multi-participante.
  */
 export async function createMessage(req: Request, res: Response) {
   const ticketId = Number(req.params.id);
   const ticket = await prisma.ticket.findUnique({ where: { id: ticketId } });
-  
+
   if (!ticket) {
-    throw new ApiError(404, "Ticket objetivo no encontrado en el registro persistente");
+    throw new ApiError(404, "Ticket de destino no encontrado en el registro persistente");
   }
 
   const message = await prisma.ticketMessage.create({

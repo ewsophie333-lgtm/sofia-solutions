@@ -41,15 +41,15 @@ async function main() {
   for (const email of clientEmails) {
     const companyName = email.split('@')[0];
     const capitalizedName = companyName.charAt(0).toUpperCase() + companyName.slice(1);
-    
-    // Contraseñas ultra-simples para modo vulnerable para facilitar Brute Force / Demo
-    const rawPassword = process.env.APP_MODE === "vulnerable" 
-        ? `${companyName}123` 
-        : `S0f1a_${capitalizedName}!_2026`;
 
-    const clientPassword = process.env.APP_MODE === "vulnerable" 
-        ? rawPassword 
-        : await bcrypt.hash(rawPassword, 12);
+    // Contraseñas ultra-simples para modo vulnerable para facilitar Brute Force / Demo
+    const rawPassword = process.env.APP_MODE === "vulnerable"
+      ? `${companyName}123`
+      : `S0f1a_${capitalizedName}!_2026`;
+
+    const clientPassword = process.env.APP_MODE === "vulnerable"
+      ? rawPassword
+      : await bcrypt.hash(rawPassword, 12);
 
     console.log(`Creating client user: ${email} with password: ${rawPassword} (Mode: ${process.env.APP_MODE})`);
     await prisma.user.upsert({
@@ -102,7 +102,7 @@ async function main() {
 
   const allUsers = await prisma.user.findMany();
   const userMap = new Map(allUsers.map(u => [u.email, u]));
-  
+
   const admin = userMap.get(process.env.ADMIN_EMAIL ?? "admin@sofia.local")!;
   const iberdrolaUser = userMap.get("iberdrola@sofia.local")!;
   const mapfreUser = userMap.get("mapfre@sofia.local")!;
@@ -162,12 +162,12 @@ async function main() {
     }),
   ]);
 
-  await prisma.user.update({ where: { id: admin.id },         data: { customerId: customers[0].id } });
+  await prisma.user.update({ where: { id: admin.id }, data: { customerId: customers[0].id } });
   await prisma.user.update({ where: { id: iberdrolaUser.id }, data: { customerId: customers[0].id } });
-  await prisma.user.update({ where: { id: mapfreUser.id },    data: { customerId: customers[1].id } });
+  await prisma.user.update({ where: { id: mapfreUser.id }, data: { customerId: customers[1].id } });
   await prisma.user.update({ where: { id: mercadonaUser.id }, data: { customerId: customers[2].id } });
-  await prisma.user.update({ where: { id: repsolUser.id },    data: { customerId: customers[3].id } });
-  await prisma.user.update({ where: { id: sabadellUser.id },  data: { customerId: customers[4].id } });
+  await prisma.user.update({ where: { id: repsolUser.id }, data: { customerId: customers[3].id } });
+  await prisma.user.update({ where: { id: sabadellUser.id }, data: { customerId: customers[4].id } });
 
   const assets = await prisma.asset.createManyAndReturn({
     data: [
@@ -199,7 +199,6 @@ async function main() {
       { customerId: customers[0].id, assetId: assets[1].id, analystId: admin.id, title: "Reconocimiento de activos SCADA en infraestructura eléctrica", vector: "Reconnaissance", severity: "LOW", status: "RESOLVED", sourceIp: "80.94.95.52", sourceCountry: "Países Bajos", attackSurface: "Nube", timelineSlot: 12 },
     ],
   });
-
   await prisma.ticket.createMany({
     data: [
       { userId: client.id, subject: "Revisión de alertas en Microsoft 365", status: "OPEN", priority: "HIGH" },
@@ -209,73 +208,73 @@ async function main() {
     ],
   });
 
-  const tickets = await prisma.ticket.findMany({ orderBy: { id: "asc" } });
-  await prisma.ticketMessage.createMany({
-    data: [
-      { ticketId: tickets[0].id, senderId: admin.id, content: "Revisando la correlación de eventos y las reglas de alertado configuradas." },
-      { ticketId: tickets[0].id, senderId: client.id, content: "Se están registrando múltiples detecciones en el canal de correo electrónico." },
-      { ticketId: tickets[1].id, senderId: admin.id, content: "Se valida la firma digital y el idempotency key del webhook de pagos." },
-      { ticketId: tickets[2].id, senderId: admin.id, content: "MFA reforzado para todas las cuentas con privilegios elevados." },
-    ],
-  });
+const tickets = await prisma.ticket.findMany({ orderBy: { id: "asc" } });
+await prisma.ticketMessage.createMany({
+  data: [
+    { ticketId: tickets[0].id, senderId: admin.id, content: "Revisando la correlación de eventos y las reglas de alertado configuradas." },
+    { ticketId: tickets[0].id, senderId: client.id, content: "Se están registrando múltiples detecciones en el canal de correo electrónico." },
+    { ticketId: tickets[1].id, senderId: admin.id, content: "Se valida la firma digital y el idempotency key del webhook de pagos." },
+    { ticketId: tickets[2].id, senderId: admin.id, content: "MFA reforzado para todas las cuentas con privilegios elevados." },
+  ],
+});
 
-  await prisma.payment.createMany({
-    data: [
-      {
-        userId: client.id,
-        amount: soc.price,
-        currency: "EUR",
-        status: "SUCCEEDED",
-        last4: "4242",
-        brand: "visa",
-        transactionId: `txn_soc_${Date.now()}`,
-      },
-      {
-        userId: client.id,
-        amount: pentest.price,
-        currency: "EUR",
-        status: "SUCCEEDED",
-        last4: "4242",
-        brand: "mastercard",
-        transactionId: `txn_pentest_${Date.now() + 1}`,
-      },
-      {
-        userId: admin.id,
-        amount: ir.price,
-        currency: "EUR",
-        status: "SUCCEEDED",
-        last4: "4242",
-        brand: "visa",
-        transactionId: `txn_ir_${Date.now() + 2}`,
-      },
-      {
-        userId: client.id,
-        amount: cloud.price,
-        currency: "EUR",
-        status: "SUCCEEDED",
-        last4: "4242",
-        brand: "visa",
-        transactionId: `txn_cloud_${Date.now() + 3}`,
-      },
-    ],
-  });
+await prisma.payment.createMany({
+  data: [
+    {
+      userId: client.id,
+      amount: soc.price,
+      currency: "EUR",
+      status: "SUCCEEDED",
+      last4: "4242",
+      brand: "visa",
+      transactionId: `txn_soc_${Date.now()}`,
+    },
+    {
+      userId: client.id,
+      amount: pentest.price,
+      currency: "EUR",
+      status: "SUCCEEDED",
+      last4: "4242",
+      brand: "mastercard",
+      transactionId: `txn_pentest_${Date.now() + 1}`,
+    },
+    {
+      userId: admin.id,
+      amount: ir.price,
+      currency: "EUR",
+      status: "SUCCEEDED",
+      last4: "4242",
+      brand: "visa",
+      transactionId: `txn_ir_${Date.now() + 2}`,
+    },
+    {
+      userId: client.id,
+      amount: cloud.price,
+      currency: "EUR",
+      status: "SUCCEEDED",
+      last4: "4242",
+      brand: "visa",
+      transactionId: `txn_cloud_${Date.now() + 3}`,
+    },
+  ],
+});
 
-  await prisma.securityEvent.createMany({
-    data: incidents.map((incident, index) => ({
-      type: incident.vector,
-      severity: incident.severity,
-      sourceIp: incident.sourceIp,
-      endpoint: assets.find((asset) => asset.id === incident.assetId)?.hostname ?? "unknown",
-      payload: `${incident.title} | asset=${incident.assetId}`,
-      action: incident.status === "CONTAINED" || incident.status === "RESOLVED" ? "BLOCKED" : "MONITORED",
-      timestamp: new Date(Date.now() - index * 60 * 60 * 1000),
-      metadata: JSON.stringify({
-        customer: customers.find((customer) => customer.id === incident.customerId)?.name,
-        sourceCountry: incident.sourceCountry,
-        attackSurface: incident.attackSurface,
-      }),
-    })),
-  });
+await prisma.securityEvent.createMany({
+  data: incidents.map((incident, index) => ({
+    type: incident.vector,
+    severity: incident.severity,
+    sourceIp: incident.sourceIp,
+    endpoint: assets.find((asset) => asset.id === incident.assetId)?.hostname ?? "unknown",
+    payload: `${incident.title} | asset=${incident.assetId}`,
+    action: incident.status === "CONTAINED" || incident.status === "RESOLVED" ? "BLOCKED" : "MONITORED",
+    timestamp: new Date(Date.now() - index * 60 * 60 * 1000),
+    metadata: JSON.stringify({
+      customer: customers.find((customer) => customer.id === incident.customerId)?.name,
+      sourceCountry: incident.sourceCountry,
+      attackSurface: incident.attackSurface,
+    }),
+  })),
+});
 }
 
 main()

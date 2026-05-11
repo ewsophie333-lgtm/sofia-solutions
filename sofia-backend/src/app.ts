@@ -1,3 +1,17 @@
+/**
+ * ============================================================================
+ * SOFIA SOLUTIONS - SECURITY & MONITORING PLATFORM
+ * ============================================================================
+ * 
+ * Este archivo forma parte de la arquitectura base del backend de Sofia Solutions.
+ * Ha sido disenado siguiendo principios de codigo limpio, seguridad por diseno,
+ * y alta escalabilidad para entornos criticos e industriales.
+ * 
+ * @module SofiaSolutions
+ * @author Sofia Solutions Architecture Team
+ * @copyright 2026
+ * ============================================================================
+ */
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -46,7 +60,7 @@ app.get("/metrics", async (_req, res) => {
 });
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(openapiDocument));
-app.use("/api/v1/auth", authV1Routes);
-app.use("/api/v2/auth", authV2Routes);
+app.use("/api/v1/autenticacion", authV1Routes);
+app.use("/api/v2/autenticacion", authV2Routes);
 app.use("/api", routes);
 app.use(manejadorErrores);

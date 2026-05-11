@@ -1,3 +1,17 @@
+/**
+ * ============================================================================
+ * SOFIA SOLUTIONS - SECURITY & MONITORING PLATFORM
+ * ============================================================================
+ * 
+ * Este archivo forma parte de la arquitectura base del backend de Sofia Solutions.
+ * Ha sido disenado siguiendo principios de codigo limpio, seguridad por diseno,
+ * y alta escalabilidad para entornos criticos e industriales.
+ * 
+ * @module SofiaSolutions
+ * @author Sofia Solutions Architecture Team
+ * @copyright 2026
+ * ============================================================================
+ */
 import { registro } from "../configuracion/registro";
 import axios from "axios";
 import { metrics } from "../configuracion/prometheus";
@@ -34,7 +48,7 @@ export async function notifySoc(message: string, type: string = "SECURITY_EVENT"
       timestamp: new Date(),
       recipientEmail: ALERT_EMAIL,
       userName: "Sofia-WAF-Shield",
-      clientName: "Infraestructura Interna"
+      clientName: "Internal Infrastructure"
     });
     console.log(`[SOC SUCCESS] n8n respondió: ${response.status} ${response.statusText}`);
     metrics.alertsSentTotal.inc({ destination: "GMAIL/N8N", type, severity });
