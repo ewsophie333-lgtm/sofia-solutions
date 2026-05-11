@@ -823,7 +823,6 @@ Content-Length: 0
             tLog(`[-] El payload ya ha sido inyectado.`, 'dim');
         }
     }
-    }
 </script>
 
 <style>
