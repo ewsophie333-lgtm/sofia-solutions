@@ -1,6 +1,28 @@
 (function () {
   const config = window.SOFIA_CONFIG || {};
   const apiBase = ""; // Siempre vacío para usar el Proxy de Apache (/api)
+  let currentLang = localStorage.getItem("sofia_lang_v1") || "es";
+
+  const TRANSLATIONS = {
+    es: {
+      eyebrow: "Panel de Control de Cliente",
+      welcome: "¡Bienvenido, ",
+      status: "Tu infraestructura está bajo vigilancia activa por el equipo SOC."
+    },
+    en: {
+      eyebrow: "Client Command Center",
+      welcome: "Welcome, ",
+      status: "Your infrastructure is under active surveillance by the SOC team."
+    }
+  };
+
+  function applyLang() {
+    const dict = TRANSLATIONS[currentLang] || TRANSLATIONS.es;
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const key = el.getAttribute("data-i18n");
+      if (dict[key]) el.textContent = dict[key];
+    });
+  }
 
   function setLang(lang) {
     currentLang = lang;
@@ -50,7 +72,7 @@
 
   function headers(json = true) {
     const auth = getToken();
-    const h: any = {
+    const h = {
       "Bypass-Tunnel-Reminder": "true",
       ...(json ? { "Content-Type": "application/json" } : {}),
     };
@@ -340,6 +362,7 @@
   }
 
   async function main() {
+    applyLang();
     initLogin();
     initLogout();
 
