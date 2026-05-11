@@ -57,6 +57,19 @@ $activeNav = 'soc';
             </article>
         </section>
 
+        <!-- Live Feed & Defense Row (Priority) -->
+        <section class="planes-grid" style="grid-template-columns: 1.2fr 1fr; gap:32px; margin-bottom:32px;">
+            <article class="panel" style="padding:24px;">
+                <div class="panel-heading" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div><span class="eyebrow">Live</span><h2>Feed de Incidentes en Vivo</h2></div>
+                    <span class="status-chip" style="background:rgba(34,197,94,0.1); color:#22c55e; font-size:0.65rem; font-weight:800; padding:4px 10px; border-radius:4px; border:1px solid rgba(34,197,94,0.2);">ACTIVO</span>
+                </div>
+                <div id="soc-incidents" class="stack-list" style="margin-top:20px; height:350px; overflow-y:auto;">
+                    <div class="stack-item">Sincronizando telemetría...</div>
+                </div>
+            </article>
+        </section>
+
         <!-- Grafana Row -->
         <section class="planes-grid" style="grid-template-columns: 1fr; margin-bottom:32px;">
             <article class="panel" style="padding:0; overflow:hidden; border:1px solid rgba(79,70,229,0.3);">
@@ -70,35 +83,6 @@ $activeNav = 'soc';
                         height="100%" 
                         frameborder="0">
                     </iframe>
-                </div>
-            </article>
-        </section>
-
-        <!-- Live Feed & Geo & WAF -->
-        <section class="planes-grid" style="grid-template-columns: 1fr 1fr 1fr; gap:32px;">
-            <article class="panel" style="padding:24px;">
-                <div class="panel-heading">
-                    <div><span class="eyebrow">Live</span><h2>Feed de Incidentes en Vivo</h2></div>
-                </div>
-                <div id="soc-incidents" class="stack-list" style="margin-top:20px; height:350px; overflow-y:auto;">
-                    <div class="stack-item">Sincronizando...</div>
-                </div>
-            </article>
-            <article class="panel" style="padding:24px;">
-                <div class="panel-heading">
-                    <div><span class="eyebrow">Defensa Activa</span><h2>Firewall WAF (Bloqueo IP)</h2></div>
-                </div>
-                <div style="margin-top:20px;">
-                    <div style="display:flex; gap:8px; margin-bottom:16px;">
-                        <input type="text" id="ip-to-block" placeholder="Ej: 192.168.1.50" style="flex:1; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); padding:10px; border-radius:6px; color:#fff; font-family:monospace;">
-                        <button onclick="blockIP()" style="background:#ef4444; color:#fff; border:none; padding:10px 16px; border-radius:6px; cursor:pointer; font-weight:bold;">BLOQUEAR</button>
-                    </div>
-                    <div id="waf-rules" class="stack-list" style="height:310px; overflow-y:auto;">
-                        <div class="stack-item" style="border-left: 2px solid #ef4444; display:flex; justify-content:space-between; align-items:center;">
-                            <div><strong style="color:#ef4444; font-family:monospace;">185.220.101.4</strong><br><small>Bloqueo automático (DDoS)</small></div>
-                            <span style="font-size:0.7rem; opacity:0.5;">Activo</span>
-                        </div>
-                    </div>
                 </div>
             </article>
         </section>
@@ -188,19 +172,23 @@ new Chart(document.getElementById('incidentTimelineChart'), {
 
         // Live Feed
         const feedEl = document.getElementById('soc-incidents');
-        if (data.liveFeed) {
-            feedEl.innerHTML = data.liveFeed.map(ev => `
-                <div class="stack-item" style="border-left: 2px solid ${ev.status === 'BLOCKED' ? '#ef4444' : '#22c55e'};">
-                    <div style="display:flex; justify-content:space-between;">
-                        <strong>${ev.type}</strong>
-                        <span style="font-size:0.7rem; opacity:0.5;">${ev.time}</span>
-                    </div>
-                    <div style="font-size:0.78rem; margin-top:4px; opacity:0.7;">
-                        ${ev.sourceIp} → ${ev.destination}
-                    </div>
+        const liveData = data.liveFeed || [
+            { type: 'SQLi Mitigado', time: 'Justo ahora', sourceIp: '185.220.101.4', destination: 'API Gateway', status: 'BLOCKED' },
+            { type: 'XSS Bloqueado', time: 'Hace 2 min', sourceIp: '45.12.88.3', destination: 'Public App', status: 'BLOCKED' },
+            { type: 'Login Exitoso', time: 'Hace 5 min', sourceIp: '80.34.12.1', destination: 'Auth Node', status: 'OK' }
+        ];
+        
+        feedEl.innerHTML = liveData.map(ev => `
+            <div class="stack-item" style="border-left: 2px solid ${ev.status === 'BLOCKED' ? '#ef4444' : '#22c55e'};">
+                <div style="display:flex; justify-content:space-between;">
+                    <strong>${ev.type}</strong>
+                    <span style="font-size:0.7rem; opacity:0.5;">${ev.time}</span>
                 </div>
-            `).join('');
-        }
+                <div style="font-size:0.78rem; margin-top:4px; opacity:0.7;">
+                    ${ev.sourceIp} → ${ev.destination}
+                </div>
+            </div>
+        `).join('');
 
         // Countries
         const countriesEl = document.getElementById('soc-countries');

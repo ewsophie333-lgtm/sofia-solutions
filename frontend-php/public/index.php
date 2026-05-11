@@ -77,7 +77,7 @@ $operationalBenefits = [
 
     <script>
         window.SOFIA_CONFIG = {
-            apiBase: window.location.origin, // Usa el mismo dominio para evitar problemas de túneles mixtos
+            apiBase: "", // Usar rutas relativas para el Proxy de Apache
             view: "<?= htmlspecialchars($view, ENT_QUOTES, 'UTF-8') ?>",
             loginMode: "<?= htmlspecialchars($mode, ENT_QUOTES, 'UTF-8') ?>"
         };

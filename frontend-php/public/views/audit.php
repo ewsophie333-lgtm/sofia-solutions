@@ -430,12 +430,6 @@
                             Sin datos capturados
                         </div>
                     </div>
-                    <div style="margin-top:20px;">
-                        <a href="/soc" class="btn btn-outline" style="width:100%; font-size:0.65rem; border-color:rgba(255,255,255,0.1); color:#94a3b8; text-align:center; text-decoration:none; display:block;">
-                            <svg class="icon" style="width:12px; height:12px; margin-right:4px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-                            VER BLOQUEOS EN GRAFANA
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>

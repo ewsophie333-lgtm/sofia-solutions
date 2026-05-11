@@ -1502,13 +1502,16 @@ img {
     .site-header {
         padding: 8px 16px !important;
         gap: 12px !important;
+        flex-direction: column !important;
+        align-items: center !important;
     }
     .brand-mark-header {
-        width: 42px !important;
-        height: 42px !important;
+        width: 190px !important;
+        height: auto !important;
+        margin-bottom: 8px;
     }
     .brand-mark-login {
-        width: min(260px, 80vw) !important;
+        width: min(280px, 85vw) !important;
         height: auto !important;
     }
 

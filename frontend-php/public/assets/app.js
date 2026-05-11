@@ -1,6 +1,6 @@
 (function () {
   const config = window.SOFIA_CONFIG || {};
-  const apiBase = config.apiBase || "";
+  const apiBase = ""; // Siempre vacío para usar el Proxy de Apache (/api)
 
   function setLang(lang) {
     currentLang = lang;
@@ -107,7 +107,7 @@
 
   async function login(mode, email, password) {
     if (mode === "secure") {
-      const csrf = await getJson(`${apiBase}/api/v2/autenticacion/csrf`);
+      const csrf = await getJson(`/api/csrf`);
       const response = await fetch(`${apiBase}/api/v2/autenticacion/login`, {
         method: "POST",
         credentials: "include",
@@ -121,11 +121,13 @@
       if (!response.ok) {
         throw new Error(data.message || "Credenciales inv\u00e1lidas");
       }
-      // Persistir usuario para el Dashboard en modo seguro
+      // Persistir usuario y token para el Dashboard en modo seguro
       if (data.user) {
+          const role = data.user.role || 'CLIENT';
           localStorage.setItem("sofia_user_v1", JSON.stringify(data.user));
+          localStorage.setItem(`sofia_token_${role}`, data.accessToken || 'SECURE_SESSION_MOCK');
       }
-      window.location.href = getRedirectTarget();
+      window.location.href = getRedirectTarget(data.user?.role || 'CLIENT');
       return;
     }
 

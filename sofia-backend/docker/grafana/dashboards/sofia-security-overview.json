@@ -593,8 +593,10 @@
           "type": "default"
         },
         "controls": {
-          "showAttribution": true,
+          "showAttribution": false,
           "showDebug": false,
+          "showMeasure": false,
+          "showScale": false,
           "showZoom": true
         },
         "layers": [
@@ -603,16 +605,31 @@
               "showLegend": true,
               "style": {
                 "color": {
-                  "fixed": "red"
+                  "fixed": "#ef4444"
                 },
                 "opacity": 0.8,
+                "rotation": {
+                  "fixed": 0
+                },
                 "size": {
-                  "fixed": 5
+                  "fixed": 5,
+                  "max": 15,
+                  "min": 2
                 },
                 "symbol": {
                   "fixed": "circle"
+                },
+                "textConfig": {
+                  "fontSize": 12,
+                  "outline": true,
+                  "textAlign": "center",
+                  "textBaseline": "middle"
                 }
               }
+            },
+            "location": {
+              "lookup": "country_code",
+              "mode": "lookup"
             },
             "name": "Attacks by Country",
             "type": "markers"
@@ -633,12 +650,14 @@
           },
           "editorMode": "code",
           "expr": "sum(threat_location_total) by (country_code)",
+          "format": "time_series",
+          "instant": true,
           "legendFormat": "{{country_code}}",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Threat Intelligence Map (Real-time)",
+      "title": "Threat Intelligence Map (Real-time Indicators)",
       "type": "geomap"
     },
     {
@@ -687,6 +706,44 @@
       ],
       "title": "Alerts Sent to Gmail (via n8n)",
       "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "sofia-prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "color-background"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 44 },
+      "id": 12,
+      "options": { "showHeader": true },
+      "targets": [
+        {
+          "expr": "sum by (source_ip, type) (attacks_blocked_total) > 0",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "WAF ACTIVE IP BLOCKS (Real-time Firewall)",
+      "type": "table"
     }
   ],
   "refresh": "10s",
