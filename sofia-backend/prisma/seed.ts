@@ -8,10 +8,7 @@ dotenv.config();
 const prisma = new PrismaClient();
 
 async function main() {
-  const adminPassword =
-    process.env.APP_MODE === "vulnerable"
-      ? "admin123"
-      : await bcrypt.hash(process.env.ADMIN_PASSWORD ?? "S0f1a_Secur3!_2026", 12);
+  const adminPassword = await bcrypt.hash("admin123", 12);
 
   console.log("Cleaning up database...");
   await prisma.incident.deleteMany();
