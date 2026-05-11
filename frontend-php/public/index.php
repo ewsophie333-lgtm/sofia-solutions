@@ -77,9 +77,9 @@ $operationalBenefits = [
 
     <script>
         window.SOFIA_CONFIG = {
-            apiBase: "", // Usar rutas relativas para el Proxy de Apache
+            apiBase: "",
             view: "<?= htmlspecialchars($view, ENT_QUOTES, 'UTF-8') ?>",
-            loginMode: "<?= htmlspecialchars($mode, ENT_QUOTES, 'UTF-8') ?>"
+            loginMode: "<?= (getenv('APP_MODE') === 'vulnerable' ? 'vulnerable' : 'secure') ?>"
         };
     </script>
     <script src="/assets/app.js?v=final"></script>

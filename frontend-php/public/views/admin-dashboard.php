@@ -25,10 +25,22 @@ $activeNav = 'admin-dashboard';
     (async function loadAdminDashboard() {
         try {
             const user = JSON.parse(localStorage.getItem('sofia_user_v1') || '{}');
-            document.getElementById('admin-name-badge').textContent = (user.name || user.email || 'Admin').toUpperCase();
-            if (user.role === 'CLIENT') window.location.replace('/dashboard');
+            if (!user.email) {
+                 window.location.replace('/login');
+                 return;
+            }
+            if (user.role === 'CLIENT') {
+                 window.location.replace('/dashboard');
+                 return;
+            }
+            
+            // Solo actualizamos el nombre si el elemento ya existe
+            const badge = document.getElementById('admin-name-badge');
+            if (badge) {
+                badge.textContent = (user.name || user.email || 'Admin').toUpperCase();
+            }
         } catch (e) {
-            window.location.replace('/login');
+            console.warn("Error en el guard de admin:", e);
         }
     })();
 </script>

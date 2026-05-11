@@ -80,8 +80,9 @@ export async function login(req: Request, res: Response) {
 
   const user = await prisma.user.findUnique({ where: { email } });
 
-  if (!user || !(await verifyPassword(password, user.passwordHash, "secure"))) {
-    metrics.loginAttemptsTotal.inc({ modo: "secure", result: "failed" });
+  const modo = entorno.APP_MODE as any;
+  if (!user || !(await verifyPassword(password, user.passwordHash, modo))) {
+    metrics.loginAttemptsTotal.inc({ modo, result: "failed" });
     
     // Alerta automática por fallo crítico
     await prisma.alert.create({

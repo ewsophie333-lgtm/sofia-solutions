@@ -599,8 +599,8 @@ $activeNav = 'dashboard';
             let rawName = user.companyName || user.name || user.email || 'CLIENTE';
             if (rawName.includes('@')) rawName = rawName.split('@')[0];
             
-            const cleanName = rawName.toUpperCase();
-            document.getElementById('welcome-user-name').textContent = cleanName;
+            const nameEl = document.getElementById('welcome-user-name');
+            if (nameEl) nameEl.textContent = cleanName;
 
             // Render Active Plan
             renderActivePlan(user.role === 'ADMIN' ? 'Enterprise SOC' : 'Business Premium');
@@ -612,10 +612,15 @@ $activeNav = 'dashboard';
             const overview = await overviewRes.json();
             const ticketsData = await ticketsRes.json();
 
-            // KPIs
-            document.querySelector('#kpi-assets strong').textContent = overview.secureLogins ?? '14';
-            document.querySelector('#kpi-blocked strong').textContent = overview.blockedAttacks ?? '2,840';
-            document.querySelector('#kpi-tickets strong').textContent = overview.openTickets ?? '2';
+            // KPIs (Protegidos)
+            const elAssets = document.querySelector('#kpi-assets strong');
+            if (elAssets) elAssets.textContent = overview.secureLogins ?? '14';
+            
+            const elBlocked = document.querySelector('#kpi-blocked strong');
+            if (elBlocked) elBlocked.textContent = overview.blockedAttacks ?? '2,840';
+            
+            const elTickets = document.querySelector('#kpi-tickets strong');
+            if (elTickets) elTickets.textContent = overview.openTickets ?? '2';
 
             // Tickets logic with better mockup fallbacks
             const realTickets = Array.isArray(ticketsData) ? ticketsData : (ticketsData.tickets || []);

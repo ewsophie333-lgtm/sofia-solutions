@@ -106,7 +106,7 @@
   }
 
   async function login(mode, email, password) {
-    const endpoint = mode === "secure" ? "/api/v2/autenticacion/login" : "/api/v1/autenticacion/login";
+    const endpoint = "/api/autenticacion/login";
     
     try {
       const response = await fetch(endpoint, {
@@ -118,47 +118,16 @@
       if (!response.ok) {
         throw new Error(data.message || "Credenciales inv\u00e1lidas");
       }
-      // Persistir usuario y token para el Dashboard en modo seguro
       if (data.user) {
           const role = data.user.role || 'CLIENT';
           localStorage.setItem("sofia_user_v1", JSON.stringify(data.user));
           localStorage.setItem(`sofia_token_${role}`, data.accessToken || 'SECURE_SESSION_MOCK');
       }
       window.location.href = getRedirectTarget(data.user?.role || 'CLIENT');
-      return;
+    } catch (error) {
+      throw error;
     }
-
-    const response = await fetch(`${apiBase}/api/v1/autenticacion/login`, {
-      method: "POST",
-      credentials: "include",
-      headers: headers(),
-      body: JSON.stringify({ email, password }),
-    });
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.message || "Error de autenticación");
-    }
-
-    if (data.accessToken) {
-      // Determine role for storage
-      let role = data.user?.role;
-      if (!role) {
-        role = email.toLowerCase().includes('admin') ? 'ADMIN' : 'CLIENT';
-      }
-
-      localStorage.setItem(`sofia_token_${role}`, data.accessToken);
-      
-      // Persistir objeto de usuario completo del backend
-      const user = data.user || {};
-      user.role = role;
-      
-      // Asegurar que el email está en el objeto si el backend no lo envió
-      if (!user.email) user.email = email;
-      
-      localStorage.setItem("sofia_user_v1", JSON.stringify(user));
-      window.location.href = role === 'ADMIN' ? '/admin' : '/dashboard';
-    }
-}
+  }
 
   async function renderDashboard() {
     const [overview, catalog, effectiveness] = await Promise.all([

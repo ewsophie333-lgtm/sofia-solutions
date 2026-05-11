@@ -62,7 +62,8 @@ app.get("/metrics", async (_req, res) => {
 });
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(openapiDocument));
+app.use("/api/v1/autenticacion", authV1Routes);
 app.use("/api/v2/autenticacion", authV2Routes);
-app.get("/api/csrf", asyncHandler(csrfToken)); // Endpoint directo para evitar problemas de proxy
+app.get("/api/csrf", asyncHandler(csrfToken));
 app.use("/api", routes);
 app.use(manejadorErrores);
