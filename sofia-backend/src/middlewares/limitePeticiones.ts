@@ -26,11 +26,12 @@ const secureAuthRateLimiter = limitePeticiones({
 });
 
 export function authRateLimiter(req: Request, res: Response, next: NextFunction) {
-  if (isVulnerableMode(getRequestMode(req))) {
-    // VULNERABLE: no se aplica rate limit al login.
-    next();
-    return;
+  const currentMode = getRequestMode(req);
+  
+  if (isVulnerableMode(currentMode)) {
+    // VULNERABLE: No hay proteccion contra fuerza bruta para permitir demos tecnicas
+    return next();
   }
 
-  secureAuthRateLimiter(req, res, next);
+  return secureAuthRateLimiter(req, res, next);
 }

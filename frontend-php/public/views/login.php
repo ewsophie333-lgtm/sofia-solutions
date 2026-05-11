@@ -1,9 +1,8 @@
 <style>
     .brand-mark-login {
-        max-height: 80px;
+        max-height: 140px;
         width: auto;
-        margin-bottom: 10px;
-        filter: brightness(0) invert(1);
+        margin-bottom: 20px;
     }
 </style>
 <main class="auth-shell">

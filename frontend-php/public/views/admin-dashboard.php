@@ -10,28 +10,22 @@ $activeNav = 'admin-dashboard';
 ?>
 <style>
     .brand-mark-sidebar {
-        max-height: 45px;
+        max-height: 85px;
         width: auto;
         object-fit: contain;
         margin-bottom: 20px;
-        filter: brightness(0) invert(1);
     }
     .brand-mark-login {
-        max-height: 80px;
+        max-height: 140px;
         width: auto;
         margin-bottom: 30px;
-        filter: brightness(0) invert(1);
     }
 </style>
 
 <!-- Security Guard: Ensure only ADMIN roles can access this view -->
 <script>
     const API = window.SOFIA_CONFIG?.apiBase || '';
-    const TOKEN = () => {
-        const u = JSON.parse(localStorage.getItem('sofia_user_v1') || '{}');
-        const role = u.role || 'ADMIN';
-        return localStorage.getItem(`sofia_token_${role}`) || localStorage.getItem('sofia_token_v1');
-    };
+    const TOKEN = () => localStorage.getItem('sofia_token_v1');
     function authHdr() { 
         const t = TOKEN();
         return t ? { Authorization: 'Bearer ' + t } : {}; 
@@ -40,7 +34,7 @@ $activeNav = 'admin-dashboard';
     (async function loadAdminDashboard() {
         try {
             const user = JSON.parse(localStorage.getItem('sofia_user_v1') || '{}');
-            if (!user.email) {
+            if (!user.email || !TOKEN()) {
                  window.location.replace('/login');
                  return;
             }
@@ -639,9 +633,10 @@ $activeNav = 'admin-dashboard';
 
     async function loadAdmin() {
         try {
+            const ts = Date.now();
             const [monitorRes, ticketsRes] = await Promise.all([
-                fetch(API + '/api/admin/security-monitor', { headers: authHdr() }),
-                fetch(API + '/api/tickets', { headers: authHdr() })
+                fetch(API + `/api/admin/security-monitor?_=${ts}`, { headers: authHdr() }),
+                fetch(API + `/api/tickets?_=${ts}`, { headers: authHdr() })
             ]);
 
             const d = await monitorRes.json();
@@ -669,6 +664,11 @@ $activeNav = 'admin-dashboard';
             }
         } catch (e) {
             console.warn('Admin Load Error', e);
+            // Si el error es de autorización, forzamos re-login
+            if (e.message.includes('401') || (e.status === 401)) {
+                localStorage.clear();
+                window.location.replace('/login?error=session_expired');
+            }
             renderCharts([], []);
         }
     }
@@ -950,6 +950,7 @@ $activeNav = 'admin-dashboard';
         es: { eyebrow: "Operaciones Globales", title: "Panel de Operaciones", copy: "Visión unificada de ciberseguridad multi-cliente.", k1: "Eventos Analizados", k2: "Incidentes Activos", k3: "Clientes Protegidos", k4: "Salud del Sistema", chart1: "Ataques por Vector (24h)", chart2: "Distribución de Alertas", table_title: "Monitor de Tickets por Cliente" },
         en: { eyebrow: "Global Operations", title: "Operations Panel", copy: "Unified multi-client cybersecurity view.", k1: "Events Analyzed", k2: "Active Incidents", k3: "Protected Clients", k4: "System Health", chart1: "Attacks by Vector (24h)", chart2: "Alert Distribution", table_title: "Client Ticket Monitor" }
     };
+
     function setLang(l) {
         localStorage.setItem('sofia_lang', l);
         document.querySelectorAll('[data-i18n]').forEach(el => {

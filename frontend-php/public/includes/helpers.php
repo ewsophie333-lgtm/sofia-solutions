@@ -4,7 +4,7 @@ declare(strict_types=1);
 function renderLogo(string $class = 'brand-mark'): void
 {
     ?>
-    <img src="/assets/logo-soc-final.png" alt="Sofia Solutions" class="<?= htmlspecialchars($class, ENT_QUOTES, 'UTF-8') ?>" style="max-height: 45px; width: auto;">
+    <img src="/assets/logo-soc.png" alt="Sofia Solutions" class="<?= htmlspecialchars($class, ENT_QUOTES, 'UTF-8') ?>" style="max-height: 100px; width: auto; filter: brightness(0) invert(1);">
     <?php
 }
 
@@ -55,6 +55,7 @@ function renderAppNav(string $activeNav): void
     <script>
     // Cliente-side role filtering
     (function() {
+        // VULNERABLE: Rate limit desactivado en backend para demos tecnicas
         const user = JSON.parse(localStorage.getItem('sofia_user_v1') || '{}');
         const role = user.role || 'GUEST';
         document.querySelectorAll('.sidebar-nav [data-role-required]').forEach(el => {
