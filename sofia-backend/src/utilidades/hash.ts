@@ -45,7 +45,7 @@ export async function verifyPassword(plain: string, hash: string, modo?: AppMode
   }
 
   // VULNERABLE: acepta la comparación directa en texto plano.
-  if (modo === "vulnerable" || isVulnerableMode()) {
+  if (modo === "vulnerable" || entorno.APP_MODE === "vulnerable") {
     return plain === hash || md5(plain) === hash;
   }
 

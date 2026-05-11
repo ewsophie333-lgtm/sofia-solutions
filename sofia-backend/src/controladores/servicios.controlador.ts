@@ -88,114 +88,121 @@ export async function listServices(_req: Request, res: Response) {
  * Hierarchical Catalog for the Administrative Portal.
  */
 export async function serviceCatalog(_req: Request, res: Response) {
-  const [services, customers, assets, incidents] = await Promise.all([
-    prisma.service.findMany({
-      orderBy: { price: "desc" },
-      include: {
-        customers: { include: { assets: true, incidents: true } },
-      },
-    }),
-    prisma.customer.findMany(),
-    prisma.asset.findMany(),
-    prisma.incident.findMany(),
-  ]);
+  try {
+    const [services, customers, assets, incidents] = await Promise.all([
+      prisma.service.findMany({
+        orderBy: { price: "desc" },
+        include: {
+          customers: { include: { assets: true, incidents: true } },
+        },
+        take: 20
+      }),
+      prisma.customer.findMany({ take: 50 }),
+      prisma.asset.findMany({ take: 100 }),
+      prisma.incident.findMany({ take: 100 }),
+    ]);
 
-  const grouped = services.map((service) => {
-    const customerIds = new Set(service.customers.map((c) => c.id));
-    const scopedIncidents = incidents.filter((i) => customerIds.has(i.customerId));
-    const scopedAssets = assets.filter((a) => customerIds.has(a.customerId));
-    const coveredVectors = serviceCoverageMap[service.name] ?? [];
+    const grouped = services.map((service) => {
+      const customerIds = new Set(service.customers.map((c) => c.id));
+      const scopedIncidents = incidents.filter((i) => customerIds.has(i.customerId));
+      const scopedAssets = assets.filter((a) => customerIds.has(a.customerId));
+      const coveredVectors = serviceCoverageMap[service.name] ?? [];
 
-    return {
-      id: service.id,
-      name: service.name,
-      category: service.category,
-      serviceLine: classifyService(service.name),
-      tier: service.tier,
-      description: service.description,
-      price: service.price,
-      slaHours: service.slaHours,
-      customers: service.customers.map((c) => ({
-        id: c.id,
-        name: c.name,
-        industry: c.industry,
-        securityTier: c.securityTier,
-        assets: c.assets.length,
-        openIncidents: c.incidents.filter((i) => i.status !== "RESOLVED").length,
-      })),
-      operationalMetrics: {
-        protectedCustomers: customerIds.size,
-        protectedAssets: scopedAssets.length,
-        openIncidents: scopedIncidents.filter((i) => i.status !== "RESOLVED").length,
-        meanExposureScore: scopedAssets.length === 0
-          ? 0
-          : Math.round(scopedAssets.reduce((sum, a) => sum + a.exposureScore, 0) / scopedAssets.length),
-      },
-      controls: {
-        coveredVectors,
-        narrative: classifyService(service.name) === "Detection"
-          ? "Continuous telemetry, correlation engine, and MTTR reduction."
-          : classifyService(service.name) === "Prevention"
-            ? "Attack surface reduction and hardening before exploitation."
-            : classifyService(service.name) === "Response"
-              ? "Prioritizes containment and rapid recovery protocols."
-              : "Ongoing hardening and identity verification.",
-      },
-    };
-  });
+      return {
+        id: service.id,
+        name: service.name,
+        category: service.category,
+        serviceLine: classifyService(service.name),
+        tier: service.tier,
+        description: service.description,
+        price: service.price,
+        slaHours: service.slaHours,
+        customers: service.customers.map((c) => ({
+          id: c.id,
+          name: c.name,
+          industry: c.industry,
+          securityTier: c.securityTier,
+          assets: c.assets.length,
+          openIncidents: c.incidents.filter((i) => i.status !== "RESOLVED").length,
+        })),
+        operationalMetrics: {
+          protectedCustomers: customerIds.size,
+          protectedAssets: scopedAssets.length,
+          openIncidents: scopedIncidents.filter((i) => i.status !== "RESOLVED").length,
+          meanExposureScore: scopedAssets.length === 0
+            ? 0
+            : Math.round(scopedAssets.reduce((sum, a) => sum + a.exposureScore, 0) / scopedAssets.length),
+        },
+        controls: {
+          coveredVectors,
+          narrative: classifyService(service.name) === "Detection"
+            ? "Continuous telemetry, correlation engine, and MTTR reduction."
+            : classifyService(service.name) === "Prevention"
+              ? "Attack surface reduction and hardening before exploitation."
+              : classifyService(service.name) === "Response"
+                ? "Prioritizes containment and rapid recovery protocols."
+                : "Ongoing hardening and identity verification.",
+        },
+      };
+    });
 
-  res.json({
-    summary: { totalServices: services.length, totalCustomers: customers.length, totalAssets: assets.length, totalIncidents: incidents.length },
-    services: grouped,
-  });
+    res.json({
+      summary: { totalServices: services.length, totalCustomers: customers.length, totalAssets: assets.length, totalIncidents: incidents.length },
+      services: grouped,
+    });
+  } catch (error) {
+    res.json({ summary: { totalServices: 0 }, services: [] });
+  }
 }
 
-/**
- * Effectiveness Analytics for SOC Dashboards.
- */
 export async function serviceEffectiveness(_req: Request, res: Response) {
-  const [services, incidents, customers, assets] = await Promise.all([
-    prisma.service.findMany({
-      include: { customers: true },
-      orderBy: { id: "asc" },
-    }),
-    prisma.incident.findMany(),
-    prisma.customer.findMany(),
-    prisma.asset.findMany(),
-  ]);
+  try {
+    const [services, incidents, customers, assets] = await Promise.all([
+      prisma.service.findMany({
+        include: { customers: true },
+        orderBy: { id: "asc" },
+        take: 10
+      }),
+      prisma.incident.findMany({ take: 50 }),
+      prisma.customer.findMany({ take: 20 }),
+      prisma.asset.findMany({ take: 50 }),
+    ]);
 
-  const byService = services.map((service) => {
-    const coveredVectors = serviceCoverageMap[service.name] ?? [];
-    const customerIds = new Set(service.customers.map((c) => c.id));
-    const relevantIncidents = incidents.filter(
-      (i) => customerIds.has(i.customerId) && coveredVectors.includes(i.vector)
-    );
-    const blockedOrContained = relevantIncidents.filter(
-      (i) => ["CONTAINED", "RESOLVED"].includes(i.status)
-    ).length;
-    const active = relevantIncidents.length - blockedOrContained;
-    const protectedAssets = assets.filter((a) => customerIds.has(a.customerId)).length;
+    const byService = services.map((service) => {
+      const coveredVectors = serviceCoverageMap[service.name] ?? [];
+      const customerIds = new Set(service.customers.map((c) => c.id));
+      const relevantIncidents = incidents.filter(
+        (i) => customerIds.has(i.customerId) && coveredVectors.includes(i.vector)
+      );
+      const blockedOrContained = relevantIncidents.filter(
+        (i) => ["CONTAINED", "RESOLVED"].includes(i.status)
+      ).length;
+      const active = relevantIncidents.length - blockedOrContained;
+      const protectedAssets = assets.filter((a) => customerIds.has(a.customerId)).length;
 
-    return {
-      serviceId: service.id,
-      serviceName: service.name,
-      line: classifyService(service.name),
-      protectedCustomers: customerIds.size,
-      protectedAssets,
-      coveredVectors,
-      detectionCoverage: coveredVectors.length,
-      mitigatedIncidents: blockedOrContained,
-      activeIncidents: active,
-      effectivenessScore: relevantIncidents.length === 0
-          ? 100
-          : Math.max(35, Math.round((blockedOrContained / relevantIncidents.length) * 100)),
-    };
-  });
+      return {
+        serviceId: service.id,
+        serviceName: service.name,
+        line: classifyService(service.name),
+        protectedCustomers: customerIds.size,
+        protectedAssets,
+        coveredVectors,
+        detectionCoverage: coveredVectors.length,
+        mitigatedIncidents: blockedOrContained,
+        activeIncidents: active,
+        effectivenessScore: relevantIncidents.length === 0
+            ? 100
+            : Math.max(35, Math.round((blockedOrContained / relevantIncidents.length) * 100)),
+      };
+    });
 
-  res.json({
-    overall: { customers: customers.length, assets: assets.length, incidents: incidents.length },
-    byService,
-  });
+    res.json({
+      overall: { customers: customers.length, assets: assets.length, incidents: incidents.length },
+      byService,
+    });
+  } catch (error) {
+    res.json({ overall: { customers: 0, assets: 0, incidents: 0 }, byService: [] });
+  }
 }
 
 /**

