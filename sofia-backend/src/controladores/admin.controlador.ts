@@ -209,6 +209,7 @@ export async function securityMonitor(_req: Request, res: Response) {
         severity: i.severity,
         type: i.title,
         sourceIp: i.sourceIp,
+        sourceCountry: i.sourceCountry,
         destination: i.asset?.hostname || 'Unknown',
         status: i.status.charAt(0) + i.status.slice(1).toLowerCase(),
       }));

@@ -29,7 +29,7 @@ services:
       PORT: 8001
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/sofia_solutions
       APP_MODE: ${APP_MODE:-secure} # Determina si está en modo vulnerable o seguro
-      CORS_ORIGIN: http://localhost:8000
+      CORS_ORIGIN: "http://localhost:8000,https://sofia-solutions.serveousercontent.com"
       JWT_SECRET: ${JWT_SECRET:-sofia-super-secret-key-2026}
       N8N_WEBHOOK_URL: http://n8n:5678/webhook/alert
     volumes:

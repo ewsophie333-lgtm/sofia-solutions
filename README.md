@@ -64,10 +64,18 @@ Dentro de la carpeta `scripts/`, se encuentra el **Sofia Kit Auditor** (`sofia-a
 2. Repite los ataques anteriores. El **WAF Shield** bloqueará las inyecciones y el **Rate Limiting** cortará la conexión tras 3 intentos.
 3. Explica el uso de **Bcrypt (12 rondas)** y la validación estricta de **Tokens JWT**.
 
-### 3. Monitorización SOC
-1. Muestra el **Mapa de Amenazas** en el SOC (`/admin`). Los puntos rojos indican el origen de los ataques bloqueados.
-2. Muestra las alertas automáticas recibidas por correo (Integración con **n8n**).
-3. Pulsa el botón **SOS** desde el panel del cliente para simular una respuesta ante incidentes prioritaria.
+### 3. Monitorización SOC y Enriquecimiento de Telemetría
+1. **Rastreo Geográfico**: El panel `/admin` ahora visualiza la **IP de origen** y el **País (Zona)** de los atacantes en tiempo real dentro del feed de incidentes.
+2. **Alertas Inteligentes (n8n)**: Cada intrusión crítica activa un flujo de n8n que envía un correo al SOC enriquecido con los metadatos geográficos del atacante.
+3. **Validación de Identidad**: Muestra el uso de **Bcrypt (12 rondas)** y la monitorización de sesiones activas.
+
+---
+
+## 🛡️ Arquitectura de Seguridad
+Sofia Solutions implementa una defensa en profundidad:
+- **Perímetro:** WAF Rules y Rate Limiting.
+- **Lógica:** Validación de Schemas y Sanitización.
+- **SOC:** Telemetría enriquecida con **IP/Geo** y respuesta ante incidentes automatizada.
 
 ---
 

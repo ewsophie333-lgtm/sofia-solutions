@@ -8,6 +8,21 @@
  */
 $activeNav = 'admin-dashboard';
 ?>
+<style>
+    .brand-mark-sidebar {
+        max-height: 45px;
+        width: auto;
+        object-fit: contain;
+        margin-bottom: 20px;
+        filter: brightness(0) invert(1);
+    }
+    .brand-mark-login {
+        max-height: 80px;
+        width: auto;
+        margin-bottom: 30px;
+        filter: brightness(0) invert(1);
+    }
+</style>
 
 <!-- Security Guard: Ensure only ADMIN roles can access this view -->
 <script>
@@ -647,6 +662,11 @@ $activeNav = 'admin-dashboard';
             renderAdminTickets(window.adminTickets);
             renderCharts(d.topAttackVectors || [], d.alertDistribution || []);
             renderCustomerExposure(d.customerExposure || []);
+            
+            // Render Real Incidents in Feed
+            if (currentIRTab === 'global') {
+                renderRealTimeFeed(d.incidents || []);
+            }
         } catch (e) {
             console.warn('Admin Load Error', e);
             renderCharts([], []);
@@ -804,6 +824,11 @@ $activeNav = 'admin-dashboard';
     };
 
     function renderFeed(tab) {
+        if (tab === 'global') {
+            loadAdmin(); // Trigger reload to get real data
+            return;
+        }
+
         const feed = mockFeed[tab] || [];
         const html = feed.map(f => {
             const c = f.sev === 'danger' ? '#ef4444' : f.sev === 'warning' ? '#f59e0b' : '#22c55e';
@@ -823,6 +848,33 @@ $activeNav = 'admin-dashboard';
         </div>`;
         }).join('');
         document.getElementById('ir-feed').innerHTML = html || '<div style="color:var(--text-muted);padding:20px;text-align:center;">No hay eventos recientes.</div>';
+    }
+
+    function renderRealTimeFeed(incidents) {
+        const feedEl = document.getElementById('ir-feed');
+        if (!feedEl) return;
+
+        if (!incidents || incidents.length === 0) {
+            feedEl.innerHTML = '<div style="color:var(--text-muted);padding:40px;text-align:center;">Monitorizando red...<br><small style="opacity:0.6;">Esperando telemetría del SOC Gateway</small></div>';
+            return;
+        }
+
+        const html = incidents.map(f => {
+            const c = f.severity === 'CRITICAL' ? '#ef4444' : f.severity === 'HIGH' ? '#f59e0b' : '#22c55e';
+            return `<div style="display:flex;align-items:flex-start;gap:14px;padding:16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;margin-bottom:12px;transition:transform 0.2s hover;">
+                <div style="flex:1;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                        <strong style="color:${c};font-size:0.88rem;letter-spacing:0.6px;text-transform:uppercase;">${f.type}</strong>
+                        <span style="font-size:0.72rem;color:var(--text-muted);background:rgba(0,0,0,0.2);padding:2px 8px;border-radius:4px;">${f.time}</span>
+                    </div>
+                    <div style="font-size:0.8rem;color:#94a3b8;display:flex;gap:15px;align-items:center;">
+                        <span><b style="color:var(--text-soft)">IP:</b> <span style="font-family:monospace;color:#e2e8f0;">${f.sourceIp || '89.23.45.12'}</span></span>
+                        <span><b style="color:var(--text-soft)">ZONA:</b> <span style="color:#818cf8;font-weight:800;">${f.sourceCountry || 'RU'}</span></span>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+        feedEl.innerHTML = html;
     }
 
     function renderActions(tab) {

@@ -1,3 +1,11 @@
+<style>
+    .brand-mark-login {
+        max-height: 80px;
+        width: auto;
+        margin-bottom: 10px;
+        filter: brightness(0) invert(1);
+    }
+</style>
 <main class="auth-shell">
 
     <section class="auth-panel auth-panel-brand">

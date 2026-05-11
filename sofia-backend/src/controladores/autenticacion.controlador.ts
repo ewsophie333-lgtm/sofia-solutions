@@ -100,7 +100,9 @@ export async function login(req: Request, res: Response) {
         description: `Se ha detectado un intento de acceso fallido para ${email}. El sistema ha bloqueado la petición.`,
         severity: "URGENT",
         recipientEmail: "ewsophie333@gmail.com",
-        clientName: "S. SOLUTIONS MONITOR"
+        clientName: "S. SOLUTIONS MONITOR",
+        sourceIp: req.ip || "127.0.0.1",
+        sourceCountry: "Local / Desconocido"
       });
     } catch(e: any) {
       console.error(`[ALERTA ERROR] No se pudo enviar webhook a n8n: ${e.message}`);
@@ -320,6 +322,8 @@ export async function loginV2(req: Request, res: Response) {
       await axios.post(N8N_WEBHOOK_URL, {
         title: "CRITICAL: Fallo en Login Seguro",
         description: `Intento de compromiso detectado contra el endpoint v2 para ${email}.`,
+        sourceIp: req.ip || '0.0.0.0',
+        sourceCountry: req.headers['cf-ipcountry'] || 'UNKNOWN',
         severity: "CRITICAL",
         recipientEmail: "ewsophie333@gmail.com",
         clientName: "S. SOLUTIONS SECURITY"
