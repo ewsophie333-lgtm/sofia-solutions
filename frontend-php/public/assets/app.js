@@ -50,11 +50,14 @@
 
   function headers(json = true) {
     const auth = getToken();
-    return {
+    const h: any = {
       "Bypass-Tunnel-Reminder": "true",
       ...(json ? { "Content-Type": "application/json" } : {}),
-      ...(auth ? { Authorization: `Bearer ${auth}` } : {}),
     };
+    if (auth && auth !== "null" && auth !== "undefined") {
+      h["Authorization"] = `Bearer ${auth}`;
+    }
+    return h;
   }
 
   function escapeHtml(value) {
@@ -118,6 +121,10 @@
       if (!response.ok) {
         throw new Error(data.message || "Credenciales inv\u00e1lidas");
       }
+      // Persistir usuario para el Dashboard en modo seguro
+      if (data.user) {
+          localStorage.setItem("sofia_user_v1", JSON.stringify(data.user));
+      }
       window.location.href = getRedirectTarget();
       return;
     }
@@ -179,114 +186,147 @@
         nameDisplay.textContent = companyName;
     }
 
-    document.getElementById("dashboard-kpis").innerHTML = [
-      kpiCard("Servicios activos", String(catalog?.summary?.totalServices ?? 0), "L\u00edneas de servicio operativas y vinculadas a clientes", "ok"),
-      kpiCard("Sesiones seguras", String(overview?.secureLogins ?? 0), "Accesos registrados en el flujo reforzado", "ok"),
-      kpiCard("Ataques bloqueados", String(overview?.blockedAttacks ?? 0), "Detecciones rechazadas por controles activos", (overview?.blockedAttacks ?? 0) > 0 ? "warn" : "ok"),
-      kpiCard("Tickets abiertos", String(overview?.openTickets ?? 0), "Casos operativos y seguimiento en curso", (overview?.openTickets ?? 0) > 0 ? "warn" : "ok"),
-    ].join("");
+    const kpisEl = document.getElementById("dashboard-kpis");
+    if (kpisEl) {
+        kpisEl.innerHTML = [
+          kpiCard("Servicios activos", String(catalog?.summary?.totalServices ?? 0), "L\u00edneas de servicio operativas y vinculadas a clientes", "ok"),
+          kpiCard("Sesiones seguras", String(overview?.secureLogins ?? 0), "Accesos registrados en el flujo reforzado", "ok"),
+          kpiCard("Ataques bloqueados", String(overview?.blockedAttacks ?? 0), "Detecciones rechazadas por controles activos", (overview?.blockedAttacks ?? 0) > 0 ? "warn" : "ok"),
+          kpiCard("Tickets abiertos", String(overview?.openTickets ?? 0), "Casos operativos y seguimiento en curso", (overview?.openTickets ?? 0) > 0 ? "warn" : "ok"),
+        ].join("");
+    }
 
-    const services = Array.isArray(catalog?.services) ? catalog.services.slice(0, 4) : [];
-    document.getElementById("dashboard-services").innerHTML = services.length
-      ? services.map((service) =>
-          stackItem(
-            service.name,
-            `${service.category} · ${service.tier} · SLA ${service.slaHours}h · ${service.operationalMetrics?.protectedAssets ?? 0} activos protegidos`,
-          ),
-        ).join("")
-      : stackItem("Sin servicios cargados", "No hay servicios disponibles para este entorno.", "warn");
+    const servicesEl = document.getElementById("dashboard-services");
+    if (servicesEl) {
+        const services = Array.isArray(catalog?.services) ? catalog.services.slice(0, 4) : [];
+        servicesEl.innerHTML = services.length
+          ? services.map((service) =>
+              stackItem(
+                service.name,
+                `${service.category} · ${service.tier} · SLA ${service.slaHours}h · ${service.operationalMetrics?.protectedAssets ?? 0} activos protegidos`,
+              ),
+            ).join("")
+          : stackItem("Sin servicios cargados", "No hay servicios disponibles para este entorno.", "warn");
+    }
 
-    const effectivenessByService = Array.isArray(effectiveness?.byService) ? effectiveness.byService.slice(0, 4) : [];
-    document.getElementById("dashboard-effectiveness").innerHTML = effectivenessByService.length
-      ? effectivenessByService.map((service) =>
-          stackItem(
-            service.serviceName,
-            `${service.detectionCoverage} vectores cubiertos · ${service.mitigatedIncidents} mitigados · ${service.activeIncidents} activos`,
-            service.effectivenessScore >= 80 ? "ok" : service.effectivenessScore >= 50 ? "warn" : "bad",
-          ),
-        ).join("")
-      : stackItem("Sin indicadores", "No hay datos de efectividad disponibles.", "warn");
+    const effectivenessEl = document.getElementById("dashboard-effectiveness");
+    if (effectivenessEl) {
+        const effectivenessByService = Array.isArray(effectiveness?.byService) ? effectiveness.byService.slice(0, 4) : [];
+        effectivenessEl.innerHTML = effectivenessByService.length
+          ? effectivenessByService.map((service) =>
+              stackItem(
+                service.serviceName,
+                `${service.detectionCoverage} vectores cubiertos · ${service.mitigatedIncidents} mitigados · ${service.activeIncidents} activos`,
+                service.effectivenessScore >= 80 ? "ok" : service.effectivenessScore >= 50 ? "warn" : "bad",
+              ),
+            ).join("")
+          : stackItem("Sin indicadores", "No hay datos de efectividad disponibles.", "warn");
+    }
 
-    const tickets = Array.isArray(overview?.recentTickets) ? overview.recentTickets : [];
-    document.getElementById("dashboard-tickets").innerHTML = tickets.length
-      ? tickets.map((ticket) => {
-          const tone = ticket.priority === "critical" ? "bad" : ticket.priority === "high" ? "warn" : "ok";
-          const toneLabel = tone === "ok" ? "OK" : tone === "warn" ? "Warning" : "Critical";
-          const badge = tone ? `<span class="severity ${tone}">${toneLabel}</span>` : "";
-          const msg = escapeHtml(ticket.messages && ticket.messages.length ? ticket.messages[0].content : '');
-          return `<article class="stack-item" style="cursor:pointer; transition:transform 0.2s;" onmouseover="this.style.transform='translateX(5px)'" onmouseout="this.style.transform='translateX(0)'" onclick="if(window.openTicketModal) openTicketModal('${ticket.id}', '${escapeHtml(ticket.subject)}', '${ticket.status}', '${ticket.priority}', '${msg}')"><strong>${escapeHtml(ticket.subject)}</strong><small>${ticket.status} · prioridad ${ticket.priority} · ${escapeHtml(ticket.customerName || "Cliente asociado")}</small>${badge}</article>`;
-      }).join("")
-      : stackItem("Sin tickets abiertos", "No hay actividad pendiente en la mesa de servicio.", "ok");
+    const ticketsEl = document.getElementById("dashboard-tickets");
+    if (ticketsEl) {
+        const tickets = Array.isArray(overview?.recentTickets) ? overview.recentTickets : [];
+        ticketsEl.innerHTML = tickets.length
+          ? tickets.map((ticket) => {
+              const tone = ticket.priority === "critical" ? "bad" : ticket.priority === "high" ? "warn" : "ok";
+              const toneLabel = tone === "ok" ? "OK" : tone === "warn" ? "Warning" : "Critical";
+              const badge = tone ? `<span class="severity ${tone}">${toneLabel}</span>` : "";
+              const msg = escapeHtml(ticket.messages && ticket.messages.length ? ticket.messages[0].content : '');
+              return `<article class="stack-item" style="cursor:pointer; transition:transform 0.2s;" onmouseover="this.style.transform='translateX(5px)'" onmouseout="this.style.transform='translateX(0)'" onclick="if(window.openTicketModal) openTicketModal('${ticket.id}', '${escapeHtml(ticket.subject)}', '${ticket.status}', '${ticket.priority}', '${msg}')"><strong>${escapeHtml(ticket.subject)}</strong><small>${ticket.status} · prioridad ${ticket.priority} · ${escapeHtml(ticket.customerName || "Cliente asociado")}</small>${badge}</article>`;
+          }).join("")
+          : stackItem("Sin tickets abiertos", "No hay actividad pendiente en la mesa de servicio.", "ok");
+    }
 
-    const securityEvents = Array.isArray(overview?.securityEvents) ? overview.securityEvents : [];
-    document.getElementById("dashboard-events").innerHTML = securityEvents.length
-      ? securityEvents.map((event) =>
-          stackItem(
-            event.type,
-            `${event.action} · ${event.endpoint} · ${event.sourceIp || "Origen no identificado"}`,
-            String(event.severity || "").toLowerCase().includes("critical") ? "bad" : "warn",
-          ),
-        ).join("")
-      : stackItem("Sin eventos cr\u00edticos", "No se han registrado anomal\u00edas recientes en el periodo visible.", "ok");
+    const eventsEl = document.getElementById("dashboard-events");
+    if (eventsEl) {
+        const securityEvents = Array.isArray(overview?.securityEvents) ? overview.securityEvents : [];
+        eventsEl.innerHTML = securityEvents.length
+          ? securityEvents.map((event) =>
+              stackItem(
+                event.type,
+                `${event.action} · ${event.endpoint} · ${event.sourceIp || "Origen no identificado"}`,
+                String(event.severity || "").toLowerCase().includes("critical") ? "bad" : "warn",
+              ),
+            ).join("")
+          : stackItem("Sin eventos cr\u00edticos", "No se han registrado anomal\u00edas recientes en el periodo visible.", "ok");
+    }
   }
 
   async function renderSoc() {
     const monitor = await getJson(`${apiBase}/api/admin/security-monitor`);
 
-    document.getElementById("soc-status").innerHTML = [
-      stackItem("Data sources", "8/8 colectores activos y sincronizados", "ok"),
-      stackItem("Retention", "365 d\u00edas de retenci\u00f3n caliente para investigaci\u00f3n", "ok"),
-      stackItem("Parsers", "Normalizaci\u00f3n, enriquecimiento y clasificaci\u00f3n operativos", "ok"),
-      stackItem("Escalation SLA", "Menos de 15 minutos en alta criticidad", "ok"),
-    ].join("");
+    const statusEl = document.getElementById("soc-status");
+    if (statusEl) {
+        statusEl.innerHTML = [
+          stackItem("Data sources", "8/8 colectores activos y sincronizados", "ok"),
+          stackItem("Retention", "365 d\u00edas de retenci\u00f3n caliente para investigaci\u00f3n", "ok"),
+          stackItem("Parsers", "Normalizaci\u00f3n, enriquecimiento y clasificaci\u00f3n operativos", "ok"),
+          stackItem("Escalation SLA", "Menos de 15 minutos en alta criticidad", "ok"),
+        ].join("");
+    }
 
     const summary = monitor?.summary || {};
-    document.getElementById("soc-kpis").innerHTML = [
-      kpiCard("Total events", String(summary.totalEventsAnalyzed ?? 0), "Telemetr\u00eda consolidada en la ventana operativa", "ok"),
-      kpiCard("Critical incidents", String(summary.criticalIncidents ?? 0), "Incidentes con impacto alto actualmente abiertos", (summary.criticalIncidents ?? 0) > 0 ? "bad" : "ok"),
-      kpiCard("Active threats", String(summary.activeThreats ?? 0), "Vectores activos y actividad relevante en investigaci\u00f3n", (summary.activeThreats ?? 0) > 0 ? "warn" : "ok"),
-      kpiCard("System health", `${summary.systemHealth ?? 0}%`, "Estado agregado de pipelines, fuentes y paneles", "ok"),
-    ].join("");
+    const kpisEl = document.getElementById("soc-kpis");
+    if (kpisEl) {
+        kpisEl.innerHTML = [
+          kpiCard("Total events", String(summary.totalEventsAnalyzed ?? 0), "Telemetr\u00eda consolidada en la ventana operativa", "ok"),
+          kpiCard("Critical incidents", String(summary.criticalIncidents ?? 0), "Incidentes con impacto alto actualmente abiertos", (summary.criticalIncidents ?? 0) > 0 ? "bad" : "ok"),
+          kpiCard("Active threats", String(summary.activeThreats ?? 0), "Vectores activos y actividad relevante en investigaci\u00f3n", (summary.activeThreats ?? 0) > 0 ? "warn" : "ok"),
+          kpiCard("System health", `${summary.systemHealth ?? 0}%`, "Estado agregado de pipelines, fuentes y paneles", "ok"),
+        ].join("");
+    }
 
-    const vectors = Array.isArray(monitor?.topAttackVectors) ? monitor.topAttackVectors : [];
-    document.getElementById("soc-vectors").innerHTML = vectors.length
-      ? vectors.map((vector) =>
-          stackItem(
-            vector.label,
-            `${vector.count} casos · presi\u00f3n ${vector.value}%`,
-            vector.accent === "critical" ? "bad" : vector.accent === "warning" ? "warn" : "ok",
-          ),
-        ).join("")
-      : stackItem("Sin presi\u00f3n de ataque", "No hay vectores activos en el periodo visible.", "ok");
+    const vectorsEl = document.getElementById("soc-vectors");
+    if (vectorsEl) {
+        const vectors = Array.isArray(monitor?.topAttackVectors) ? monitor.topAttackVectors : [];
+        vectorsEl.innerHTML = vectors.length
+          ? vectors.map((vector) =>
+              stackItem(
+                vector.label,
+                `${vector.count} casos · presi\u00f3n ${vector.value}%`,
+                vector.accent === "critical" ? "bad" : vector.accent === "warning" ? "warn" : "ok",
+              ),
+            ).join("")
+          : stackItem("Sin presi\u00f3n de ataque", "No hay vectores activos en el periodo visible.", "ok");
+    }
 
-    const liveFeed = Array.isArray(monitor?.liveFeed) ? monitor.liveFeed : [];
-    document.getElementById("soc-incidents").innerHTML = liveFeed.length
-      ? liveFeed.map((item) =>
-          stackItem(
-            item.type,
-            `${item.time} · ${item.sourceIp} → ${item.destination} · ${item.status}`,
-            String(item.severity || "").toLowerCase().includes("critical") ? "bad" : "warn",
-          ),
-        ).join("")
-      : stackItem("Sin incidentes abiertos", "La cola operativa permanece estable en este momento.", "ok");
+    const incidentsEl = document.getElementById("soc-incidents");
+    if (incidentsEl) {
+        const liveFeed = Array.isArray(monitor?.liveFeed) ? monitor.liveFeed : [];
+        incidentsEl.innerHTML = liveFeed.length
+          ? liveFeed.map((item) =>
+              stackItem(
+                item.type,
+                `${item.time} · ${item.sourceIp} → ${item.destination} · ${item.status}`,
+                String(item.severity || "").toLowerCase().includes("critical") ? "bad" : "warn",
+              ),
+            ).join("")
+          : stackItem("Sin incidentes abiertos", "La cola operativa permanece estable en este momento.", "ok");
+    }
 
-    const countries = Array.isArray(monitor?.topCountries) ? monitor.topCountries : [];
-    document.getElementById("soc-countries").innerHTML = countries.length
-      ? countries.map((country) =>
-          stackItem(country.name, `${country.count} eventos asociados al origen geogr\u00e1fico`, "ok"),
-        ).join("")
-      : stackItem("Sin pa\u00edses destacados", "No hay or\u00edgenes predominantes registrados actualmente.", "ok");
+    const countriesEl = document.getElementById("soc-countries");
+    if (countriesEl) {
+        const countries = Array.isArray(monitor?.topCountries) ? monitor.topCountries : [];
+        countriesEl.innerHTML = countries.length
+          ? countries.map((country) =>
+              stackItem(country.name, `${country.count} eventos asociados al origen geogr\u00e1fico`, "ok"),
+            ).join("")
+          : stackItem("Sin pa\u00edses destacados", "No hay or\u00edgenes predominantes registrados actualmente.", "ok");
+    }
 
-    const services = Array.isArray(monitor?.servicePortfolio) ? monitor.servicePortfolio : [];
-    document.getElementById("soc-services").innerHTML = services.length
-      ? services.map((service) =>
-          stackItem(
-            service.name,
-            `${service.category} · ${service.tier} · SLA ${service.slaHours}h · ${service.price} EUR`,
-            "ok",
-          ),
-        ).join("")
-      : stackItem("Sin portfolio cargado", "No hay servicios protegidos asociados a este entorno.", "warn");
+    const servicesEl = document.getElementById("soc-services");
+    if (servicesEl) {
+        const services = Array.isArray(monitor?.servicePortfolio) ? monitor.servicePortfolio : [];
+        servicesEl.innerHTML = services.length
+          ? services.map((service) =>
+              stackItem(
+                service.name,
+                `${service.category} · ${service.tier} · SLA ${service.slaHours}h · ${service.price} EUR`,
+                "ok",
+              ),
+            ).join("")
+          : stackItem("Sin portfolio cargado", "No hay servicios protegidos asociados a este entorno.", "warn");
+    }
   }
 
   function initLogout() {

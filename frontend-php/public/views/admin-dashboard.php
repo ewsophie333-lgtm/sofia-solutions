@@ -25,7 +25,7 @@ $activeNav = 'admin-dashboard';
     <aside class="sidebar">
         <div class="sidebar-brand">
             <?php renderLogo('brand-mark brand-mark-sidebar'); ?>
-            <div class="sidebar-brand-copy"><span>Sofia Solutions</span><small>Admin v3.0</small></div>
+            <div class="sidebar-brand-copy"><span>Sofia Solutions</span><small>Su seguridad, nuestra misi\u00f3n</small></div>
         </div>
         <?php renderAppNav($activeNav); ?>
         <div style="margin-top:auto; padding:20px; border-top:1px solid rgba(255,255,255,0.05);">
@@ -538,9 +538,15 @@ $activeNav = 'admin-dashboard';
     /**
      * CORE ADMINISTRATIVE LOGIC
      */
-    const API = window.SOFIA_CONFIG?.apiBase || '';
-    const TOKEN = () => localStorage.getItem('sofia_token_v1');
-    const authHdr = () => ({ Authorization: 'Bearer ' + TOKEN() });
+    const TOKEN = () => {
+        const u = JSON.parse(localStorage.getItem('sofia_user_v1') || '{}');
+        const role = u.role || 'CLIENT';
+        return localStorage.getItem(`sofia_token_${role}`) || localStorage.getItem('sofia_token_v1');
+    };
+    const authHdr = () => {
+        const t = TOKEN();
+        return t ? { Authorization: 'Bearer ' + t } : {};
+    };
 
     /**
      * SOS EMERGENCY LISTENER (Simulated Real-time)

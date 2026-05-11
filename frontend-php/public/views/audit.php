@@ -641,9 +641,10 @@
                 addEvidence('Authentication Bypass', `User: ${d.user?.email}\nToken: ${d.accessToken.substring(0, 32)}...`);
                 const res = tLog(`[*] Acción: `, 'cyan');
                 addAction(res, 'Acceder al Panel', '<path d="M12 2L2 7l10 5 10-5-10-5z"></path>', () => {
-                    localStorage.setItem('sofia_token_v1', d.accessToken);
+                    const role = d.user?.role || 'CLIENT';
+                    localStorage.setItem(`sofia_token_${role}`, d.accessToken);
                     localStorage.setItem('sofia_user_v1', JSON.stringify(d.user));
-                    window.location.href = '/admin';
+                    window.location.href = role === 'ADMIN' ? '/admin' : '/dashboard';
                 });
             } else {
                 tLog(`[WARNING] POST parameter 'email' does not seem to be injectable`, 'red');
@@ -677,7 +678,8 @@
                     addEvidence('Cracked Credentials', `${user}:${p}`);
                     const res = tLog(`[*] Acción: `, 'cyan');
                     addAction(res, 'Autologin Admin', '<path d="M12 11V7a4 4 0 0 1 8 0v4"></path>', () => {
-                        localStorage.setItem('sofia_token_v1', d.accessToken);
+                        const role = d.user?.role || 'ADMIN';
+                        localStorage.setItem(`sofia_token_${role}`, d.accessToken);
                         localStorage.setItem('sofia_user_v1', JSON.stringify(d.user));
                         window.location.href = '/admin';
                     });
@@ -792,7 +794,7 @@ Content-Length: 0
             const res = tLog(`[*] Acción: `, 'cyan');
             addAction(res, 'Entrar como Admin (Cookie)', '<path d="M12 2L2 7l10 5 10-5-10-5z"></path>', () => {
                 // Simulación de sesión admin por cookie robada
-                localStorage.setItem('sofia_token_v1', 'STOLEN_ADMIN_TOKEN_MOCK');
+                localStorage.setItem('sofia_token_ADMIN', 'STOLEN_ADMIN_TOKEN_MOCK');
                 localStorage.setItem('sofia_user_v1', JSON.stringify({ id: 1, email: 'admin@sofia.local', role: 'ADMIN' }));
                 window.location.href = '/admin';
             });

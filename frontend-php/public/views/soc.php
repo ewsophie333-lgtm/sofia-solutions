@@ -9,7 +9,7 @@ $activeNav = 'soc';
             <?php renderLogo('brand-mark brand-mark-sidebar'); ?>
             <div class="sidebar-brand-copy">
                 <span>Sofia Solutions</span>
-                <small>SOC Monitor</small>
+                <small>Su seguridad, nuestra misi\u00f3n</small>
             </div>
         </div>
         <?php renderAppNav($activeNav); ?>
@@ -144,13 +144,21 @@ new Chart(document.getElementById('incidentTimelineChart'), {
 // API Data
 (function() {
     const api = window.SOFIA_CONFIG?.apiBase || '';
-    const token = localStorage.getItem('sofia_token_v1');
+    const getToken = () => {
+        const u = JSON.parse(localStorage.getItem('sofia_user_v1') || '{}');
+        const role = u.role || 'CLIENT';
+        return localStorage.getItem(`sofia_token_${role}`) || localStorage.getItem('sofia_token_v1');
+    };
+    const token = getToken();
     if (!token) return;
 
     fetch(api + '/api/admin/security-monitor', {
         headers: { Authorization: 'Bearer ' + token }
     })
-    .then(r => r.json())
+    .then(r => {
+        if (!r.ok) throw new Error('Unauthorized');
+        return r.json();
+    })
     .then(data => {
         // KPIs
         const kpiCards = document.querySelectorAll('#soc-kpis .kpi-card strong');

@@ -8,7 +8,7 @@
                 Solutions</span>
             <h1
                 style="margin:14px 0 16px;font-size:clamp(1.9rem,3.5vw,2.8rem);line-height:1.06;letter-spacing:-0.04em;color:#f1f5f9;">
-                Inteligencia activa.<br>Operación sin interrupciones.
+                Su seguridad,<br>Nuestra misión.
             </h1>
 
             <div style="display:flex;flex-direction:column;gap:10px;margin-top:38px;">
@@ -36,7 +36,7 @@
             <span class="card-kicker" style="color:rgba(148,163,184,0.7);">Acceso a plataforma</span>
             <h2 style="margin:12px 0 24px;font-size:1.65rem;letter-spacing:-0.03em;color:#f1f5f9;">Iniciar sesión</h2>
 
-            <form id="login-form" class="login-form" novalidate style="gap:14px;">
+            <form id="login-form" class="login-form" method="POST" onsubmit="return false;" style="gap:14px;">
                 <label style="display:grid;gap:7px;">
                     <span style="font-size:0.82rem;font-weight:600;color:rgba(148,163,184,0.9);">Correo
                         electrónico</span>

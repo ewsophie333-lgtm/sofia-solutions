@@ -10,6 +10,9 @@ services:
       dockerfile: frontend-php/Dockerfile
     ports:
       - "8000:80"
+    volumes:
+      - ./frontend-php/public:/var/www/html
+      - ./frontend-php/apache.conf:/etc/apache2/sites-available/000-default.conf
     depends_on:
       - backend
 
@@ -29,6 +32,9 @@ services:
       CORS_ORIGIN: http://localhost:8000
       JWT_SECRET: ${JWT_SECRET:-sofia-super-secret-key-2026}
       N8N_WEBHOOK_URL: http://n8n:5678/webhook/alert
+    volumes:
+      - ./sofia-backend/src:/usr/src/app/src
+      - ./sofia-backend/prisma:/usr/src/app/prisma
     ports:
       - "8001:8001"
       - "5555:5555" # Puerto opcional para Prisma Studio (herramienta DB visual)
