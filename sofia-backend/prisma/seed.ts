@@ -39,17 +39,8 @@ async function main() {
 
   const clientEmails = ["iberdrola@sofia.local", "mapfre@sofia.local", "mercadona@sofia.local", "repsol@sofia.local", "sabadell@sofia.local"];
   for (const email of clientEmails) {
-    const companyName = email.split('@')[0];
-    const capitalizedName = companyName.charAt(0).toUpperCase() + companyName.slice(1);
-
-    // Contraseñas ultra-simples para modo vulnerable para facilitar Brute Force / Demo
-    const rawPassword = process.env.APP_MODE === "vulnerable"
-      ? `${companyName}123`
-      : `S0f1a_${capitalizedName}!_2026`;
-
-    const clientPassword = process.env.APP_MODE === "vulnerable"
-      ? rawPassword
-      : await bcrypt.hash(rawPassword, 12);
+    const rawPassword = "iberdrola123";
+    const clientPassword = await bcrypt.hash(rawPassword, 12);
 
     console.log(`Creating client user: ${email} with password: ${rawPassword} (Mode: ${process.env.APP_MODE})`);
     await prisma.user.upsert({

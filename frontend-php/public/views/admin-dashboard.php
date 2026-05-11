@@ -11,9 +11,25 @@ $activeNav = 'admin-dashboard';
 
 <!-- Security Guard: Ensure only ADMIN roles can access this view -->
 <script>
-    (function () {
+    const API = window.SOFIA_CONFIG?.apiBase || '';
+    const TOKEN = () => {
         const u = JSON.parse(localStorage.getItem('sofia_user_v1') || '{}');
-        if (u.role === 'CLIENT') window.location.replace('/dashboard');
+        const role = u.role || 'ADMIN';
+        return localStorage.getItem(`sofia_token_${role}`) || localStorage.getItem('sofia_token_v1');
+    };
+    function authHdr() { 
+        const t = TOKEN();
+        return t ? { Authorization: 'Bearer ' + t } : {}; 
+    }
+
+    (async function loadAdminDashboard() {
+        try {
+            const user = JSON.parse(localStorage.getItem('sofia_user_v1') || '{}');
+            document.getElementById('admin-name-badge').textContent = (user.name || user.email || 'Admin').toUpperCase();
+            if (user.role === 'CLIENT') window.location.replace('/dashboard');
+        } catch (e) {
+            window.location.replace('/login');
+        }
     })();
 </script>
 
@@ -25,7 +41,7 @@ $activeNav = 'admin-dashboard';
     <aside class="sidebar">
         <div class="sidebar-brand">
             <?php renderLogo('brand-mark brand-mark-sidebar'); ?>
-            <div class="sidebar-brand-copy"><span>Sofia Solutions</span><small>Su seguridad, nuestra misi\u00f3n</small></div>
+            <div class="sidebar-brand-copy"><span>Sofia Solutions</span><small>Su seguridad, nuestra misión</small></div>
         </div>
         <?php renderAppNav($activeNav); ?>
         <div style="margin-top:auto; padding:20px; border-top:1px solid rgba(255,255,255,0.05);">

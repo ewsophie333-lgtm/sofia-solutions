@@ -106,16 +106,13 @@
   }
 
   async function login(mode, email, password) {
-    if (mode === "secure") {
-      const csrf = await getJson(`/api/csrf`);
-      const response = await fetch(`${apiBase}/api/v2/autenticacion/login`, {
+    const endpoint = mode === "secure" ? "/api/v2/autenticacion/login" : "/api/v1/autenticacion/login";
+    
+    try {
+      const response = await fetch(endpoint, {
         method: "POST",
-        credentials: "include",
-        headers: {
-          ...headers(),
-          "x-csrf-token": csrf.csrfToken,
-        },
-        body: JSON.stringify({ email, password }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
       });
       const data = await response.json();
       if (!response.ok) {

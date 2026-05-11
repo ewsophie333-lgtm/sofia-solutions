@@ -581,26 +581,24 @@ $activeNav = 'dashboard';
      * BACKEND INTEGRATION
      */
     const API = window.SOFIA_CONFIG?.apiBase || '';
-    const TOKEN = () => localStorage.getItem('sofia_token_v1');
-    function authHdr() { return { Authorization: 'Bearer ' + TOKEN() }; }
+    const TOKEN = () => {
+        const u = JSON.parse(localStorage.getItem('sofia_user_v1') || '{}');
+        const role = u.role || 'CLIENT';
+        return localStorage.getItem(`sofia_token_${role}`) || localStorage.getItem('sofia_token_v1');
+    };
+    function authHdr() { 
+        const t = TOKEN();
+        return t ? { Authorization: 'Bearer ' + t } : {}; 
+    }
 
     (async function loadDashboard() {
         try {
             const user = JSON.parse(localStorage.getItem('sofia_user_v1') || '{}');
 
-            // Robust welcome message logic
-            let rawName = user.companyName || user.name || user.email || 'Cliente';
-
-            // If it's an email, take the part before @
-            if (rawName.includes('@')) {
-                rawName = rawName.split('@')[0];
-            }
-
-            // Avoid "USUARIO" as a name if it's just the email prefix
-            if (rawName.toLowerCase() === 'usuario' && user.email) {
-                rawName = user.email.split('@')[0];
-            }
-
+            // Forzamos el nombre de la empresa si existe, si no, limpiamos el email
+            let rawName = user.companyName || user.name || user.email || 'CLIENTE';
+            if (rawName.includes('@')) rawName = rawName.split('@')[0];
+            
             const cleanName = rawName.toUpperCase();
             document.getElementById('welcome-user-name').textContent = cleanName;
 

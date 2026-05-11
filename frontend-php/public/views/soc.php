@@ -9,7 +9,7 @@ $activeNav = 'soc';
             <?php renderLogo('brand-mark brand-mark-sidebar'); ?>
             <div class="sidebar-brand-copy">
                 <span>Sofia Solutions</span>
-                <small>Su seguridad, nuestra misi\u00f3n</small>
+                <small>Su seguridad, nuestra misión</small>
             </div>
         </div>
         <?php renderAppNav($activeNav); ?>
