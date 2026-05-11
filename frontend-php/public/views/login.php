@@ -1,6 +1,7 @@
 <style>
+    body { font-size: 16px; }
     .brand-mark-login {
-        max-height: 140px;
+        max-height: 900px;
         width: auto;
         margin-bottom: 20px;
     }
@@ -14,8 +15,8 @@
                 style="margin-top:28px;display:block;color:rgba(255,255,255,0.45);letter-spacing:0.14em;">Sofia
                 Solutions</span>
             <h1
-                style="margin:14px 0 16px;font-size:clamp(1.9rem,3.5vw,2.8rem);line-height:1.06;letter-spacing:-0.04em;color:#f1f5f9;">
-                Su seguridad,<br>Nuestra misión.
+                style="font-size:clamp(2.4rem,6vw,4.5rem);color:#f1f5f9;line-height:1.02;letter-spacing:-0.04em;margin:16px 0 20px;">
+                Tu Seguridad,<br>Nuestra Misión.
             </h1>
 
             <div style="display:flex;flex-direction:column;gap:10px;margin-top:38px;">
@@ -93,7 +94,6 @@
 
 </main>
 <script>
-    // LIMPIEZA DE SESION AL LLEGAR AL LOGIN
-    localStorage.removeItem('sofia_token_v1');
-    localStorage.removeItem('sofia_user_v1');
+    // La limpieza de sesión ahora solo ocurre al cerrar sesión explícitamente,
+    // para evitar bucles de redirección durante el proceso de login.
 </script>

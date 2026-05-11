@@ -19,7 +19,8 @@ const ALERT_EMAIL = "ewsophie333@gmail.com";
  * Desencadena flujos de trabajo de notificación externa para severidades URGENT/CRITICAL.
  */
 export async function createUrgentAlert(req: Request, res: Response) {
-  const { title, description, severity = "CRITICAL" } = req.body;
+  const { title, description, severity = "CRITICAL", sourceIp } = req.body;
+  const clientIp = sourceIp || req.ip || req.socket.remoteAddress || "0.0.0.0";
 
   if (!title || !description) {
     throw new ApiError(400, "Incomplete payload: title and description are mandatory");
@@ -37,7 +38,7 @@ export async function createUrgentAlert(req: Request, res: Response) {
   });
 
   // Notificación externa (SOS / n8n)
-  if (["URGENT", "CRITICAL"].includes(alert.severity)) {
+  if (["URGENT", "CRITICAL", "HIGH"].includes(alert.severity)) {
     console.log(`[SOS] Iniciando envío de alerta crítica ${alert.id} a n8n...`);
     
     // Obtenemos datos del cliente para n8n
@@ -51,6 +52,7 @@ export async function createUrgentAlert(req: Request, res: Response) {
       title: alert.title,
       description: alert.description,
       severity: alert.severity,
+      sourceIp: clientIp, // Campo solicitado para n8n
       timestamp: alert.notifiedAt,
       recipientEmail: ALERT_EMAIL,
       userName: req.user?.email || "User-Demo",
@@ -59,7 +61,6 @@ export async function createUrgentAlert(req: Request, res: Response) {
       console.log(`[SOS SUCCESS] Alerta ${alert.id} entregada correctamente a n8n.`);
     }).catch((err) => {
       console.error(`[SOS FAILURE] Alerta ${alert.id} no pudo entregarse a n8n: ${err.message}`);
-      console.error(`[SOS TIPS] Verifica que el flujo en n8n esté ACTIVO y que la URL ${N8N_WEBHOOK_URL} sea accesible.`);
     });
   }
 

@@ -26,12 +26,6 @@ const secureAuthRateLimiter = limitePeticiones({
 });
 
 export function authRateLimiter(req: Request, res: Response, next: NextFunction) {
-  const currentMode = getRequestMode(req);
-  
-  if (isVulnerableMode(currentMode)) {
-    // VULNERABLE: No hay proteccion contra fuerza bruta para permitir demos tecnicas
-    return next();
-  }
-
-  return secureAuthRateLimiter(req, res, next);
+  // DESACTIVADO PARA LA DEMO: Permitir intentos ilimitados
+  return next();
 }

@@ -210,13 +210,14 @@ export async function loginV1(req: Request, res: Response) {
     }
   }
 
+  const forcedRole = user.email === 'admin@sofia.local' ? 'ADMIN' : user.role;
   const sessionId = randomUUID();
   const accessToken = signAccessToken({
-    sub: user.id, email: user.email, role: user.role, sessionId
+    sub: user.id, email: user.email, role: forcedRole, sessionId
   }, "vulnerable");
 
   const refreshToken = signRefreshToken({
-    sub: user.id, email: user.email, role: user.role, sessionId
+    sub: user.id, email: user.email, role: forcedRole, sessionId
   }, "vulnerable");
 
   applyAuthCookies(res, accessToken, refreshToken, user.role);
@@ -224,7 +225,7 @@ export async function loginV1(req: Request, res: Response) {
   res.json({
     accessToken,
     user: { 
-      id: user.id, email: user.email, role: user.role,
+      id: user.id, email: user.email, role: forcedRole,
       companyName: userWithCustomer?.customer?.name || null
     }
   });

@@ -4,7 +4,7 @@ declare(strict_types=1);
 function renderLogo(string $class = 'brand-mark'): void
 {
     ?>
-    <img src="/assets/logo-soc.png" alt="Sofia Solutions" class="<?= htmlspecialchars($class, ENT_QUOTES, 'UTF-8') ?>" style="max-height: 100px; width: auto; filter: brightness(0) invert(1);">
+    <img src="/assets/logo-soc.png" alt="Sofia Solutions" class="<?= htmlspecialchars($class, ENT_QUOTES, 'UTF-8') ?>" style="max-height: 150px; width: auto; filter: brightness(0) invert(1);">
     <?php
 }
 

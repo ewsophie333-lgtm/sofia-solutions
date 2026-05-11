@@ -397,18 +397,28 @@ $activeNav = 'dashboard';
 <script>
     function openSOS() { document.getElementById('sos-modal').style.display = 'flex'; }
     function closeSOS() { document.getElementById('sos-modal').style.display = 'none'; }
-    async function sendSOS() {
+
+    async function refreshSofiaSession() {
+        try {
+            const response = await fetch(API + '/api/autenticacion/refresh', { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem('sofia_token_v1', data.accessToken);
+                return true;
+            }
+        } catch (e) { console.error("Session refresh failed", e); }
+        return false;
+    }
+
+    async function sendSOS(retryCount = 0) {
         const reason = document.getElementById('sos-reason').value.trim();
         if (!reason) return alert('Por favor, indica una razón.');
 
         const user = JSON.parse(localStorage.getItem('sofia_user_v1') || '{}');
         const token = localStorage.getItem('sofia_token_v1');
-
-        if (!token) {
-            alert('Sesión expirada. Por favor, vuelve a iniciar sesión.');
-            window.location.href = '/login.php';
-            return;
-        }
 
         try {
             const response = await fetch(API + '/api/alerts/urgent', {
@@ -424,12 +434,17 @@ $activeNav = 'dashboard';
                 })
             });
 
+            if (response.status === 401 && retryCount < 1) {
+                const refreshed = await refreshSofiaSession();
+                if (refreshed) return sendSOS(retryCount + 1);
+            }
+
             if (!response.ok) throw new Error('Error al enviar la alerta');
 
             closeSOS();
             document.getElementById('sos-reason').value = '';
 
-            // Feedback visual Premium (Menos agresivo)
+            // Feedback visual Premium
             const t = document.createElement('div');
             t.innerHTML = `
                 <div style="position:fixed; top:24px; left:50%; transform:translateX(-50%); z-index:99999; 
@@ -437,7 +452,7 @@ $activeNav = 'dashboard';
                             padding:18px 36px; border-radius:16px; font-weight:700; 
                             border:1px solid rgba(239,68,68,0.4); 
                             box-shadow:0 15px 45px rgba(0,0,0,0.7), 0 0 15px rgba(239,68,68,0.2); 
-                            text-align:center; animation: slideDown 0.4s ease-out;">
+                            text-align:center;">
                     <div style="display:flex; align-items:center; gap:12px; justify-content:center;">
                         <span style="font-size:1.4rem;">🛡️</span>
                         <div style="text-align:left;">
@@ -447,18 +462,9 @@ $activeNav = 'dashboard';
                     </div>
                 </div>
                 <style>
-                    @keyframes slideDown {
-                        from { transform: translateX(-50%) translateY(-30px); opacity: 0; }
-                        to { transform: translateX(-50%) translateY(0); opacity: 1; }
-                    }
-                </style>
-            `;
+                    @keyframes slideDown { from { transform: translate(-50%, -100%); opacity:0; } to { transform: translate(-50%, 0); opacity:1; } }
+                </style>`;
             document.body.appendChild(t);
-            setTimeout(() => {
-                t.style.transition = 'opacity 0.5s ease-out';
-                t.style.opacity = '0';
-                setTimeout(() => t.remove(), 500);
-            }, 5000);
 
         } catch (error) {
             console.error('SOS Error:', error);

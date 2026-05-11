@@ -1,3 +1,9 @@
+<style>
+    .brand-mark-header {
+        max-height: 900px;
+        width: auto;
+    }
+</style>
 <main class="home-shell">
     <div class="page-backdrop"></div>
 

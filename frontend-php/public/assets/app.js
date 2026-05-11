@@ -52,9 +52,7 @@
   }
 
   function getToken() {
-    const user = JSON.parse(localStorage.getItem("sofia_user_v1") || "{}");
-    const role = user.role || "CLIENT";
-    return localStorage.getItem(`sofia_token_${role}`);
+    return localStorage.getItem("sofia_token_v1");
   }
 
   function getRedirectTarget(role = "CLIENT") {
@@ -143,7 +141,7 @@
       if (data.user) {
           const role = data.user.role || 'CLIENT';
           localStorage.setItem("sofia_user_v1", JSON.stringify(data.user));
-          localStorage.setItem(`sofia_token_${role}`, data.accessToken || 'SECURE_SESSION_MOCK');
+          localStorage.setItem("sofia_token_v1", data.accessToken || data.token || 'SECURE_SESSION_MOCK');
       }
       window.location.href = getRedirectTarget(data.user?.role || 'CLIENT');
     } catch (error) {
