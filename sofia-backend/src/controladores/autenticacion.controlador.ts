@@ -171,7 +171,7 @@ export async function loginV1(req: Request, res: Response) {
            data: {
              customerId: 1, assetId: 1,
              title: "Intento de Fuerza Bruta",
-             vector: "BRUTE_FORCE", severity: "HIGH", status: "OPEN",
+             vector: "BRUTE_FORCE", severity: "HIGH", status: "TRIAGE",
              sourceIp: "185.15.22.1", sourceCountry: "CN", // China para Brute Force
              attackSurface: "Login API", timelineSlot: new Date().getHours() * 2
            }
