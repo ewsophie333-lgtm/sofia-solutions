@@ -34,7 +34,7 @@ export async function notifySoc(message: string, type: string = "SECURITY_EVENT"
       timestamp: new Date(),
       recipientEmail: ALERT_EMAIL,
       userName: "Sofia-WAF-Shield",
-      clientName: "Internal Infrastructure"
+      clientName: "Infraestructura Interna"
     });
     console.log(`[SOC SUCCESS] n8n respondió: ${response.status} ${response.statusText}`);
     metrics.alertsSentTotal.inc({ destination: "GMAIL/N8N", type, severity });

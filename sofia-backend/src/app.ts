@@ -46,7 +46,7 @@ app.get("/metrics", async (_req, res) => {
 });
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(openapiDocument));
-app.use("/api/v1/autenticacion", authV1Routes);
-app.use("/api/v2/autenticacion", authV2Routes);
+app.use("/api/v1/auth", authV1Routes);
+app.use("/api/v2/auth", authV2Routes);
 app.use("/api", routes);
 app.use(manejadorErrores);
