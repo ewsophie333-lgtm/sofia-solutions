@@ -104,8 +104,8 @@
 
   async function login(mode, email, password) {
     if (mode === "secure") {
-      const csrf = await getJson(`${apiBase}/api/v2/auth/csrf`);
-      const response = await fetch(`${apiBase}/api/v2/auth/login`, {
+      const csrf = await getJson(`${apiBase}/api/v2/autenticacion/csrf`);
+      const response = await fetch(`${apiBase}/api/v2/autenticacion/login`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -122,7 +122,7 @@
       return;
     }
 
-    const response = await fetch(`${apiBase}/api/v1/auth/login`, {
+    const response = await fetch(`${apiBase}/api/v1/autenticacion/login`, {
       method: "POST",
       credentials: "include",
       headers: headers(),

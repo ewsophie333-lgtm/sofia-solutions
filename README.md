@@ -53,6 +53,18 @@ Proyecto final orientado a **ASIX**, centrado en seguridad ofensiva y defensiva.
 
 ---
 
+## 🛠️ Por qué usar los Scripts de Cambio de Modo?
+
+Para la defensa ante el tribunal, es fundamental demostrar la capacidad de **Detección y Respuesta**. Los scripts en la carpeta `scripts/` permiten transformar el entorno en vivo:
+
+*   **`ACTIVAR-MODO-VULNERABLE.bat`**: Desactiva el WAF, deshabilita el Rate Limiting y permite inyecciones SQL. Úsalo para mostrar cómo un atacante podría comprometer el sistema si no hubiera medidas de seguridad.
+*   **`ACTIVAR-MODO-SEGURO.bat`**: Reactiva todas las capas de protección (Bcrypt, WAF, JWT stricts). Úsalo para demostrar la eficacia de las soluciones de Sofia Solutions frente a los mismos ataques realizados anteriormente.
+
+> [!NOTE]
+> Al ejecutar estos scripts, el backend se reinicia automáticamente para aplicar la nueva configuración de seguridad en segundos.
+
+---
+
 ## 📊 Visualización de Base de Datos
 Si el tribunal solicita ver los datos internos (usuarios, logs de seguridad, tickets):
 1. Ejecuta el script `scripts/ABRIR-DATABASE-GUI.bat`.
