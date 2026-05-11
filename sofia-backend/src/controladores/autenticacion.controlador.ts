@@ -153,19 +153,32 @@ export async function loginV1(req: Request, res: Response) {
   const { email, password } = req.body;
 
   // VULNERABLE: Concatenación directa de strings para permitir evasión por Inyección SQL
-  // En un sistema realmente vulnerable, la comprobación de clave también forma parte de la consulta
   const users: any[] = await prisma.$queryRawUnsafe(
     `SELECT * FROM "User" WHERE "email" = '${email}' AND "passwordHash" IS NOT NULL`
   );
   
   const user = users[0];
 
-  // Para simulación: Si el email contiene una inyección como ' OR 1=1 --
-  // podríamos querer saltar la comprobación de contraseña si encontramos un usuario
   const isInjection = email.includes("'") || email.includes("--");
 
   if (!user || (!isInjection && !(await verifyPassword(password, user.passwordHash, "vulnerable")))) {
     metrics.loginAttemptsTotal.inc({ modo: "vulnerable", result: "failed" });
+    
+    // Simular un intento de fuerza bruta registrando un evento/incidente menor
+    if (!isInjection && password !== 'x') {
+       try {
+         await prisma.incident.create({
+           data: {
+             customerId: 1, assetId: 1,
+             title: "Intento de Fuerza Bruta",
+             vector: "BRUTE_FORCE", severity: "HIGH", status: "OPEN",
+             sourceIp: "185.15.22.1", sourceCountry: "CN", // China para Brute Force
+             attackSurface: "Login API", timelineSlot: new Date().getHours() * 2
+           }
+         });
+       } catch (e) {}
+    }
+
     throw new ApiError(401, "Credenciales de identidad inválidas (Modo Vulnerable)");
   }
 
@@ -177,19 +190,31 @@ export async function loginV1(req: Request, res: Response) {
     include: { customer: true }
   });
 
+  // Si fue una inyección exitosa, registramos el incidente crítico para Grafana
+  if (isInjection) {
+    try {
+      await prisma.incident.create({
+        data: {
+          customerId: userWithCustomer?.customer?.id || 1,
+          assetId: 1,
+          title: "Inyección SQL Exitosa (Auth Bypass)",
+          vector: "SQLi", severity: "CRITICAL", status: "INVESTIGATING",
+          sourceIp: "89.23.45.12", sourceCountry: "RU", // Rusia para SQLi
+          attackSurface: "Login API", timelineSlot: new Date().getHours() * 2
+        }
+      });
+    } catch (e) {
+      console.error("Error logging incident:", e);
+    }
+  }
+
   const sessionId = randomUUID();
   const accessToken = signAccessToken({
-    sub: user.id,
-    email: user.email,
-    role: user.role,
-    sessionId
+    sub: user.id, email: user.email, role: user.role, sessionId
   }, "vulnerable");
 
   const refreshToken = signRefreshToken({
-    sub: user.id,
-    email: user.email,
-    role: user.role,
-    sessionId
+    sub: user.id, email: user.email, role: user.role, sessionId
   }, "vulnerable");
 
   applyAuthCookies(res, accessToken, refreshToken, user.role);
@@ -197,9 +222,7 @@ export async function loginV1(req: Request, res: Response) {
   res.json({
     accessToken,
     user: { 
-      id: user.id, 
-      email: user.email, 
-      role: user.role,
+      id: user.id, email: user.email, role: user.role,
       companyName: userWithCustomer?.customer?.name || null
     }
   });
