@@ -20,7 +20,31 @@ $activeNav = 'admin-dashboard';
         width: auto;
         margin-bottom: 50px;
     }
+    :root {
+        --ubuntu-purple: #300A24;
+        --font-main: 'Inter', sans-serif;
+    }
+    body, .app-shell, .sidebar, .panel, .content {
+        background-color: var(--ubuntu-purple) !important;
+        font-family: var(--font-main) !important;
+    }
+    .pulse-dot {
+        width: 8px;
+        height: 8px;
+        background: #22c55e;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 6px;
+        box-shadow: 0 0 0 rgba(34, 197, 94, 0.4);
+        animation: pulse-green 2s infinite;
+    }
+    @keyframes pulse-green {
+        0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    }
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
 
 <!-- Security Guard: Ensure only ADMIN roles can access this view -->
 <script>
@@ -87,17 +111,13 @@ $activeNav = 'admin-dashboard';
             <div>
                 <span class="eyebrow" data-i18n="eyebrow">Operaciones Globales</span>
                 <h1 data-i18n="title">Panel de Operaciones</h1>
-                <p class="panel-header-copy" data-i18n="copy">Visión unificada de ciberseguridad multi-cliente.</p>
+                <p class="panel-header-copy" data-i18n="copy">Plataforma de Inteligencia de Amenazas y Orquestación Multi-Tenant</p>
             </div>
             <div style="display:flex; gap:12px; align-items:center;">
-                <button onclick="testSocAlert()"
-                    style="padding:12px 24px; border-radius:10px; font-size:0.85rem; font-weight:800; background:#8b5cf6; color:#fff; border:none; cursor:pointer; box-shadow:0 10px 20px rgba(139,92,246,0.2); transition:transform 0.2s;"
-                    onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                    🚀 LANZAR ALERTA DE PRUEBA (SOC)
-                </button>
                 <span
-                    style="padding:8px 16px; border-radius:20px; font-size:0.75rem; font-weight:700; background:rgba(34,197,94,0.1); color:#22c55e; border:1px solid rgba(34,197,94,0.2);">●
-                    SISTEMA OPERATIVO</span>
+                    style="padding:8px 16px; border-radius:20px; font-size:0.75rem; font-weight:700; background:rgba(34,197,94,0.1); color:#22c55e; border:1px solid rgba(34,197,94,0.2); display:flex; align-items:center;">
+                    <span class="pulse-dot"></span>
+                    ESTADO DEL NODO: OPERATIVO</span>
             </div>
         </header>
 
@@ -752,6 +772,12 @@ $activeNav = 'admin-dashboard';
                     liveFeed: [
                         { type: 'SQLi DETECTADA', time: 'Ahora', severity: 'CRITICAL' },
                         { type: 'FUERZA BRUTA BLOQUEADA', time: 'Hace 5m', severity: 'HIGH' }
+                    ],
+                    incidents: [
+                        { title: 'Inyección SQL', sourceIp: '89.23.45.12', sourceCountry: 'RU', severity: 'CRITICAL' },
+                        { title: 'Fuerza Bruta', sourceIp: '185.15.22.1', sourceCountry: 'CN', severity: 'HIGH' },
+                        { title: 'Anomalía SCADA', sourceIp: '45.67.89.10', sourceCountry: 'UA', severity: 'CRITICAL' },
+                        { title: 'DDoS Flood', sourceIp: '102.34.56.78', sourceCountry: 'BR', severity: 'HIGH' }
                     ],
                     customerExposure: [
                         { name: 'MAPFRE', risk: 15 },
