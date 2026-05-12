@@ -295,3 +295,45 @@ export async function getGeomapData(_req: Request, res: Response) {
     res.status(500).json({ error: "Error generando datos geoespaciales" });
   }
 }
+
+/**
+ * Endpoint avanzado para el Geomap de Grafana.
+ * Calcula métricas de resumen (bloqueos, porcentajes, países top) en tiempo real.
+ */
+export async function getGeomapDataAdvanced(_req: Request, res: Response) {
+  try {
+    const events = generateMockupAttacks();
+
+    const totalAttacks = events.reduce((sum, e) => sum + e.attempts, 0);
+    const blockedAttacks = events.reduce((sum, e) => sum + (e.blocked ? e.attempts : 0), 0);
+    const detectedAttacks = totalAttacks - blockedAttacks;
+    const blockPercentage = totalAttacks > 0 ? Math.round((blockedAttacks / totalAttacks) * 100) : 0;
+
+    const countryStats: Record<string, number> = {};
+    events.forEach(e => countryStats[e.country] = (countryStats[e.country] || 0) + e.attempts);
+    const topCountry = Object.entries(countryStats).sort((a, b) => b[1] - a[1])[0]?.[0] || 'Unknown';
+
+    const typeStats: Record<string, number> = {};
+    events.forEach(e => typeStats[e.attack_type] = (typeStats[e.attack_type] || 0) + 1);
+    const topAttackType = Object.entries(typeStats).sort((a, b) => b[1] - a[1])[0]?.[0] || 'BRUTE_FORCE';
+
+    const avgAttemptsPerLocation = events.length > 0 ? Number((totalAttacks / events.length).toFixed(2)) : 0;
+
+    res.set("Cache-Control", "no-cache");
+    res.json({
+      events,
+      summary: {
+        totalAttacks,
+        blockedAttacks,
+        detectedAttacks,
+        blockPercentage,
+        topCountry,
+        topAttackType,
+        avgAttemptsPerLocation
+      }
+    });
+  } catch (error) {
+    console.error('[SOC] Error en geomap-data:', error);
+    res.status(500).json({ error: 'Error generando datos geográficos' });
+  }
+}
