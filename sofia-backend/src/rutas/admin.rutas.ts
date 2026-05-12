@@ -4,7 +4,7 @@
  */
 
 import { Router } from "express";
-import { overview, securityEvents, securityMonitor } from "../controladores/admin.controlador";
+import { overview, securityEvents, securityMonitor, getGeoTelemetry } from "../controladores/admin.controlador";
 import { requireAuth, requireRole } from "../middlewares/autenticacion";
 import { asyncHandler } from "../utilidades/http";
 
@@ -30,5 +30,10 @@ router.get("/security-monitor", requireRole("ADMIN"), asyncHandler(securityMonit
  * Registro de Eventos en Crudo: Estrictamente reservado para usuarios con privilegios ADMIN.
  */
 router.get("/security-events", requireRole("ADMIN"), asyncHandler(securityEvents));
+
+/**
+ * Telemetría para Mapa de Grafana: Mockup dinámico.
+ */
+router.get("/geo-telemetry", requireRole("ADMIN"), asyncHandler(getGeoTelemetry));
 
 export default router;

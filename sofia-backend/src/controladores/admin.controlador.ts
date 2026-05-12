@@ -10,6 +10,7 @@ import type { Request, Response } from "express";
 import { prisma } from "../configuracion/prisma";
 import { entorno } from "../configuracion/entorno";
 import { getSocNotifications } from "../servicios/soc.servicio";
+import { generateMockupAttacks } from "../utils/mockupGeoData";
 
 // --- Esquemas de Datos Internos para Telemetría ---
 
@@ -238,11 +239,19 @@ export async function securityMonitor(_req: Request, res: Response) {
         createdAt: i.createdAt
       }))
     });
+  }
+}
+
+/**
+ * Endpoint especializado para el panel Geomap de Grafana.
+ * Devuelve un flujo de ataques geolocalizados generados dinámicamente.
+ */
+export async function getGeoTelemetry(_req: Request, res: Response) {
+  try {
+    const geoData = generateMockupAttacks();
+    res.set("Cache-Control", "no-cache");
+    res.json(geoData);
   } catch (error) {
-    console.error("[Admin Controller] Error in securityMonitor:", error);
-    res.json({
-      summary: { totalEventsAnalyzed: 1200000, criticalIncidents: 2, activeThreats: 1, systemHealth: 99.8, managedAssets: 15, protectedCustomers: 4 },
-      topCountries: [], eventTrend: [], topAttackVectors: [], alertDistribution: [], liveFeed: [], customerExposure: [], telemetry: {}
-    });
+    res.status(500).json({ error: "Error generando telemetría geoespacial" });
   }
 }
