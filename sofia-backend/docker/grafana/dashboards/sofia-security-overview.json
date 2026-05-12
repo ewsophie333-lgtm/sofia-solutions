@@ -607,7 +607,7 @@
               "showLegend": true,
               "style": {
                 "color": {
-                  "field": "status",
+                  "field": "severity",
                   "fixed": "red"
                 },
                 "opacity": 0.8,
@@ -643,8 +643,10 @@
             {
               "type": "value",
               "options": {
-                "0": { "text": "Nodo Seguro", "color": "green" },
-                "1": { "text": "Ataque Activo", "color": "red" }
+                "low":      { "text": "Amenaza Baja",    "color": "green" },
+                "medium":   { "text": "Amenaza Media",   "color": "yellow" },
+                "high":      { "text": "Amenaza Alta",    "color": "orange" },
+                "critical":  { "text": "ATAQUE CRÍTICO", "color": "red" }
               }
             }
           ],
@@ -656,13 +658,23 @@
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "testdata", "uid": "grafana" },
-          "scenarioId": "csv_content",
-          "string": "lat,lon,status,location_name\n40.4168,-3.7038,0,Madrid\n51.5074,-0.1278,0,London\n40.7128,-74.0060,1,New York\n35.6762,139.6503,0,Tokyo\n55.7558,37.6173,1,Moscow\n39.9042,116.4074,1,Beijing\n-23.5505,-46.6333,1,Sao Paulo\n-33.8688,151.2093,0,Sydney\n52.5200,13.4050,0,Berlin\n48.8566,2.3522,1,Paris"
+          "datasource": { "type": "yesoreyer-infinity-datasource", "uid": "Sofia-Telemetry-API" },
+          "type": "json",
+          "source": "url",
+          "url": "http://backend:8001/api/admin/geo-telemetry",
+          "root_selector": "",
+          "columns": [
+            { "text": "latitude", "type": "number" },
+            { "text": "longitude", "type": "number" },
+            { "text": "city", "type": "string" },
+            { "text": "severity", "type": "string" },
+            { "text": "attack_type", "type": "string" }
+          ],
+          "format": "table"
         }
       ],
-      "title": "Mapa de Amenazas Global",
-      "description": "INTELIGENCIA GEOESPACIAL",
+      "title": "Mapa de Amenazas Global (Live SOC)",
+      "description": "INTELIGENCIA GEOESPACIAL EN TIEMPO REAL",
       "type": "geomap"
     },
     {

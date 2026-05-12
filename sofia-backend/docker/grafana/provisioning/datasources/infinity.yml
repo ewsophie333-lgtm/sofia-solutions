@@ -1,0 +1,9 @@
+apiVersion: 1
+datasources:
+  - name: Sofia-Telemetry-API
+    type: yesoreyer-infinity-datasource
+    access: proxy
+    isDefault: false
+    jsonData:
+      global_timeout: 10
+    editable: true
