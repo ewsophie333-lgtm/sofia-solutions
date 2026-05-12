@@ -770,8 +770,8 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Sofia Security Overview",
-  "uid": "sofia-security-overview",
+  "title": "Sofia Security Overview (Stable)",
+  "uid": "sofia-security-v2",
   "version": 1,
   "weekStart": ""
 }
