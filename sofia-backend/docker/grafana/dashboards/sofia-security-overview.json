@@ -556,8 +556,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "sofia-prometheus"
+        "type": "yesoreyer-infinity-datasource",
+        "uid": "Sofia-Telemetry-API"
       },
       "fieldConfig": {
         "defaults": {
@@ -623,8 +623,8 @@
             },
             "location": {
               "mode": "coords",
-              "lat": "lat",
-              "lon": "lon"
+              "lat": "latitude",
+              "lon": "longitude"
             },
             "name": "Amenazas en Tiempo Real",
             "type": "markers"
