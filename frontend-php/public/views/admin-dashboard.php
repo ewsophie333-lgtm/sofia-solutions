@@ -20,14 +20,6 @@ $activeNav = 'admin-dashboard';
         width: auto;
         margin-bottom: 50px;
     }
-    :root {
-        --ubuntu-purple: #300A24;
-        --font-main: 'Inter', sans-serif;
-    }
-    body, .app-shell, .sidebar, .panel, .content {
-        background-color: var(--ubuntu-purple) !important;
-        font-family: var(--font-main) !important;
-    }
     .pulse-dot {
         width: 8px;
         height: 8px;
@@ -35,7 +27,6 @@ $activeNav = 'admin-dashboard';
         border-radius: 50%;
         display: inline-block;
         margin-right: 6px;
-        box-shadow: 0 0 0 rgba(34, 197, 94, 0.4);
         animation: pulse-green 2s infinite;
     }
     @keyframes pulse-green {
@@ -44,7 +35,6 @@ $activeNav = 'admin-dashboard';
         100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
     }
 </style>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
 
 <!-- Security Guard: Ensure only ADMIN roles can access this view -->
 <script>
