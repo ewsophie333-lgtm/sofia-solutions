@@ -589,7 +589,9 @@
       "id": 10,
       "options": {
         "basemap": {
-          "config": {},
+          "config": {
+            "theme": "dark"
+          },
           "type": "default"
         },
         "controls": {
@@ -605,59 +607,62 @@
               "showLegend": true,
               "style": {
                 "color": {
-                  "fixed": "#ef4444"
+                  "field": "status",
+                  "fixed": "red"
                 },
                 "opacity": 0.8,
-                "rotation": {
-                  "fixed": 0
-                },
                 "size": {
-                  "fixed": 5,
+                  "fixed": 6,
                   "max": 15,
                   "min": 2
                 },
                 "symbol": {
                   "fixed": "circle"
-                },
-                "textConfig": {
-                  "fontSize": 12,
-                  "outline": true,
-                  "textAlign": "center",
-                  "textBaseline": "middle"
                 }
               }
             },
             "location": {
-              "lookup": "country_code",
-              "mode": "lookup"
+              "mode": "coords",
+              "lat": "lat",
+              "lon": "lon"
             },
-            "name": "Attacks by Country",
+            "name": "Amenazas en Tiempo Real",
             "type": "markers"
           }
         ],
         "view": {
-          "id": "coords",
+          "id": "world",
           "lat": 20,
           "lon": 0,
-          "zoom": 1
+          "zoom": 2
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": { "text": "Nodo Seguro", "color": "green" },
+                "1": { "text": "Ataque Activo", "color": "red" }
+              }
+            }
+          ],
+          "color": {
+            "mode": "mappings"
+          }
         }
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "sofia-prometheus"
-          },
-          "editorMode": "code",
-          "expr": "sum(threat_location_total) by (country_code)",
-          "format": "time_series",
-          "instant": true,
-          "legendFormat": "{{country_code}}",
-          "range": true,
-          "refId": "A"
+          "refId": "A",
+          "datasource": { "type": "testdata", "uid": "grafana" },
+          "scenarioId": "csv_content",
+          "string": "lat,lon,status,location_name\n40.4168,-3.7038,0,Madrid\n51.5074,-0.1278,0,London\n40.7128,-74.0060,1,New York\n35.6762,139.6503,0,Tokyo\n55.7558,37.6173,1,Moscow\n39.9042,116.4074,1,Beijing\n-23.5505,-46.6333,1,Sao Paulo\n-33.8688,151.2093,0,Sydney\n52.5200,13.4050,0,Berlin\n48.8566,2.3522,1,Paris"
         }
       ],
-      "title": "Threat Intelligence Map (Real-time Indicators)",
+      "title": "Mapa de Amenazas Global",
+      "description": "INTELIGENCIA GEOESPACIAL",
       "type": "geomap"
     },
     {
