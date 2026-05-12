@@ -58,7 +58,9 @@ $activeNav = 'admin-dashboard';
     })();
 </script>
 
-<!-- External Charting Dependency -->
+<!-- External Charting & Mapping Dependencies -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <main class="app-shell readdy-dashboard" id="main-app">
@@ -224,6 +226,24 @@ $activeNav = 'admin-dashboard';
         <script>
             // La salud del sistema se gestiona de forma centralizada en loadAdmin.
         </script>
+
+        <!-- SOC Threat Map & Geospatial Intelligence -->
+        <section class="panel" style="padding:0; margin-bottom:32px; overflow:hidden; min-height:400px; position:relative; border:1px solid rgba(139,92,246,0.2);">
+            <div id="threat-map" style="width:100%; height:400px; background:#0f172a; z-index:1;"></div>
+            <div style="position:absolute; top:20px; left:20px; z-index:1000; pointer-events:none;">
+                <div style="background:rgba(15,23,42,0.9); backdrop-filter:blur(10px); padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+                    <span class="eyebrow" style="color:#a78bfa;">Inteligencia Geoespacial</span>
+                    <h2 style="margin:4px 0 0; font-size:1.2rem; color:#fff;">Mapa de Amenazas Global</h2>
+                    <div style="margin-top:12px; display:flex; gap:12px;">
+                        <div style="font-size:0.7rem; color:#94a3b8;"><span style="color:#ef4444;">●</span> Ataque Activo</div>
+                        <div style="font-size:0.7rem; color:#94a3b8;"><span style="color:#22c55e;">●</span> Nodo Seguro</div>
+                    </div>
+                </div>
+            </div>
+            <div style="position:absolute; bottom:20px; right:20px; z-index:1000;">
+                <div style="background:rgba(34,197,94,0.1); color:#86efac; border:1px solid rgba(34,197,94,0.3); padding:6px 12px; border-radius:6px; font-size:0.65rem; font-weight:800; letter-spacing:1px;">RED DE SENSORES: ACTIVA</div>
+            </div>
+        </section>
 
         <!-- Threat Vector & Risk Distribution Analytics -->
         <section class="planes-grid" style="grid-template-columns:1.8fr 1fr;gap:32px;margin-bottom:32px;">
@@ -536,12 +556,85 @@ $activeNav = 'admin-dashboard';
         color: #86efac;
         border: 1px solid rgba(34, 197, 94, 0.2);
     }
+
+    .map-tooltip {
+        background: rgba(15, 23, 42, 0.95) !important;
+        border: 1px solid rgba(139, 92, 246, 0.4) !important;
+        color: #fff !important;
+        font-family: 'Outfit', sans-serif !important;
+        font-size: 0.75rem !important;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.4) !important;
+        border-radius: 8px !important;
+    }
 </style>
 
 <script>
     /**
      * CORE ADMINISTRATIVE LOGIC
      */
+
+    // Threat Map Instance
+    let threatMap;
+    const attackMarkers = [];
+
+    function initMap() {
+        if (threatMap) return;
+        const container = document.getElementById('threat-map');
+        if (!container) return;
+
+        threatMap = L.map('threat-map', {
+            center: [20, 0],
+            zoom: 2,
+            zoomControl: false,
+            attributionControl: false
+        });
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            maxZoom: 19
+        }).addTo(threatMap);
+    }
+
+    const GEO_COORDS = {
+        'RU': [61.524, 105.318],
+        'CN': [35.861, 104.195],
+        'US': [37.090, -95.712],
+        'ES': [40.463, -3.749],
+        'BR': [-14.235, -51.925],
+        'UA': [48.379, 31.165],
+        'KP': [40.339, 127.510],
+        'IR': [32.427, 53.688]
+    };
+
+    function updateThreatMap(incidents) {
+        if (!threatMap) initMap();
+        if (!threatMap) return;
+        
+        attackMarkers.forEach(m => threatMap.removeLayer(m));
+        attackMarkers.length = 0;
+        
+        if (!incidents || incidents.length === 0) return;
+
+        incidents.slice(0, 15).forEach(i => {
+            const coords = GEO_COORDS[i.sourceCountry] || [Math.random() * 40, Math.random() * 40];
+            const color = i.severity === 'CRITICAL' ? '#ef4444' : '#f97316';
+            
+            const marker = L.circleMarker(coords, {
+                radius: i.severity === 'CRITICAL' ? 10 : 6,
+                fillColor: color,
+                color: '#fff',
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.8
+            }).addTo(threatMap)
+              .bindTooltip(`<b>${i.title}</b><br>${i.sourceCountry} - ${i.sourceIp}`, { 
+                  permanent: false, 
+                  direction: 'top',
+                  className: 'map-tooltip'
+              });
+            
+            attackMarkers.push(marker);
+        });
+    }
 
     /**
      * SOS EMERGENCY LISTENER (Simulated Real-time)
@@ -690,7 +783,11 @@ $activeNav = 'admin-dashboard';
 
             renderCharts(d.topAttackVectors, d.alertDistribution);
             renderCustomerExposure(d.customerExposure);
+            
+            // Map & Feed Update
+            if (d.incidents) updateThreatMap(d.incidents);
             if (window.currentIRTab === 'global') renderRealTimeFeed(d.liveFeed);
+            
             renderAdminTickets(window.adminTickets);
 
         } catch (globalError) {
@@ -802,32 +899,78 @@ $activeNav = 'admin-dashboard';
     window.activeCharts = {};
 
     function renderCharts(vectors, dist) {
-        const commonLineOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false, min: 0 } }, elements: { point: { radius: 0 } } };
+        const commonLineOptions = { 
+            responsive: true, 
+            maintainAspectRatio: false, 
+            plugins: { legend: { display: false } }, 
+            scales: { x: { display: false }, y: { display: false, min: 0 } }, 
+            elements: { point: { radius: 0 } } 
+        };
 
-        // Gráfica de Vectores de Ataque (Barras)
-        if (vectors && vectors.length > 0) {
-            if (window.activeCharts.traffic) window.activeCharts.traffic.destroy();
-            const ctxGlobal = document.getElementById('globalTrafficChart')?.getContext('2d');
-            if (ctxGlobal) {
-                window.activeCharts.traffic = new Chart(ctxGlobal, { type: 'bar', data: { labels: vectors.map(v => v.label), datasets: [{ data: vectors.map(v => v.count), backgroundColor: 'rgba(139,92,246,0.5)', borderColor: '#8b5cf6', borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: 'rgba(255,255,255,0.4)' } }, x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.4)' } } } } });
+        // Independent chart rendering to prevent global crash
+        try {
+            if (vectors && vectors.length > 0) {
+                if (window.activeCharts.traffic) window.activeCharts.traffic.destroy();
+                const ctxGlobal = document.getElementById('globalTrafficChart')?.getContext('2d');
+                if (ctxGlobal) {
+                    window.activeCharts.traffic = new Chart(ctxGlobal, { 
+                        type: 'bar', 
+                        data: { 
+                            labels: vectors.map(v => v.label), 
+                            datasets: [{ 
+                                data: vectors.map(v => v.count), 
+                                backgroundColor: 'rgba(139,92,246,0.5)', 
+                                borderColor: '#8b5cf6', 
+                                borderWidth: 1 
+                            }] 
+                        }, 
+                        options: { 
+                            responsive: true, 
+                            maintainAspectRatio: false, 
+                            plugins: { legend: { display: false } }, 
+                            scales: { 
+                                y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: 'rgba(255,255,255,0.4)' } }, 
+                                x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.4)' } } 
+                            } 
+                        } 
+                    });
+                }
             }
-        }
+        } catch (e) { console.error("Error rendering vector chart:", e); }
 
-        // Gráfica de Riesgo / Distribución de Alertas (Donut)
-        if (dist && dist.length > 0) {
-            if (window.activeCharts.risk) window.activeCharts.risk.destroy();
-            const ctxRisk = document.getElementById('riskChart')?.getContext('2d');
-            if (ctxRisk) {
-                window.activeCharts.risk = new Chart(ctxRisk, { type: 'doughnut', data: { labels: dist.map(d => d.label), datasets: [{ data: dist.map(d => d.value), backgroundColor: dist.map(d => d.color), borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#fff', padding: 16, font: { size: 11 } } } } } });
+        try {
+            if (dist && dist.length > 0) {
+                if (window.activeCharts.risk) window.activeCharts.risk.destroy();
+                const ctxRisk = document.getElementById('riskChart')?.getContext('2d');
+                if (ctxRisk) {
+                    window.activeCharts.risk = new Chart(ctxRisk, { 
+                        type: 'doughnut', 
+                        data: { 
+                            labels: dist.map(d => d.label), 
+                            datasets: [{ 
+                                data: dist.map(d => d.value), 
+                                backgroundColor: dist.map(d => d.color), 
+                                borderWidth: 0 
+                            }] 
+                        }, 
+                        options: { 
+                            responsive: true, 
+                            maintainAspectRatio: false, 
+                            plugins: { legend: { position: 'bottom', labels: { color: '#fff', padding: 16, font: { size: 11 } } } } 
+                        } 
+                    });
+                }
             }
-        }
+        } catch (e) { console.error("Error rendering risk chart:", e); }
 
-        // Gráficas de Latencia (Mini-lines)
+        // Mini-lines update
         const renderMiniLine = (id, data, color) => {
-            const ctx = document.getElementById(id);
-            if (ctx) {
-                new Chart(ctx, { type: 'line', data: { labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'], datasets: [{ data: data, borderColor: color, backgroundColor: color + '1A', fill: true, tension: 0.4 }] }, options: commonLineOptions });
-            }
+            try {
+                const ctx = document.getElementById(id);
+                if (ctx) {
+                    new Chart(ctx, { type: 'line', data: { labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'], datasets: [{ data: data, borderColor: color, backgroundColor: color + '1A', fill: true, tension: 0.4 }] }, options: commonLineOptions });
+                }
+            } catch (e) {}
         };
 
         renderMiniLine('mapfreLatencyChart', [11, 12, 15, 10, 13, 12, 11, 14, 12, 12], '#22c55e');

@@ -228,6 +228,15 @@ export async function securityMonitor(_req: Request, res: Response) {
         incidents: incidents.filter((i) => i.customerId === c.id && i.status !== "RESOLVED").length,
       })),
       telemetry: { notifications: getSocNotifications(), totalIncidents: incidents.length, totalAssets: assets.length },
+      incidents: incidents.map(i => ({
+        id: i.id,
+        title: i.title,
+        vector: i.vector,
+        severity: i.severity,
+        sourceIp: i.sourceIp,
+        sourceCountry: i.sourceCountry,
+        createdAt: i.createdAt
+      }))
     });
   } catch (error) {
     console.error("[Admin Controller] Error in securityMonitor:", error);
