@@ -255,3 +255,43 @@ export async function getGeoTelemetry(_req: Request, res: Response) {
     res.status(500).json({ error: "Error generando telemetría geoespacial" });
   }
 }
+
+/**
+ * Generador de Telemetría Geoespacial Simulada para Grafana.
+ * Devuelve 10 eventos aleatorios con coordenadas globales reales.
+ */
+export async function getGeomapData(_req: Request, res: Response) {
+  try {
+    const locations = [
+      { city: "Madrid", country: "Spain", lat: 40.4168, lon: -3.7038 },
+      { city: "Barcelona", country: "Spain", lat: 41.3851, lon: 2.1734 },
+      { city: "Nueva York", country: "USA", lat: 40.7128, lon: -74.0060 },
+      { city: "Londres", country: "UK", lat: 51.5074, lon: -0.1278 },
+      { city: "Moscú", country: "Russia", lat: 55.7558, lon: 37.6173 },
+      { city: "Sídney", country: "Australia", lat: -33.8688, lon: 151.2093 },
+      { city: "Singapur", country: "Singapore", lat: 1.3521, lon: 103.8198 },
+      { city: "São Paulo", country: "Brazil", lat: -23.5505, lon: -46.6333 }
+    ];
+
+    const attackTypes = ["BRUTE_FORCE", "SQLI", "XSS", "SESSION_HIJACKING", "DOS"];
+
+    const events = Array.from({ length: 10 }).map(() => {
+      const location = locations[Math.floor(Math.random() * locations.length)];
+      return {
+        city: location.city,
+        country: location.country,
+        latitude: location.lat,
+        longitude: location.lon,
+        attack_type: attackTypes[Math.floor(Math.random() * attackTypes.length)],
+        attempts: Math.floor(Math.random() * 15) + 1,
+        blocked: Math.random() < 0.75,
+        timestamp: new Date().toISOString()
+      };
+    });
+
+    res.set("Cache-Control", "no-cache");
+    res.json({ events });
+  } catch (error) {
+    res.status(500).json({ error: "Error generando datos geoespaciales" });
+  }
+}

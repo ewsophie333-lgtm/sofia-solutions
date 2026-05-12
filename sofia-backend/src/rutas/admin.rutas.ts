@@ -4,7 +4,7 @@
  */
 
 import { Router } from "express";
-import { overview, securityEvents, securityMonitor, getGeoTelemetry } from "../controladores/admin.controlador";
+import { overview, securityEvents, securityMonitor, getGeoTelemetry, getGeomapData } from "../controladores/admin.controlador";
 import { requireAuth, requireRole } from "../middlewares/autenticacion";
 import { asyncHandler } from "../utilidades/http";
 
@@ -35,5 +35,10 @@ router.get("/security-events", requireRole("ADMIN"), asyncHandler(securityEvents
  * Telemetría para Mapa de Grafana: Mockup dinámico.
  */
 router.get("/geo-telemetry", requireRole("ADMIN"), asyncHandler(getGeoTelemetry));
+
+/**
+ * Endpoint de datos para Geomap de Grafana (formato simplificado).
+ */
+router.get("/geomap-data", requireRole("ADMIN"), asyncHandler(getGeomapData));
 
 export default router;
