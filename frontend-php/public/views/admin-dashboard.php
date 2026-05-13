@@ -770,9 +770,10 @@ $activeNav = 'admin-dashboard';
                         { title: 'DDoS Flood', sourceIp: '102.34.56.78', sourceCountry: 'BR', severity: 'HIGH' }
                     ],
                     customerExposure: [
-                        { name: 'MAPFRE', risk: 15 },
-                        { name: 'IBERDROLA', risk: 45 },
-                        { name: 'SABADELL', risk: 8 }
+                        { name: 'MAPFRE', assets: 24, incidents: 1, risk: 15 },
+                        { name: 'IBERDROLA', assets: 42, incidents: 6, risk: 45 },
+                        { name: 'SABADELL', assets: 18, incidents: 0, risk: 8 },
+                        { name: 'MERCADONA', assets: 35, incidents: 2, risk: 12 }
                     ]
                 };
             }
@@ -781,7 +782,8 @@ $activeNav = 'admin-dashboard';
                 window.adminTickets = [
                     { id: 101, client: 'MAPFRE', title: 'Intento de IDOR en portal pagos', status: 'OPEN', priority: 'HIGH' },
                     { id: 102, client: 'IBERDROLA', title: 'Anomalía en controlador SCADA', status: 'IN_PROGRESS', priority: 'CRITICAL' },
-                    { id: 103, client: 'SABADELL', title: 'Múltiples fallos 2FA (Brute Force)', status: 'OPEN', priority: 'HIGH' }
+                    { id: 103, client: 'SABADELL', title: 'Múltiples fallos 2FA (Brute Force)', status: 'OPEN', priority: 'HIGH' },
+                    { id: 104, client: 'MERCADONA', title: 'Intento de SQLi en API de Productos', status: 'OPEN', priority: 'HIGH' }
                 ];
             }
 
@@ -821,7 +823,15 @@ $activeNav = 'admin-dashboard';
             renderRealTimeFeed(mockIncidents);
             renderAdminTickets([
                 { id: 101, client: 'MAPFRE', title: 'Intento de IDOR detectado', status: 'OPEN', priority: 'HIGH' },
-                { id: 102, client: 'IBERDROLA', title: 'Anomalía en SCADA', status: 'IN_PROGRESS', priority: 'CRITICAL' }
+                { id: 102, client: 'IBERDROLA', title: 'Anomalía en SCADA', status: 'IN_PROGRESS', priority: 'CRITICAL' },
+                { id: 103, client: 'MERCADONA', title: 'Intento de SQLi mitigado', status: 'CLOSED', priority: 'HIGH' }
+            ]);
+
+            renderCustomerExposure([
+                { name: 'MAPFRE', assets: 24, incidents: 1, risk: 15 },
+                { name: 'IBERDROLA', assets: 42, incidents: 6, risk: 45 },
+                { name: 'SABADELL', assets: 18, incidents: 0, risk: 8 },
+                { name: 'MERCADONA', assets: 35, incidents: 2, risk: 12 }
             ]);
             
             const setKPI = (id, val) => { const el = document.querySelector(`${id} strong`); if (el) el.textContent = val; };
