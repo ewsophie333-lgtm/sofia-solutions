@@ -201,10 +201,10 @@ export async function securityMonitor(_req: Request, res: Response) {
     ];
 
     const alertDistribution = [
-      { label: "Critical", value: allAlerts.filter(a => a.severity.toUpperCase() === "CRITICAL" || a.severity.toUpperCase() === "URGENT").length, color: "#ef4444" },
-      { label: "High",     value: allAlerts.filter(a => a.severity.toUpperCase() === "HIGH" || a.severity.toUpperCase() === "ALTA").length,     color: "#f97316" },
-      { label: "Medium",   value: allAlerts.filter(a => a.severity.toUpperCase() === "MEDIUM" || a.severity.toUpperCase() === "MEDIA").length,   color: "#f59e0b" },
-      { label: "Low",      value: allAlerts.filter(a => a.severity.toUpperCase() === "LOW" || a.severity.toUpperCase() === "BAJA").length,      color: "#3b82f6" }
+      { label: "Critical", value: allAlerts.filter(a => a.severity.toUpperCase() === "CRITICAL" || a.severity.toUpperCase() === "URGENT").length, color: "#be123c" }, // Rojo oscuro
+      { label: "High",     value: allAlerts.filter(a => a.severity.toUpperCase() === "HIGH" || a.severity.toUpperCase() === "ALTA").length,     color: "#ea580c" }, // Naranja intenso
+      { label: "Medium",   value: allAlerts.filter(a => a.severity.toUpperCase() === "MEDIUM" || a.severity.toUpperCase() === "MEDIA").length,   color: "#eab308" }, // Amarillo brillante
+      { label: "Low",      value: allAlerts.filter(a => a.severity.toUpperCase() === "LOW" || a.severity.toUpperCase() === "BAJA").length,      color: "#2563eb" }  // Azul fuerte
     ];
 
     const liveFeed = incidents
