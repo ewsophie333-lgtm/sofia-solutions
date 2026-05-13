@@ -519,95 +519,6 @@
         "overrides": []
       },
     {
-      "datasource": { "type": "testdata", "uid": "grafana" },
-      "gridPos": {
-        "h": 12,
-        "w": 14,
-        "x": 0,
-        "y": 26
-      },
-      "id": 10,
-      "options": {
-        "basemap": {
-          "config": {
-            "theme": "dark"
-          },
-          "type": "default"
-        },
-        "controls": {
-          "showAttribution": false,
-          "showDebug": false,
-          "showMeasure": false,
-          "showScale": false,
-          "showZoom": true
-        },
-        "layers": [
-          {
-            "config": {
-              "showLegend": true,
-              "style": {
-                "color": {
-                  "field": "severity",
-                  "fixed": "red"
-                },
-                "opacity": 0.8,
-                "size": {
-                  "fixed": 6,
-                  "max": 15,
-                  "min": 2
-                },
-                "symbol": {
-                  "fixed": "circle"
-                }
-              }
-            },
-            "location": {
-              "mode": "coords",
-              "lat": "latitude",
-              "lon": "longitude"
-            },
-            "name": "Amenazas en Tiempo Real",
-            "type": "markers"
-          }
-        ],
-        "view": {
-          "id": "world",
-          "lat": 20,
-          "lon": 0,
-          "zoom": 2
-        }
-      },
-      "fieldConfig": {
-        "defaults": {
-          "mappings": [
-            {
-              "type": "value",
-              "options": {
-                "low":      { "text": "Amenaza Baja",    "color": "green" },
-                "medium":   { "text": "Amenaza Media",   "color": "yellow" },
-                "high":      { "text": "Amenaza Alta",    "color": "orange" },
-                "critical":  { "text": "ATAQUE CRÍTICO", "color": "red" }
-              }
-            }
-          ],
-          "color": {
-            "mode": "mappings"
-          }
-        }
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": { "type": "testdata", "uid": "grafana" },
-          "scenarioId": "csv_content",
-          "string": "latitude,longitude,severity,city,attack_type\n40.4168,-3.7038,critical,Madrid,SQL_INJECTION\n41.3851,2.1734,high,Barcelona,BRUTE_FORCE\n40.7128,-74.0060,critical,Nueva York,SESSION_HIJACKING\n51.5074,-0.1278,medium,Londres,XSS_ATTACK\n55.7558,37.6173,high,Moscú,DOS_SERVICE\n-33.8688,151.2093,low,Sídney,SCANNING\n1.3521,103.8198,medium,Singapur,MALWARE_DROP\n-23.5505,-46.6333,high,São Paulo,BRUTE_FORCE"
-        }
-      ],
-      "title": "Mapa de Amenazas Global (SOC Telemetry)",
-      "description": "INTELIGENCIA GEOESPACIAL: RED DE SENSORES ACTIVA",
-      "type": "geomap"
-    },
-    {
       "datasource": {
         "type": "prometheus",
         "uid": "sofia-prometheus"
@@ -624,7 +535,7 @@
         "h": 12,
         "w": 10,
         "x": 14,
-        "y": 32
+        "y": 26
       },
       "id": 11,
       "options": {
