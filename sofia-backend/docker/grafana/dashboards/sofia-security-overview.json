@@ -658,9 +658,18 @@
       "targets": [
         {
           "refId": "A",
-          "datasource": { "type": "testdata", "uid": "grafana" },
-          "scenarioId": "csv_content",
-          "string": "latitude,longitude,severity,city\n40.4168,-3.7038,low,Madrid\n41.3851,2.1734,medium,Barcelona\n40.7128,-74.0060,critical,New York\n51.5074,-0.1278,high,London\n55.7558,37.6173,critical,Moscow\n-33.8688,151.2093,low,Sydney\n1.3521,103.8198,medium,Singapore\n-23.5505,-46.6333,high,Sao Paulo"
+          "datasource": { "type": "yesoreyeram-infinity-datasource", "uid": "Sofia-Telemetry-API" },
+          "type": "json",
+          "source": "url",
+          "url": "http://backend:8001/api/admin/geo-telemetry",
+          "root_selector": "",
+          "columns": [
+            { "text": "latitude", "type": "number" },
+            { "text": "longitude", "type": "number" },
+            { "text": "city", "type": "string" },
+            { "text": "severity", "type": "string" }
+          ],
+          "format": "table"
         }
       ],
       "title": "Mapa de Amenazas Global (SOC Telemetry)",
@@ -770,8 +779,8 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Sofia Security Overview (Stable)",
-  "uid": "sofia-security-v2",
-  "version": 1,
+  "title": "Sofia Security Overview",
+  "uid": "sofia-security-overview",
+  "version": 5,
   "weekStart": ""
 }

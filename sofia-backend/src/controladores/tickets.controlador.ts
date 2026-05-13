@@ -21,9 +21,7 @@ export async function listTickets(req: Request, res: Response) {
       messages: true,
       user: {
         select: {
-          email: true,
-          name: true,
-          companyName: true
+          email: true
         }
       }
     },

@@ -1,6 +1,6 @@
 /**
- * SOFIA SOLUTIONS - Helpdesk & Ticketing Routes
- * Manages communication between clients and the SOC team.
+ * SOFIA SOLUTIONS - Rutas de Soporte y Tickets
+ * Gestiona la comunicación técnica entre los clientes y el equipo SOC.
  */
 
 import { Router } from "express";
@@ -13,24 +13,24 @@ import { asyncHandler } from "../utilidades/http";
 const router = Router();
 
 /**
- * All ticketing operations require authentication.
+ * Todas las operaciones de tickets requieren autenticación previa.
  */
 router.use(requireAuth);
 
 /**
- * Retrieves the ticket backlog for the current user.
+ * Recupera el historial de tickets del usuario autenticado.
  */
 router.get("/", asyncHandler(listTickets));
 
 /**
- * Submits a new support request.
- * Includes schema validation for subject length.
+ * Registra una nueva solicitud de soporte.
+ * Incluye validación de esquema para asegurar la calidad de la información.
  */
 router.post(
   "/",
   validar(
     z.object({
-      subject: z.string().min(5),
+      subject: z.string().min(5, "El asunto debe tener al menos 5 caracteres"),
       status: z.string().optional(),
       priority: z.string().optional()
     })
@@ -39,12 +39,12 @@ router.post(
 );
 
 /**
- * Message Threads: Fetches/Posts messages within a specific ticket context.
+ * Hilos de Mensajes: Recupera o envía mensajes dentro de un ticket específico.
  */
 router.get("/:id/messages", asyncHandler(listMessages));
 router.post(
   "/:id/messages",
-  validar(z.object({ content: z.string().min(1) })),
+  validar(z.object({ content: z.string().min(1, "El mensaje no puede estar vacío") })),
   asyncHandler(createMessage)
 );
 

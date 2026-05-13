@@ -150,6 +150,11 @@ export async function securityMonitor(_req: Request, res: Response) {
     const totalEventsAnalyzed = Math.max(events.length * 20134, 1200000); 
     const criticalIncidents = incidents.filter((i) => i.severity === "CRITICAL" && i.status !== "RESOLVED").length;
     const activeThreats = incidents.filter((i) => ["TRIAGE", "INVESTIGATING"].includes(i.status)).length;
+    
+    // Nodos Seguros: Activos que no tienen incidentes críticos ni de alta severidad activos.
+    const assetIdsWithIssues = new Set(incidents.filter(i => ["CRITICAL", "HIGH"].includes(i.severity) && i.status !== "RESOLVED").map(i => i.assetId));
+    const safeNodes = assets.filter(a => !assetIdsWithIssues.has(a.id)).length;
+
     const systemHealth = incidents.length === 0 ? 100 : Number((100 - activeThreats * 0.3).toFixed(1));
 
     const eventTrend = trendLabels.map((label, index) => {
@@ -216,8 +221,16 @@ export async function securityMonitor(_req: Request, res: Response) {
       }));
 
     res.json({
-      header: { title: "SOC SECURITY MONITOR", timeframe: "Last 24 Hours - Real-time" },
-      summary: { totalEventsAnalyzed, criticalIncidents, activeThreats, systemHealth, managedAssets: assets.length, protectedCustomers: customers.length },
+      header: { title: "MONITOR DE SEGURIDAD SOC", timeframe: "Últimas 24 Horas - Tiempo Real" },
+      summary: { 
+        totalEventsAnalyzed, 
+        criticalIncidents, 
+        activeThreats, 
+        systemHealth, 
+        safeNodes,
+        managedAssets: assets.length, 
+        protectedCustomers: customers.length 
+      },
       topCountries,
       eventTrend,
       topAttackVectors,
@@ -239,6 +252,9 @@ export async function securityMonitor(_req: Request, res: Response) {
         createdAt: i.createdAt
       }))
     });
+  } catch (error) {
+    console.error('[SOC-Monitor] Error crítico en el análisis de telemetría:', error);
+    res.status(500).json({ error: "Fallo interno en el motor de monitorización SOC" });
   }
 }
 

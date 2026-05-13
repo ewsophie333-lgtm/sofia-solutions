@@ -11,13 +11,20 @@ import { asyncHandler } from "../utilidades/http";
 const router = Router();
 
 /**
- * Protección global: Todas las rutas de administración requieren una sesión JWT válida.
+ * Telemetría para Mapa de Grafana: Mockup dinámico.
+ * Nota: Endpoints públicos para facilitar la integración con Grafana Provisioning.
+ */
+router.get("/geo-telemetry", asyncHandler(getGeoTelemetry));
+router.get("/geomap-data", asyncHandler(getGeomapData));
+router.get("/geomap-data-advanced", asyncHandler(getGeomapDataAdvanced));
+
+/**
+ * Protección global: El resto de rutas administrativas requieren una sesión JWT válida.
  */
 router.use(requireAuth);
 
 /**
  * Resumen general: Accesible por todos los usuarios autenticados (Cliente/Admin).
- * Nota: El controlador filtra internamente los datos según el rol del usuario.
  */
 router.get("/overview", asyncHandler(overview));
 
@@ -30,20 +37,5 @@ router.get("/security-monitor", requireRole("ADMIN"), asyncHandler(securityMonit
  * Registro de Eventos en Crudo: Estrictamente reservado para usuarios con privilegios ADMIN.
  */
 router.get("/security-events", requireRole("ADMIN"), asyncHandler(securityEvents));
-
-/**
- * Telemetría para Mapa de Grafana: Mockup dinámico.
- */
-router.get("/geo-telemetry", requireRole("ADMIN"), asyncHandler(getGeoTelemetry));
-
-/**
- * Endpoint de datos para Geomap de Grafana (formato simplificado).
- */
-router.get("/geomap-data", requireRole("ADMIN"), asyncHandler(getGeomapData));
-
-/**
- * Endpoint de datos avanzado para Geomap de Grafana.
- */
-router.get("/geomap-data-advanced", requireRole("ADMIN"), asyncHandler(getGeomapDataAdvanced));
 
 export default router;
