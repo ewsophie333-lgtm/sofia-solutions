@@ -10,6 +10,8 @@ Proyecto final orientado a **ASIX / Ciberseguridad**, centrado en la demostraci�
 
 | Módulo | Acceso Público | Puerto Local |
 |--------|----------------|--------------|
+| **Presentaci&oacute;n Ejecutiva** | [Ver Diapositivas](file:///c:/Users/shair/Desktop/sofia-solutions/sofia-solutions/PRESENTACION_EJECUTIVA_SOFIA.html) | Estilo Consultor&iacute;a |
+| **Presentaci&oacute;n SOC** | [Ver Diapositivas](file:///c:/Users/shair/Desktop/sofia-solutions/sofia-solutions/PRESENTACION_SOFIA.html) | Reveal.js Din&aacute;mico |
 | **Plataforma Corporativa** | [Acceder](https://sofia-solutions.serveousercontent.com) | `8000` |
 | **Consola de Auditoría** | [Acceder](https://sofia-solutions.serveousercontent.com/consola) | `/consola` |
 | **Panel SOC (Admin)** | [Acceder](https://sofia-solutions.serveousercontent.com/admin) | `/admin` |

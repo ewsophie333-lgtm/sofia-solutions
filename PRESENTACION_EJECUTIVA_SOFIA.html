@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sofia Solutions: Orquestaci&oacute;n de Ciberseguridad Multi-tenant</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #300A24 0%, #0f172a 100%);
+            --accent-green: #22c55e;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --border-subtle: rgba(255, 255, 255, 0.1);
+        }
+
+        .reveal {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .reveal h1, .reveal h2, .reveal h3 {
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            text-transform: none;
+            text-align: left;
+        }
+
+        .reveal h1 { font-size: 72px; margin-bottom: 40px; }
+        .reveal h2 { font-size: 48px; border-bottom: 2px solid var(--accent-green); display: inline-block; padding-bottom: 10px; margin-bottom: 40px; }
+
+        .reveal p, .reveal li {
+            font-size: 24px;
+            line-height: 1.6;
+            color: var(--text-dim);
+            text-align: left;
+        }
+
+        .reveal .controls { color: var(--accent-green); }
+        .reveal .progress { color: var(--accent-green); }
+
+        /* Estilos Ejecutivos */
+        .slide-content {
+            padding: 60px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            position: relative;
+        }
+
+        .logo-sofia {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            width: 180px;
+            z-index: 10;
+        }
+
+        .tech-label {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-green);
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .image-wrapper {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .image-wrapper::after {
+            content: "CAPTURA: " attr(data-label);
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 4px solid var(--accent-green);
+            padding: 20px;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .stat-card h4 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            margin: 0 0 10px 0;
+            color: var(--accent-green);
+        }
+
+        .stat-card p {
+            font-size: 18px;
+            margin: 0;
+            color: var(--text-main);
+        }
+
+        /* Portada espec&iacute;fica */
+        .portada {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .portada h1 { text-align: center; }
+        .portada .subtitle {
+            color: var(--accent-green);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 20px;
+            margin-top: -20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Diapositiva 1: Portada -->
+            <section data-transition="fade">
+                <div class="slide-content portada">
+                    <img src="frontend-php/public/assets/logo-soc-white.png" style="width: 300px; margin-bottom: 40px;">
+                    <h1>Sofia Solutions</h1>
+                    <p class="subtitle">Orquestaci&oacute;n de Ciberseguridad Multi-tenant</p>
+                    <div style="margin-top: 60px; font-size: 18px; color: var(--text-dim);">
+                        Proyecto Final ASIR 2026<br>
+                        Infraestructura de Inteligencia de Amenazas
+                    </div>
+                </div>
+            </section>
+
+            <!-- Diapositiva 2: El Problema -->
+            <section>
+                <div class="slide-content">
+                    <img src="frontend-php/public/assets/logo-soc-white.png" class="logo-sofia">
+                    <div class="tech-label">ANALYSIS_01</div>
+                    <h2>El Problema</h2>
+                    <p>La fragmentaci&oacute;n de herramientas de seguridad genera silos de datos y latencia cr&iacute;tica en la respuesta ante incidentes.</p>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h4>FRAGMENTACI&Oacute;N</h4>
+                            <p>M&uacute;ltiples consolas sin correlaci&oacute;n.</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>LATENCIA</h4>
+                            <p>Tiempos de respuesta superiores a 4h.</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>COMPLEJIDAD</h4>
+                            <p>Dificultad en la gesti&oacute;n multi-cliente.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Diapositiva 3: La Soluci&oacute;n -->
+            <section>
+                <div class="slide-content">
+                    <img src="frontend-php/public/assets/logo-soc-white.png" class="logo-sofia">
+                    <div class="tech-label">SOLUTION_ARCH</div>
+                    <h2>La Soluci&oacute;n</h2>
+                    <p>Una arquitectura centralizada que unifica la Inteligencia de Amenazas y automatiza la respuesta inmediata.</p>
+                    <ul style="margin-top: 30px;">
+                        <li>Visi&oacute;n 360&deg; del riesgo corporativo.</li>
+                        <li>Automatizaci&oacute;n de alertas v&iacute;a n8n.</li>
+                        <li>Telemetr&iacute;a en tiempo real con Prometheus.</li>
+                        <li>Gesti&oacute;n aislada por cliente (Multi-tenancy).</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Diapositiva 4: Arquitectura -->
+            <section>
+                <div class="slide-content">
+                    <img src="frontend-php/public/assets/logo-soc-white.png" class="logo-sofia">
+                    <div class="tech-label">CORE_SYSTEM</div>
+                    <h2>Arquitectura T&eacute;cnica</h2>
+                    <p>Ecosistema basado en microservicios dockerizados para garantizar escalabilidad horizontal y aislamiento de datos.</p>
+                    <div class="image-wrapper" data-label="Diagrama T&eacute;cnico del Stack">
+                        <!-- Imagen del diagrama si existiera -->
+                    </div>
+                    <div style="display: flex; gap: 40px; margin-top: 20px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent-green);">
+                        <span>[ FRONTEND: PHP/APACHE ]</span>
+                        <span>[ BACKEND: NODE.JS/TS ]</span>
+                        <span>[ ENGINE: GRAFANA/PROM ]</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Diapositiva 5: Dashboard SOC -->
+            <section>
+                <div class="slide-content">
+                    <img src="frontend-php/public/assets/logo-soc-white.png" class="logo-sofia">
+                    <div class="tech-label">VISUALIZATION_01</div>
+                    <h2>Dashboard SOC</h2>
+                    <p>Interfaz unificada para analistas de seguridad con m&eacute;tricas de riesgo y eventos cr&iacute;ticos.</p>
+                    <div class="image-wrapper" data-label="Vista General del Panel SOC"></div>
+                </div>
+            </section>
+
+            <!-- Diapositiva 6: Mapa Global -->
+            <section>
+                <div class="slide-content">
+                    <img src="frontend-php/public/assets/logo-soc-white.png" class="logo-sofia">
+                    <div class="tech-label">THREAT_INTEL</div>
+                    <h2>Mapa de Amenazas</h2>
+                    <p>Geolocalizaci&oacute;n de ataques en tiempo real basada en telemetr&iacute;a de red y logs de acceso.</p>
+                    <div class="image-wrapper" data-label="Mapa Global de Ataques"></div>
+                </div>
+            </section>
+
+            <!-- Diapositiva 7: Monitoreo -->
+            <section>
+                <div class="slide-content">
+                    <img src="frontend-php/public/assets/logo-soc-white.png" class="logo-sofia">
+                    <div class="tech-label">CLIENT_HEALTH</div>
+                    <h2>Estado de Clientes</h2>
+                    <p>Monitorizaci&oacute;n granular de la salud de los servidores de cada cliente en el ecosistema.</p>
+                    <div class="image-wrapper" data-label="Monitor de Salud Multi-tenant"></div>
+                </div>
+            </section>
+
+            <!-- Diapositiva 8: Gesti&oacute;n de Tickets -->
+            <section>
+                <div class="slide-content">
+                    <img src="frontend-php/public/assets/logo-soc-white.png" class="logo-sofia">
+                    <div class="tech-label">OPERATIONS_01</div>
+                    <h2>Gesti&oacute;n de Incidentes</h2>
+                    <p>Trazabilidad completa de tickets de soporte y respuestas ante brechas de seguridad.</p>
+                    <div class="image-wrapper" data-label="Monitor de Tickets en Tiempo Real"></div>
+                </div>
+            </section>
+
+            <!-- Diapositiva 9: Respuesta SOS -->
+            <section>
+                <div class="slide-content">
+                    <img src="frontend-php/public/assets/logo-soc-white.png" class="logo-sofia">
+                    <div class="tech-label">INCIDENT_RESPONSE</div>
+                    <h2>Respuesta SOS</h2>
+                    <p>Mecanismo de alerta cr&iacute;tica para clientes ante detecci&oacute;n de Ransomware o intrusiones de red.</p>
+                    <div class="image-wrapper" data-label="Notificaci&oacute;n SOS de Emergencia"></div>
+                </div>
+            </section>
+
+            <!-- Diapositiva 10: Notificaciones -->
+            <section>
+                <div class="slide-content">
+                    <img src="frontend-php/public/assets/logo-soc-white.png" class="logo-sofia">
+                    <div class="tech-label">ALERTS_DISPATCH</div>
+                    <h2>Notificaciones Automatizadas</h2>
+                    <p>Propagaci&oacute;n multicanal de alertas (Email/Webhook) con branding corporativo corregido.</p>
+                    <div class="image-wrapper" data-label="Email de Alerta SOC (n8n)"></div>
+                </div>
+            </section>
+
+            <!-- Diapositiva 11: Stack Tecnol&oacute;gico -->
+            <section>
+                <div class="slide-content">
+                    <img src="frontend-php/public/assets/logo-soc-white.png" class="logo-sofia">
+                    <div class="tech-label">STACK_V1.0.8</div>
+                    <h2>Infraestructura de Sistemas</h2>
+                    <p>Tecnolog&iacute;as seleccionadas para alta disponibilidad y seguridad por dise&ntilde;o.</p>
+                    <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr);">
+                        <div class="stat-card">
+                            <h4>CORE</h4>
+                            <p>Node.js, TypeScript, PostgreSQL, PHP 8.2</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>DEVOPS</h4>
+                            <p>Docker Compose, Prometheus, Grafana</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>SEGURIDAD</h4>
+                            <p>JWT, Bcrypt (Cost 12), WAF Shield</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>AUTOMATIZACI&Oacute;N</h4>
+                            <p>n8n Workflow Engine, Serveo Tunnels</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Diapositiva 12: Conclusi&oacute;n -->
+            <section>
+                <div class="slide-content portada">
+                    <img src="frontend-php/public/assets/logo-soc-white.png" style="width: 150px; margin-bottom: 20px;">
+                    <h2>Conclusi&oacute;n y Q&A</h2>
+                    <p style="text-align: center;">Sofia Solutions reduce el tiempo medio de respuesta (MTTR) y democratiza la ciberseguridad avanzada para el sector empresarial.</p>
+                    <div style="margin-top: 40px; font-family: 'JetBrains Mono', monospace; color: var(--accent-green);">
+                        &gt; SISTEMA_NOMINAL_2026<br>
+                        &gt; GRACIAS_POR_SU_ATENCION
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Reveal.js JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+    <script>
+        Reveal.initialize({
+            width: 1280,
+            height: 720,
+            margin: 0,
+            minScale: 0.2,
+            maxScale: 2.0,
+            hash: true,
+            transition: 'slide',
+            center: false,
+            controls: true,
+            progress: true,
+            backgroundTransition: 'fade'
+        });
+    </script>
+</body>
+</html>
