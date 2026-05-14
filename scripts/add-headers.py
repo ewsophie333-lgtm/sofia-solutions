@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import os
 
 directory = r'c:\Users\shair\Desktop\sofia-solutions\sofia-solutions\sofia-backend\src'
@@ -13,7 +13,7 @@ standard_header = '''/**
  * y alta escalabilidad para entornos criticos e industriales.
  * 
  * @module SofiaSolutions
- * @author Sofia Solutions Architecture Team
+ * Sofia Gomez
  * @copyright 2026
  * ============================================================================
  */

@@ -99,7 +99,7 @@ export async function login(req: Request, res: Response) {
     await notifySoc(
       `Se ha detectado un intento de acceso fallido para ${email}. El sistema ha bloqueado la petición.`,
       "Fuerza Bruta",
-      "URGENT",
+      "URGENTE",
       sourceIp
     );
 
@@ -168,7 +168,7 @@ export async function loginV1(req: Request, res: Response) {
            data: {
              customerId: 1, assetId: 1,
              title: "Intento de Fuerza Bruta",
-             vector: "BRUTE_FORCE", severity: "HIGH", status: "TRIAGE",
+             vector: "BRUTE_FORCE", severity: "ALTA", status: "TRIAGE",
              sourceIp: "185.15.22.1", sourceCountry: "CN", // China para Brute Force
              attackSurface: "Login API", timelineSlot: new Date().getHours() * 2
            }
@@ -195,7 +195,7 @@ export async function loginV1(req: Request, res: Response) {
           customerId: userWithCustomer?.customer?.id || 1,
           assetId: 1,
           title: "Inyección SQL Exitosa (Auth Bypass)",
-          vector: "SQLi", severity: "CRITICAL", status: "INVESTIGATING",
+          vector: "SQLi", severity: "CRÍTICA", status: "INVESTIGATING",
           sourceIp: "89.23.45.12", sourceCountry: "RU", // Rusia para SQLi
           attackSurface: "Login API", timelineSlot: new Date().getHours() * 2
         }
@@ -318,7 +318,7 @@ export async function loginV2(req: Request, res: Response) {
     await notifySoc(
       `Intento de compromiso detectado contra el endpoint v2 para ${email}.`,
       "Fallo en Login Seguro",
-      "CRITICAL",
+      "CRÍTICA",
       sourceIp
     );
 

@@ -13,17 +13,18 @@ enum Role {
 }
 
 enum AssetCriticality {
-  LOW
-  MEDIUM
-  HIGH
-  CRITICAL
+  BAJA
+  MEDIA
+  ALTA
+  CRÍTICA
 }
 
 enum IncidentSeverity {
-  LOW
-  MEDIUM
-  HIGH
-  CRITICAL
+  BAJA
+  MEDIA
+  ALTA
+  CRÍTICA
+  URGENTE
 }
 
 enum IncidentStatus {

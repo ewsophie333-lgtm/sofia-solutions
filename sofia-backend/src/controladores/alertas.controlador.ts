@@ -19,7 +19,7 @@ const ALERT_EMAIL = "ewsophie333@gmail.com";
  * Desencadena flujos de trabajo de notificación externa para severidades URGENT/CRITICAL.
  */
 export async function createUrgentAlert(req: Request, res: Response) {
-  const { title, description, severity = "CRITICAL", sourceIp } = req.body;
+  const { title, description, severity = "CRÍTICA", sourceIp } = req.body;
   const clientIp = sourceIp || req.ip || req.socket.remoteAddress || "0.0.0.0";
 
   if (!title || !description) {
@@ -38,7 +38,7 @@ export async function createUrgentAlert(req: Request, res: Response) {
   });
 
   // Notificación externa (SOS / n8n)
-  if (["URGENT", "CRITICAL", "HIGH"].includes(alert.severity)) {
+  if (["URGENTE", "CRÍTICA", "ALTA"].includes(alert.severity)) {
     console.log(`[SOS] Iniciando envío de alerta crítica ${alert.id} a n8n...`);
     
     // Obtenemos datos del cliente para n8n
@@ -66,7 +66,7 @@ export async function createUrgentAlert(req: Request, res: Response) {
 
   res.status(201).json({
     ...alert,
-    webhookSent: ["URGENT", "CRITICAL"].includes(alert.severity),
+    webhookSent: ["URGENTE", "CRÍTICA"].includes(alert.severity),
   });
 }
 

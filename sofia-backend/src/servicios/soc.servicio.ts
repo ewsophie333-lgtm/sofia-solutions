@@ -8,7 +8,7 @@
  * y alta escalabilidad para entornos criticos e industriales.
  * 
  * @module SofiaSolutions
- * @author Sofia Solutions Architecture Team
+ * @author Sofia Gomez
  * @copyright 2026
  * ============================================================================
  */
@@ -20,11 +20,11 @@ const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL || "http://n8n:5678/webhook/
 const ALERT_EMAIL = "ewsophie333@gmail.com";
 
 // Severidades que disparan notificación externa por email (n8n → Gmail)
-const EMAIL_SEVERITIES = ["CRITICAL", "HIGH", "URGENT"];
+const EMAIL_SEVERITIES = ["CRÍTICA", "ALTA", "URGENTE"];
 
 const socNotifications: string[] = [];
 
-export async function notifySoc(message: string, type: string = "SECURITY_EVENT", severity: string = "HIGH", sourceIp: string = "unknown") {
+export async function notifySoc(message: string, type: string = "SECURITY_EVENT", severity: string = "ALTA", sourceIp: string = "unknown") {
   socNotifications.unshift(message);
   if (socNotifications.length > 20) {
     socNotifications.pop();
@@ -32,27 +32,17 @@ export async function notifySoc(message: string, type: string = "SECURITY_EVENT"
 
   registro.warn({ message: "soc_notification", detail: message, type, severity });
 
-  // Solo entornoiar email para severidades de impacto alto
+  // Solo enviar email para severidades de impacto alto
   if (!EMAIL_SEVERITIES.includes(severity.toUpperCase())) {
-    console.log(`[SOC] Alerta ${type} (${severity}) registrada localmente. No se entornoía email.`);
+    console.log(`[SOC] Alerta ${type} (${severity}) registrada localmente. No se envía email.`);
     return;
   }
 
   // Notificación externa a n8n -> Gmail
   try {
-    const severityMap: Record<string, string> = {
-      "HIGH": "ALTA",
-      "CRITICAL": "CRÍTICA",
-      "URGENT": "URGENTE",
-      "MEDIUM": "MEDIA",
-      "LOW": "BAJA"
-    };
-
-    const translatedSeverity = severityMap[severity.toUpperCase()] || severity;
-
-    console.log(`[SOC] Enviando alerta ${translatedSeverity} a n8n: ${N8N_WEBHOOK_URL} (IP: ${sourceIp})`);
+    console.log(`[SOC] Enviando alerta ${severity} a n8n: ${N8N_WEBHOOK_URL} (IP: ${sourceIp})`);
     const response = await axios.post(N8N_WEBHOOK_URL, {
-      title: `ALERTA SOC [${translatedSeverity}]: ${type}`,
+      title: `ALERTA SOC [${severity}]: ${type}`,
       description: message,
       severity: severity.toLowerCase(), // n8n espera lowercase para el badge
       timestamp: new Date().toLocaleString("es-ES"),

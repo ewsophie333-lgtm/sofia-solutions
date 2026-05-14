@@ -8,7 +8,7 @@
  * y alta escalabilidad para entornos criticos e industriales.
  * 
  * @module SofiaSolutions
- * @author Sofia Solutions Architecture Team
+ * Sofia Gomez
  * @copyright 2026
  * ============================================================================
  */

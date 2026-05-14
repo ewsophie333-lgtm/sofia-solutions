@@ -65,7 +65,7 @@ const trendLabels = ["00", "04", "08", "12", "16", "20", "24"];
  * @internal
  */
 function severityRank(value: string) {
-  const ranks: Record<string, number> = { CRITICAL: 4, HIGH: 3, MEDIUM: 2, LOW: 1 };
+  const ranks: Record<string, number> = { "CRÍTICA": 4, "URGENTE": 4, "ALTA": 3, "MEDIA": 2, "BAJA": 1 };
   return ranks[value.toUpperCase()] ?? 1;
 }
 
@@ -148,11 +148,11 @@ export async function securityMonitor(_req: Request, res: Response) {
     ]);
 
     const totalEventsAnalyzed = Math.max(events.length * 20134, 1200000); 
-    const criticalIncidents = incidents.filter((i) => i.severity === "CRITICAL" && i.status !== "RESOLVED").length;
+    const criticalIncidents = incidents.filter((i) => (i.severity === "CRÍTICA" || i.severity === "URGENTE") && i.status !== "RESOLVED").length;
     const activeThreats = incidents.filter((i) => ["TRIAGE", "INVESTIGATING"].includes(i.status)).length;
     
     // Nodos Seguros: Activos que no tienen incidentes críticos ni de alta severidad activos.
-    const assetIdsWithIssues = new Set(incidents.filter(i => ["CRITICAL", "HIGH"].includes(i.severity) && i.status !== "RESOLVED").map(i => i.assetId));
+    const assetIdsWithIssues = new Set(incidents.filter(i => ["CRÍTICA", "URGENTE", "ALTA"].includes(i.severity) && i.status !== "RESOLVED").map(i => i.assetId));
     const safeNodes = assets.filter(a => !assetIdsWithIssues.has(a.id)).length;
 
     const systemHealth = incidents.length === 0 ? 100 : Number((100 - activeThreats * 0.3).toFixed(1));
@@ -162,9 +162,9 @@ export async function securityMonitor(_req: Request, res: Response) {
       const bucket = incidents.filter((i) => i.timelineSlot >= slotStart && i.timelineSlot < slotStart + 2);
       return {
         hour: label,
-        low: bucket.filter((i) => i.severity === "LOW").length * 12 + (index === 0 ? 18 : 0),
-        medium: bucket.filter((i) => i.severity === "MEDIUM").length * 18 + 10,
-        high: bucket.filter((i) => i.severity === "HIGH").length * 24 + 8,
+        low: bucket.filter((i) => i.severity === "BAJA").length * 12 + (index === 0 ? 18 : 0),
+        medium: bucket.filter((i) => i.severity === "MEDIA").length * 18 + 10,
+        high: bucket.filter((i) => i.severity === "ALTA").length * 24 + 8,
       };
     });
 
@@ -201,10 +201,10 @@ export async function securityMonitor(_req: Request, res: Response) {
     ];
 
     const alertDistribution = [
-      { label: "Critical", value: allAlerts.filter(a => a.severity.toUpperCase() === "CRITICAL" || a.severity.toUpperCase() === "URGENT").length, color: "#be123c" }, // Rojo oscuro
-      { label: "High",     value: allAlerts.filter(a => a.severity.toUpperCase() === "HIGH" || a.severity.toUpperCase() === "ALTA").length,     color: "#ea580c" }, // Naranja intenso
-      { label: "Medium",   value: allAlerts.filter(a => a.severity.toUpperCase() === "MEDIUM" || a.severity.toUpperCase() === "MEDIA").length,   color: "#eab308" }, // Amarillo brillante
-      { label: "Low",      value: allAlerts.filter(a => a.severity.toUpperCase() === "LOW" || a.severity.toUpperCase() === "BAJA").length,      color: "#2563eb" }  // Azul fuerte
+      { label: "Crítica", value: allAlerts.filter(a => a.severity.toUpperCase() === "CRÍTICA" || a.severity.toUpperCase() === "URGENTE").length, color: "#be123c" }, // Rojo oscuro
+      { label: "Alta",     value: allAlerts.filter(a => a.severity.toUpperCase() === "ALTA").length,     color: "#ea580c" }, // Naranja intenso
+      { label: "Media",   value: allAlerts.filter(a => a.severity.toUpperCase() === "MEDIA").length,   color: "#eab308" }, // Amarillo brillante
+      { label: "Baja",      value: allAlerts.filter(a => a.severity.toUpperCase() === "BAJA").length,      color: "#2563eb" }  // Azul fuerte
     ];
 
     const liveFeed = incidents
