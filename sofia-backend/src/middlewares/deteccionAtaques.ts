@@ -41,10 +41,12 @@ export async function deteccionAtaques(req: Request, res: Response, next: NextFu
   console.log(`[ALERT] ${threat.type} detected on ${req.path}. Escalating to SOC...`);
 
   // Registro en el Audit Service (SIEM interno)
+  const sourceIp = (req.headers["x-forwarded-for"] as string) || req.ip || "127.0.0.1";
+
   await logSecurityEvent({
     type: attack.type,
     severity: threat.severity,
-    sourceIp: req.ip ?? "unknown",
+    sourceIp,
     endpoint: req.originalUrl,
     payload: { query: req.query, body: req.body },
     action: modo === "secure" ? "BLOCKED" : "ALLOWED",
@@ -52,7 +54,7 @@ export async function deteccionAtaques(req: Request, res: Response, next: NextFu
   });
 
   // Notificación al SOC (n8n -> Gmail) - SIEMPRE, incluso en modo vulnerable
-  await notifySoc(`Ataque ${threat.type} detectado en ${req.originalUrl} (${modo.toUpperCase()})`, attack.type, threat.severity);
+  await notifySoc(`Ataque ${threat.type} detectado en ${req.originalUrl} (${modo.toUpperCase()})`, attack.type, threat.severity, sourceIp);
 
   if (modo === "vulnerable") {
     // VULNERABLE: solo registra el intento y deja continuar la petición.

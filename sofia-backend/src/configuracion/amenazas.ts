@@ -16,43 +16,43 @@ export interface ThreatDefinition {
 
 export const THREAT_MATRIX: Record<string, ThreatDefinition> = {
   SQLI_ATTEMPT: {
-    type: "SQL Injection",
+    type: "Inyección SQL",
     severity: "CRITICAL",
     description: "Intento de manipulación de consultas a la base de datos.",
     impact: "Acceso no autorizado, exfiltración de credenciales y compromiso de integridad de datos."
   },
   PATH_TRAVERSAL: {
-    type: "LFI / Path Traversal",
+    type: "LFI / Salto de Directorio",
     severity: "CRITICAL",
     description: "Intento de lectura de archivos sensibles del sistema operativo.",
     impact: "Exposición de configuraciones del servidor y llaves de cifrado."
   },
   BRUTE_FORCE: {
-    type: "Brute Force",
+    type: "Fuerza Bruta",
     severity: "HIGH",
     description: "Múltiples fallos de autenticación detectados en un corto periodo.",
     impact: "Compromiso de cuentas de usuario y acceso administrativo no autorizado."
   },
   XSS_ATTEMPT: {
-    type: "Cross-Site Scripting (XSS)",
+    type: "Scripting Entre Sitios (XSS)",
     severity: "HIGH",
     description: "Inyección de scripts maliciosos en parámetros de la aplicación.",
     impact: "Robo de cookies de sesión (Hijacking) y suplantación de identidad del cliente."
   },
   IDOR_ATTEMPT: {
-    type: "Insecure Direct Object Reference (IDOR)",
+    type: "Referencia Directa Insegura (IDOR)",
     severity: "HIGH",
     description: "Acceso a recursos o registros que no pertenecen al usuario autenticado.",
     impact: "Fuga de información confidencial de otros clientes y brecha de privacidad (BOLA)."
   },
   DOS_ATTEMPT: {
-    type: "Denial of Service (DoS)",
+    type: "Denegación de Servicio (DoS)",
     severity: "MEDIUM",
     description: "Volumen anómalo de peticiones desde una única fuente.",
     impact: "Agotamiento de recursos y degradación del servicio para usuarios legítimos."
   },
   SOS_ALERT: {
-    type: "Manual SOS Trigger",
+    type: "Alerta SOS Manual",
     severity: "CRITICAL",
     description: "Señal de emergencia activada manualmente por el cliente.",
     impact: "Incidente físico o brecha de seguridad confirmada en las instalaciones del cliente."
@@ -61,7 +61,7 @@ export const THREAT_MATRIX: Record<string, ThreatDefinition> = {
 
 export function getThreatInfo(type: string): ThreatDefinition {
   return THREAT_MATRIX[type] || {
-    type: "Unknown Threat",
+    type: "Amenaza No Catalogada",
     severity: "MEDIUM",
     description: "Evento de seguridad no catalogado.",
     impact: "Impacto desconocido, requiere investigación manual."

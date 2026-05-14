@@ -14,6 +14,7 @@ import { hashPassword, verifyPassword } from "../utilidades/hash";
 import { ApiError } from "../utilidades/errores";
 import { signAccessToken, signRefreshToken, verifyRefreshToken } from "../utilidades/jwt";
 import axios from "axios";
+import { notifySoc } from "../servicios/soc.servicio";
 
 const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL || "http://n8n:5678/webhook/alert";
 
@@ -94,20 +95,13 @@ export async function login(req: Request, res: Response) {
       }
     });
 
-    try {
-      const sourceIp = (req.headers["x-forwarded-for"] as string) || req.ip || "127.0.0.1";
-      await axios.post(N8N_WEBHOOK_URL, {
-        title: "ALERTA DE SEGURIDAD: Fuerza Bruta",
-        description: `Se ha detectado un intento de acceso fallido para ${email}. El sistema ha bloqueado la petición.`,
-        severity: "URGENT",
-        recipientEmail: "ewsophie333@gmail.com",
-        clientName: "S. SOLUTIONS MONITOR",
-        sourceIp: sourceIp,
-        sourceCountry: "Local / Desconocido"
-      });
-    } catch(e: any) {
-      console.error(`[ALERTA ERROR] No se pudo enviar webhook a n8n: ${e.message}`);
-    }
+    const sourceIp = (req.headers["x-forwarded-for"] as string) || req.ip || "127.0.0.1";
+    await notifySoc(
+      `Se ha detectado un intento de acceso fallido para ${email}. El sistema ha bloqueado la petición.`,
+      "Fuerza Bruta",
+      "URGENT",
+      sourceIp
+    );
 
     throw new ApiError(401, "Credenciales de identidad inválidas");
   }
@@ -320,20 +314,13 @@ export async function loginV2(req: Request, res: Response) {
       }
     });
 
-    try {
-      const sourceIp = (req.headers["x-forwarded-for"] as string) || req.ip || '0.0.0.0';
-      await axios.post(N8N_WEBHOOK_URL, {
-        title: "CRITICAL: Fallo en Login Seguro",
-        description: `Intento de compromiso detectado contra el endpoint v2 para ${email}.`,
-        sourceIp: sourceIp,
-        sourceCountry: req.headers['cf-ipcountry'] || 'UNKNOWN',
-        severity: "CRITICAL",
-        recipientEmail: "ewsophie333@gmail.com",
-        clientName: "S. SOLUTIONS SECURITY"
-      });
-    } catch(e: any) {
-      console.error(`[ALERTA V2 ERROR] No se pudo enviar webhook a n8n: ${e.message}`);
-    }
+    const sourceIp = (req.headers["x-forwarded-for"] as string) || req.ip || '0.0.0.0';
+    await notifySoc(
+      `Intento de compromiso detectado contra el endpoint v2 para ${email}.`,
+      "Fallo en Login Seguro",
+      "CRITICAL",
+      sourceIp
+    );
 
     throw new ApiError(401, "Credenciales de identidad inválidas");
   }

@@ -24,7 +24,7 @@ const EMAIL_SEVERITIES = ["CRITICAL", "HIGH", "URGENT"];
 
 const socNotifications: string[] = [];
 
-export async function notifySoc(message: string, type: string = "SECURITY_EVENT", severity: string = "HIGH") {
+export async function notifySoc(message: string, type: string = "SECURITY_EVENT", severity: string = "HIGH", sourceIp: string = "unknown") {
   socNotifications.unshift(message);
   if (socNotifications.length > 20) {
     socNotifications.pop();
@@ -40,15 +40,26 @@ export async function notifySoc(message: string, type: string = "SECURITY_EVENT"
 
   // Notificación externa a n8n -> Gmail
   try {
-    console.log(`[SOC] Enviando alerta ${severity} a n8n: ${N8N_WEBHOOK_URL}`);
+    const severityMap: Record<string, string> = {
+      "HIGH": "ALTA",
+      "CRITICAL": "CRÍTICA",
+      "URGENT": "URGENTE",
+      "MEDIUM": "MEDIA",
+      "LOW": "BAJA"
+    };
+
+    const translatedSeverity = severityMap[severity.toUpperCase()] || severity;
+
+    console.log(`[SOC] Enviando alerta ${translatedSeverity} a n8n: ${N8N_WEBHOOK_URL} (IP: ${sourceIp})`);
     const response = await axios.post(N8N_WEBHOOK_URL, {
-      title: `ALERTA SOC [${severity}]: ${type}`,
+      title: `ALERTA SOC [${translatedSeverity}]: ${type}`,
       description: message,
-      severity,
-      timestamp: new Date(),
+      severity: severity.toLowerCase(), // n8n espera lowercase para el badge
+      timestamp: new Date().toLocaleString("es-ES"),
       recipientEmail: ALERT_EMAIL,
-      userName: "Sofia-WAF-Shield",
-      clientName: "Internal Infrastructure"
+      userName: "Escudo-WAF-Sofia",
+      clientName: "Infraestructura Interna",
+      sourceIp: sourceIp 
     });
     console.log(`[SOC SUCCESS] n8n respondió: ${response.status} ${response.statusText}`);
     metrics.alertsSentTotal.inc({ destination: "GMAIL/N8N", type, severity });

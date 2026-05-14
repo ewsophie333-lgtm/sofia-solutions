@@ -26,6 +26,7 @@ services:
     build:
       context: ./sofia-backend
       dockerfile: docker/Dockerfile
+    command: npm run dev
     environment:
       NODE_ENV: production
       PORT: 8001
@@ -35,8 +36,10 @@ services:
       JWT_SECRET: ${JWT_SECRET:-sofia-super-secret-key-2026}
       N8N_WEBHOOK_URL: http://n8n:5678/webhook/alert
     volumes:
-      - ./sofia-backend/src:/usr/src/app/src
-      - ./sofia-backend/prisma:/usr/src/app/prisma
+      - ./sofia-backend/src:/app/src
+      - ./sofia-backend/prisma:/app/prisma
+      - ./sofia-backend/package.json:/app/package.json
+      - ./sofia-backend/tsconfig.json:/app/tsconfig.json
     ports:
       - "8001:8001"
       - "5555:5555" # Puerto opcional para Prisma Studio (herramienta DB visual)

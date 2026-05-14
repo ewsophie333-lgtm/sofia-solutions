@@ -6,9 +6,9 @@
   "type": "commonjs",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
-    "dev:vuln": "cross-env APP_MODE=vulnerable tsx watch src/server.ts",
-    "dev:secure": "cross-env APP_MODE=secure tsx watch src/server.ts",
+    "dev": "tsx watch src/servidor.ts",
+    "dev:vuln": "cross-env APP_MODE=vulnerable tsx watch src/servidor.ts",
+    "dev:secure": "cross-env APP_MODE=secure tsx watch src/servidor.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
