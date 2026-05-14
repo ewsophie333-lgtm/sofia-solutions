@@ -29,4 +29,8 @@ router.use("/tickets", ticketsRoutes);
 router.use("/admin", adminRoutes);
 router.use("/alerts", alertsRoutes);
 
+router.get("/health", (req, res) => {
+    res.json({ status: "ok", mode: "PROXIED" });
+});
+
 export default router;

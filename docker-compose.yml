@@ -13,6 +13,8 @@ services:
     volumes:
       - ./frontend-php/public:/var/www/html
       - ./frontend-php/apache.conf:/etc/apache2/sites-available/000-default.conf
+    environment:
+      APP_MODE: ${APP_MODE:-secure}
     depends_on:
       - backend
 

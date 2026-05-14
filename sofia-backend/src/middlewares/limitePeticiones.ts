@@ -26,6 +26,13 @@ const secureAuthRateLimiter = limitePeticiones({
 });
 
 export function authRateLimiter(req: Request, res: Response, next: NextFunction) {
-  // DESACTIVADO PARA LA DEMO: Permitir intentos ilimitados
-  return next();
+  const modo = getRequestMode(req);
+  
+  if (modo === "vulnerable") {
+    // DESACTIVADO PARA LA DEMO: Permitir intentos ilimitados en modo vulnerable
+    return next();
+  }
+
+  // Activo en modo seguro
+  return secureAuthRateLimiter(req, res, next);
 }
