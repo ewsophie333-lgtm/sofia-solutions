@@ -34,6 +34,7 @@ import { csrfToken } from "./controladores/autenticacion.controlador";
 const openapiDocument = YAML.load(path.join(process.cwd(), "src", "docs", "openapi.yaml"));
 
 export const app = express();
+app.set("trust proxy", true); // Habilitar detección de IP tras proxy (Apache)
 
 app.use(
   cors({

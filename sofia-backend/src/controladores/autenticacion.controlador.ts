@@ -95,13 +95,14 @@ export async function login(req: Request, res: Response) {
     });
 
     try {
+      const sourceIp = (req.headers["x-forwarded-for"] as string) || req.ip || "127.0.0.1";
       await axios.post(N8N_WEBHOOK_URL, {
         title: "ALERTA DE SEGURIDAD: Fuerza Bruta",
         description: `Se ha detectado un intento de acceso fallido para ${email}. El sistema ha bloqueado la petición.`,
         severity: "URGENT",
         recipientEmail: "ewsophie333@gmail.com",
         clientName: "S. SOLUTIONS MONITOR",
-        sourceIp: req.ip || "127.0.0.1",
+        sourceIp: sourceIp,
         sourceCountry: "Local / Desconocido"
       });
     } catch(e: any) {
@@ -320,10 +321,11 @@ export async function loginV2(req: Request, res: Response) {
     });
 
     try {
+      const sourceIp = (req.headers["x-forwarded-for"] as string) || req.ip || '0.0.0.0';
       await axios.post(N8N_WEBHOOK_URL, {
         title: "CRITICAL: Fallo en Login Seguro",
         description: `Intento de compromiso detectado contra el endpoint v2 para ${email}.`,
-        sourceIp: req.ip || '0.0.0.0',
+        sourceIp: sourceIp,
         sourceCountry: req.headers['cf-ipcountry'] || 'UNKNOWN',
         severity: "CRITICAL",
         recipientEmail: "ewsophie333@gmail.com",
