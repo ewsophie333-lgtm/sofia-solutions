@@ -76,7 +76,7 @@ const demoCountries = [
   { code: "FR", lat: 48.86, lon: 2.35, count: 1 }
 ];
 for (const c of demoCountries) {
-  metrics.threatLocationTotal.inc({ country_code: c.code, type: "SQL Injection" }, c.count);
+  metrics.threatLocationTotal.inc({ country_code: c.code, type: "Inyección SQL" }, c.count);
 }
 
 // Gauge con coordenadas para el Geomap de Grafana
@@ -97,6 +97,6 @@ metrics.attacksBlockedTotal.inc({ type: "XSS_ATTEMPT", modo: "secure" }, 4);
 metrics.attacksBlockedTotal.inc({ type: "PATH_TRAVERSAL", modo: "secure" }, 3);
 
 // Pre-populate alert sent data
-metrics.alertsSentTotal.inc({ destination: "GMAIL/N8N", type: "SQL Injection", severity: "CRITICAL" }, 3);
-metrics.alertsSentTotal.inc({ destination: "GMAIL/N8N", type: "Brute Force", severity: "HIGH" }, 2);
+metrics.alertsSentTotal.inc({ destination: "GMAIL/N8N", type: "Inyección SQL", severity: "CRITICAL" }, 3);
+metrics.alertsSentTotal.inc({ destination: "GMAIL/N8N", type: "Fuerza Bruta", severity: "HIGH" }, 2);
 

@@ -14,9 +14,9 @@ import { ApiError } from "../utilidades/errores";
  * @internal
  */
 const serviceCoverageMap: Record<string, string[]> = {
-  "SOC 24/7": ["Brute Force", "Phishing", "Malware", "Credential Abuse", "SQL Injection"],
-  "Pentesting Premium": ["SQL Injection", "XSS", "Path Traversal", "Reconnaissance"],
-  "IR Retainer": ["Malware", "Credential Abuse", "Phishing", "Brute Force"],
+  "SOC 24/7": ["Fuerza Bruta", "Phishing", "Malware", "Credential Abuse", "Inyección SQL"],
+  "Pentesting Premium": ["Inyección SQL", "XSS", "Path Traversal", "Reconnaissance"],
+  "IR Retainer": ["Malware", "Credential Abuse", "Phishing", "Fuerza Bruta"],
   "Cloud Security Hardening": ["Reconnaissance", "Credential Abuse", "Cloud Misconfiguration"],
 };
 

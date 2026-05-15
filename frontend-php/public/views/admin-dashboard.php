@@ -414,6 +414,9 @@ $activeNav = 'admin-dashboard';
                 <button onclick="setIRTab('mercadona')" class="ir-tab" data-tab="mercadona">
                     MERCADONA <span style="font-size:0.65rem; margin-left:8px; color:#22c55e;">● 99.7%</span>
                 </button>
+                <button onclick="setIRTab('repsol')" class="ir-tab" data-tab="repsol">
+                    REPSOL <span style="font-size:0.65rem; margin-left:8px; color:#ef4444;">● 94.2%</span>
+                </button>
             </div>
 
             <!-- IR Actions Toolbar -->
@@ -755,9 +758,10 @@ $activeNav = 'admin-dashboard';
                         { label: 'DDoS / Flood', count: 180 }
                     ],
                     alertDistribution: [
-                        { label: 'Crítico', value: 12, color: '#ef4444' },
-                        { label: 'Alto', value: 28, color: '#f59e0b' },
-                        { label: 'Medio', value: 60, color: '#8b5cf6' }
+                        { label: 'Critica', value: 15, color: '#ef4444' },
+                        { label: 'Alta', value: 32, color: '#f59e0b' },
+                        { label: 'Media', value: 45, color: '#eab308' },
+                        { label: 'Baja', value: 120, color: '#2563eb' }
                     ],
                     liveFeed: [
                         { type: 'SQLi DETECTADA', time: 'Ahora', severity: 'CRITICAL' },
@@ -773,7 +777,8 @@ $activeNav = 'admin-dashboard';
                         { name: 'MAPFRE', assets: 24, incidents: 1, risk: 15 },
                         { name: 'IBERDROLA', assets: 42, incidents: 6, risk: 45 },
                         { name: 'SABADELL', assets: 18, incidents: 0, risk: 8 },
-                        { name: 'MERCADONA', assets: 35, incidents: 2, risk: 12 }
+                        { name: 'MERCADONA', assets: 35, incidents: 2, risk: 12 },
+                        { name: 'REPSOL', assets: 58, incidents: 9, risk: 72 }
                     ]
                 };
             }
@@ -783,7 +788,8 @@ $activeNav = 'admin-dashboard';
                     { id: 101, client: 'MAPFRE', title: 'Intento de IDOR en portal pagos', status: 'OPEN', priority: 'HIGH' },
                     { id: 102, client: 'IBERDROLA', title: 'Anomalía en controlador SCADA', status: 'IN_PROGRESS', priority: 'CRITICAL' },
                     { id: 103, client: 'SABADELL', title: 'Múltiples fallos 2FA (Brute Force)', status: 'OPEN', priority: 'HIGH' },
-                    { id: 104, client: 'MERCADONA', title: 'Intento de SQLi en API de Productos', status: 'OPEN', priority: 'HIGH' }
+                    { id: 104, client: 'MERCADONA', title: 'Intento de SQLi en API de Productos', status: 'OPEN', priority: 'HIGH' },
+                    { id: 105, client: 'REPSOL', title: 'Acceso no autorizado a Red OT', status: 'OPEN', priority: 'CRITICAL' }
                 ];
             }
 
@@ -799,6 +805,18 @@ $activeNav = 'admin-dashboard';
             setKPI('#kpi-customers', s.protectedCustomers ?? '12');
             setKPI('#kpi-health', s.systemHealth != null ? s.systemHealth + '%' : '99.8%');
 
+            // Fallback a mocks si la distribución de alertas está vacía o es todo ceros (para que no se vea el panel vacío en la defensa)
+            const distSum = (d.alertDistribution || []).reduce((acc, curr) => acc + (curr.value || 0), 0);
+            if (distSum === 0) {
+                console.warn('Distribución de alertas vacía. Cargando datos de respaldo...');
+                d.alertDistribution = [
+                    { label: 'Critica', value: 15, color: '#ef4444' },
+                    { label: 'Alta', value: 32, color: '#f59e0b' },
+                    { label: 'Media', value: 45, color: '#eab308' },
+                    { label: 'Baja', value: 120, color: '#2563eb' }
+                ];
+            }
+
             renderCharts(d.topAttackVectors, d.alertDistribution);
             renderCustomerExposure(d.customerExposure);
             
@@ -813,10 +831,15 @@ $activeNav = 'admin-dashboard';
             
             // MOCKS DE EMERGENCIA AGRESIVOS (Si falla TODO)
             const mockVectors = [{ label: 'Inyección SQL', count: 850 }, { label: 'Fuerza Bruta', count: 640 }, { label: 'XSS', count: 420 }];
-            const mockDist = [{ label: 'Crítico', value: 12, color: '#ef4444' }, { label: 'Alto', value: 28, color: '#f59e0b' }, { label: 'Medio', value: 60, color: '#8b5cf6' }];
+            const mockDist = [
+                { label: 'Crítica', value: 15, color: '#ef4444' },
+                { label: 'Alta', value: 32, color: '#f59e0b' },
+                { label: 'Media', value: 45, color: '#eab308' },
+                { label: 'Baja', value: 120, color: '#2563eb' }
+            ];
             const mockIncidents = [
-                { type: 'SQLi DETECTADA', time: 'Ahora', severity: 'CRITICAL' },
-                { type: 'BRUTE FORCE BLOCKED', time: 'Hace 2m', severity: 'HIGH' }
+                { type: 'Inyección SQL DETECTADA', time: 'Ahora', severity: 'CRITICAL' },
+                { type: 'FUERZA BRUTA BLOQUEADA', time: 'Hace 2m', severity: 'HIGH' }
             ];
             
             renderCharts(mockVectors, mockDist);
@@ -831,7 +854,8 @@ $activeNav = 'admin-dashboard';
                 { name: 'MAPFRE', assets: 24, incidents: 1, risk: 15 },
                 { name: 'IBERDROLA', assets: 42, incidents: 6, risk: 45 },
                 { name: 'SABADELL', assets: 18, incidents: 0, risk: 8 },
-                { name: 'MERCADONA', assets: 35, incidents: 2, risk: 12 }
+                { name: 'MERCADONA', assets: 35, incidents: 2, risk: 12 },
+                { name: 'REPSOL', assets: 58, incidents: 9, risk: 72 }
             ]);
             
             const setKPI = (id, val) => { const el = document.querySelector(`${id} strong`); if (el) el.textContent = val; };
@@ -893,7 +917,7 @@ $activeNav = 'admin-dashboard';
             const isHigh = ['ALTA', 'HIGH', 'URGENT', 'CRITICAL'].includes(p);
             const prioColor = isHigh ? '#fca5a5' : '#fcd34d';
 
-            const client = t.user?.companyName || t.user?.name || 'Cliente Desconocido';
+            const client = t.user?.customer?.name || t.user?.companyName || t.user?.name || t.client || 'Cliente Desconocido';
 
             return `<tr style="border-bottom:1px solid rgba(255,255,255,0.03); transition:all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.01)'" onmouseout="this.style.background=''">
             <td style="padding:16px 12px;"><strong style="color:#a78bfa; font-size:0.9rem;">${client}</strong></td>
@@ -1028,6 +1052,10 @@ $activeNav = 'admin-dashboard';
         mercadona: [
             { time: 'Hace 3 min', type: 'DETECTADO: Intento de SQLi en /api/products', sev: 'warning', node: 'mercadona-ecommerce' },
             { time: 'Hace 20 min', type: 'LIMPIEZA: Cache de sesiones purgada', sev: 'success', node: 'mercadona-redis' }
+        ],
+        repsol: [
+            { time: 'Hace 2 min', type: 'CRÍTICO: Acceso no autorizado a Red OT (Refinería)', sev: 'danger', node: 'repsol-ot-gw' },
+            { time: 'Hace 15 min', type: 'ALERTA: Escaneo de vulnerabilidades externo detectado', sev: 'warning', node: 'repsol-edge-router' }
         ]
     };
 

@@ -177,9 +177,17 @@ export async function securityMonitor(_req: Request, res: Response) {
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
+    const translationMap: Record<string, string> = {
+      "SQL Injection": "Inyección SQL",
+      "Brute Force": "Fuerza Bruta",
+      "SQLi": "Inyección SQL",
+      "BRUTE_FORCE": "Fuerza Bruta"
+    };
+
     const vectorMap = new Map<string, number>();
     for (const incident of incidents) {
-      vectorMap.set(incident.vector, (vectorMap.get(incident.vector) ?? 0) + 1);
+      const label = translationMap[incident.vector] ?? incident.vector;
+      vectorMap.set(label, (vectorMap.get(label) ?? 0) + 1);
     }
     const topAttackVectors = [...vectorMap.entries()]
       .map(([label, count]) => ({ label, count }))

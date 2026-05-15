@@ -93,7 +93,6 @@
             "mode": "thresholds"
           },
           "thresholds": {
-            "mode": "absolute",
             "steps": [
               {
                 "color": "green",
@@ -484,74 +483,8 @@
       "title": "Container Memory Usage",
       "type": "timeseries"
     },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "sofia-prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "color-background"
-            },
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              },
-              {
-                "color": "green",
-                "value": 1
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-    {
-      "datasource": { "type": "testdata", "uid": "grafana" },
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "fixed" },
-          "custom": { "hideFrom": { "legend": false, "tooltip": false, "viz": false } },
-          "mappings": [
-            { "type": "value", "options": { "Critical": { "color": "#be123c" }, "High": { "color": "#ea580c" }, "Medium": { "color": "#eab308" }, "Low": { "color": "#2563eb" } } }
-          ]
-        },
-        "overrides": [
-           { "matcher": { "id": "byName", "options": "High" }, "properties": [{ "id": "color", "value": { "fixedColor": "#ea580c", "mode": "fixed" } }] },
-           { "matcher": { "id": "byName", "options": "Medium" }, "properties": [{ "id": "color", "value": { "fixedColor": "#eab308", "mode": "fixed" } }] }
-        ]
-      },
-      "gridPos": { "h": 12, "w": 14, "x": 0, "y": 26 },
-      "id": 15,
-      "options": {
-        "legend": { "displayMode": "list", "placement": "right", "showLegend": true },
-        "pieType": "pie",
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-        "tooltip": { "mode": "single" }
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": { "type": "testdata", "uid": "grafana" },
-          "scenarioId": "csv_content",
-          "string": "severity,count,color\nCritical,5,#be123c\nHigh,12,#ea580c\nMedium,25,#eab308\nLow,40,#2563eb"
-        }
-      ],
-      "title": "Distribución de Alertas por Severidad (SOC)",
-      "type": "piechart"
-    },
+
+
     {
       "datasource": {
         "type": "prometheus",
@@ -567,8 +500,8 @@
       },
       "gridPos": {
         "h": 12,
-        "w": 10,
-        "x": 14,
+        "w": 24,
+        "x": 0,
         "y": 26
       },
       "id": 11,
@@ -590,7 +523,7 @@
             "uid": "sofia-prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(alerts_sent_total) by (type)",
+          "expr": "sum(alerts_sent_total{type!~\"Brute Force|SQL Injection\"}) by (type)",
           "legendFormat": "{{type}}",
           "range": true,
           "refId": "A"
@@ -599,6 +532,7 @@
       "title": "Alerts Sent to Gmail (via n8n)",
       "type": "stat"
     },
+
     {
       "datasource": {
         "type": "prometheus",

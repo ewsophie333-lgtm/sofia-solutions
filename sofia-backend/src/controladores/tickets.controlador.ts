@@ -21,8 +21,8 @@ export async function listTickets(req: Request, res: Response) {
     include: {
       messages: true,
       user: {
-        select: {
-          email: true
+        include: {
+          customer: true
         }
       }
     },

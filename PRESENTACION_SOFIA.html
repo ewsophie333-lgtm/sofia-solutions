@@ -7,7 +7,7 @@
     <!-- Reveal.js CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Orbitron:wght@400;700&family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #0d0a16;
@@ -25,79 +25,58 @@
         .reveal {
             background: var(--bg);
             color: var(--text);
-            font-family: 'Inter', sans-serif;
+            font-family: 'Outfit', sans-serif;
         }
 
-        /* Grid Background Pattern */
-        .reveal::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-            background-size: 50px 50px;
-            opacity: 0.5;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        /* Animated Glows */
-        .reveal .background-glow {
-            position: fixed;
-            width: 100vw;
-            height: 100vh;
-            background: 
-                radial-gradient(circle at 20% 20%, rgba(139, 92, 246, 0.15), transparent 40%),
-                radial-gradient(circle at 80% 80%, rgba(86, 230, 255, 0.1), transparent 40%);
-            z-index: -2;
-        }
-
-        /* Heading Styles */
-        .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
-            font-family: 'Orbitron', sans-serif;
-            text-transform: none;
-            color: var(--text);
-            text-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
-            margin-bottom: 30px;
-        }
-
-        .reveal h1 { font-size: 2.2em; letter-spacing: -2px; }
-        .reveal h2 { color: var(--brand-soft); border-bottom: 2px solid var(--brand); display: inline-block; padding-bottom: 10px; }
-        .reveal h3 { color: var(--cian); font-size: 1.2em; }
-
-        /* Glassmorphism Panels */
         .glass-panel {
-            background: var(--panel);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--border);
-            border-radius: 24px;
+            background: rgba(23, 18, 40, 0.4);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
             padding: 40px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            margin-top: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+            transition: transform 0.3s ease;
         }
 
-        .capture-placeholder {
-            border: 1px dashed var(--brand-soft);
-            background: rgba(139, 92, 246, 0.03);
-            border-radius: 16px;
-            height: 400px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            font-size: 0.8em;
-            margin: 20px 0;
-            position: relative;
+        .glass-panel:hover {
+            transform: translateY(-5px);
+            border-color: var(--brand-soft);
+        }
+
+        .screenshot-frame {
+            border-radius: 20px;
+            border: 4px solid var(--panel);
+            box-shadow: 0 0 40px rgba(0,0,0,0.6), 0 0 20px rgba(139, 92, 246, 0.2);
             overflow: hidden;
+            margin: 20px 0;
+            background: #111;
         }
 
-        .capture-placeholder::after {
-            content: "📸 [INSERTAR CAPTURA DE PANTALLA]";
-            font-family: 'Orbitron', sans-serif;
-            letter-spacing: 2px;
-            opacity: 0.5;
+        .screenshot-frame img {
+            display: block;
+            width: 100%;
+            height: auto;
+            max-height: 500px;
+            object-fit: contain;
         }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .neon-text {
+            color: #fff;
+            text-shadow: 0 0 10px var(--brand), 0 0 20px var(--brand), 0 0 30px var(--brand);
+        }
+
+        .reveal .progress { height: 6px; background: rgba(139, 92, 246, 0.2); }
+        .reveal .progress span { background: var(--brand); box-shadow: 0 0 15px var(--brand); }
 
         /* Tech Badges */
         .badge {
@@ -188,11 +167,11 @@
         <div class="slides">
             
             <!-- 1. PORTADA -->
-            <section data-background-color="#0d0a16">
-                <div class="logo-pulse">
-                    <img src="frontend-php/public/assets/logo-soc-final.png" alt="Logo" style="width: 320px; filter: drop-shadow(0 0 30px var(--brand));">
+            <section data-background-image="assets_presentation_bg.png" data-background-opacity="0.4">
+                <div class="logo-pulse floating">
+                    <img src="frontend-php/public/assets/sofia_logo_transparent.png" alt="Logo" style="width: 250px; filter: drop-shadow(0 0 20px rgba(255,255,255,0.3));">
                 </div>
-                <h1 style="margin-top: 20px;">Sofia Solutions</h1>
+                <h1 style="margin-top: 20px;" class="neon-text">Sofia Solutions</h1>
                 <h3 style="letter-spacing: 4px;">SECURITY & SOC FRAMEWORK</h3>
                 <p style="font-size: 0.5em; color: var(--text-muted); margin-top: 50px;">
                     Defensa de Proyecto Final | ASIX Ciberseguridad 2026
@@ -282,8 +261,8 @@
             <section>
                 <h2>Arquitectura de Red</h2>
                 <p style="font-size: 0.6em;">Orquestación de 7 contenedores en una red aislada.</p>
-                <div class="capture-placeholder" style="height: 450px;">
-                    <!-- CAPTURA DEL DIAGRAMA ER O DOCKER COMPOSE -->
+                <div class="screenshot-frame floating">
+                    <img src="imagenes sofia solutions/diagrama_er_sofia_profesional.png" alt="Arquitectura">
                 </div>
                 <div style="display: flex; justify-content: center; gap: 10px;">
                     <span class="badge">Frontend PHP</span>
@@ -301,8 +280,8 @@
                 <div class="glass-panel">
                     <h3>La Consola de Auditoría</h3>
                     <p style="font-size: 0.7em;">Un entorno controlado para demostrar debilidades.</p>
-                    <div class="capture-placeholder" style="height: 300px;">
-                        <!-- CAPTURA CONSOLA AUDITORIA -->
+                    <div class="screenshot-frame">
+                        <img src="frontend-php/public/assets/audit_screenshot.png" alt="Auditoría">
                     </div>
                     <ul style="font-size: 0.6em;">
                         <li><strong>Modo Vulnerable:</strong> Desactiva Bcrypt y WAF para demostraciones educativas.</li>
@@ -321,8 +300,8 @@
                         <pre><code>SELECT * FROM users WHERE 
 email = '' OR 1=1 --' AND password = '...'</code></pre>
                     </div>
-                    <div class="capture-placeholder" style="height: 300px;">
-                        <!-- CAPTURA BYPASS LOGIN -->
+                    <div class="screenshot-frame">
+                        <img src="frontend-php/public/assets/sqli_evidence_pro.png" alt="SQL Injection">
                     </div>
                 </div>
                 <p style="font-size: 0.6em; margin-top: 20px;">Resultado: Acceso administrativo sin credenciales válidas.</p>
@@ -332,8 +311,8 @@ email = '' OR 1=1 --' AND password = '...'</code></pre>
             <section>
                 <h2>XSS & Session Hijacking</h2>
                 <p style="font-size: 0.7em;">Robo de cookies de sesión mediante inyección de scripts.</p>
-                <div class="capture-placeholder">
-                    <!-- CAPTURA SIMULADOR BURP SUITE / ROBO COOKIE -->
+                <div class="screenshot-frame">
+                    <img src="frontend-php/public/assets/login_comparison.png" alt="Bypass Comparison">
                 </div>
                 <div class="glass-panel" style="padding: 15px;">
                     <p style="font-size: 0.5em; color: var(--brand-soft);">
@@ -364,8 +343,8 @@ email = '' OR 1=1 --' AND password = '...'</code></pre>
                 <h2>Protección de Datos: Bcrypt</h2>
                 <div class="glass-panel">
                     <p style="font-size: 0.7em;">Bcrypt implementa un coste computacional (Work Factor) que protege contra fuerza bruta.</p>
-                    <div class="capture-placeholder" style="height: 300px;">
-                        <!-- CAPTURA CODIGO BCRYPT O DB HASHEADA -->
+                    <div class="screenshot-frame">
+                        <img src="frontend-php/public/assets/login_screenshot.png" alt="Bcrypt Security">
                     </div>
                     <p style="font-size: 0.5em;">Incluso si la base de datos es exfiltrada, las contraseñas son computacionalmente imposibles de revertir.</p>
                 </div>
@@ -386,8 +365,8 @@ email = '' OR 1=1 --' AND password = '...'</code></pre>
                         <span class="badge" style="color: var(--bad);">403 Forbidden</span>
                     </div>
                 </div>
-                <div class="capture-placeholder" style="height: 250px;">
-                    <!-- CAPTURA BLOQUEO WAF -->
+                <div class="screenshot-frame">
+                    <img src="frontend-php/public/assets/admin_screenshot.png" alt="WAF Blocking">
                 </div>
             </section>
 
@@ -395,8 +374,8 @@ email = '' OR 1=1 --' AND password = '...'</code></pre>
             <section data-background-color="#111827">
                 <h2>FASE III: Monitorización SOC</h2>
                 <p style="font-size: 0.7em;">Observabilidad total mediante el Panel Administrativo y Grafana.</p>
-                <div class="capture-placeholder" style="height: 400px;">
-                    <!-- CAPTURA DASHBOARD GRAFANA -->
+                <div class="screenshot-frame">
+                    <img src="frontend-php/public/assets/dashboard_screenshot.png" alt="Grafana SOC">
                 </div>
                 <div style="display: flex; justify-content: center; gap: 20px;">
                     <div style="text-align: center;">
@@ -414,8 +393,8 @@ email = '' OR 1=1 --' AND password = '...'</code></pre>
             <section>
                 <h2>Rastreo Geográfico (Threat Intel)</h2>
                 <p style="font-size: 0.7em;">¿Desde dónde nos atacan?</p>
-                <div class="capture-placeholder">
-                    <!-- CAPTURA MAPA O FEED CON IP/PAIS -->
+                <div class="screenshot-frame">
+                    <img src="frontend-php/public/assets/dashboard_screenshot.png" alt="GeoIP Feed">
                 </div>
                 <div class="glass-panel" style="padding: 15px;">
                     <p style="font-size: 0.55em;">
@@ -437,8 +416,8 @@ email = '' OR 1=1 --' AND password = '...'</code></pre>
                             <li>Notificación inmediata vía Email/Slack.</li>
                         </ul>
                     </div>
-                    <div class="capture-placeholder" style="height: 350px;">
-                        <!-- CAPTURA FLUJO N8N -->
+                    <div class="screenshot-frame">
+                        <img src="frontend-php/public/assets/n8n_workflow_pro.png" alt="n8n Workflow">
                     </div>
                 </div>
             </section>
@@ -447,8 +426,30 @@ email = '' OR 1=1 --' AND password = '...'</code></pre>
             <section>
                 <h2>El Correo de Alerta SOC</h2>
                 <p style="font-size: 0.7em;">Notificaciones diseñadas para la toma de decisiones.</p>
-                <div class="capture-placeholder" style="height: 400px;">
-                    <!-- CAPTURA DEL CORREO RECIBIDO -->
+                <div class="glass-panel" style="padding: 0; overflow: hidden; border-radius: 12px; background: #fff; color: #333; max-width: 500px; margin: 20px auto; text-align: left; font-family: sans-serif;">
+                    <div style="background: #1a1c2c; padding: 20px; color: #fff; text-align: center;">
+                        <p style="margin: 0; font-size: 10px; letter-spacing: 2px; opacity: 0.8;">SOFIA SOLUTIONS | CENTRO DE SEGURIDAD</p>
+                        <h4 style="margin: 10px 0 0 0; color: #fff; font-size: 20px; text-shadow: none;">SISTEMA DE ALERTAS</h4>
+                    </div>
+                    <div style="padding: 30px;">
+                        <span style="background: #fee2e2; color: #ef4444; border: 1px solid #ef4444; padding: 4px 12px; border-radius: 99px; font-size: 10px; font-weight: bold;">● CRÍTICA</span>
+                        <h2 style="color: #1a1c2c; border: none; font-size: 24px; margin: 20px 0;">Incidente Detectado</h2>
+                        <div style="background: #f1f5f9; border-left: 4px solid #8b5cf6; padding: 15px; border-radius: 4px; font-size: 14px; color: #475569;">
+                            Se ha detectado un intento de acceso fallido para <strong style="color: #2563eb;">admin@sofia.local</strong>. El sistema ha bloqueado la petición.
+                        </div>
+                        <table style="width: 100%; margin-top: 20px; font-size: 12px; border-collapse: collapse;">
+                            <tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 10px 0; color: #64748b;">CLIENTE</td><td style="padding: 10px 0; font-weight: bold;">Infraestructura Interna</td></tr>
+                            <tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 10px 0; color: #64748b;">INCIDENTE</td><td style="padding: 10px 0; font-weight: bold;">ALERTA SOC [URGENTE]: Fuerza Bruta</td></tr>
+                            <tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 10px 0; color: #64748b;">ORIGEN IP</td><td style="padding: 10px 0; font-weight: bold;">172.18.0.1</td></tr>
+                        </table>
+                        <div style="text-align: center; margin-top: 30px;">
+                            <a href="#" style="background: #6366f1; color: #fff; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px;">ACCEDER AL DASHBOARD</a>
+                        </div>
+                    </div>
+                    <div style="background: #f8fafc; padding: 15px; text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px solid #e2e8f0;">
+                        SISTEMA INTEGRADO DE MONITOREO 24/7<br>
+                        © 2026 SOFIA SOLUTIONS | SECURITY GROUP
+                    </div>
                 </div>
                 <p style="font-size: 0.5em; color: var(--brand-soft);">Diseño minimalista premium enfocado en datos críticos: IP, Cliente, Gravedad.</p>
             </section>
@@ -488,8 +489,8 @@ def exfiltrate_data():
     # Automatización de volcado de DB post-compromiso
     # Simulación de persistencia silenciosa</code></pre>
                 </div>
-                <div class="capture-placeholder" style="height: 250px;">
-                    <!-- CAPTURA EJECUCION SCRIPT PYTHON -->
+                <div class="screenshot-frame">
+                    <img src="frontend-php/public/assets/audit_screenshot.png" alt="Audit Kit" style="opacity: 0.9;">
                 </div>
                 <p style="font-size: 0.55em;">Herramienta para demostrar el impacto real tras un acceso inicial exitoso.</p>
             </section>
