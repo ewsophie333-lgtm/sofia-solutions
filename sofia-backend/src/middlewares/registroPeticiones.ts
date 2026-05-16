@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * PROYECTO SOFIA SOLUTIONS - MI SISTEMA DE CIBERSEGURIDAD
+ * PROYECTO SOFIA SOLUTIONS
  * ============================================================================
  * 
  * Este código lo he desarrollado para mi proyecto final (TFG). Aquí trato de
@@ -15,17 +15,25 @@ import { randomUUID } from "crypto";
 import { registro } from "../configuracion/registro";
 import { metrics } from "../configuracion/prometheus";
 
+/**
+ * Este middleware registra cada petición que llega a la API.
+ * Asigno un ID único a cada una para poder rastrearlas si hay problemas.
+ */
 export function registroPeticiones(req: Request, res: Response, next: NextFunction): void {
+  // Genero un ID único para esta petición
   req.requestId = randomUUID();
   const start = Date.now();
 
+  // Cuando la petición termina (se envía la respuesta), calculo cuánto ha tardado
   res.on("finish", () => {
+    // Actualizo las métricas de Prometheus para Grafana
     metrics.httpRequestsTotal.inc({
       method: req.method,
       route: req.route?.path ?? req.path,
       statusCode: String(res.statusCode)
     });
 
+    // Guardo un log con los detalles de la petición
     registro.info({
       message: "request_completed",
       requestId: req.requestId,

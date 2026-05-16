@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * PROYECTO SOFIA SOLUTIONS - MI SISTEMA DE CIBERSEGURIDAD
+ * PROYECTO SOFIA SOLUTIONS
  * ============================================================================
  * 
  * Este código lo he desarrollado para mi proyecto final (TFG). Aquí trato de

@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * PROYECTO SOFIA SOLUTIONS - MI SISTEMA DE CIBERSEGURIDAD
+ * PROYECTO SOFIA SOLUTIONS
  * ============================================================================
  * 
  * Este código lo he desarrollado para mi proyecto final (TFG). Aquí trato de
@@ -24,14 +24,20 @@ const secureAuthRateLimiter = limitePeticiones({
   message: { message: "Demasiados intentos. Por favor, espera un momento antes de volver a probar." }
 });
 
+/**
+ * Middleware para controlar el número de peticiones (Rate Limiting).
+ * Lo uso principalmente para evitar ataques de fuerza bruta en el login.
+ */
 export function authRateLimiter(req: Request, res: Response, next: NextFunction) {
+  // Primero miro en qué modo está funcionando la app (vulnerable o seguro)
   const modo = getRequestMode(req);
   
   if (modo === "vulnerable") {
-    // DESACTIVADO PARA LA DEMO: Permitir intentos ilimitados en modo vulnerable
+    // Si estamos en modo vulnerable, desactivo el límite.
+    // Esto es útil para que el tribunal pueda probar ataques de diccionario sin bloqueos.
     return next();
   }
 
-  // Activo en modo seguro
+  // Si estamos en modo seguro, aplico el limitador estricto que he configurado arriba.
   return secureAuthRateLimiter(req, res, next);
 }
