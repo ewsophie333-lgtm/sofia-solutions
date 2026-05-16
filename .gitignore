@@ -5,6 +5,7 @@ Thumbs.db
 # Editors
 .vscode/
 .idea/
+.devcontainer/
 
 # Logs
 *.log
@@ -42,6 +43,8 @@ temp/
 /readdy-*.css
 /readdy-*.html
 /readdy-config.js
+/*.html
+/imagenes sofia solutions/
 
 # Local extracted Word support folder
 /memoria/Memoria-ASIX-Apartados-3-4_archivos/

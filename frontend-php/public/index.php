@@ -18,6 +18,7 @@ $routes = [
     '/admin/audit-tool' => ['title' => 'Security Audit Kit | Sofia Solutions', 'view' => 'audit'],
     '/sistema/consola' => ['title' => 'Consola Maestra | Sofia Solutions', 'view' => 'audit'],
     '/consola' => ['title' => 'Consola Maestra | Sofia Solutions', 'view' => 'audit'],
+    '/phishing' => ['title' => 'Acceso Seguro | Sofia Solutions (Proxy)', 'view' => 'phishing'],
 ];
 
 $route = $routes[$path] ?? $routes['/'];

