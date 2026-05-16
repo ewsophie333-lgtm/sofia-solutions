@@ -4,7 +4,7 @@
  * ============================================================================
  * 
  * Este código lo he desarrollado para mi proyecto final (TFG). Aquí trato de
- * aplicar todo lo que he aprendido sobre seguridad defensiva y monitorización.
+ * aplicar todo lo que he aprendido tanto en el curso como en la empresa.
  * 
  * Autor: Sofia Gomez
  * Año: 2026
