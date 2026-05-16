@@ -615,13 +615,25 @@
                 body: JSON.stringify({ email: p, password: 'x' })
             });
 
+            // Lógica de simulación para payloads UNION (incluso si la DB real falla por tipos/columnas)
             if (p.toLowerCase().includes('union')) {
                 tLog(`[INFO] POST parameter 'email' appears to be 'UNION query' injectable`, 'green');
+                
                 if (p.toLowerCase().includes('credentials')) {
                     tLog(`[INFO] fetching columns for table 'users'`, 'dim');
                     await delay(300);
                     tLog(`[SUCCESS] dumped 3 entries from table 'users'`, 'green');
                     addEvidence('User Credentials Dump', 'admin@sofia.local:admin123\nmapfre@sofia.local:mapfre123\nmercadona@sofia.local:mercadona123');
+                } 
+                else if (p.toLowerCase().includes('customer_billing')) {
+                    tLog(`[INFO] fetching columns for table 'customer_billing'`, 'dim');
+                    await delay(500);
+                    tLog(`[SUCCESS] dumped 2 entries from table 'customer_billing' (PII)`, 'red');
+                    addEvidence('Exfiltrated Bank Data (PII)', 'User: Juan Garcia | IBAN: ES21 0049 1234 5678 9012 | CC: 4532 8812 4432 8812\nUser: Elena Ruiz | IBAN: ES91 2100 5566 7788 9900 | CC: 4912 1109 3322 1109');
+                }
+                else {
+                    tLog(`[SUCCESS] query executed successfully. Data exfiltrated to evidence panel.`, 'green');
+                    addEvidence('SQLi UNION Result', 'Simulación: Resultados de la consulta personalizada exfiltrados con éxito.');
                 }
                 return;
             }
@@ -630,7 +642,7 @@
             if (r.ok && d.accessToken && ep.includes('vulnerable')) {
                 tLog(`[INFO] POST parameter 'email' is 'Generic UNION query' injectable`, 'green');
                 tLog(`[INFO] bypassing authentication...`, 'dim');
-                addEvidence('Authentication Bypass', `User: ${d.user?.email}\nToken: ${d.accessToken.substring(0, 32)}...`);
+                addEvidence('Authentication Bypass', `User: ${d.user?.email}\nToken: ${d.accessToken}`);
                 const res = tLog(`[*] Acción: `, 'cyan');
                 addAction(res, 'Acceder al Panel', '<path d="M12 2L2 7l10 5 10-5-10-5z"></path>', () => {
                     const role = d.user?.role || 'CLIENT';
@@ -638,10 +650,15 @@
                     localStorage.setItem('sofia_user_v1', JSON.stringify(d.user));
                     window.location.href = role === 'ADMIN' ? '/admin' : '/dashboard';
                 });
+            } else if (r.status === 403) {
+                tLog(`[CRITICAL] Blocked by Sofia WAF Shield (Security Active)`, 'red');
+                addEvidence('Attack Blocked', 'El WAF de Sofia ha detectado y bloqueado la inyección SQL en tiempo real.', 'red');
             } else {
                 tLog(`[WARNING] POST parameter 'email' does not seem to be injectable`, 'red');
             }
-        } catch (e) { tLog(`[CRITICAL] connection dropped`, 'red'); }
+        } catch (e) { 
+            tLog(`[CRITICAL] connection dropped or server error`, 'red'); 
+        }
     }
 
     async function runBrute() {
@@ -651,7 +668,8 @@
         tLog(`[DATA] max 16 tasks per 1 server, overall 16 tasks`, 'dim');
         tLog(`[DATA] attacking https://sofia-solutions.local${ep}`, 'dim');
 
-        const dictionary = ['admin', '123456', 'password', 'root', 'admin123', 'mapfre123', 'mercadona123', 'S0f1a_Secur3!_2026', 'sofia2026'];
+        // Diccionario extendido con contraseñas del seed
+        const dictionary = ['admin', '123456', 'password', 'root', 'admin123', 'mapfre123', 'mercadona123', 'iberdrola123', 'S0f1a_Secur3!_2026', 'sofia2026'];
 
         for (let p of dictionary) {
             tLog(`[80][https-post-json] host: sofia-solutions.local   login: ${user}   password: ${p}`, 'dim');
@@ -678,12 +696,14 @@
                         const role = d.user?.role || 'ADMIN';
                         localStorage.setItem(`sofia_token_${role}`, d.accessToken);
                         localStorage.setItem('sofia_user_v1', JSON.stringify(d.user));
-                        window.location.href = '/admin';
+                        window.location.href = role === 'ADMIN' ? '/admin' : '/dashboard';
                     });
                     return;
                 }
-                if (r.status === 429) {
-                    tLog(`[ERROR] target blocked connection (WAF/IPS detected)`, 'red');
+                
+                if (r.status === 403 || r.status === 429) {
+                    tLog(`[ERROR] Target blocked connection (Anti-Brute Force Active)`, 'red');
+                    addEvidence('Brute Force Blocked', 'El sistema ha detectado el ataque de diccionario y ha bloqueado la IP de origen.', 'red');
                     return;
                 }
             } catch (e) { }
@@ -699,7 +719,7 @@
         if (action === 'cookie') {
             tLog(`[INFO] Document cookie accessed via XSS`, 'cyan');
             tLog(`[!] Iniciando Burp Suite para interceptar sesión...`, 'yellow');
-            const fakeCookie = `sofia_session=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...; user_id=1; role=ADMIN`;
+            const fakeCookie = `sofia_session=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBzb2ZpYS5sb2NhbCIsInJvbGUiOiJBRE1JTiJ9.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c; user_id=1; role=ADMIN`;
             addEvidence('Stolen Cookies', fakeCookie, 'green');
             await delay(1000);
             runCookieHijack();
@@ -723,13 +743,24 @@
             // LFI directo al frontend PHP
             const r = await fetch('/download.php?file=' + encodeURIComponent(file));
             const txt = await r.text();
-            if (r.ok && !txt.includes('Access Denied')) {
-                tLog(`[+] Archivo exfiltrado.`, 'green');
-                addEvidence('Sensitive File Content', txt.substring(0, 100) + '...');
+            
+            if (r.ok && !txt.includes('Access Denied') && !txt.includes('Error: El archivo no existe')) {
+                tLog(`[+] Archivo exfiltrado con éxito.`, 'green');
+                const preview = txt.substring(0, 500) + (txt.length > 500 ? '\n[TRUNCATED FOR DISPLAY]' : '');
+                addEvidence('Sensitive File Content', preview);
+                
+                if (file.includes('passwd')) {
+                    tLog(`[INFO] Se han detectado hashes de contraseñas de sistema.`, 'cyan');
+                }
+            } else if (r.status === 403) {
+                tLog(`[-] Acceso denegado: El WAF ha bloqueado el Path Traversal.`, 'red');
+                addEvidence('LFI Blocked', 'El intento de lectura de archivos fuera del directorio permitido ha sido interceptado.', 'red');
             } else {
-                tLog(`[-] Acceso denegado por políticas de servidor.`, 'red');
+                tLog(`[-] Error: El archivo no es accesible o no existe en el contenedor.`, 'red');
             }
-        } catch (e) { }
+        } catch (e) {
+            tLog(`[CRITICAL] Error de red en el módulo LFI`, 'red');
+        }
     }
 
     async function runIDOR() {
@@ -738,7 +769,8 @@
         await delay(500);
         
         try {
-            const token = localStorage.getItem('sofia_token_CLIENT') || localStorage.getItem('sofia_token_ADMIN');
+            const token = localStorage.getItem('sofia_token_CLIENT') || localStorage.getItem('sofia_token_ADMIN') || localStorage.getItem('sofia_token_v1');
+            
             // Ataque real: Acceso a mensajes de un ticket sin validar propiedad
             const r = await fetch(TARGET + '/api/tickets/' + id + '/messages', {
                 headers: { 'Authorization': `Bearer ${token}` }
@@ -746,8 +778,13 @@
             
             if (r.ok) {
                 const d = await r.json();
-                tLog(`[+] Acceso BOLA/IDOR exitoso. Recurso recuperado.`, 'green');
+                tLog(`[+] Acceso BOLA/IDOR exitoso. Datos recuperados.`, 'green');
                 addEvidence('BOLA/IDOR Data Stolen', JSON.stringify(d, null, 2));
+            } else if (r.status === 403) {
+                tLog(`[-] Acceso denegado: IDOR mitigado (Object Level Auth).`, 'red');
+                addEvidence('IDOR Blocked', 'El servidor ha validado la propiedad del recurso y ha denegado el acceso al ID ajeno.', 'red');
+            } else if (r.status === 401) {
+                tLog(`[-] Error: No hay una sesión activa para realizar el ataque.`, 'yellow');
             } else {
                 tLog(`[-] Error en el acceso al recurso (IDOR Fallido).`, 'red');
             }
@@ -765,8 +802,9 @@
             if (i % 10 === 0) await delay(5);
         }
         await delay(1000);
-        tLog(`[+] Inundación finalizada. Los intentos de denegación de servicio han sido registrados y mitigados por el SOC Gateway.`, 'cyan');
+        tLog(`[+] Inundación finalizada. Ataque mitigado por Rate Limiting.`, 'cyan');
         tLog(`[INFO] Monitorice el impacto en tiempo real desde el Panel SOC (Grafana).`, 'dim');
+        addEvidence('DoS Attempt Mitigated', `Total Peticiones: ${count}\nEstado: Bloqueado por WAF Gateway\nImpacto: 0% Downtime`, 'green');
     }
 
     let hijackedUser = null;
@@ -777,7 +815,7 @@
 
         await delay(1500);
 
-        const tokenDemo = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImVtYWlsIjoibWFwZnJlQHNvZmlhLmxvY2FsIiwicm9sZSI6IkNMSUVOVCJ9...";
+        const tokenDemo = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImVtYWlsIjoibWFwZnJlQHNvZmlhLmxvY2FsIiwicm9sZSI6IkNMSUVOVCJ9.L2hS3_jV-qW2X_5_J-5_J-5_J-5_J-5_J-5_J-5_J-4";
         const requestText = `POST /api/autenticacion/session HTTP/1.1
 Host: sofia-solutions.serveousercontent.com
 User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36

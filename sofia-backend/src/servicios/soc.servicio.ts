@@ -1,14 +1,13 @@
 /**
  * ============================================================================
- * SOFIA SOLUTIONS - SECURITY & MONITORING PLATFORM
+ * SOFIA SOLUTIONS - MI SISTEMA DE NOTIFICACIONES SOC
  * ============================================================================
  * 
- * Este archivo forma parte de la arquitectura base del backend de Sofia Solutions.
- * Ha sido disenado siguiendo principios de codigo limpio, seguridad por diseno,
- * y alta escalabilidad para entornos criticos e industriales.
+ * Este servicio lo uso para avisarme cada vez que ocurre algo importante en el 
+ * sistema. Si detecto un ataque crítico, mando un email a través de n8n para
+ * tenerlo controlado al momento.
  * 
- * @module SofiaSolutions
- * @author Sofia Gomez
+ * Sofia Gomez
  * @copyright 2026
  * ============================================================================
  */
@@ -19,11 +18,15 @@ import { metrics } from "../configuracion/prometheus";
 const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL || "http://n8n:5678/webhook/alert";
 const ALERT_EMAIL = "ewsophie333@gmail.com";
 
-// Severidades que disparan notificación externa por email (n8n → Gmail)
+// Solo mando email para estas severidades, si no me colapsarían el correo en las pruebas
 const EMAIL_SEVERITIES = ["CRÍTICA", "ALTA", "URGENTE"];
 
 const socNotifications: string[] = [];
 
+/**
+ * Función principal para notificar al SOC.
+ * Guardo la notificación en una lista local y, si es grave, la mando fuera.
+ */
 export async function notifySoc(message: string, type: string = "SECURITY_EVENT", severity: string = "ALTA", sourceIp: string = "unknown") {
   socNotifications.unshift(message);
   if (socNotifications.length > 20) {
@@ -32,35 +35,35 @@ export async function notifySoc(message: string, type: string = "SECURITY_EVENT"
 
   registro.warn({ message: "soc_notification", detail: message, type, severity });
 
-  // Solo enviar email para severidades de impacto alto
+  // Aquí decido si mando email o si me vale con el log local
   if (!EMAIL_SEVERITIES.includes(severity.toUpperCase())) {
-    console.log(`[SOC] Alerta ${type} (${severity}) registrada localmente. No se envía email.`);
+    console.log(`[SOC] Alerta ${type} (${severity}) registrada localmente. No hace falta mandar email.`);
     return;
   }
 
-  // Notificación externa a n8n -> Gmail
+  // Notificación externa: mando el webhook a mi n8n para que me llegue al Gmail
   try {
-    console.log(`[SOC] Enviando alerta ${severity} a n8n: ${N8N_WEBHOOK_URL} (IP: ${sourceIp})`);
+    console.log(`[SOC] Mandando alerta ${severity} a n8n: ${N8N_WEBHOOK_URL} (IP: ${sourceIp})`);
     const response = await axios.post(N8N_WEBHOOK_URL, {
       title: `ALERTA SOC [${severity}]: ${type}`,
       description: message,
-      severity: severity.toLowerCase(), // n8n espera lowercase para el badge
+      severity: severity.toLowerCase(),
       timestamp: new Date().toLocaleString("es-ES"),
       recipientEmail: ALERT_EMAIL,
       userName: "Escudo-WAF-Sofia",
       clientName: "Infraestructura Interna",
       sourceIp: sourceIp 
     });
-    console.log(`[SOC SUCCESS] n8n respondió: ${response.status} ${response.statusText}`);
+    console.log(`[SOC ÉXITO] n8n ha respondido bien: ${response.status}`);
     metrics.alertsSentTotal.inc({ destination: "GMAIL/N8N", type, severity });
   } catch (error: any) {
-    console.error(`[SOC ERROR] Fallo al entornoiar a n8n: ${error.message}`);
-    if (error.response) {
-      console.error(`[SOC ERROR DETAIL] Data: ${JSON.stringify(error.response.data)}`);
-    }
+    console.error(`[SOC ERROR] Algo ha fallado al avisar a n8n: ${error.message}`);
   }
 }
 
+/**
+ * Función para sacar las últimas notificaciones y pintarlas en mi panel.
+ */
 export function getSocNotifications() {
   return socNotifications;
 }

@@ -1,5 +1,5 @@
 <?php
-// download.php - Professional Invoice Generator & Vulnerable Endpoint
+// download.php - Mi generador de facturas y endpoint para pruebas de vulnerabilidad LFI
 $file = $_GET['file'] ?? '';
 $appMode = getenv('APP_MODE') ?: 'vulnerable';
 

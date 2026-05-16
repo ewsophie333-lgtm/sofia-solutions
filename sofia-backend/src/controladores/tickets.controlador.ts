@@ -1,8 +1,8 @@
 /**
- * SOFIA SOLUTIONS - Controlador de Helpdesk & Tickets
+ * SOFIA SOLUTIONS - Mi Controlador para el Centro de Ayuda y Tickets
  * 
- * Gestiona el ciclo de vida de las solicitudes de soporte e informes de incidentes.
- * Implementa lógica de aislamiento de datos basada en roles y mensajería en tiempo real.
+ * Aquí es donde gestiono los mensajes de soporte e informes que nos mandan.
+ * He programado una lógica para que cada uno solo vea lo suyo y todo vaya en orden.
  */
 
 import type { Request, Response } from "express";
@@ -11,8 +11,8 @@ import { ApiError } from "../utilidades/errores";
 import { getRequestMode } from "../utilidades/modo";
 
 /**
- * Lista todos los tickets asociados al contexto de la sesión actual.
- * Los administradores tienen acceso global; los clientes están restringidos a su propio userId.
+ * Saco la lista de tickets que tocan. Si eres el jefe (ADMIN) los ves todos,
+ * pero si eres un cliente normal, solo te enseño los tuyos.
  */
 export async function listTickets(req: Request, res: Response) {
   const where = req.user?.role === "ADMIN" ? {} : { userId: req.user?.id };
@@ -33,7 +33,7 @@ export async function listTickets(req: Request, res: Response) {
 }
 
 /**
- * Capa de persistencia para nuevas peticiones de soporte.
+ * Aquí es donde se guardan las nuevas peticiones de ayuda.
  */
 export async function createTicket(req: Request, res: Response) {
   const { subject, status, priority } = req.body;
@@ -51,14 +51,14 @@ export async function createTicket(req: Request, res: Response) {
 }
 
 /**
- * Lógica de recuperación de hilos.
- * Obtiene mensajes para un contenedor de incidente específico.
+ * Con esto recupero todos los mensajes de una conversación específica.
  */
 export async function listMessages(req: Request, res: Response) {
   const ticketId = Number(req.params.id);
   const modo = getRequestMode(req);
 
-  // PROTECCIÓN IDOR: En modo seguro, validamos que el ticket pertenezca al usuario (o sea ADMIN)
+  // PROTECCIÓN CONTRA IDOR: He puesto esto para que nadie cotillee tickets de otros.
+  // Solo lo dejo pasar si el modo seguro está apagado o si eres el ADMIN.
   if (modo === "secure" && req.user?.role !== "ADMIN") {
     const ticket = await prisma.ticket.findUnique({
       where: { id: ticketId },
@@ -79,7 +79,7 @@ export async function listMessages(req: Request, res: Response) {
 }
 
 /**
- * Manejador de comunicación multi-participante.
+ * Esta parte sirve para enviar mensajes nuevos a un ticket.
  */
 export async function createMessage(req: Request, res: Response) {
   const ticketId = Number(req.params.id);

@@ -1,15 +1,13 @@
 /**
  * ============================================================================
- * SOFIA SOLUTIONS - SECURITY & MONITORING PLATFORM
+ * PROYECTO SOFIA SOLUTIONS - MI SISTEMA DE CIBERSEGURIDAD
  * ============================================================================
  * 
- * Este archivo forma parte de la arquitectura base del backend de Sofia Solutions.
- * Ha sido disenado siguiendo principios de codigo limpio, seguridad por diseno,
- * y alta escalabilidad para entornos criticos e industriales.
+ * Este código lo he desarrollado para mi proyecto final (TFG). Aquí trato de
+ * aplicar todo lo que he aprendido sobre seguridad defensiva y monitorización.
  * 
- * @module SofiaSolutions
- * Sofia Gomez
- * @copyright 2026
+ * Autor: Sofia Gomez
+ * Año: 2026
  * ============================================================================
  */
 import limitePeticiones from "express-rate-limit";
@@ -17,12 +15,13 @@ import type { Request, Response, NextFunction } from "express";
 import { entorno } from "../configuracion/entorno";
 import { getRequestMode, isVulnerableMode } from "../utilidades/modo";
 
+// Configuro el limitador para el modo seguro: 5 peticiones por ventana de tiempo
 const secureAuthRateLimiter = limitePeticiones({
   windowMs: entorno.RATE_LIMIT_WINDOW_MS,
   max: entorno.RATE_LIMIT_MAX,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { message: "Too many auth attempts, slow down." }
+  message: { message: "Demasiados intentos. Por favor, espera un momento antes de volver a probar." }
 });
 
 export function authRateLimiter(req: Request, res: Response, next: NextFunction) {

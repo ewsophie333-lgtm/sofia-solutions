@@ -1,6 +1,6 @@
 /**
- * SOFIA SOLUTIONS - Rutas de Soporte y Tickets
- * Gestiona la comunicación técnica entre los clientes y el equipo SOC.
+ * SOFIA SOLUTIONS - Mis Rutas de Soporte
+ * Aquí defino cómo se llega a los tickets y mensajes desde el frontend.
  */
 
 import { Router } from "express";
@@ -13,18 +13,17 @@ import { asyncHandler } from "../utilidades/http";
 const router = Router();
 
 /**
- * Todas las operaciones de tickets requieren autenticación previa.
+ * Para tocar cualquier cosa de tickets tienes que estar logueado sí o sí.
  */
 router.use(requireAuth);
 
 /**
- * Recupera el historial de tickets del usuario autenticado.
+ * Obtener todos los tickets.
  */
 router.get("/", asyncHandler(listTickets));
 
 /**
- * Registra una nueva solicitud de soporte.
- * Incluye validación de esquema para asegurar la calidad de la información.
+ * Crear un ticket nuevo. Valido los datos para que no me metan basura.
  */
 router.post(
   "/",
@@ -39,7 +38,7 @@ router.post(
 );
 
 /**
- * Hilos de Mensajes: Recupera o envía mensajes dentro de un ticket específico.
+ * Aquí gestiono los mensajes individuales de cada ticket.
  */
 router.get("/:id/messages", asyncHandler(listMessages));
 router.post(

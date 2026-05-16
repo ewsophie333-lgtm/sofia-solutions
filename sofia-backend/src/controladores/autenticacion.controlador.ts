@@ -1,8 +1,8 @@
 /**
- * SOFIA SOLUTIONS - Identity & Access Management (IAM) Controller
+ * SOFIA SOLUTIONS - Mi Controlador de Identidad y Gestión de Accesos (IAM)
  * 
- * Manages secure user authentication, multi-tenant session isolation,
- * and standard JWT issuance protocols.
+ * Aquí gestiono todo lo que tiene que ver con la entrada de usuarios, el aislamiento
+ * de sesiones para que no se mezclen datos de clientes y la creación de tokens JWT.
  */
 
 import type { Request, Response } from "express";
@@ -19,8 +19,8 @@ import { notifySoc } from "../servicios/soc.servicio";
 const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL || "http://n8n:5678/webhook/alert";
 
 /**
- * Persists secure HTTP-only cookies for session management.
- * @internal
+ * Esta función la uso para guardar las cookies de sesión de forma segura (HTTP-only).
+ * Así me aseguro de que los tokens no sean accesibles por scripts maliciosos.
  */
 function applyAuthCookies(
   res: Response,
@@ -45,19 +45,19 @@ function applyAuthCookies(
     maxAge: 7 * 24 * 60 * 60 * 1000
   });
 
-  // Keep legacy cookies for backward compatibility if needed, but the role-specific ones take precedence
+  // Mantengo cookies antiguas por si acaso para compatibilidad, aunque las de arriba mandan.
   res.cookie("accessToken", accessToken, { httpOnly: true, secure, sameSite: "strict", maxAge: 15 * 60 * 1000 });
 }
 
 /**
- * SOC Analyst & Client Registration Handler.
+ * Registro de nuevos analistas del SOC o clientes de mi plataforma.
  */
 export async function register(req: Request, res: Response) {
   const { email, password, role } = req.body;
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
-    throw new ApiError(409, "Principal identifier already exists in the registry");
+    throw new ApiError(409, "Este correo ya está registrado en mi base de datos");
   }
 
   const passwordHash = await hashPassword(password, "secure");
@@ -161,7 +161,7 @@ export async function loginV1(req: Request, res: Response) {
   if (!user || (!isInjection && !(await verifyPassword(password, user.passwordHash, "vulnerable")))) {
     metrics.loginAttemptsTotal.inc({ modo: "vulnerable", result: "failed" });
     
-    // Simular un intento de fuerza bruta registrando un evento/incidente menor
+    // Aquí simulo un intento de fuerza bruta para que salga en el dashboard
     if (!isInjection && password !== 'x') {
        try {
          await prisma.incident.create({
@@ -279,7 +279,7 @@ export async function logout(req: Request, res: Response) {
 }
 
 /**
- * Introspección de Sesión Actual.
+ * Consulta para saber quién es el usuario que tiene la sesión abierta.
  */
 export async function me(req: Request, res: Response) {
   res.json(req.user);
@@ -325,7 +325,7 @@ export async function loginV2(req: Request, res: Response) {
     throw new ApiError(401, "Credenciales de identidad inválidas");
   }
 
-  // Simulación de chequeo OTP (para demo empresarial)
+  // Simulación de chequeo OTP (lo he metido para que parezca un entorno real de empresa)
   if (otp && otp !== "123456") {
     throw new ApiError(401, "Código de autenticación multifactor inválido");
   }

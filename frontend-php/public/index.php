@@ -5,7 +5,7 @@ require __DIR__ . '/includes/helpers.php';
 
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 
-// Admin route is handled by the router below — no redirect needed
+// Aquí manejo todas las rutas de mi página. No necesito redirecciones porque todo pasa por este router.
 
 $routes = [
     '/' => ['title' => 'Sofia Solutions | Seguridad gestionada para entornos críticos', 'view' => 'home'],

@@ -1,15 +1,13 @@
 /**
  * ============================================================================
- * SOFIA SOLUTIONS - SECURITY & MONITORING PLATFORM
+ * PROYECTO SOFIA SOLUTIONS - MI SISTEMA DE CIBERSEGURIDAD
  * ============================================================================
  * 
- * Este archivo forma parte de la arquitectura base del backend de Sofia Solutions.
- * Ha sido disenado siguiendo principios de codigo limpio, seguridad por diseno,
- * y alta escalabilidad para entornos criticos e industriales.
+ * Este código lo he desarrollado para mi proyecto final (TFG). Aquí trato de
+ * aplicar todo lo que he aprendido sobre seguridad defensiva y monitorización.
  * 
- * @module SofiaSolutions
- * Sofia Gomez
- * @copyright 2026
+ * Autor: Sofia Gomez
+ * Año: 2026
  * ============================================================================
  */
 import express from "express";
@@ -30,7 +28,6 @@ import authV2Routes from "./rutas/autenticacion.v2.rutas";
 import { metrics } from "./configuracion/prometheus";
 import { asyncHandler } from "./utilidades/http";
 import { csrfToken } from "./controladores/autenticacion.controlador";
-
 const openapiDocument = YAML.load(path.join(process.cwd(), "src", "docs", "openapi.yaml"));
 
 export const app = express();
@@ -62,9 +59,14 @@ app.get("/metrics", async (_req, res) => {
   res.end(await metrics.registry.metrics());
 });
 
+// Configuro la documentación con Swagger para que el tribunal pueda ver los endpoints
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(openapiDocument));
+
+// Rutas de la API. He separado la v1 (vulnerable) de la v2 (segura) para la demo.
 app.use("/api/v1/autenticacion", authV1Routes);
 app.use("/api/v2/autenticacion", authV2Routes);
 app.get("/api/csrf", asyncHandler(csrfToken));
 app.use("/api", routes);
+
+// Este es el último paso, atrapar cualquier error que haya ocurrido arriba
 app.use(manejadorErrores);
