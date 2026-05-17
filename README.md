@@ -6,22 +6,22 @@ Proyecto final orientado a **ASIX / Ciberseguridad**, centrado en la demostraci�
 
 ---
 
-## 📂 Materiales de Defensa (Obligatorio para el Jurado)
+## 📂 Materiales del Proyecto (Guía para el Jurado y Evaluadores)
 
-Para facilitar la evaluación del proyecto por parte de los miembros del tribunal, se proporciona acceso directo a toda la documentación de soporte, guías técnicas y material interactivo de la defensa:
+Para facilitar la evaluación del proyecto por parte de los miembros del tribunal y cualquier auditor externo, se proporciona acceso directo a toda la documentación de soporte, guías técnicas y material interactivo de verificación:
 
 | Documento | Descripción | Enlace |
 | :--- | :--- | :--- |
 | **Presentación Ejecutiva** | Estilo de alta dirección/consultoría (23 diapositivas explicativas) | [Ver Diapositivas](./PRESENTACION_EJECUTIVA_SOFIA.html) |
 | **Presentación SOC V2** | Edición cinematográfica e interactiva con diseño Glassmorphism | [Ver Diapositivas](./PRESENTACION_SOFIA.html) |
 | **Presentación SOC V1** | Diapositivas dinámicas y fluidas basadas en el estándar Reveal.js | [Ver Diapositivas](./presentacion_final.html) |
-| **Guía Maestra de Defensa** | Guion y pautas discursivas detalladas paso a paso para la exposición oral | [Abrir Guía](./GUIA_MAESTRA_DEFENSA.html) |
+| **Guía de Verificación** | Guion y pautas discursivas detalladas paso a paso para la exposición oral | [Abrir Guía](./GUIA_MAESTRA_DEFENSA.html) |
 | **Guía Completa (Técnica)** | Arquitectura interna, criptografía aplicada y funcionamiento del WAF | [Abrir Guía](./GUIA_TECNICA_COMPLETA.html) |
 | **Guion de Ataques** | Procedimientos exactos y comandos para la explotación controlada | [Ver Guion](./GUION_DE_ATAQUES.html) |
 
 ---
 
-## 🌐 Puntos de Acceso (Producción / Defensa)
+## 🌐 Puntos de Acceso (Producción y Auditoría)
 
 | Módulo | Acceso Público | Puerto Local |
 |--------|----------------|--------------|
@@ -106,9 +106,9 @@ Sofia Solutions está optimizado para ejecutarse en la nube de GitHub en segundo
 
 ---
 
-## ⚡ Manual de Auditoría y Verificación de Contramedidas (Guía para el Jurado)
+## ⚡ Manual de Auditoría y Verificación de Contramedidas (Para el Jurado y Evaluadores)
 
-Este apartado sirve como una guía metodológica estructurada para que los miembros del tribunal puedan auditar, replicar y validar de forma controlada el comportamiento de la plataforma *Sofia Solutions* en ambos estados operacionales (Vulnerable y Protegido).
+Este apartado sirve como una guía metodológica estructurada para que los miembros del tribunal, evaluadores y cualquier auditor técnico puedan replicar, auditar y validar de forma controlada el comportamiento de la plataforma *Sofia Solutions* en ambos estados operacionales (Vulnerable y Protegido).
 
 ---
 
