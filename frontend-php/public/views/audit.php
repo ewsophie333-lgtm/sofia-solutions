@@ -442,6 +442,33 @@
 <!-- Hacker Alert Overlay (Removido por petición: stealth mode) -->
 <div id="hacker-overlay" style="display:none;"></div>
 
+<!-- DoS Downtime Simulation Overlay -->
+<div id="dos-downtime-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5, 2, 10, 0.96); z-index:999999; justify-content:center; align-items:center; font-family:'Inter', sans-serif; backdrop-filter:blur(15px); color:#fff; animation:fadeIn 0.5s ease;">
+    <div style="background:rgba(20, 10, 30, 0.9); border:2px solid #ef4444; border-radius:16px; padding:40px; width:min(600px, 90%); box-shadow:0 0 50px rgba(239, 68, 68, 0.35); text-align:center; position:relative; overflow:hidden;">
+        <!-- Glowing background effect -->
+        <div style="position:absolute; top:-50%; left:-50%; width:200%; height:200%; background:radial-gradient(circle, rgba(239, 68, 68, 0.15) 0%, transparent 60%); pointer-events:none; animation:pulse 4s infinite;"></div>
+        
+        <div style="font-size:4rem; margin-bottom:20px; animation:shake 0.5s infinite;">⚠️</div>
+        <h2 style="font-size:1.8rem; font-weight:900; color:#f87171; margin:0 0 15px; letter-spacing:-0.5px;">SISTEMA CAÍDO (DOWNTIME 100%)</h2>
+        <p style="font-size:0.85rem; color:#94a3b8; line-height:1.6; margin-bottom:24px;">
+            El ataque de inundación HTTP (DoS) ha agotado completamente el bucle de eventos (Event Loop) de Node.js. Al no estar activo el **Rate Limiting** (Modo Vulnerable), el backend ha colapsado bajo la carga de peticiones concurrentes y no responde.
+        </p>
+        
+        <!-- Stats table -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:30px; text-align:left; background:rgba(0,0,0,0.3); padding:15px; border-radius:8px; border:1px solid rgba(255,255,255,0.05); font-family:monospace; font-size:0.75rem;">
+            <div><span style="color:#64748b;">ESTADO:</span> <strong style="color:#ef4444;">OFFLINE (503)</strong></div>
+            <div><span style="color:#64748b;">CARGA CPU:</span> <strong style="color:#ef4444;">100%</strong></div>
+            <div><span style="color:#64748b;">LATENCIA:</span> <strong style="color:#ef4444;">TIMEOUT (∞)</strong></div>
+            <div><span style="color:#64748b;">FILTRADO WAF:</span> <strong style="color:#8b5cf6;">INACTIVO</strong></div>
+        </div>
+        
+        <button onclick="restoreDoS()" style="background:#ef4444; color:#fff; border:none; border-radius:8px; padding:12px 28px; font-weight:800; cursor:pointer; font-size:0.85rem; letter-spacing:0.5px; transition:all 0.2s; box-shadow:0 0 20px rgba(239, 68, 68, 0.4);" onmouseover="this.style.background='#dc2626'; this.style.transform='scale(1.02)';" onmouseout="this.style.background='#ef4444'; this.style.transform='scale(1)';">
+            RESTABLECER SERVIDOR (REBOOT)
+        </button>
+    </div>
+</div>
+
+
 <script>
     console.log("Sofia Solutions Audit Framework v4.8.5 - Finalized.");
     const TARGET = window.SOFIA_CONFIG?.apiBase || '';
@@ -715,15 +742,42 @@
         tLog(`[COMMAND] hping3 -c ${count} -d 120 -S -w 64 -p 80 --flood ${window.location.hostname}`, 'yellow');
         await delay(800);
         tLog(`[*] DoS: Iniciando ráfaga de ${count} peticiones...`, 'red');
-        let blocked = 0;
-        for (let i = 0; i < count; i++) {
-            fetch(TARGET + '/api/health').then(r => { if (r.status === 429) blocked++; });
-            if (i % 10 === 0) await delay(5);
+        
+        // Detectamos el modo actual desde la configuración global
+        const isVulnerable = window.SOFIA_CONFIG && window.SOFIA_CONFIG.loginMode === 'vulnerable';
+        
+        if (isVulnerable) {
+            for (let i = 0; i < 4; i++) {
+                tLog(`[*] DoS: Enviando lote de peticiones concurrentes...`, 'red');
+                await delay(300);
+            }
+            tLog(`[!] ADVERTENCIA: Latencia del Event Loop de Node.js > 5000ms`, 'yellow');
+            await delay(500);
+            tLog(`[!] ADVERTENCIA: Sockets TCP agotados, rechazando conexiones entrantes`, 'yellow');
+            await delay(600);
+            tLog(`[!] ERROR CRÍTICO: Connection timeout from target`, 'red');
+            tLog(`[!] TARGET UNREACHABLE - HTTP 503 Service Unavailable`, 'red');
+            await delay(800);
+            
+            // Mostrar modal de caída visual
+            document.getElementById('dos-downtime-overlay').style.display = 'flex';
+            addEvidence('DoS Attack SUCCESS', `Total Peticiones: ${count}\nEstado: INFRAESTRUCTURA CAÍDA (Downtime 100%)\nImpacto: Node.js Event Loop Blocked\nMitigación: NINGUNA (Falta de Rate Limiting)`, 'red');
+        } else {
+            let blocked = 0;
+            for (let i = 0; i < count; i++) {
+                fetch(TARGET + '/api/health').then(r => { if (r.status === 429) blocked++; });
+                if (i % 10 === 0) await delay(5);
+            }
+            await delay(1000);
+            tLog(`[+] Inundación finalizada. Ataque mitigado por Rate Limiting.`, 'cyan');
+            tLog(`[INFO] Monitorice el impacto en tiempo real desde el Panel SOC (Grafana).`, 'dim');
+            addEvidence('DoS Attempt Mitigated', `Total Peticiones: ${count}\nEstado: Bloqueado por WAF Gateway\nImpacto: 0% Downtime\nMitigación: Activa (Express Rate Limit)`, 'green');
         }
-        await delay(1000);
-        tLog(`[+] Inundación finalizada. Ataque mitigado por Rate Limiting.`, 'cyan');
-        tLog(`[INFO] Monitorice el impacto en tiempo real desde el Panel SOC (Grafana).`, 'dim');
-        addEvidence('DoS Attempt Mitigated', `Total Peticiones: ${count}\nEstado: Bloqueado por WAF Gateway\nImpacto: 0% Downtime`, 'green');
+    }
+
+    function restoreDoS() {
+        document.getElementById('dos-downtime-overlay').style.display = 'none';
+        tLog(`[*] Servidor restablecido con éxito. Event loop liberado.`, 'green');
     }
 
     let hijackedUser = null;
@@ -815,5 +869,21 @@ Content-Length: 0
             transform: translateY(0);
             opacity: 1;
         }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.8; }
+        50% { transform: scale(1.05); opacity: 1; }
+    }
+
+    @keyframes shake {
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        20%, 60% { transform: translate(-2px, 2px) rotate(-1deg); }
+        40%, 80% { transform: translate(2px, -2px) rotate(1deg); }
     }
 </style>
