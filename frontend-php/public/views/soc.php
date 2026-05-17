@@ -1,23 +1,4 @@
 <?php
-/**
- * ============================================================================
- * PROYECTO SOFIA SOLUTIONS - MONITOR DE SEGURIDAD SOC (TELEMETRÍA EN VIVO)
- * ============================================================================
- * 
- * He desarrollado esta interfaz de monitorización del SOC (Security Operations Center)
- * para mi proyecto final de ASIR con el fin de proporcionar visibilidad operacional en tiempo real:
- * 1. Integración de Grafana: Embebe un iframe interactivo conectado a Prometheus
- *    que muestra métricas de CPU, peticiones concurrentes y anomalías de red.
- * 2. Gráficas de Telemetría: Renderiza incidentes por hora (bloqueados vs permitidos)
- *    para contrastar visualmente el impacto del "Escudo WAF de Sofia".
- * 3. Feed de Eventos en Vivo: Un flujo continuo alimentado por el backend que lista
- *    los vectores de ataque detectados (SQLi, Fuerza Bruta, XSS) al instante.
- * 4. Controladores WAF Activos: Permite simular el bloqueo manual de IPs sospechosas.
- * 
- * Autor: Sofia Gomez
- * Año: 2026
- * ============================================================================
- */
 $activeNav = 'soc';
 ?>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -42,25 +23,41 @@ $activeNav = 'soc';
                 <p class="panel-header-copy">Telemetría de red, vectores de ataque e incidentes en tiempo real.</p>
             </div>
             <div class="header-links">
-                <span class="signal-chip" style="background:rgba(109,40,217,0.1); color:#a78bfa; border-color:rgba(109,40,217,0.2);">
+                <span class="signal-chip"
+                    style="background:rgba(109,40,217,0.1); color:#a78bfa; border-color:rgba(109,40,217,0.2);">
                     <span class="pulse-dot" style="background:#6d28d9;"></span> 3 Alertas Activas
                 </span>
             </div>
         </header>
 
         <!-- SOC KPIs -->
-        <section id="soc-kpis" class="planes-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:20px; margin-bottom:32px;">
-            <div class="kpi-card" data-tone="ok" style="border-left:3px solid #6d28d9;"><span class="meta-label">Eventos Analizados</span><strong>4.1M</strong><div class="tone-bar" style="background:#6d28d9;"></div></div>
-            <div class="kpi-card" data-tone="ok" style="border-left:3px solid #6d28d9;"><span class="meta-label">Incidentes Críticos</span><strong>3</strong><div class="tone-bar" style="background:#6d28d9;"></div></div>
-            <div class="kpi-card" data-tone="ok" style="border-left:3px solid #6d28d9;"><span class="meta-label">Amenazas Activas</span><strong>12</strong><div class="tone-bar" style="background:#6d28d9;"></div></div>
-            <div class="kpi-card" data-tone="ok" style="border-left:3px solid #6d28d9;"><span class="meta-label">Salud del Sistema</span><strong>100%</strong><div class="tone-bar" style="background:#6d28d9;"></div></div>
+        <section id="soc-kpis" class="planes-grid"
+            style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:20px; margin-bottom:32px;">
+            <div class="kpi-card" data-tone="ok" style="border-left:3px solid #6d28d9;"><span class="meta-label">Eventos
+                    Analizados</span><strong>4.1M</strong>
+                <div class="tone-bar" style="background:#6d28d9;"></div>
+            </div>
+            <div class="kpi-card" data-tone="ok" style="border-left:3px solid #6d28d9;"><span
+                    class="meta-label">Incidentes Críticos</span><strong>3</strong>
+                <div class="tone-bar" style="background:#6d28d9;"></div>
+            </div>
+            <div class="kpi-card" data-tone="ok" style="border-left:3px solid #6d28d9;"><span
+                    class="meta-label">Amenazas Activas</span><strong>12</strong>
+                <div class="tone-bar" style="background:#6d28d9;"></div>
+            </div>
+            <div class="kpi-card" data-tone="ok" style="border-left:3px solid #6d28d9;"><span class="meta-label">Salud
+                    del Sistema</span><strong>100%</strong>
+                <div class="tone-bar" style="background:#6d28d9;"></div>
+            </div>
         </section>
 
         <!-- Charts Row -->
         <section class="planes-grid" style="grid-template-columns: 1.8fr 1fr; gap:32px; margin-bottom:32px;">
             <article class="panel" style="padding:24px;">
                 <div class="panel-heading">
-                    <div><span class="eyebrow">Telemetría L7</span><h2>Incidentes por Hora (Últimas 12h)</h2></div>
+                    <div><span class="eyebrow">Telemetría L7</span>
+                        <h2>Incidentes por Hora (Últimas 12h)</h2>
+                    </div>
                 </div>
                 <div style="height:280px; margin-top:20px;">
                     <canvas id="incidentTimelineChart"></canvas>
@@ -68,7 +65,9 @@ $activeNav = 'soc';
             </article>
             <article class="panel" style="padding:24px;">
                 <div class="panel-heading">
-                    <div><span class="eyebrow">Vectores</span><h2>Top Vectores de Ataque</h2></div>
+                    <div><span class="eyebrow">Vectores</span>
+                        <h2>Top Vectores de Ataque</h2>
+                    </div>
                 </div>
                 <div id="soc-vectors" class="stack-list" style="margin-top:20px; height:280px; overflow-y:auto;">
                     <div class="stack-item">Cargando vectores...</div>
@@ -80,8 +79,11 @@ $activeNav = 'soc';
         <section class="planes-grid" style="grid-template-columns: 1.2fr 1fr; gap:32px; margin-bottom:32px;">
             <article class="panel" style="padding:24px;">
                 <div class="panel-heading" style="display:flex; justify-content:space-between; align-items:center;">
-                    <div><span class="eyebrow">Live</span><h2>Feed de Incidentes en Vivo</h2></div>
-                    <span class="status-chip" style="background:rgba(34,197,94,0.1); color:#22c55e; font-size:0.65rem; font-weight:800; padding:4px 10px; border-radius:4px; border:1px solid rgba(34,197,94,0.2);">ACTIVO</span>
+                    <div><span class="eyebrow">Live</span>
+                        <h2>Feed de Incidentes en Vivo</h2>
+                    </div>
+                    <span class="status-chip"
+                        style="background:rgba(34,197,94,0.1); color:#22c55e; font-size:0.65rem; font-weight:800; padding:4px 10px; border-radius:4px; border:1px solid rgba(34,197,94,0.2);">ACTIVO</span>
                 </div>
                 <div id="soc-incidents" class="stack-list" style="margin-top:20px; height:350px; overflow-y:auto;">
                     <div class="stack-item">Sincronizando telemetría...</div>
@@ -93,14 +95,13 @@ $activeNav = 'soc';
         <section class="planes-grid" style="grid-template-columns: 1fr; margin-bottom:32px;">
             <article class="panel" style="padding:0; overflow:hidden; border:1px solid rgba(79,70,229,0.3);">
                 <div class="panel-heading" style="padding:24px 24px 0 24px;">
-                    <div><span class="eyebrow" style="color:#a5b4fc;">Grafana Cloud</span><h2>Telemetría de Infraestructura (Prometheus)</h2></div>
+                    <div><span class="eyebrow" style="color:#a5b4fc;">Grafana Cloud</span>
+                        <h2>Telemetría de Infraestructura (Prometheus)</h2>
+                    </div>
                 </div>
                 <div style="height:500px; width:100%; margin-top:10px; background:#000;">
-                    <iframe 
-                        src="/grafana/d/sofia-security-overview/sofia-security-overview?orgId=1&kiosk&theme=dark" 
-                        width="100%" 
-                        height="100%" 
-                        frameborder="0">
+                    <iframe src="/grafana/d/sofia-security-overview/sofia-security-overview?orgId=1&kiosk&theme=dark"
+                        width="100%" height="100%" frameborder="0">
                     </iframe>
                 </div>
             </article>
@@ -109,73 +110,73 @@ $activeNav = 'soc';
 </main>
 
 <script>
-// Gráfica de timeline nativa - siempre funciona, no depende de Grafana
-new Chart(document.getElementById('incidentTimelineChart'), {
-    type: 'line',
-    data: {
-        labels: ['00h','02h','04h','06h','08h','10h','12h','14h','16h','18h','20h','22h'],
-        datasets: [
-            {
-                label: 'Bloqueados',
-                data: [12, 8, 22, 45, 88, 120, 95, 67, 134, 210, 178, 89],
-                borderColor: '#ef4444',
-                backgroundColor: 'rgba(239,68,68,0.08)',
-                fill: true,
-                tension: 0.4
-            },
-            {
-                label: 'Permitidos',
-                data: [1200, 980, 1100, 890, 1400, 1600, 1200, 980, 1300, 1800, 1500, 1100],
-                borderColor: '#06b6d4',
-                backgroundColor: 'rgba(6,182,212,0.05)',
-                fill: true,
-                tension: 0.4
+    // Gráfica de timeline nativa - siempre funciona, no depende de Grafana
+    new Chart(document.getElementById('incidentTimelineChart'), {
+        type: 'line',
+        data: {
+            labels: ['00h', '02h', '04h', '06h', '08h', '10h', '12h', '14h', '16h', '18h', '20h', '22h'],
+            datasets: [
+                {
+                    label: 'Bloqueados',
+                    data: [12, 8, 22, 45, 88, 120, 95, 67, 134, 210, 178, 89],
+                    borderColor: '#ef4444',
+                    backgroundColor: 'rgba(239,68,68,0.08)',
+                    fill: true,
+                    tension: 0.4
+                },
+                {
+                    label: 'Permitidos',
+                    data: [1200, 980, 1100, 890, 1400, 1600, 1200, 980, 1300, 1800, 1500, 1100],
+                    borderColor: '#06b6d4',
+                    backgroundColor: 'rgba(6,182,212,0.05)',
+                    fill: true,
+                    tension: 0.4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#fff' } } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: 'rgba(255,255,255,0.5)' } },
+                x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.5)' } }
             }
-        ]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { labels: { color: '#fff' } } },
-        scales: {
-            y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: 'rgba(255,255,255,0.5)' } },
-            x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.5)' } }
         }
-    }
-});
+    });
 
-// API Data
-(function() {
-    const api = window.SOFIA_CONFIG?.apiBase || '';
-    const getToken = () => {
-        const u = JSON.parse(localStorage.getItem('sofia_user_v1') || '{}');
-        const role = u.role || 'CLIENT';
-        return localStorage.getItem(`sofia_token_${role}`) || localStorage.getItem('sofia_token_v1');
-    };
-    const token = getToken();
-    if (!token) return;
+    // API Data
+    (function () {
+        const api = window.SOFIA_CONFIG?.apiBase || '';
+        const getToken = () => {
+            const u = JSON.parse(localStorage.getItem('sofia_user_v1') || '{}');
+            const role = u.role || 'CLIENT';
+            return localStorage.getItem(`sofia_token_${role}`) || localStorage.getItem('sofia_token_v1');
+        };
+        const token = getToken();
+        if (!token) return;
 
-    fetch(api + '/api/admin/security-monitor', {
-        headers: { Authorization: 'Bearer ' + token }
-    })
-    .then(r => {
-        if (!r.ok) throw new Error('Unauthorized');
-        return r.json();
-    })
-    .then(data => {
-        // KPIs
-        const kpiCards = document.querySelectorAll('#soc-kpis .kpi-card strong');
-        if (data.summary) {
-            if (kpiCards[0]) kpiCards[0].textContent = data.summary.totalEventsAnalyzed?.toLocaleString() || '—';
-            if (kpiCards[1]) kpiCards[1].textContent = data.summary.criticalIncidents || '—';
-            if (kpiCards[2]) kpiCards[2].textContent = data.summary.activeThreats || '—';
-            if (kpiCards[3]) kpiCards[3].textContent = (data.summary.systemHealth || '—') + '%';
-        }
+        fetch(api + '/api/admin/security-monitor', {
+            headers: { Authorization: 'Bearer ' + token }
+        })
+            .then(r => {
+                if (!r.ok) throw new Error('Unauthorized');
+                return r.json();
+            })
+            .then(data => {
+                // KPIs
+                const kpiCards = document.querySelectorAll('#soc-kpis .kpi-card strong');
+                if (data.summary) {
+                    if (kpiCards[0]) kpiCards[0].textContent = data.summary.totalEventsAnalyzed?.toLocaleString() || '—';
+                    if (kpiCards[1]) kpiCards[1].textContent = data.summary.criticalIncidents || '—';
+                    if (kpiCards[2]) kpiCards[2].textContent = data.summary.activeThreats || '—';
+                    if (kpiCards[3]) kpiCards[3].textContent = (data.summary.systemHealth || '—') + '%';
+                }
 
-        // Vectors
-        const vectorsEl = document.getElementById('soc-vectors');
-        if (data.topAttackVectors) {
-            vectorsEl.innerHTML = data.topAttackVectors.map(v => `
+                // Vectors
+                const vectorsEl = document.getElementById('soc-vectors');
+                if (data.topAttackVectors) {
+                    vectorsEl.innerHTML = data.topAttackVectors.map(v => `
                 <div class="stack-item" style="border-left: 3px solid ${v.accent === 'critical' ? '#ef4444' : '#f59e0b'};">
                     <div style="display:flex; justify-content:space-between;">
                         <strong>${v.label}</strong>
@@ -187,17 +188,17 @@ new Chart(document.getElementById('incidentTimelineChart'), {
                     </div>
                 </div>
             `).join('');
-        }
+                }
 
-        // Live Feed
-        const feedEl = document.getElementById('soc-incidents');
-        const liveData = data.liveFeed || [
-            { type: 'SQLi Mitigado', time: 'Justo ahora', sourceIp: '185.220.101.4', destination: 'API Gateway', status: 'BLOCKED' },
-            { type: 'XSS Bloqueado', time: 'Hace 2 min', sourceIp: '45.12.88.3', destination: 'Public App', status: 'BLOCKED' },
-            { type: 'Login Exitoso', time: 'Hace 5 min', sourceIp: '80.34.12.1', destination: 'Auth Node', status: 'OK' }
-        ];
-        
-        feedEl.innerHTML = liveData.map(ev => `
+                // Live Feed
+                const feedEl = document.getElementById('soc-incidents');
+                const liveData = data.liveFeed || [
+                    { type: 'SQLi Mitigado', time: 'Justo ahora', sourceIp: '185.220.101.4', destination: 'API Gateway', status: 'BLOCKED' },
+                    { type: 'XSS Bloqueado', time: 'Hace 2 min', sourceIp: '45.12.88.3', destination: 'Public App', status: 'BLOCKED' },
+                    { type: 'Login Exitoso', time: 'Hace 5 min', sourceIp: '80.34.12.1', destination: 'Auth Node', status: 'OK' }
+                ];
+
+                feedEl.innerHTML = liveData.map(ev => `
             <div class="stack-item" style="border-left: 2px solid ${ev.status === 'BLOCKED' ? '#ef4444' : '#22c55e'};">
                 <div style="display:flex; justify-content:space-between;">
                     <strong>${ev.type}</strong>
@@ -209,24 +210,24 @@ new Chart(document.getElementById('incidentTimelineChart'), {
             </div>
         `).join('');
 
-        // Countries
-        const countriesEl = document.getElementById('soc-countries');
-        if (data.topCountries) {
-            countriesEl.innerHTML = data.topCountries.map(c => `
+                // Countries
+                const countriesEl = document.getElementById('soc-countries');
+                if (data.topCountries) {
+                    countriesEl.innerHTML = data.topCountries.map(c => `
                 <div class="stack-item" style="display:flex; justify-content:space-between; align-items:center;">
                     <span>${c.name}</span>
                     <span style="font-weight:700; color:var(--primary);">${c.count} eventos</span>
                 </div>
             `).join('');
-        }
-    })
-    .catch(() => {
-        // Fallback con datos demo si la API falla
-        document.getElementById('soc-vectors').innerHTML = [
-            { label: 'SQLi / NoSQLi', count: 312, value: 82, accent: 'critical' },
-            { label: 'Credential Stuffing', count: 201, value: 65, accent: 'warning' },
-            { label: 'DDoS Layer 7', count: 88, value: 44, accent: 'critical' },
-        ].map(v => `
+                }
+            })
+            .catch(() => {
+                // Fallback con datos demo si la API falla
+                document.getElementById('soc-vectors').innerHTML = [
+                    { label: 'SQLi / NoSQLi', count: 312, value: 82, accent: 'critical' },
+                    { label: 'Credential Stuffing', count: 201, value: 65, accent: 'warning' },
+                    { label: 'DDoS Layer 7', count: 88, value: 44, accent: 'critical' },
+                ].map(v => `
             <div class="stack-item" style="border-left: 3px solid ${v.accent === 'critical' ? '#ef4444' : '#f59e0b'};">
                 <div style="display:flex; justify-content:space-between;">
                     <strong>${v.label}</strong>
@@ -237,38 +238,38 @@ new Chart(document.getElementById('incidentTimelineChart'), {
                 </div>
             </div>
         `).join('');
-    });
-})();
+            });
+    })();
 
-// WAF IP Blocking logic
-function blockIP() {
-    const input = document.getElementById('ip-to-block');
-    const ip = input.value.trim();
-    if(!ip) return;
-    
-    // Validate basic IP format
-    const ipRegex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
-    if(!ipRegex.test(ip)) {
-        alert("Formato de IP inválido.");
-        return;
-    }
+    // WAF IP Blocking logic
+    function blockIP() {
+        const input = document.getElementById('ip-to-block');
+        const ip = input.value.trim();
+        if (!ip) return;
 
-    const rulesEl = document.getElementById('waf-rules');
-    const newRule = document.createElement('div');
-    newRule.className = 'stack-item';
-    newRule.style.borderLeft = '2px solid #ef4444';
-    newRule.style.display = 'flex';
-    newRule.style.justifyContent = 'space-between';
-    newRule.style.alignItems = 'center';
-    newRule.innerHTML = `
+        // Validate basic IP format
+        const ipRegex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
+        if (!ipRegex.test(ip)) {
+            alert("Formato de IP inválido.");
+            return;
+        }
+
+        const rulesEl = document.getElementById('waf-rules');
+        const newRule = document.createElement('div');
+        newRule.className = 'stack-item';
+        newRule.style.borderLeft = '2px solid #ef4444';
+        newRule.style.display = 'flex';
+        newRule.style.justifyContent = 'space-between';
+        newRule.style.alignItems = 'center';
+        newRule.innerHTML = `
         <div><strong style="color:#ef4444; font-family:monospace;">${ip}</strong><br><small>Bloqueo manual (Admin)</small></div>
         <span style="font-size:0.7rem; opacity:0.5;">Activo</span>
     `;
-    
-    rulesEl.insertBefore(newRule, rulesEl.firstChild);
-    input.value = '';
-    
-    // Simulate API call
-    console.log(`[WAF] Regla insertada para dropear tráfico de ${ip}`);
-}
+
+        rulesEl.insertBefore(newRule, rulesEl.firstChild);
+        input.value = '';
+
+        // Simulate API call
+        console.log(`[WAF] Regla insertada para dropear tráfico de ${ip}`);
+    }
 </script>

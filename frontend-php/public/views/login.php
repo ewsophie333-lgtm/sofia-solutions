@@ -1,25 +1,8 @@
-<?php
-/**
- * ============================================================================
- * PROYECTO SOFIA SOLUTIONS - VISTA DE AUTENTICACIÓN CENTRAL (LOGIN)
- * ============================================================================
- * 
- * He diseñado esta interfaz de inicio de sesión con dos propósitos clave para mi proyecto final de ASIR:
- * 1. Servir como la puerta de acceso legítima de los clientes corporativos.
- * 2. Alternar dinámicamente entre el flujo de autenticación 'vulnerable' (v1 - sin MFA)
- *    y el flujo de autenticación 'seguro' (v2 - con hCaptcha / protección de segundo factor)
- *    según el parámetro $mode inyectado desde el enrutador.
- * 
- * Su diseño premium implementa una estética de cristal translúcido (glassmorphism)
- * optimizada para impresionar al tribunal y asegurar una experiencia inmersiva.
- * 
- * Autor: Sofia Gomez
- * Año: 2026
- * ============================================================================
- */
-?>
 <style>
-    body { font-size: 16px; }
+    body {
+        font-size: 16px;
+    }
+
     .brand-mark-login {
         max-height: 900px;
         width: auto;

@@ -1,25 +1,10 @@
 <?php
 /**
- * ============================================================================
- * PROYECTO SOFIA SOLUTIONS - PANEL DE OPERACIONES GLOBAL (SOC MULTI-TENANT)
- * ============================================================================
+ * SOFIA SOLUTIONS - Administrative Operations Center (SOC)
+ * Central command center for multi-tenant security monitoring.
  * 
- * He diseñado este panel administrativo integral (SOC Command Center) para mi proyecto final de ASIR.
- * Agrega y visualiza la telemetría en tiempo real de todos los clientes corporativos.
- * 
- * CARACTERÍSTICAS ACADÉMICAS CLAVE:
- * 1. Inteligencia Geoespacial: Integra Leaflet.js para mapear las IPs de origen de
- *    los atacantes y colorear los nodos según la severidad.
- * 2. Visualización de Datos: Gráficos dinámicos interactivos mediante Chart.js que
- *    muestran los vectores de ataque y la distribución del riesgo (Crítico, Alto, Medio).
- * 3. Gestión Multi-Tenant: Monitorización del estado y la latencia del servidor de cada
- *    cliente (MAPFRE, Iberdrola, Sabadell) con un mecanismo "Kill Switch" simulado.
- * 4. Gestión de Incidentes: Un flujo de trabajo activo de tickets para responder
- *    a amenazas detectadas y asignar analistas L3.
- * 
- * Autor: Sofia Gomez
- * Año: 2026
- * ============================================================================
+ * This module aggregates telemetry from all clients, embeds Grafana metrics,
+ * and provides a live administrative console for incident response.
  */
 $activeNav = 'admin-dashboard';
 ?>
@@ -30,11 +15,13 @@ $activeNav = 'admin-dashboard';
         object-fit: contain;
         margin-bottom: 30px;
     }
+
     .brand-mark-login {
         max-height: 300px;
         width: auto;
         margin-bottom: 50px;
     }
+
     .pulse-dot {
         width: 8px;
         height: 8px;
@@ -44,10 +31,19 @@ $activeNav = 'admin-dashboard';
         margin-right: 6px;
         animation: pulse-green 2s infinite;
     }
+
     @keyframes pulse-green {
-        0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-        70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        0% {
+            box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+        }
+
+        70% {
+            box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+        }
     }
 </style>
 
@@ -68,14 +64,14 @@ $activeNav = 'admin-dashboard';
         try {
             const user = JSON.parse(localStorage.getItem('sofia_user_v1') || '{}');
             if (!user.email || !TOKEN()) {
-                 console.warn("Sesión no detectada, esperando...");
-                 return;
+                console.warn("Sesión no detectada, esperando...");
+                return;
             }
             if (user.role === 'CLIENT') {
-                 window.location.replace('/dashboard');
-                 return;
+                window.location.replace('/dashboard');
+                return;
             }
-            
+
             // Solo actualizamos el nombre si el elemento ya existe
             const badge = document.getElementById('admin-name-badge');
             if (badge) {
@@ -97,7 +93,8 @@ $activeNav = 'admin-dashboard';
     <aside class="sidebar">
         <div class="sidebar-brand">
             <?php renderLogo('brand-mark brand-mark-sidebar'); ?>
-            <div class="sidebar-brand-copy"><span>Sofia Solutions</span><small>Su seguridad, nuestra misión</small></div>
+            <div class="sidebar-brand-copy"><span>Sofia Solutions</span><small>Su seguridad, nuestra misión</small>
+            </div>
         </div>
         <?php renderAppNav($activeNav); ?>
         <div style="margin-top:auto; padding:20px; border-top:1px solid rgba(255,255,255,0.05);">
@@ -116,7 +113,8 @@ $activeNav = 'admin-dashboard';
             <div>
                 <span class="eyebrow" data-i18n="eyebrow">Operaciones Globales</span>
                 <h1 data-i18n="title">Panel de Operaciones</h1>
-                <p class="panel-header-copy" data-i18n="copy">Plataforma de Inteligencia de Amenazas y Orquestación Multi-Tenant</p>
+                <p class="panel-header-copy" data-i18n="copy">Plataforma de Inteligencia de Amenazas y Orquestación
+                    Multi-Tenant</p>
             </div>
             <div style="display:flex; gap:12px; align-items:center;">
                 <span
@@ -127,21 +125,34 @@ $activeNav = 'admin-dashboard';
         </header>
 
         <!-- Global Performance Metrics (KPIs) -->
-        <section class="planes-grid" style="display:flex !important; flex-wrap:nowrap !important; gap:12px; margin-bottom:32px; width:100%;">
-            <div class="kpi-card" data-tone="ok" style="flex:1; border-left:3px solid #6d28d9; padding:12px; min-width:0;" id="kpi-events"><span
-                    class="meta-label" data-i18n="k1" style="font-size:0.6rem; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">EVENTOS ANALIZADOS</span><strong style="font-size:1.3rem;">—</strong>
+        <section class="planes-grid"
+            style="display:flex !important; flex-wrap:nowrap !important; gap:12px; margin-bottom:32px; width:100%;">
+            <div class="kpi-card" data-tone="ok"
+                style="flex:1; border-left:3px solid #6d28d9; padding:12px; min-width:0;" id="kpi-events"><span
+                    class="meta-label" data-i18n="k1"
+                    style="font-size:0.6rem; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">EVENTOS
+                    ANALIZADOS</span><strong style="font-size:1.3rem;">—</strong>
                 <div class="tone-bar" style="background:#6d28d9;"></div>
             </div>
-            <div class="kpi-card" data-tone="ok" style="flex:1; border-left:3px solid #6d28d9; padding:12px; min-width:0;" id="kpi-incidents"><span
-                    class="meta-label" data-i18n="k2" style="font-size:0.6rem; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">INCIDENTES CRÍTICOS</span><strong style="font-size:1.3rem;">—</strong>
+            <div class="kpi-card" data-tone="ok"
+                style="flex:1; border-left:3px solid #6d28d9; padding:12px; min-width:0;" id="kpi-incidents"><span
+                    class="meta-label" data-i18n="k2"
+                    style="font-size:0.6rem; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">INCIDENTES
+                    CRÍTICOS</span><strong style="font-size:1.3rem;">—</strong>
                 <div class="tone-bar" style="background:#6d28d9;"></div>
             </div>
-            <div class="kpi-card" data-tone="ok" style="flex:1; border-left:3px solid #6d28d9; padding:12px; min-width:0;" id="kpi-customers"><span
-                    class="meta-label" data-i18n="k3" style="font-size:0.6rem; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">CLIENTES PROTEGIDOS</span><strong style="font-size:1.3rem;">—</strong>
+            <div class="kpi-card" data-tone="ok"
+                style="flex:1; border-left:3px solid #6d28d9; padding:12px; min-width:0;" id="kpi-customers"><span
+                    class="meta-label" data-i18n="k3"
+                    style="font-size:0.6rem; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">CLIENTES
+                    PROTEGIDOS</span><strong style="font-size:1.3rem;">—</strong>
                 <div class="tone-bar" style="background:#6d28d9;"></div>
             </div>
-            <div class="kpi-card" data-tone="ok" style="flex:1; border-left:3px solid #6d28d9; padding:12px; min-width:0;" id="kpi-health"><span
-                    class="meta-label" data-i18n="k4" style="font-size:0.6rem; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">SALUD DEL SISTEMA</span><strong style="font-size:1.3rem;">—</strong>
+            <div class="kpi-card" data-tone="ok"
+                style="flex:1; border-left:3px solid #6d28d9; padding:12px; min-width:0;" id="kpi-health"><span
+                    class="meta-label" data-i18n="k4"
+                    style="font-size:0.6rem; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">SALUD
+                    DEL SISTEMA</span><strong style="font-size:1.3rem;">—</strong>
                 <div class="tone-bar" style="background:#6d28d9;"></div>
             </div>
         </section>
@@ -253,20 +264,26 @@ $activeNav = 'admin-dashboard';
         </script>
 
         <!-- SOC Threat Map & Geospatial Intelligence -->
-        <section class="panel" style="padding:0; margin-bottom:32px; overflow:hidden; min-height:400px; position:relative; border:1px solid rgba(139,92,246,0.2);">
+        <section class="panel"
+            style="padding:0; margin-bottom:32px; overflow:hidden; min-height:400px; position:relative; border:1px solid rgba(139,92,246,0.2);">
             <div id="threat-map" style="width:100%; height:400px; background:#0f172a; z-index:1;"></div>
             <div style="position:absolute; top:20px; left:20px; z-index:1000; pointer-events:none;">
-                <div style="background:rgba(15,23,42,0.9); backdrop-filter:blur(10px); padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+                <div
+                    style="background:rgba(15,23,42,0.9); backdrop-filter:blur(10px); padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); box-shadow:0 10px 30px rgba(0,0,0,0.5);">
                     <span class="eyebrow" style="color:#a78bfa;">Inteligencia Geoespacial</span>
                     <h2 style="margin:4px 0 0; font-size:1.2rem; color:#fff;">Mapa de Amenazas Global</h2>
                     <div style="margin-top:12px; display:flex; gap:12px;">
-                        <div style="font-size:0.7rem; color:#94a3b8;"><span style="color:#ef4444;">●</span> Ataque Activo</div>
-                        <div style="font-size:0.7rem; color:#94a3b8;"><span style="color:#22c55e;">●</span> Nodo Seguro</div>
+                        <div style="font-size:0.7rem; color:#94a3b8;"><span style="color:#ef4444;">●</span> Ataque
+                            Activo</div>
+                        <div style="font-size:0.7rem; color:#94a3b8;"><span style="color:#22c55e;">●</span> Nodo Seguro
+                        </div>
                     </div>
                 </div>
             </div>
             <div style="position:absolute; bottom:20px; right:20px; z-index:1000;">
-                <div style="background:rgba(34,197,94,0.1); color:#86efac; border:1px solid rgba(34,197,94,0.3); padding:6px 12px; border-radius:6px; font-size:0.65rem; font-weight:800; letter-spacing:1px;">RED DE SENSORES: ACTIVA</div>
+                <div
+                    style="background:rgba(34,197,94,0.1); color:#86efac; border:1px solid rgba(34,197,94,0.3); padding:6px 12px; border-radius:6px; font-size:0.65rem; font-weight:800; letter-spacing:1px;">
+                    RED DE SENSORES: ACTIVA</div>
             </div>
         </section>
 
@@ -287,7 +304,8 @@ $activeNav = 'admin-dashboard';
                     </div>
                 </div>
                 <div style="height:280px;margin-top:20px;display:flex;align-items:center;justify-content:center;">
-                    <canvas id="riskChart"></canvas></div>
+                    <canvas id="riskChart"></canvas>
+                </div>
             </article>
         </section>
 
@@ -398,8 +416,10 @@ $activeNav = 'admin-dashboard';
                     <h2>Exposición de Riesgo por Cliente</h2>
                 </div>
             </div>
-            <div class="planes-grid" id="customer-exposure-grid" style="grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
-                <div style="grid-column: 1/-1; padding:40px; text-align:center; color:var(--text-muted);">Calculando exposición de activos...</div>
+            <div class="planes-grid" id="customer-exposure-grid"
+                style="grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
+                <div style="grid-column: 1/-1; padding:40px; text-align:center; color:var(--text-muted);">Calculando
+                    exposición de activos...</div>
             </div>
         </section>
 
@@ -591,7 +611,7 @@ $activeNav = 'admin-dashboard';
         color: #fff !important;
         font-family: 'Outfit', sans-serif !important;
         font-size: 0.75rem !important;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.4) !important;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4) !important;
         border-radius: 8px !important;
     }
 </style>
@@ -636,16 +656,16 @@ $activeNav = 'admin-dashboard';
     function updateThreatMap(incidents) {
         if (!threatMap) initMap();
         if (!threatMap) return;
-        
+
         attackMarkers.forEach(m => threatMap.removeLayer(m));
         attackMarkers.length = 0;
-        
+
         if (!incidents || incidents.length === 0) return;
 
         incidents.slice(0, 15).forEach(i => {
             const coords = GEO_COORDS[i.sourceCountry] || [Math.random() * 40, Math.random() * 40];
             const color = i.severity === 'CRITICAL' ? '#ef4444' : '#f97316';
-            
+
             const marker = L.circleMarker(coords, {
                 radius: i.severity === 'CRITICAL' ? 10 : 6,
                 fillColor: color,
@@ -654,12 +674,12 @@ $activeNav = 'admin-dashboard';
                 opacity: 1,
                 fillOpacity: 0.8
             }).addTo(threatMap)
-              .bindTooltip(`<b>${i.title}</b><br>${i.sourceCountry} - ${i.sourceIp}`, { 
-                  permanent: false, 
-                  direction: 'top',
-                  className: 'map-tooltip'
-              });
-            
+                .bindTooltip(`<b>${i.title}</b><br>${i.sourceCountry} - ${i.sourceIp}`, {
+                    permanent: false,
+                    direction: 'top',
+                    className: 'map-tooltip'
+                });
+
             attackMarkers.push(marker);
         });
     }
@@ -727,7 +747,7 @@ $activeNav = 'admin-dashboard';
     async function loadAdmin() {
         const ts = Date.now();
         const config = { headers: authHdr() };
-        
+
         const clearLoadingStates = () => {
             const loadingEls = document.querySelectorAll('[id$="-container"], [id$="-grid"], #client-table-body');
             loadingEls.forEach(el => {
@@ -746,12 +766,12 @@ $activeNav = 'admin-dashboard';
 
             let monitorData = null;
             let ticketsData = null;
-            
+
             if (monitorRes.status === 'fulfilled' && monitorRes.value.ok) {
                 monitorData = await monitorRes.value.json();
                 // Actualizar Estado de Salud (UI)
                 const cards = [document.getElementById('health-api'), document.getElementById('health-db'), document.getElementById('health-gateway')];
-                cards.forEach(c => { if(c) { c.classList.remove('error'); c.classList.add('ok'); c.querySelector('.status-text').textContent = c.id.includes('api')?'Operacional':c.id.includes('db')?'Conectado':'Activo'; }});
+                cards.forEach(c => { if (c) { c.classList.remove('error'); c.classList.add('ok'); c.querySelector('.status-text').textContent = c.id.includes('api') ? 'Operacional' : c.id.includes('db') ? 'Conectado' : 'Activo'; } });
             } else {
                 console.warn('API Monitor falló (401 o Red). Activando telemetría simulada.');
             }
@@ -810,7 +830,7 @@ $activeNav = 'admin-dashboard';
 
             const d = monitorData;
             const s = d.summary || {};
-            
+
             const setKPI = (id, val) => {
                 const el = document.querySelector(`${id} strong`);
                 if (el) el.textContent = val;
@@ -834,16 +854,16 @@ $activeNav = 'admin-dashboard';
 
             renderCharts(d.topAttackVectors, d.alertDistribution);
             renderCustomerExposure(d.customerExposure);
-            
+
             // Map & Feed Update
             if (d.incidents) updateThreatMap(d.incidents);
             if (window.currentIRTab === 'global') renderRealTimeFeed(d.liveFeed);
-            
+
             renderAdminTickets(window.adminTickets);
 
         } catch (globalError) {
             console.error('Critical Dashboard Failure:', globalError);
-            
+
             // MOCKS DE EMERGENCIA AGRESIVOS (Si falla TODO)
             const mockVectors = [{ label: 'Inyección SQL', count: 850 }, { label: 'Fuerza Bruta', count: 640 }, { label: 'XSS', count: 420 }];
             const mockDist = [
@@ -856,7 +876,7 @@ $activeNav = 'admin-dashboard';
                 { type: 'Inyección SQL DETECTADA', time: 'Ahora', severity: 'CRITICAL' },
                 { type: 'FUERZA BRUTA BLOQUEADA', time: 'Hace 2m', severity: 'HIGH' }
             ];
-            
+
             renderCharts(mockVectors, mockDist);
             renderRealTimeFeed(mockIncidents);
             renderAdminTickets([
@@ -872,7 +892,7 @@ $activeNav = 'admin-dashboard';
                 { name: 'MERCADONA', assets: 35, incidents: 2, risk: 12 },
                 { name: 'REPSOL', assets: 58, incidents: 9, risk: 72 }
             ]);
-            
+
             const setKPI = (id, val) => { const el = document.querySelector(`${id} strong`); if (el) el.textContent = val; };
             setKPI('#kpi-events', '4.2M'); setKPI('#kpi-incidents', '2'); setKPI('#kpi-customers', '12'); setKPI('#kpi-health', '99.8%');
         }
@@ -885,16 +905,16 @@ $activeNav = 'admin-dashboard';
     function renderCustomerExposure(customers) {
         const grid = document.getElementById('customer-exposure-grid');
         if (!customers || customers.length === 0) return;
-        
+
         grid.innerHTML = customers.map(c => {
             const riskLevel = c.incidents > 5 ? 'High' : c.incidents > 2 ? 'Medium' : 'Low';
             const riskColor = riskLevel === 'High' ? '#ef4444' : riskLevel === 'Medium' ? '#f59e0b' : '#22c55e';
-            
+
             return `
             <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:12px; padding:20px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                     <strong style="color:#fff; font-size:1rem;">${c.name}</strong>
-                    <span style="font-size:0.6rem; font-weight:900; color:${riskColor}; background:rgba(${riskLevel==='High'?'239,68,68':'34,197,94'},0.1); padding:4px 8px; border-radius:4px;">${riskLevel.toUpperCase()} RISK</span>
+                    <span style="font-size:0.6rem; font-weight:900; color:${riskColor}; background:rgba(${riskLevel === 'High' ? '239,68,68' : '34,197,94'},0.1); padding:4px 8px; border-radius:4px;">${riskLevel.toUpperCase()} RISK</span>
                 </div>
                 <div style="display:flex; gap:20px; margin-bottom:12px;">
                     <div><small style="color:var(--text-muted); display:block;">Activos</small><strong>${c.assets}</strong></div>
@@ -964,12 +984,12 @@ $activeNav = 'admin-dashboard';
     window.activeCharts = {};
 
     function renderCharts(vectors, dist) {
-        const commonLineOptions = { 
-            responsive: true, 
-            maintainAspectRatio: false, 
-            plugins: { legend: { display: false } }, 
-            scales: { x: { display: false }, y: { display: false, min: 0 } }, 
-            elements: { point: { radius: 0 } } 
+        const commonLineOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { x: { display: false }, y: { display: false, min: 0 } },
+            elements: { point: { radius: 0 } }
         };
 
         // Independent chart rendering to prevent global crash
@@ -978,26 +998,26 @@ $activeNav = 'admin-dashboard';
                 if (window.activeCharts.traffic) window.activeCharts.traffic.destroy();
                 const ctxGlobal = document.getElementById('globalTrafficChart')?.getContext('2d');
                 if (ctxGlobal) {
-                    window.activeCharts.traffic = new Chart(ctxGlobal, { 
-                        type: 'bar', 
-                        data: { 
-                            labels: vectors.map(v => v.label), 
-                            datasets: [{ 
-                                data: vectors.map(v => v.count), 
-                                backgroundColor: 'rgba(139,92,246,0.5)', 
-                                borderColor: '#8b5cf6', 
-                                borderWidth: 1 
-                            }] 
-                        }, 
-                        options: { 
-                            responsive: true, 
-                            maintainAspectRatio: false, 
-                            plugins: { legend: { display: false } }, 
-                            scales: { 
-                                y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: 'rgba(255,255,255,0.4)' } }, 
-                                x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.4)' } } 
-                            } 
-                        } 
+                    window.activeCharts.traffic = new Chart(ctxGlobal, {
+                        type: 'bar',
+                        data: {
+                            labels: vectors.map(v => v.label),
+                            datasets: [{
+                                data: vectors.map(v => v.count),
+                                backgroundColor: 'rgba(139,92,246,0.5)',
+                                borderColor: '#8b5cf6',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: 'rgba(255,255,255,0.4)' } },
+                                x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.4)' } }
+                            }
+                        }
                     });
                 }
             }
@@ -1008,21 +1028,21 @@ $activeNav = 'admin-dashboard';
                 if (window.activeCharts.risk) window.activeCharts.risk.destroy();
                 const ctxRisk = document.getElementById('riskChart')?.getContext('2d');
                 if (ctxRisk) {
-                    window.activeCharts.risk = new Chart(ctxRisk, { 
-                        type: 'doughnut', 
-                        data: { 
-                            labels: dist.map(d => d.label), 
-                            datasets: [{ 
-                                data: dist.map(d => d.value), 
-                                backgroundColor: dist.map(d => d.color), 
-                                borderWidth: 0 
-                            }] 
-                        }, 
-                        options: { 
-                            responsive: true, 
-                            maintainAspectRatio: false, 
-                            plugins: { legend: { position: 'bottom', labels: { color: '#fff', padding: 16, font: { size: 11 } } } } 
-                        } 
+                    window.activeCharts.risk = new Chart(ctxRisk, {
+                        type: 'doughnut',
+                        data: {
+                            labels: dist.map(d => d.label),
+                            datasets: [{
+                                data: dist.map(d => d.value),
+                                backgroundColor: dist.map(d => d.color),
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { position: 'bottom', labels: { color: '#fff', padding: 16, font: { size: 11 } } } }
+                        }
                     });
                 }
             }
@@ -1035,7 +1055,7 @@ $activeNav = 'admin-dashboard';
                 if (ctx) {
                     new Chart(ctx, { type: 'line', data: { labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'], datasets: [{ data: data, borderColor: color, backgroundColor: color + '1A', fill: true, tension: 0.4 }] }, options: commonLineOptions });
                 }
-            } catch (e) {}
+            } catch (e) { }
         };
 
         renderMiniLine('mapfreLatencyChart', [11, 12, 15, 10, 13, 12, 11, 14, 12, 12], '#22c55e');
