@@ -711,6 +711,15 @@
         tLog(`[*] Lanzando ataque XSS Reflejado...`, 'yellow');
         await delay(600);
 
+        // Comprobación de seguridad WAF dinámica
+        const isVulnerable = window.SOFIA_CONFIG && window.SOFIA_CONFIG.loginMode === 'vulnerable';
+        
+        if (!isVulnerable) {
+            tLog(`[CRITICAL] Blocked by Sofia WAF Shield (Security Active)`, 'red');
+            addEvidence('Attack Blocked (XSS)', 'El WAF de Sofia ha detectado y bloqueado en tiempo real el intento de Cross-Site Scripting (XSS).', 'red');
+            return;
+        }
+
         if (action === 'cookie') {
             tLog(`[INFO] Document cookie accessed via XSS`, 'cyan');
             tLog(`[!] Iniciando Burp Suite para interceptar sesión...`, 'yellow');
