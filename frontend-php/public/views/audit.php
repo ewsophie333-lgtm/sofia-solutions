@@ -443,28 +443,31 @@
 <div id="hacker-overlay" style="display:none;"></div>
 
 <!-- DoS Downtime Simulation Overlay -->
-<div id="dos-downtime-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5, 2, 10, 0.96); z-index:999999; justify-content:center; align-items:center; font-family:'Inter', sans-serif; backdrop-filter:blur(15px); color:#fff; animation:fadeIn 0.5s ease;">
-    <div style="background:rgba(20, 10, 30, 0.9); border:2px solid #ef4444; border-radius:16px; padding:40px; width:min(600px, 90%); box-shadow:0 0 50px rgba(239, 68, 68, 0.35); text-align:center; position:relative; overflow:hidden;">
-        <!-- Glowing background effect -->
-        <div style="position:absolute; top:-50%; left:-50%; width:200%; height:200%; background:radial-gradient(circle, rgba(239, 68, 68, 0.15) 0%, transparent 60%); pointer-events:none; animation:pulse 4s infinite;"></div>
-        
-        <div style="font-size:4rem; margin-bottom:20px; animation:shake 0.5s infinite;">⚠️</div>
-        <h2 style="font-size:1.8rem; font-weight:900; color:#f87171; margin:0 0 15px; letter-spacing:-0.5px;">SISTEMA CAÍDO (DOWNTIME 100%)</h2>
-        <p style="font-size:0.85rem; color:#94a3b8; line-height:1.6; margin-bottom:24px;">
-            El ataque de inundación HTTP (DoS) ha agotado completamente el bucle de eventos (Event Loop) de Node.js. Al no estar activo el **Rate Limiting** (Modo Vulnerable), el backend ha colapsado bajo la carga de peticiones concurrentes y no responde.
+<div id="dos-downtime-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#202124; z-index:999999; justify-content:center; align-items:center; font-family:system-ui, -apple-system, sans-serif; color:#e8eaed; animation:fadeIn 0.4s ease;">
+    <div style="max-width:550px; width:90%; padding:20px; text-align:left; animation:slideDown 0.3s ease;">
+        <!-- Chrome Sad Dinosaur SVG -->
+        <svg viewBox="0 0 24 24" style="width:72px; height:72px; fill:#9aa0a6; margin-bottom:24px;">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+        </svg>
+        <h1 style="font-size:20px; font-weight:500; margin:0 0 15px; color:#e8eaed;">No se puede acceder a este sitio web</h1>
+        <p style="font-size:13px; color:#9aa0a6; line-height:1.6; margin:0 0 20px;">
+            La página <strong>sofia-solutions.serveousercontent.com</strong> ha rechazado la conexión.
         </p>
         
-        <!-- Stats table -->
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:30px; text-align:left; background:rgba(0,0,0,0.3); padding:15px; border-radius:8px; border:1px solid rgba(255,255,255,0.05); font-family:monospace; font-size:0.75rem;">
-            <div><span style="color:#64748b;">ESTADO:</span> <strong style="color:#ef4444;">OFFLINE (503)</strong></div>
-            <div><span style="color:#64748b;">CARGA CPU:</span> <strong style="color:#ef4444;">100%</strong></div>
-            <div><span style="color:#64748b;">LATENCIA:</span> <strong style="color:#ef4444;">TIMEOUT (∞)</strong></div>
-            <div><span style="color:#64748b;">FILTRADO WAF:</span> <strong style="color:#8b5cf6;">INACTIVO</strong></div>
+        <div style="border-top:1px solid #3c4043; padding-top:20px; margin-bottom:25px;">
+            <p style="font-size:13px; color:#9aa0a6; margin:0 0 10px;">Prueba a realizar las siguientes comprobaciones:</p>
+            <ul style="font-size:13px; color:#9aa0a6; margin:0; padding-left:20px; line-height:1.6;">
+                <li>Comprobar la conexión a Internet</li>
+                <li>Comprobar el proxy, el cortafuegos y el estado del contenedor de backend</li>
+            </ul>
         </div>
         
-        <button onclick="restoreDoS()" style="background:#ef4444; color:#fff; border:none; border-radius:8px; padding:12px 28px; font-weight:800; cursor:pointer; font-size:0.85rem; letter-spacing:0.5px; transition:all 0.2s; box-shadow:0 0 20px rgba(239, 68, 68, 0.4);" onmouseover="this.style.background='#dc2626'; this.style.transform='scale(1.02)';" onmouseout="this.style.background='#ef4444'; this.style.transform='scale(1)';">
-            RESTABLECER SERVIDOR (REBOOT)
-        </button>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <button onclick="restoreDoS()" style="background:#8ab4f8; color:#202124; border:none; border-radius:4px; padding:8px 16px; font-size:13px; font-weight:500; cursor:pointer; transition:background 0.2s;" onmouseover="this.style.background='#9ec2f9';" onmouseout="this.style.background='#8ab4f8';">
+                Cargar de nuevo
+            </button>
+            <span style="font-size:12px; color:#9aa0a6; font-family:monospace;">ERR_CONNECTION_REFUSED</span>
+        </div>
     </div>
 </div>
 
