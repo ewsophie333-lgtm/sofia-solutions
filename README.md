@@ -90,35 +90,74 @@ Sofia Solutions está optimizado para ejecutarse en la nube de GitHub en segundo
 
 ---
 
-## ⚡ Guía para la Defensa (Demostración en vivo)
+## ⚡ Manual de Auditoría y Verificación de Contramedidas (Guía para el Jurado)
 
-### 1. Fase Ofensiva (Modo Vulnerable)
-1. Activa el **Modo Vulnerable** con el script `scripts/ACTIVAR-MODO-VULNERABLE.bat` (o `.sh` en Linux).
-2. Ve a la **Consola de Auditoría** y lanza un ataque **SQL Injection** en el login.
-3. Observa cómo el sistema permite entrar sin contraseña.
-4. Lanza un ataque **XSS de Robo de Cookies**. Se abrirá un simulador de **Burp Suite**. Modifica el rol a `ADMIN` para demostrar la **Escalada de Privilegios**.
-
-### 2. Fase Defensiva (Modo Seguro)
-1. Activa el **Modo Seguro** con `scripts/ACTIVAR-MODO-SEGURO.bat`: Reactiva todas las capas de protección (Bcrypt, WAF, JWT stricts). Úsalo para demostrar la eficacia de las soluciones de Sofia Solutions frente a los mismos ataques realizados anteriormente.
-
-### 5. Post-Explotación: Sofia Kit Auditor
-Dentro de la carpeta `scripts/`, se encuentra el **Sofia Kit Auditor** (`sofia-audit-framework.py`). Esta herramienta permite:
-- **Persistencia**: Mantener el acceso al sistema tras el compromiso inicial.
-- **Exfiltración**: Automatizar la descarga de datos sensibles de la base de datos.
-- **Auditoría Silenciosa**: Ejecutar comandos en el backend sin disparar alertas inmediatas de nivel 1.
-- **Lanzador**: Puedes usar `lanzar-rootkit.bat` para iniciar el entorno de persistencia rápidamente.
+Este apartado sirve como una guía metodológica estructurada para que los miembros del tribunal puedan auditar, replicar y validar de forma controlada el comportamiento de la plataforma *Sofia Solutions* en ambos estados operacionales (Vulnerable y Protegido).
 
 ---
 
-2. Repite los ataques anteriores. El **WAF Shield** bloqueará las inyecciones y el **Rate Limiting** cortará la conexión tras 3 intentos.
-3. Explica el uso de **Bcrypt (12 rondas)** y la validación estricta de **Tokens JWT**.
+### 🔴 Fase 1: Auditoría Ofensiva (Demostración de Brechas en Modo Vulnerable)
 
-### 3. Monitorización SOC y Enriquecimiento de Telemetría
-1. **Rastreo Geográfico**: El panel `/admin` ahora visualiza la **IP de origen** y el **País (Zona)** de los atacantes en tiempo real dentro del feed de incidentes.
-2. **Alertas Inteligentes (n8n)**: Cada intrusión crítica activa un flujo de n8n que envía un correo al SOC enriquecido con los metadatos geográficos del atacante.
-3. **Validación de Identidad**: Muestra el uso de **Bcrypt (12 rondas)** y la monitorización de sesiones activas.
+El objetivo de esta fase es simular un entorno empresarial desprovisto de protecciones perimetrales para evidenciar la gravedad de los vectores de ataque más explotados en la capa de aplicación (OWASP Top 10).
+
+#### Paso 1.1: Activación del Estado Inseguro (Modo Vulnerable)
+*   **Acción**: Ejecutar el script `scripts/ACTIVAR-MODO-VULNERABLE.bat` (o `ACTIVAR-MODO-VULNERABLE.sh` en sistemas basados en Linux).
+*   **Efecto en el Backend**: Desactiva el Web Application Firewall (WAF) perimetral, deshabilita las firmas de saneamiento de datos y desactiva el Rate Limiting. El backend pasa a operar en modo transparente.
+
+#### Paso 1.2: Explotación de Inyección SQL (SQLi) - Bypass de Login
+*   **Procedimiento**:
+    1. Acceda a la pantalla de inicio de sesión legítima en `/login` o utilice la **Consola de Auditoría Interactiva** en `/consola`.
+    2. Introduzca el siguiente payload malicioso en el campo de **Correo Electrónico**:
+       ```sql
+       admin@sofia.local' OR 1=1 --
+       ```
+    3. Escriba cualquier texto en la contraseña y envíe el formulario.
+*   **Resultado Técnico Esperado**: El backend ejecuta una query SQL no parametrizada contra la base de datos PostgreSQL. Debido a la falta de sanitización, el operador `' OR 1=1 --` rompe la lógica de la consulta haciendo que siempre devuelva un valor verdadero, autenticando al auditor como Administrador del sistema sin conocer la clave secreta.
+
+#### Paso 1.3: Explotación de Secuestro de Sesión y Escalada (Burp Suite Simulation)
+*   **Procedimiento**:
+    1. Desde la Consola de Auditoría (`/consola`), ejecute el ataque interactivo y abra el simulador del proxy **Burp Suite**.
+    2. Modifique la cookie de sesión para alternar el rol de un usuario ordinario (`CLIENT`) a un rol de administrador (`ADMIN`).
+*   **Resultado Técnico Esperado**: Se demuestra el impacto de un secuestro de sesión y la escalada de privilegios a través de la manipulación de cookies desprotegidas en tránsito.
 
 ---
+
+### 🟢 Fase 2: Auditoría Defensiva (Validación de Robustez en Modo Seguro)
+
+El objetivo de esta fase es demostrar cómo la suite defensiva de *Sofia Solutions* neutraliza de forma automática los mismos ataques de la Fase 1, garantizando la integridad de los activos del tenant.
+
+#### Paso 2.1: Activación del Estado Protegido (Modo Seguro)
+*   **Acción**: Ejecutar el script `scripts/ACTIVAR-MODO-SEGURO.bat` (o `ACTIVAR-MODO-SEGURO.sh` en Linux).
+*   **Efecto en el Backend**: Reactiva el escudo de firmas defensivas del WAF perimetral, impone el uso de hashing criptográfico Bcrypt con factor de costo `12` para claves, activa validaciones de JWT estrictas y habilita el limitador de tasa de peticiones.
+
+#### Paso 2.2: Mitigación Activa de Inyección SQL (SQLi)
+*   **Procedimiento**: Repita el inicio de sesión introduciendo el payload `' OR 1=1 --`.
+*   **Resultado Técnico Esperado**: El WAF intercepta el tráfico HTTP entrante en la capa L7, detecta el patrón malicioso en los datos serializados mediante expresiones regulares optimizadas y aborta la petición de inmediato, respondiendo al cliente con un código HTTP `403 Forbidden` y bloqueando la intrusión.
+
+#### Paso 2.3: Mitigación de Fuerza Bruta y Ataques de Diccionario (Rate Limiting)
+*   **Procedimiento**: Realice más de 3 intentos de inicio de sesión con contraseñas incorrectas para el usuario `admin@sofia.local`.
+*   **Resultado Técnico Esperado**: El middleware de Rate Limiting detecta el abuso de peticiones concurrentes por IP y bloquea la conexión del cliente de forma temporal, previniendo el compromiso de credenciales y la denegación de servicio (DoS).
+
+---
+
+### 🕵️‍♂️ Fase 3: Post-Explotación y Persistencia (Sofia Audit Framework)
+
+Para enriquecer la evaluación técnica, el sistema incluye un framework didáctico de post-explotación en la consola del auditor.
+
+*   **Herramienta**: El script `sofia-audit-framework.py` (ejecutable mediante `lanzar-rootkit.bat`) simula un vector de persistencia avanzado y exfiltración de metadatos de bajo ruido.
+*   **Uso del Jurado**: Permite comprobar cómo, tras una intrusión controlada, un atacante intenta instalar puertas traseras (backdoors) y cómo el sistema monitoriza silenciosamente dichas actividades de persistencia para recolectar evidencias que posteriormente se inyectan en el feed del SOC.
+
+---
+
+### 📡 Fase 4: Telemetría SOC y Orquestación Automatizada (SOAR)
+
+Una vez neutralizados o detectados los ataques, la plataforma traslada los metadatos forenses al cuadro de mando centralizado.
+
+1.  **Monitorización Cartográfica**: Acceda al panel `/admin` (SOC). Podrá auditar cómo el mapa de incidentes en tiempo real geolocaliza al atacante (IP, ciudad y país de origen) correlacionando metadatos.
+2.  **Automatización SOAR (n8n)**: Al detectarse incidentes de severidad crítica (e.g. ataques SQLi en modo seguro o alertas de persistencia del rootkit), un webhook seguro dispara un flujo automático en n8n, el cual notifica por correo electrónico SMTP enriquecido al analista de guardia con los detalles forenses del atacante.
+
+---
+
 
 ## 🛡️ Arquitectura de Seguridad
 Sofia Solutions implementa una defensa en profundidad:
