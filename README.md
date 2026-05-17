@@ -2,7 +2,7 @@
 
 [![Codespaces](https://img.shields.io/static/v1?label=GitHub+Codespaces&message=Open&color=blue&logo=github)](https://github.com/codespaces/new?hide_repo_select=true&ref=entrega-final&repo=ewsophie333-lgtm/sofia-solutions)
 
-Proyecto final orientado a **ASIX / Ciberseguridad**, centrado en la demostración de arquitecturas de seguridad ofensiva y monitorización defensiva (SOC).
+Proyecto Final ASIR orientado a la demostración de arquitecturas de seguridad ofensiva y monitorización defensiva (SOC).
 
 ---
 
@@ -189,4 +189,4 @@ Sofia Solutions implementa una defensa en profundidad:
 - **Túnel de Red:** Serveo SSL Tunneling.
 
 ---
-© 2026 Sofia Solutions - Security Framework para Defensa TFG
+© 2026 Sofia Solutions - Proyecto Final ASIR

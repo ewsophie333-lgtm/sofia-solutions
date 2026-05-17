@@ -5,7 +5,7 @@
  * ============================================================================
  * 
  * He agrupado en este archivo 'helpers.php' las funciones auxiliares reutilizables
- * de mi TFG. Su objetivo es desacoplar la lógica visual de las vistas principales:
+ * de mi proyecto final de ASIR. Su objetivo es desacoplar la lógica visual de las vistas principales:
  * 1. renderLogo: Renderiza el logo corporativo adaptado al tema oscuro.
  * 2. renderTopNav: Dibuja el menú de cabecera en las landing pages.
  * 3. renderAppNav: Construye la barra lateral izquierda (Sidebar) de la aplicación,

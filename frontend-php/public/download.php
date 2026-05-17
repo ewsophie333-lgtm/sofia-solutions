@@ -4,7 +4,7 @@
  * PROYECTO SOFIA SOLUTIONS - ENDPOINT DE DESCARGAS (DEMO DE PATH TRAVERSAL / LFI)
  * ============================================================================
  * 
- * He diseñado este script 'download.php' con un doble propósito para mi TFG:
+ * He diseñado este script 'download.php' con un doble propósito para mi proyecto final de ASIR:
  * 1. Simular un fallo clásico de Path Traversal (LFI - Local File Inclusion) en el
  *    modo vulnerable (APP_MODE = vulnerable) para mostrar cómo un atacante podría
  *    leer archivos sensibles del sistema (ej. /etc/passwd o archivos del código fuente).

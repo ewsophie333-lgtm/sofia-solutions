@@ -5,7 +5,7 @@
  * ============================================================================
  * 
  * He desarrollado esta interfaz de monitorización del SOC (Security Operations Center)
- * para mi TFG con el fin de proporcionar visibilidad operacional en tiempo real:
+ * para mi proyecto final de ASIR con el fin de proporcionar visibilidad operacional en tiempo real:
  * 1. Integración de Grafana: Embebe un iframe interactivo conectado a Prometheus
  *    que muestra métricas de CPU, peticiones concurrentes y anomalías de red.
  * 2. Gráficas de Telemetría: Renderiza incidentes por hora (bloqueados vs permitidos)

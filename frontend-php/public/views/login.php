@@ -4,7 +4,7 @@
  * PROYECTO SOFIA SOLUTIONS - VISTA DE AUTENTICACIÓN CENTRAL (LOGIN)
  * ============================================================================
  * 
- * He diseñado esta interfaz de inicio de sesión con dos propósitos clave para mi TFG:
+ * He diseñado esta interfaz de inicio de sesión con dos propósitos clave para mi proyecto final de ASIR:
  * 1. Servir como la puerta de acceso legítima de los clientes corporativos.
  * 2. Alternar dinámicamente entre el flujo de autenticación 'vulnerable' (v1 - sin MFA)
  *    y el flujo de autenticación 'seguro' (v2 - con hCaptcha / protección de segundo factor)

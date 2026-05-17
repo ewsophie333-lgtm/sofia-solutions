@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 slides = [
     {"num": "01", "title": "Sofia Solutions", "subtitle": "Plataforma de Seguridad y Monitorización SOC", "body": "", "type": "cover"},
-    {"num": "02", "title": "Índice", "type": "index", "items": ["Motivación y Contexto","Objetivos del TFG","Arquitectura del Sistema","Stack Tecnológico","Modos de Operación","Consola de Auditoría – Ataques","Demostración: SQL Injection","Demostración: Fuerza Bruta","Demostración: XSS / Cookie Hijacking","Demostración: LFI / IDOR / DoS","Defensa: WAF Shield","Monitorización SOC – Grafana","Automatización: n8n","Infraestructura Docker","Resultados y Métricas","Conclusiones y Aprendizajes","Demo en Vivo – Q&A"]},
-    {"num": "03", "title": "Motivación", "type": "two_col", "left": ["Las empresas sufren miles de ciberataques diarios","La mayoría de plataformas no ofrecen transparencia sobre sus vulnerabilidades","La formación en seguridad requiere entornos reales, no solo teoría"], "right": ["Este proyecto nació de la necesidad de crear un entorno real de prácticas de ciberseguridad ofensiva y defensiva","Combinando experiencia del ciclo ASIX con prácticas en empresa"]},
-    {"num": "04", "title": "Objetivos del TFG", "type": "bullets", "items": ["✦  Construir una plataforma empresarial multi-tenant completa y funcional","✦  Demostrar vulnerabilidades reales (OWASP Top 10) en un entorno controlado","✦  Implementar contramedidas de seguridad y un sistema SOC real","✦  Integrar telemetría en tiempo real con Grafana y alertas automatizadas con n8n","✦  Desplegar todo en Docker con acceso público mediante tunneling SSL"]},
+    {"num": "02", "title": "Índice", "type": "index", "items": ["Motivación y Contexto","Objetivos del Proyecto","Arquitectura del Sistema","Stack Tecnológico","Modos de Operación","Consola de Auditoría – Ataques","Demostración: SQL Injection","Demostración: Fuerza Bruta","Demostración: XSS / Cookie Hijacking","Demostración: LFI / IDOR / DoS","Defensa: WAF Shield","Monitorización SOC – Grafana","Automatización: n8n","Infraestructura Docker","Resultados y Métricas","Conclusiones y Aprendizajes","Demo en Vivo – Q&A"]},
+    {"num": "03", "title": "Motivación", "type": "two_col", "left": ["Las empresas sufren miles de ciberataques diarios","La mayoría de plataformas no ofrecen transparencia sobre sus vulnerabilidades","La formación en seguridad requiere entornos reales, no solo teoría"], "right": ["Este proyecto nació de la necesidad de crear un entorno real de prácticas de ciberseguridad ofensiva y defensiva","Combinando experiencia del ciclo ASIR con prácticas en empresa"]},
+    {"num": "04", "title": "Objetivos del Proyecto", "type": "bullets", "items": ["✦  Construir una plataforma empresarial multi-tenant completa y funcional","✦  Demostrar vulnerabilidades reales (OWASP Top 10) en un entorno controlado","✦  Implementar contramedidas de seguridad y un sistema SOC real","✦  Integrar telemetría en tiempo real con Grafana y alertas automatizadas con n8n","✦  Desplegar todo en Docker con acceso público mediante tunneling SSL"]},
     {"num": "05", "title": "Arquitectura del Sistema", "type": "arch", "components": [("Frontend PHP 8.2","Apache :8000","Proxy inverso + vistas"),("Backend Node.js v20","Express + Prisma","API REST segura"),("PostgreSQL 15","Base de Datos","Datos y eventos SOC"),("Prometheus + Grafana","Observabilidad","Métricas en tiempo real"),("n8n Workflows","Automatización","Alertas por email"),("Serveo SSL","Túnel de Red","Acceso público HTTPS")]},
     {"num": "06", "title": "Stack Tecnológico", "type": "tech", "items": [("Frontend","PHP 8.2 · Apache · HTML5 · CSS3 · JS"),("Backend","Node.js v20 · Express · Prisma ORM · TypeScript"),("Base de Datos","PostgreSQL 15 · Esquema multi-tenant"),("Seguridad","Bcrypt · JWT · Helmet · Rate Limiting · WAF propio"),("Observabilidad","Prometheus · Grafana · cAdvisor"),("Automatización","n8n · Webhooks · SMTP Gmail"),("Infraestructura","Docker · Docker Compose · Serveo SSL")]},
     {"num": "07", "title": "Modos de Operación", "type": "two_col_color", "left_title": "🔴 MODO VULNERABLE", "left_color": "#ff4444", "left_items": ["Sin Rate Limiting en login","Contraseñas en MD5 sin sal","Tokens JWT sin expiración","Consultas SQL sin parametrizar","Sin validación de inputs","LFI y IDOR sin control de acceso"], "right_title": "🟢 MODO SEGURO", "right_color": "#00ff88", "right_items": ["Rate Limiting: 5 intentos máx.","Bcrypt 12 rondas","JWT con expiración estricta","Prepared Statements + Prisma","Validación Zod en todos los inputs","Control de acceso por propietario"]},
@@ -18,7 +18,7 @@ slides = [
     {"num": "16", "title": "Infraestructura Docker", "type": "tech", "items": [("sofia-frontend","PHP 8.2 + Apache · Puerto 8000"),("sofia-backend","Node.js 20 · Puerto 3001"),("sofia-db","PostgreSQL 15 · Puerto 5432"),("grafana","Grafana OSS · Puerto 3000"),("prometheus","Prometheus · Puerto 9090"),("n8n","n8n · Puerto 5678"),("cadvisor","Métricas de contenedores")]},
     {"num": "17", "title": "Resultados y Métricas", "type": "metrics", "items": [("7","Contenedores Docker en producción"),("6","Vectores de ataque implementados"),("100%","Ataques bloqueados en modo seguro"),("< 2s","Latencia de alerta email SOC"),("147","Eventos de seguridad registrados en demo"),("12","Rondas de Bcrypt para hashing de contraseñas")]},
     {"num": "18", "title": "Conclusiones y Aprendizajes", "type": "bullets", "items": ["He construido una plataforma de seguridad completa, desde la base de datos hasta el frontend","Aprendí que la seguridad no es un módulo adicional — es un proceso que atraviesa toda la arquitectura","La mayor lección: las mismas herramientas que permiten vulnerar un sistema son las que ayudan a defenderlo","El proyecto me ha dado experiencia práctica en DevSecOps, containerización y respuesta a incidentes","Cada línea de código tiene una razón de seguridad detrás"]},
-    {"num": "19", "title": "¿Por qué Sofia Solutions?", "type": "two_col", "left": ["Plataforma real, no un ejercicio académico","Multi-tenant con clientes reales (Iberdrola, Mercadona, Endesa)","Dos modos de operación para demostrar ataque Y defensa en vivo","Infraestructura de producción en la nube (Codespaces + Serveo)","Código completo, comentado y publicado en GitHub"], "right": ["Lo que lo diferencia de otros TFGs:","— Sistema SOC real con Grafana","— Alertas de seguridad en tiempo real","— Consola de auditoría interactiva","— WAF propio desarrollado desde cero","— Pipeline CI/CD con Docker Compose"]},
+    {"num": "19", "title": "¿Por qué Sofia Solutions?", "type": "two_col", "left": ["Plataforma real, no un ejercicio académico","Multi-tenant con clientes reales (Iberdrola, Mercadona, Endesa)","Dos modos de operación para demostrar ataque Y defensa en vivo","Infraestructura de producción en la nube (Codespaces + Serveo)","Código completo, comentado y publicado en GitHub"], "right": ["Lo que lo diferencia de otros Proyectos:","— Sistema SOC real con Grafana","— Alertas de seguridad en tiempo real","— Consola de auditoría interactiva","— WAF propio desarrollado desde cero","— Pipeline CI/CD con Docker Compose"]},
     {"num": "20", "title": "Demo en Vivo", "subtitle": "¿Preguntas?", "type": "final", "links": [("Plataforma","https://sofia-solutions.serveousercontent.com"),("Consola","https://sofia-solutions.serveousercontent.com/consola"),("Panel SOC","https://sofia-solutions.serveousercontent.com/admin"),("Grafana","https://sofia-solutions.serveousercontent.com/grafana/"),("GitHub","https://github.com/ewsophie333-lgtm/sofia-solutions")]},
 ]
 
@@ -82,7 +82,7 @@ def render_slide(s):
     out = f'<div class="slide" id="slide-{num}">'
     out += f'<span class="slide-num">{num} / 20</span>'
     out += '<div class="slide-line"></div>'
-    out += f'<span class="author">Sofia Gomez · TFG 2026</span>'
+    out += f'<span class="author">Sofia Gomez · ASIR 2026</span>'
 
     if t == 'cover':
         out += f'<h1 class="main">🛡️ {s["title"]}</h1>'
@@ -170,7 +170,7 @@ html = f"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sofia Solutions – Defensa TFG 2026</title>
+<title>Sofia Solutions – Proyecto Final ASIR 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>{CSS}</style>
 </head>
@@ -205,6 +205,6 @@ document.getElementById('progress').style.width = '5%';
 </body>
 </html>"""
 
-with open('DEFENSA_SOFIA_TFG.html', 'w', encoding='utf-8') as f:
+with open('DEFENSA_SOFIA.html', 'w', encoding='utf-8') as f:
     f.write(html)
-print('Presentacion generada: DEFENSA_SOFIA_TFG.html')
+print('Presentacion generada: DEFENSA_SOFIA.html')

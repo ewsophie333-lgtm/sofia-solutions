@@ -8,7 +8,7 @@
  * un vector de ataque avanzado de ingeniería social (Phishing de sesión expirada)
  * integrado con un proxy inverso malicioso (Evil Proxy).
  * 
- * PROPÓSITO ACADÉMICO PARA EL TFG:
+ * PROPÓSITO ACADÉMICO PARA EL PROYECTO FINAL DE ASIR:
  * 1. El portal clona de forma exacta el diseño visual de la pantalla de login legítima.
  * 2. Muestra un banner persuasivo de "Sesión expirada por inactividad", empujando
  *    al usuario a introducir sus datos bajo un falso sentido de urgencia.

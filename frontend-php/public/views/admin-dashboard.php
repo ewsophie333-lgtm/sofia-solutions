@@ -4,7 +4,7 @@
  * PROYECTO SOFIA SOLUTIONS - PANEL DE OPERACIONES GLOBAL (SOC MULTI-TENANT)
  * ============================================================================
  * 
- * He diseñado este panel administrativo integral (SOC Command Center) para mi TFG.
+ * He diseñado este panel administrativo integral (SOC Command Center) para mi proyecto final de ASIR.
  * Agrega y visualiza la telemetría en tiempo real de todos los clientes corporativos.
  * 
  * CARACTERÍSTICAS ACADÉMICAS CLAVE:
