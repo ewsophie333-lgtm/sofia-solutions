@@ -32,30 +32,50 @@ Para facilitar la demostración ante el tribunal, se han unificado todas las con
 
 ---
 
+---
+
 ## 🗄️ Acceso a la Base de Datos y Herramientas
 
-Para que el tribunal de evaluación pueda inspeccionar los registros de incidentes, usuarios y la estructura de datos:
+Para que el tribunal de evaluación pueda inspeccionar los registros de incidentes, usuarios y la estructura de datos, se exponen los servicios de almacenamiento e instrumentación en canales locales seguros.
+
+### 🛑 🔒 Nota de Seguridad y Arquitectura (Justificación para la Defensa)
+> [!IMPORTANT]
+> **¿Por qué la Base de Datos y Prisma Studio están en `localhost` y no expuestos públicamente por un dominio?**
+>
+> 1. **Principio de Mínima Exposición (Reducción de Superficie de Ataque)**: Exponer el puerto de base de datos (`5432`) o un visualizador administrativo a un subdominio público en internet permitiría a bots automatizados realizar ataques de fuerza bruta al usuario `postgres` o explotar inyecciones y vulnerabilidades del motor.
+> 2. **Docker Network Isolation**: La base de datos vive dentro de una red virtual privada y aislada de Docker (`sofia-solutions_default`). Solo el backend tiene comunicación interna (`postgres:5432`).
+> 3. **Uso Administrativo Seguro**: En una implementación de nivel corporativo real de *Sofia Solutions*, el acceso a bases de datos e instrumentación se realiza exclusivamente a través de una **VPN corporativa** o **túneles seguros SSH** locales (Local Port Forwarding), simulados aquí mediante el mapeo selectivo a `localhost`.
+
+---
 
 ### 1. 📊 Prisma Studio (Visualizador de Base de Datos Web Interactivo)
 Prisma Studio es una interfaz gráfica web premium para explorar, filtrar e insertar datos en tiempo real en la base de datos de Sofia.
-*   **Enlace de Acceso**: `http://localhost:5555` (o puerto `5555` en GitHub Codespaces).
-*   **Uso**: Permite examinar la tabla `Usuario`, el historial de `Incidente` (SIEM) y la tabla de `Ticket` de soporte técnico de forma visual y sin necesidad de escribir SQL.
+
+*   **Paso 1 (Arrancar el servicio)**: Dado que es una utilidad administrativa de desarrollo, no corre de manera pasiva para no consumir recursos del sistema. Para levantarla, abre una nueva terminal y ejecuta:
+    ```bash
+    cd sofia-backend
+    npx prisma studio --port 5555
+    ```
+*   **Paso 2 (Acceder al servicio)**:
+    *   **En Local**: Abre en tu navegador `http://localhost:5555`
+    *   **En GitHub Codespaces**: Ve a la pestaña **Ports (Puertos)** abajo en el editor, localiza el puerto `5555`, haz clic derecho -> *Port Visibility* -> y cámbialo a **Public**. Luego haz clic en el icono del globo terráqueo para abrir el enlace seguro autogenerado por GitHub.
+*   **Tablas Disponibles**: Permite auditar visualmente las tablas `Usuario` (para validar el hashing con Bcrypt), `Incidente` (el feed del SIEM) y `Ticket` (las solicitudes de soporte de los tenants).
 
 ### 2. 🐘 Acceso Directo a PostgreSQL (Base de Datos Relacional)
-Si el jurado prefiere usar clientes externos como DBeaver, pgAdmin o la consola de comandos de PostgreSQL:
+Si el jurado prefiere usar clientes externos profesionales de bases de datos como **DBeaver**, **pgAdmin** o **DataGrip**:
 *   **Host/Servidor**: `localhost` (o `127.0.0.1`)
-*   **Puerto**: `5432`
+*   **Puerto**: `5432` *(Nota: Si usas Codespaces, recuerda poner el puerto 5432 en "Public" en la pestaña "Ports" de VS Code para que tu cliente local pueda redirigirse)*
 *   **Usuario**: `postgres`
 *   **Contraseña**: `postgres`
 *   **Base de datos**: `sofia_solutions`
 *   **URL de Conexión**: `postgresql://postgres:postgres@localhost:5432/sofia_solutions`
 
 ### 3. 📈 Observabilidad y Métricas (Grafana & Prometheus)
-*   **Panel Grafana**: `http://localhost:3000` (puerto `3000` en Codespaces). Acceso anónimo de solo lectura preconfigurado para ver CPU, red e incidentes geolocalizados de forma interactiva.
-*   **Prometheus Endpoint**: `http://localhost:9090` (puerto `9090` en Codespaces). Recolector de métricas de red.
+*   **Panel Grafana**: `http://localhost:3000` (puerto `3000`). Acceso anónimo de solo lectura preconfigurado para ver CPU, red e incidentes geolocalizados de forma interactiva.
+*   **Prometheus Endpoint**: `http://localhost:9090` (puerto `9090`). Recolector de métricas de red.
 
 ### 4. 🔗 Automatización de Alertas (n8n Webhook Manager)
-*   **Interfaz de n8n**: `http://localhost:5678` (puerto `5678` en Codespaces). Para ver los flujos de respuesta automática y disparo de correos SMTP ante ataques críticos.
+*   **Interfaz de n8n**: `http://localhost:5678` (puerto `5678`). Permite monitorizar en tiempo real el flujo de automatización y orquestación de incidentes que envía alertas al analista del SOC.
 
 ---
 
