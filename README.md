@@ -12,9 +12,6 @@ Para facilitar la evaluación del proyecto por parte de los miembros del tribuna
 
 | Documento | Descripción | Enlace |
 | :--- | :--- | :--- |
-| **Presentación Ejecutiva** | Estilo de alta dirección/consultoría (23 diapositivas explicativas) | [Ver Diapositivas](./PRESENTACION_EJECUTIVA_SOFIA.html) |
-| **Presentación SOC V2** | Edición cinematográfica e interactiva con diseño Glassmorphism | [Ver Diapositivas](./PRESENTACION_SOFIA.html) |
-| **Presentación SOC V1** | Diapositivas dinámicas y fluidas basadas en el estándar Reveal.js | [Ver Diapositivas](./presentacion_final.html) |
 | **Guía de Verificación** | Guion y pautas discursivas detalladas paso a paso para la exposición oral | [Abrir Guía](./GUIA_MAESTRA_DEFENSA.html) |
 | **Guía Completa (Técnica)** | Arquitectura interna, criptografía aplicada y funcionamiento del WAF | [Abrir Guía](./GUIA_TECNICA_COMPLETA.html) |
 | **Guion de Ataques** | Procedimientos exactos y comandos para la explotación controlada | [Ver Guion](./GUION_DE_ATAQUES.html) |
