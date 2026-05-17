@@ -1,12 +1,35 @@
 <?php
+/**
+ * ============================================================================
+ * PROYECTO SOFIA SOLUTIONS - ROUTER FRONTLIGHT (FRONTEND PHP MONOLÍTICO)
+ * ============================================================================
+ * 
+ * He desarrollado este router centralizado en PHP para gestionar de forma limpia
+ * y eficiente la navegación y las vistas de la plataforma Sofia Solutions. 
+ * Con este enfoque monolítico simple pero robusto evito sobrecargar el servidor y
+ * facilito que el tribunal de evaluación pueda auditar las rutas de forma rápida.
+ * 
+ * Además de resolver las vistas del cliente y de administración, este enrutador
+ * inyecta variables globales en el cliente para controlar si estamos simulando
+ * vulnerabilidades o ejecutando contramedidas defensivas.
+ * 
+ * Autor: Sofia Gomez
+ * Año: 2026
+ * ============================================================================
+ */
 declare(strict_types=1);
 
+// Cargamos utilidades globales y renderizadores de cabeceras/logos
 require __DIR__ . '/includes/helpers.php';
 
+// Analizamos la URI solicitada para resolver el componente de la ruta limpia
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 
-// Aquí manejo todas las rutas de mi página. No necesito redirecciones porque todo pasa por este router.
-
+/**
+ * MATRIZ DE ENRUTAMIENTO (TABLA DE RUTAS AUTORIZADAS)
+ * Define la correspondencia entre los endpoints HTTP externos y las plantillas PHP
+ * ubicadas en el directorio 'views/'.
+ */
 $routes = [
     '/' => ['title' => 'Sofia Solutions | Seguridad gestionada para entornos críticos', 'view' => 'home'],
     '/login' => ['title' => 'Acceso | Sofia Solutions', 'view' => 'login', 'mode' => 'vulnerable'],
@@ -21,6 +44,7 @@ $routes = [
     '/phishing' => ['title' => 'Acceso Seguro | Sofia Solutions (Proxy)', 'view' => 'phishing'],
 ];
 
+// Resolución de la ruta. Si no coincide con ninguna declarada, redirige al Home (mecanismo fallback)
 $route = $routes[$path] ?? $routes['/'];
 $title = $route['title'];
 $view = $route['view'];

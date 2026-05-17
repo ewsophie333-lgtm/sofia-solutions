@@ -1,10 +1,25 @@
 <?php
 /**
- * SOFIA SOLUTIONS - Administrative Operations Center (SOC)
- * Central command center for multi-tenant security monitoring.
+ * ============================================================================
+ * PROYECTO SOFIA SOLUTIONS - PANEL DE OPERACIONES GLOBAL (SOC MULTI-TENANT)
+ * ============================================================================
  * 
- * This module aggregates telemetry from all clients, embeds Grafana metrics,
- * and provides a live administrative console for incident response.
+ * He diseñado este panel administrativo integral (SOC Command Center) para mi TFG.
+ * Agrega y visualiza la telemetría en tiempo real de todos los clientes corporativos.
+ * 
+ * CARACTERÍSTICAS ACADÉMICAS CLAVE:
+ * 1. Inteligencia Geoespacial: Integra Leaflet.js para mapear las IPs de origen de
+ *    los atacantes y colorear los nodos según la severidad.
+ * 2. Visualización de Datos: Gráficos dinámicos interactivos mediante Chart.js que
+ *    muestran los vectores de ataque y la distribución del riesgo (Crítico, Alto, Medio).
+ * 3. Gestión Multi-Tenant: Monitorización del estado y la latencia del servidor de cada
+ *    cliente (MAPFRE, Iberdrola, Sabadell) con un mecanismo "Kill Switch" simulado.
+ * 4. Gestión de Incidentes: Un flujo de trabajo activo de tickets para responder
+ *    a amenazas detectadas y asignar analistas L3.
+ * 
+ * Autor: Sofia Gomez
+ * Año: 2026
+ * ============================================================================
  */
 $activeNav = 'admin-dashboard';
 ?>

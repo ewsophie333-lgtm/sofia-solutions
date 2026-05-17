@@ -1,4 +1,21 @@
 <?php
+/**
+ * ============================================================================
+ * PROYECTO SOFIA SOLUTIONS - HELPERS DE RENDERIZADO Y UTILIDADES DE NAVEGACIÓN
+ * ============================================================================
+ * 
+ * He agrupado en este archivo 'helpers.php' las funciones auxiliares reutilizables
+ * de mi TFG. Su objetivo es desacoplar la lógica visual de las vistas principales:
+ * 1. renderLogo: Renderiza el logo corporativo adaptado al tema oscuro.
+ * 2. renderTopNav: Dibuja el menú de cabecera en las landing pages.
+ * 3. renderAppNav: Construye la barra lateral izquierda (Sidebar) de la aplicación,
+ *    incluyendo un filtro de roles en cliente (JavaScript) para ocultar opciones
+ *    administrativas según el usuario autenticado (RBAC - Role-Based Access Control).
+ * 
+ * Autor: Sofia Gomez
+ * Año: 2026
+ * ============================================================================
+ */
 declare(strict_types=1);
 
 function renderLogo(string $class = 'brand-mark'): void

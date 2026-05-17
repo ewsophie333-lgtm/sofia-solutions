@@ -1,5 +1,25 @@
 <?php
-// Vista de Phishing CLON EXACTO del login real para demostración de Evil Proxy
+/**
+ * ============================================================================
+ * PROYECTO SOFIA SOLUTIONS - PORTAL DE PHISHING (SIMULACIÓN DE EVIL PROXY)
+ * ============================================================================
+ * 
+ * He desarrollado esta plantilla 'phishing.php' para simular de forma ultra-realista
+ * un vector de ataque avanzado de ingeniería social (Phishing de sesión expirada)
+ * integrado con un proxy inverso malicioso (Evil Proxy).
+ * 
+ * PROPÓSITO ACADÉMICO PARA EL TFG:
+ * 1. El portal clona de forma exacta el diseño visual de la pantalla de login legítima.
+ * 2. Muestra un banner persuasivo de "Sesión expirada por inactividad", empujando
+ *    al usuario a introducir sus datos bajo un falso sentido de urgencia.
+ * 3. Al enviar el formulario, las credenciales son interceptadas y enviadas en tiempo
+ *    real a la Consola Maestra de Auditoría del atacante utilizando postMessage seguro,
+ *    demostrando así la exfiltración silenciosa.
+ * 
+ * Autor: Sofia Gomez
+ * Año: 2026
+ * ============================================================================
+ */
 require_once __DIR__ . '/../includes/helpers.php';
 ?>
 <style>

@@ -1,4 +1,23 @@
 <?php
+/**
+ * ============================================================================
+ * PROYECTO SOFIA SOLUTIONS - MONITOR DE SEGURIDAD SOC (TELEMETRÍA EN VIVO)
+ * ============================================================================
+ * 
+ * He desarrollado esta interfaz de monitorización del SOC (Security Operations Center)
+ * para mi TFG con el fin de proporcionar visibilidad operacional en tiempo real:
+ * 1. Integración de Grafana: Embebe un iframe interactivo conectado a Prometheus
+ *    que muestra métricas de CPU, peticiones concurrentes y anomalías de red.
+ * 2. Gráficas de Telemetría: Renderiza incidentes por hora (bloqueados vs permitidos)
+ *    para contrastar visualmente el impacto del "Escudo WAF de Sofia".
+ * 3. Feed de Eventos en Vivo: Un flujo continuo alimentado por el backend que lista
+ *    los vectores de ataque detectados (SQLi, Fuerza Bruta, XSS) al instante.
+ * 4. Controladores WAF Activos: Permite simular el bloqueo manual de IPs sospechosas.
+ * 
+ * Autor: Sofia Gomez
+ * Año: 2026
+ * ============================================================================
+ */
 $activeNav = 'soc';
 ?>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

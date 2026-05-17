@@ -1,36 +1,76 @@
 <?php
-// download.php - Mi generador de facturas y endpoint para pruebas de vulnerabilidad LFI
+/**
+ * ============================================================================
+ * PROYECTO SOFIA SOLUTIONS - ENDPOINT DE DESCARGAS (DEMO DE PATH TRAVERSAL / LFI)
+ * ============================================================================
+ * 
+ * He diseñado este script 'download.php' con un doble propósito para mi TFG:
+ * 1. Simular un fallo clásico de Path Traversal (LFI - Local File Inclusion) en el
+ *    modo vulnerable (APP_MODE = vulnerable) para mostrar cómo un atacante podría
+ *    leer archivos sensibles del sistema (ej. /etc/passwd o archivos del código fuente).
+ * 2. Demostrar la remediación y endurecimiento de seguridad en el modo seguro
+ *    (APP_MODE = secure) implementando una lista blanca estricta de archivos permitidos.
+ * 
+ * Además, incluye un motor dinámico en HTML/CSS para generar facturas e informes
+ * profesionales listos para imprimir en PDF.
+ * 
+ * Autor: Sofia Gomez
+ * Año: 2026
+ * ============================================================================
+ */
+
+// Capturamos el archivo solicitado desde la query string (?file=...)
 $file = $_GET['file'] ?? '';
+
+// Leemos el modo de la aplicación configurado en las variables de entorno
 $appMode = getenv('APP_MODE') ?: 'vulnerable';
 
+// Si no se especifica el archivo, detenemos la ejecución para evitar fallos
 if (empty($file)) {
     die("Error: No se ha especificado ningun archivo.");
 }
 
-// Si es una factura, generamos una profesional en HTML (que el navegador trata como documento)
+/**
+ * GENERACIÓN DINÁMICA DE FACTURAS E INFORMES
+ * Si el nombre del archivo empieza por 'invoice_' o 'report_', interceptamos la
+ * petición para renderizar una factura corporativa con un diseño premium y responsive,
+ * evitando tener que almacenar PDFs pesados en el disco.
+ */
 if (strpos($file, 'invoice_') === 0 || strpos($file, 'report_') === 0) {
     renderProfessionalInvoice($file);
     exit;
 }
 
-// Lógica de descarga normal (Vulnerable a Path Traversal)
+/**
+ * CONTROL DE SEGURIDAD (MODO SEGURO VS MODO VULNERABLE)
+ * 
+ * MODO SEGURO: Aplicamos una lista blanca estricta (Whitelisting). Solo los archivos
+ * explícitamente declarados aquí pueden ser descargados, neutralizando por completo
+ * cualquier intento de Path Traversal (ej. ../../etc/passwd).
+ */
 if ($appMode === 'secure') {
     $allowed = ['invoice_1023.pdf', 'invoice_0988.pdf'];
     if (!in_array($file, $allowed)) {
         header("HTTP/1.1 403 Forbidden");
-        die("Acceso denegado.");
+        die("Acceso denegado. El control de seguridad activo de Sofia ha bloqueado la descarga del archivo no autorizado.");
     }
 }
 
+/**
+ * RUTA BASE DE ALMACENAMIENTO DE FACTURAS
+ * En modo vulnerable, si el archivo solicitado existe fuera de este directorio,
+ * la falta de sanitización o validación de rutas permitirá leerlo directamente.
+ */
 $path = "/var/www/html/assets/invoices/" . $file;
 if (!file_exists($path)) { $path = $file; }
 
+// Verificamos la existencia y legibilidad del archivo en el sistema
 if (file_exists($path) && is_readable($path)) {
     header('Content-Type: application/pdf');
     header('Content-Disposition: inline; filename="' . basename($path) . '"');
     readfile($path);
 } else {
-    echo "Error: El archivo no existe. Ruta: " . htmlspecialchars($path);
+    echo "Error de Acceso: El archivo solicitado no está disponible o la ruta es inválida. Ruta intentada: " . htmlspecialchars($path);
 }
 
 function renderProfessionalInvoice($filename) {
