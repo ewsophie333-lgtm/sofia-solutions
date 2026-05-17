@@ -32,6 +32,33 @@ Para facilitar la demostración ante el tribunal, se han unificado todas las con
 
 ---
 
+## 🗄️ Acceso a la Base de Datos y Herramientas
+
+Para que el tribunal de evaluación pueda inspeccionar los registros de incidentes, usuarios y la estructura de datos:
+
+### 1. 📊 Prisma Studio (Visualizador de Base de Datos Web Interactivo)
+Prisma Studio es una interfaz gráfica web premium para explorar, filtrar e insertar datos en tiempo real en la base de datos de Sofia.
+*   **Enlace de Acceso**: `http://localhost:5555` (o puerto `5555` en GitHub Codespaces).
+*   **Uso**: Permite examinar la tabla `Usuario`, el historial de `Incidente` (SIEM) y la tabla de `Ticket` de soporte técnico de forma visual y sin necesidad de escribir SQL.
+
+### 2. 🐘 Acceso Directo a PostgreSQL (Base de Datos Relacional)
+Si el jurado prefiere usar clientes externos como DBeaver, pgAdmin o la consola de comandos de PostgreSQL:
+*   **Host/Servidor**: `localhost` (o `127.0.0.1`)
+*   **Puerto**: `5432`
+*   **Usuario**: `postgres`
+*   **Contraseña**: `postgres`
+*   **Base de datos**: `sofia_solutions`
+*   **URL de Conexión**: `postgresql://postgres:postgres@localhost:5432/sofia_solutions`
+
+### 3. 📈 Observabilidad y Métricas (Grafana & Prometheus)
+*   **Panel Grafana**: `http://localhost:3000` (puerto `3000` en Codespaces). Acceso anónimo de solo lectura preconfigurado para ver CPU, red e incidentes geolocalizados de forma interactiva.
+*   **Prometheus Endpoint**: `http://localhost:9090` (puerto `9090` en Codespaces). Recolector de métricas de red.
+
+### 4. 🔗 Automatización de Alertas (n8n Webhook Manager)
+*   **Interfaz de n8n**: `http://localhost:5678` (puerto `5678` en Codespaces). Para ver los flujos de respuesta automática y disparo de correos SMTP ante ataques críticos.
+
+---
+
 ## 🚀 Guía de Despliegue en Codespaces
 
 Sofia Solutions está optimizado para ejecutarse en la nube de GitHub en segundos:
