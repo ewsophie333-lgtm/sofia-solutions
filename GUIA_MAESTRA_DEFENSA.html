@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Maestra de Defensa - Sofia Solutions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #070d19;
+            --surface: rgba(13, 22, 41, 0.7);
+            --border: rgba(0, 255, 136, 0.15);
+            --green: #00ff88;
+            --cyan: #00d4ff;
+            --text: #e2e8f0;
+            --muted: #8892b0;
+            --glass-bg: rgba(10, 17, 34, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(circle at 50% 0%, #0c1c38 0%, var(--bg) 70%);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 30px;
+        }
+
+        .badge {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--green);
+            color: var(--green);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--green), var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .card:hover {
+            border-color: rgba(0, 255, 136, 0.3);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: var(--green);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 10px;
+        }
+
+        .timeline-step {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 25px;
+            border-left: 2px solid var(--border);
+        }
+
+        .timeline-step:last-child {
+            margin-bottom: 0;
+            border-left: 2px solid transparent;
+        }
+
+        .step-num {
+            position: absolute;
+            left: -11px;
+            top: 2px;
+            background: var(--bg);
+            border: 2px solid var(--green);
+            color: var(--green);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .step-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: var(--cyan);
+        }
+
+        .speech-bubble {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin: 10px 0;
+            border-left: 3px solid var(--cyan);
+            font-style: italic;
+            color: #d1d5db;
+        }
+
+        .action-box {
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px dashed var(--cyan);
+            padding: 12px 18px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #e2e8f0;
+        }
+
+        .action-title {
+            font-weight: 700;
+            color: var(--cyan);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+
+        .tech-tag {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--cyan);
+        }
+
+        footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.85rem;
+            margin-top: 50px;
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <span class="badge">Material de Apoyo Académico</span>
+            <h1>Guía Maestra de Defensa</h1>
+            <p class="subtitle">Guion estructurado paso a paso para la exposición del TFG (15 Minutos)</p>
+        </header>
+
+        <div class="card">
+            <h2>⏱️ Cronograma de Exposición (15 Minutos)</h2>
+            <p style="margin-bottom: 20px; color: var(--muted);">
+                La presentación está diseñada para mantener un equilibrio perfecto entre la base conceptual, la demostración práctica del stack tecnológico y las contramedidas de seguridad.
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; text-align: center;">
+                <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
+                    <div style="font-size: 1.5rem; font-weight: 800; color: var(--green);">3 min</div>
+                    <div style="font-weight: 700; margin-top: 5px;">Introducción</div>
+                    <div style="font-size: 0.8rem; color: var(--muted);">Motivación y Objetivos</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
+                    <div style="font-size: 1.5rem; font-weight: 800; color: var(--cyan);">8 min</div>
+                    <div style="font-weight: 700; margin-top: 5px;">Demo Ofensiva/Defensiva</div>
+                    <div style="font-size: 0.8rem; color: var(--muted);">Auditoría L7 en Vivo</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
+                    <div style="font-size: 1.5rem; font-weight: 800; color: var(--green);">4 min</div>
+                    <div style="font-weight: 700; margin-top: 5px;">Métricas y Cierre</div>
+                    <div style="font-size: 0.8rem; color: var(--muted);">Grafana, n8n y Q&A</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎤 Guion de Exposición Paso a Paso</h2>
+
+            <div class="timeline-step">
+                <div class="step-num">1</div>
+                <div class="step-title">Bloque 1: Apertura y Filosofía del Proyecto (0:00 - 3:00)</div>
+                <p><strong>Foco</strong>: Captar la atención del tribunal explicando la arquitectura de doble estado.</p>
+                <div class="speech-bubble">
+                    "Buenos días miembros del tribunal. Mi nombre es Sofia Gomez y les presento Sofia Solutions: una plataforma de monitorización SOC y seguridad gestionada diseñada para demostrar, en un entorno empresarial real, la efectividad de las contramedidas web actuales. Este TFG nace de una filosofía clara: para poder defender eficazmente un sistema, debemos entender con precisión milimétrica cómo se ataca. Por ello, la arquitectura del proyecto implementa un interruptor de estado global que permite alternar la plataforma entre un Modo Vulnerable y un Modo Seguro."
+                </div>
+                <div class="action-box">
+                    <div class="action-title">Acción en la pantalla</div>
+                    Muestra las primeras diapositivas de la presentación ejecutiva. Destaca los logotipos de los tenants (Iberdrola, Mercadona) para evidenciar el enfoque empresarial del proyecto.
+                </div>
+            </div>
+
+            <div class="timeline-step">
+                <div class="step-num">2</div>
+                <div class="step-title">Bloque 2: Demostración Ofensiva - La Explotación (3:00 - 7:00)</div>
+                <p><strong>Foco</strong>: Ejecución de ataques contra la plataforma en modo desprotegido.</p>
+                <div class="speech-bubble">
+                    "Procederemos ahora a activar el Modo Vulnerable. A través de la Consola de Auditoría interna del sistema, simularemos el comportamiento de un atacante malicioso. El primer vector de ataque es una Inyección SQL en el endpoint de inicio de sesión. Como el backend en este modo ejecuta consultas directas no parametrizadas, introducimos el payload clásico comillado. Observen cómo el sistema nos otorga inmediatamente privilegios de administrador de forma ilegítima. El segundo vector es un ataque XSS persistente en el formulario de tickets, que secuestra las cookies de sesión en el navegador de la víctima."
+                </div>
+                <div class="action-box">
+                    <div class="action-title">Acción en la pantalla</div>
+                    Ejecuta el script `scripts/ACTIVAR-MODO-VULNERABLE.bat`. Ve a `/consola` e inicia la inyección SQL con `admin@sofia.local' OR 1=1 --`. Muestra el acceso concedido y la exfiltración del panel.
+                </div>
+            </div>
+
+            <div class="timeline-step">
+                <div class="step-num">3</div>
+                <div class="step-title">Bloque 3: Demostración Defensiva - Mitigación L7 (7:00 - 11:00)</div>
+                <p><strong>Foco</strong>: Reactivar la seguridad y verificar el bloqueo absoluto.</p>
+                <div class="speech-bubble">
+                    "Ante esta brecha crítica, aplicamos la suite defensiva de Sofia Solutions activando el Modo Seguro. En este estado, el Web Application Firewall (WAF) que he programado desde cero entra en acción interceptando cada petición HTTP. Al intentar replicar el ataque de inyección SQL previo, observen cómo el WAF detecta de inmediato el patrón sospechoso mediante firmas heurísticas avanzadas, denegando el acceso de forma perimetral con un código HTTP 403 Forbidden. Asimismo, si un atacante intenta realizar fuerza bruta, el módulo de Rate Limiting bloquea su IP en la capa perimetral."
+                </div>
+                <div class="action-box">
+                    <div class="action-title">Acción en la pantalla</div>
+                    Ejecuta el script `scripts/ACTIVAR-MODO-SEGURO.bat`. Repite el ataque SQLi y muestra la pantalla del WAF con el bloqueo 403 y la explicación en pantalla del bloqueo.
+                </div>
+            </div>
+
+            <div class="timeline-step">
+                <div class="step-num">4</div>
+                <div class="step-title">Bloque 4: Telemetría y Automatización SOAR (11:00 - 13:30)</div>
+                <p><strong>Foco</strong>: Explicación de Prometheus, Grafana y n8n.</p>
+                <div class="speech-bubble">
+                    "Un SOC no es reactivo, es preventivo y analítico. Toda la telemetría de red recopilada durante los bloqueos es parseada a métricas de Prometheus. En este panel de Grafana podemos observar los picos exactos de los incidentes que acabo de simular, incluyendo un mapa dinámico que geolocaliza a los atacantes en tiempo real. Por último, ante ataques clasificados como críticos o de persistencia (como la inyección de backdoors), n8n orquesta una respuesta automática (SOAR) enviando un informe forense detallado con la IP e incidentes directamente al correo del analista de guardia."
+                </div>
+                <div class="action-box">
+                    <div class="action-title">Acción en la pantalla</div>
+                    Abre el panel de Grafana (`http://localhost:3000`) y muestra el mapa de incidentes geolocalizados y las alertas. Abre la bandeja de correo para mostrar la alerta real enviada por n8n en tiempo real.
+                </div>
+            </div>
+
+            <div class="timeline-step">
+                <div class="step-num">5</div>
+                <div class="step-title">Bloque 5: Conclusión y Cierre (13:30 - 15:00)</div>
+                <p><strong>Foco</strong>: Resumen de aportes del proyecto y paso a preguntas.</p>
+                <div class="speech-bubble">
+                    "Para concluir, este TFG demuestra que el despliegue de infraestructuras seguras bajo arquitecturas multicapa (WAF, Hashing Bcrypt de 12 rondas, y control de acceso estricto a base de datos) es capaz de erradicar por completo los vectores vulnerables clásicos de la capa de aplicación web. He implementado un sistema completamente automatizado mediante Docker Compose que permite el aprovisionamiento inmediato del entorno SOC. Agradezco su atención y quedo a su entera disposición para responder a las preguntas que consideren oportunas."
+                </div>
+                <div class="action-box">
+                    <div class="action-title">Acción en la pantalla</div>
+                    Muestra la diapositiva final de la presentación ejecutiva con los enlaces perimetrales públicos y el agradecimiento.
+                </div>
+            </div>
+
+        </div>
+
+        <footer>
+            © 2026 Sofia Solutions - Material Exclusivo para la Defensa de Trabajo de Final de Grado (ASIX / Ciberseguridad)
+        </footer>
+    </div>
+</body>
+</html>

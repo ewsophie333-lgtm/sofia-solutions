@@ -43,7 +43,8 @@ temp/
 /readdy-*.css
 /readdy-*.html
 /readdy-config.js
-/*.html
+# Permitir presentaciones y guías del TFG
+!/*.html
 /imagenes sofia solutions/
 
 # Local extracted Word support folder

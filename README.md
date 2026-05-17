@@ -6,12 +6,27 @@ Proyecto final orientado a **ASIX / Ciberseguridad**, centrado en la demostraci�
 
 ---
 
+## 📂 Materiales de Defensa (Obligatorio para el Jurado)
+
+Para facilitar la evaluación del proyecto por parte de los miembros del tribunal, se proporciona acceso directo a toda la documentación de soporte, guías técnicas y material interactivo de la defensa:
+
+| Documento | Descripción | Enlace |
+| :--- | :--- | :--- |
+| **Presentación Ejecutiva** | Estilo de alta dirección/consultoría (23 diapositivas explicativas) | [Ver Diapositivas](./PRESENTACION_EJECUTIVA_SOFIA.html) |
+| **Presentación SOC V2** | Edición cinematográfica e interactiva con diseño Glassmorphism | [Ver Diapositivas](./PRESENTACION_SOFIA.html) |
+| **Presentación SOC V1** | Diapositivas dinámicas y fluidas basadas en el estándar Reveal.js | [Ver Diapositivas](./presentacion_final.html) |
+| **Guía Maestra de Defensa** | Guion y pautas discursivas detalladas paso a paso para la exposición oral | [Abrir Guía](./GUIA_MAESTRA_DEFENSA.html) |
+| **Guía Completa (Técnica)** | Arquitectura interna, criptografía aplicada y funcionamiento del WAF | [Abrir Guía](./GUIA_TECNICA_COMPLETA.html) |
+| **Guion de Ataques** | Procedimientos exactos y comandos para la explotación controlada | [Ver Guion](./GUION_DE_ATAQUES.html) |
+
+---
+
 ## 🌐 Puntos de Acceso (Producción / Defensa)
 
 | Módulo | Acceso Público | Puerto Local |
 |--------|----------------|--------------|
-| **Presentaci&oacute;n Ejecutiva** | [Ver Diapositivas](file:///c:/Users/shair/Desktop/sofia-solutions/sofia-solutions/PRESENTACION_EJECUTIVA_SOFIA.html) | Estilo Consultor&iacute;a |
-| **Presentaci&oacute;n SOC** | [Ver Diapositivas](file:///c:/Users/shair/Desktop/sofia-solutions/sofia-solutions/PRESENTACION_SOFIA.html) | Reveal.js Din&aacute;mico |
+| **Presentaci&oacute;n Ejecutiva** | [Ver Diapositivas](./PRESENTACION_EJECUTIVA_SOFIA.html) | Estilo Consultor&iacute;a |
+| **Presentaci&oacute;n SOC** | [Ver Diapositivas](./PRESENTACION_SOFIA.html) | Reveal.js Din&aacute;mico |
 | **Plataforma Corporativa** | [Acceder](https://sofia-solutions.serveousercontent.com) | `8000` |
 | **Consola de Auditoría** | [Acceder](https://sofia-solutions.serveousercontent.com/consola) | `/consola` |
 | **Panel SOC (Admin)** | [Acceder](https://sofia-solutions.serveousercontent.com/admin) | `/admin` |
@@ -20,7 +35,8 @@ Proyecto final orientado a **ASIX / Ciberseguridad**, centrado en la demostraci�
 
 ---
 
-## 🔐 Credenciales Maestras (Simplified)
+## 🔐 Credenciales Maestras (Simplificadas)
+
 
 Para facilitar la demostración ante el tribunal, se han unificado todas las contraseñas:
 

