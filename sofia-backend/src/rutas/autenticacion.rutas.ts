@@ -42,9 +42,9 @@ const vulnerableLoginSchema = z.object({
 });
 
 router.post("/register", validar(registerSchema), asyncHandler(register));
-router.post("/login", validar(secureLoginSchema), asyncHandler(login));
-router.post("/login/secure", validar(secureLoginSchema), asyncHandler(login));
-router.post("/login/v2", validar(loginV2Schema), asyncHandler(loginV2));
+router.post("/login", authRateLimiter, validar(secureLoginSchema), asyncHandler(login));
+router.post("/login/secure", authRateLimiter, validar(secureLoginSchema), asyncHandler(login));
+router.post("/login/v2", authRateLimiter, validar(loginV2Schema), asyncHandler(loginV2));
 router.post("/login/vulnerable", asyncHandler(loginV1));
 router.post("/refresh", asyncHandler(refresh));
 router.post("/logout", asyncHandler(logout));
