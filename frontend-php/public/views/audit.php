@@ -442,35 +442,6 @@
 <!-- Hacker Alert Overlay (Removido por petición: stealth mode) -->
 <div id="hacker-overlay" style="display:none;"></div>
 
-<!-- DoS Downtime Simulation Overlay -->
-<div id="dos-downtime-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#202124; z-index:999999; justify-content:center; align-items:center; font-family:system-ui, -apple-system, sans-serif; color:#e8eaed; animation:fadeIn 0.4s ease;">
-    <div style="max-width:550px; width:90%; padding:20px; text-align:left; animation:slideDown 0.3s ease;">
-        <!-- Chrome Sad Dinosaur SVG -->
-        <svg viewBox="0 0 24 24" style="width:72px; height:72px; fill:#9aa0a6; margin-bottom:24px;">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-        </svg>
-        <h1 style="font-size:20px; font-weight:500; margin:0 0 15px; color:#e8eaed;">No se puede acceder a este sitio web</h1>
-        <p style="font-size:13px; color:#9aa0a6; line-height:1.6; margin:0 0 20px;">
-            La página <strong>sofia-solutions.serveousercontent.com</strong> ha rechazado la conexión.
-        </p>
-        
-        <div style="border-top:1px solid #3c4043; padding-top:20px; margin-bottom:25px;">
-            <p style="font-size:13px; color:#9aa0a6; margin:0 0 10px;">Prueba a realizar las siguientes comprobaciones:</p>
-            <ul style="font-size:13px; color:#9aa0a6; margin:0; padding-left:20px; line-height:1.6;">
-                <li>Comprobar la conexión a Internet</li>
-                <li>Comprobar el proxy, el cortafuegos y el estado del contenedor de backend</li>
-            </ul>
-        </div>
-        
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <button onclick="restoreDoS()" style="background:#8ab4f8; color:#202124; border:none; border-radius:4px; padding:8px 16px; font-size:13px; font-weight:500; cursor:pointer; transition:background 0.2s;" onmouseover="this.style.background='#9ec2f9';" onmouseout="this.style.background='#8ab4f8';">
-                Cargar de nuevo
-            </button>
-            <span style="font-size:12px; color:#9aa0a6; font-family:monospace;">ERR_CONNECTION_REFUSED</span>
-        </div>
-    </div>
-</div>
-
 
 <script>
     console.log("Sofia Solutions Audit Framework v4.8.5 - Finalized.");
@@ -782,9 +753,14 @@
             tLog(`[!] TARGET UNREACHABLE - HTTP 503 Service Unavailable`, 'red');
             await delay(800);
             
-            // Mostrar modal de caída visual
-            document.getElementById('dos-downtime-overlay').style.display = 'flex';
+            // Activar caída del servicio en toda la aplicación
+            localStorage.setItem('dos_active', 'true');
             addEvidence('DoS Attack SUCCESS', `Total Peticiones: ${count}\nEstado: INFRAESTRUCTURA CAÍDA (Downtime 100%)\nImpacto: Node.js Event Loop Blocked\nMitigación: NINGUNA (Falta de Rate Limiting)`, 'red');
+            
+            const res = tLog(`[*] Acción: `, 'cyan');
+            addAction(res, 'Restablecer Servidor (Mitigar DoS)', '<path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>', () => {
+                restoreDoS();
+            });
         } else {
             let blocked = 0;
             for (let i = 0; i < count; i++) {
@@ -799,8 +775,9 @@
     }
 
     function restoreDoS() {
-        document.getElementById('dos-downtime-overlay').style.display = 'none';
+        localStorage.setItem('dos_active', 'false');
         tLog(`[*] Servidor restablecido con éxito. Event loop liberado.`, 'green');
+        addEvidence('Downtime Terminado', 'El administrador ha restablecido el servicio. La página web vuelve a estar operativa.', 'green');
     }
 
     let hijackedUser = null;
