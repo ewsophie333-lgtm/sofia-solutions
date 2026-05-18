@@ -11,7 +11,6 @@ Este documento contiene la representación formal de la base de datos relacional
 > Puedes renderizar este código directamente en GitHub, VS Code (con la extensión de Markdown Preview Mermaid) o en cualquier editor Mermaid en línea.
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#f1f5f9', 'primaryTextColor': '#0f172a', 'primaryBorderColor': '#3b82f6', 'lineColor': '#64748b', 'secondaryColor': '#ffffff', 'tertiaryColor': '#ffffff', 'fontFamily': 'Inter, sans-serif'}}}%%
 erDiagram
     %% --- RELACIONES ---
     CLIENTE ||--o{ USUARIO : "tiene (1:N)"
