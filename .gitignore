@@ -52,3 +52,7 @@ temp/
 /memoria/diagramas/checkout-ataque.svg
 /memoria/diagramas/flujo-autenticacion.svg
 /memoria/diagramas/red-servicios.svg
+
+# Defense presentations (keep local, ignore on Git)
+/DEFENSA_SOFIA_TFG.html
+
