@@ -38,7 +38,9 @@ export async function createUrgentAlert(req: Request, res: Response) {
   });
 
   // Notificación externa (SOS / n8n)
-  if (["URGENTE", "CRÍTICA", "ALTA"].includes(alert.severity)) {
+  const isUrgent = ["URGENTE", "CRÍTICA", "ALTA", "CRITICAL", "URGENT", "HIGH"].includes(alert.severity);
+  
+  if (isUrgent) {
     console.log(`[SOS] Iniciando envío de alerta crítica ${alert.id} a n8n...`);
     
     // Obtenemos datos del cliente para n8n
@@ -66,7 +68,7 @@ export async function createUrgentAlert(req: Request, res: Response) {
 
   res.status(201).json({
     ...alert,
-    webhookSent: ["URGENTE", "CRÍTICA"].includes(alert.severity),
+    webhookSent: isUrgent,
   });
 }
 
