@@ -79,7 +79,7 @@ Sofia Solutions implementa una defensa en profundidad:
 
 ## 📊 Modelo de Datos (Diagrama E/R)
 
-Este diagrama interactivo representa la estructura relacional de la base de datos de Sofia Solutions (PostgreSQL + Prisma ORM) y la lógica multi-inquilino de las tablas del SOC:
+A continuación se presenta el diseño relacional del modelo de datos de Sofia Solutions. Este mapa conceptual ilustra la arquitectura de la base de datos (PostgreSQL 15 gestionada con Prisma ORM) y el aislamiento multi-inquilino (*multi-tenant*) integrado en el backend para la monitorización de telemetría y seguridad del SOC:
 
 ```mermaid
 erDiagram
