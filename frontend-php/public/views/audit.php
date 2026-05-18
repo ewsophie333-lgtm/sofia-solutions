@@ -439,9 +439,6 @@
     </div>
 </div>
 
-<!-- Hacker Alert Overlay (Removido por petición: stealth mode) -->
-<div id="hacker-overlay" style="display:none;"></div>
-
 
 <script>
     console.log("Sofia Solutions Audit Framework v4.8.5 - Finalized.");
