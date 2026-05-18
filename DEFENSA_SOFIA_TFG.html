@@ -402,62 +402,92 @@
                 <span class="logo-badge">PHP 8.2</span><span class="logo-badge">Node.js</span><span class="logo-badge">PostgreSQL</span><span class="logo-badge">Python CLI</span><span class="logo-badge">Grafana</span><span class="logo-badge">n8n</span>
             </div>
         </div>
-        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">01 / 18</span></div>
+        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">01 / 20</span></div>
     </div>
 
-    <!-- 02: ESTRUCTURA -->
+    <!-- 02: INTRODUCCION Y OBJETIVOS -->
     <div class="slide" id="slide-02">
+        <div class="slide-header">
+            <div class="brand"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span>Sofia Solutions</span></div>
+            <span class="tfg-meta">MOTIVACIÓN DEL PROYECTO</span>
+        </div>
+        <div class="slide-body">
+            <h2 class="slide-section-title">Objetivos del Proyecto</h2>
+            <div class="grid-2-equal" style="margin-top: 15px;">
+                <div class="card">
+                    <h3><span>🎯</span> Educar de forma visual</h3>
+                    <p>Hacer que conceptos abstractos como SQLi o Phishing sean fáciles de entender al ver el ataque y la defensa en tiempo real.</p>
+                </div>
+                <div class="card">
+                    <h3><span>⚙️</span> Centralizar la seguridad</h3>
+                    <p>Crear un entorno donde se monitoricen múltiples empresas desde un solo panel de control (Centro de Operaciones SOC).</p>
+                </div>
+                <div class="card">
+                    <h3><span>🛡️</span> Filosofía "Doble Modo"</h3>
+                    <p>Poder desactivar las defensas con un solo clic para comparar cómo responde un sistema vulnerable frente a uno parcheado.</p>
+                </div>
+                <div class="card">
+                    <h3><span>🤖</span> Automatizar la respuesta</h3>
+                    <p>Conectar sistemas para que, ante un ataque grave, las alertas se envíen solas sin intervención humana.</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">02 / 20</span></div>
+    </div>
+
+    <!-- 03: ESTRUCTURA -->
+    <div class="slide" id="slide-03">
         <div class="slide-header">
             <div class="brand"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span>Sofia Solutions</span></div>
             <span class="tfg-meta">ESTRUCTURA DE LA DEFENSA</span>
         </div>
         <div class="slide-body">
-            <h2 class="slide-section-title">Estructura de la Defensa</h2>
+            <h2 class="slide-section-title">Fases de la Presentación</h2>
             <div class="grid-2-equal" style="margin-top: 15px;">
                 <div class="card">
-                    <h3><span>01.</span> Arquitectura y Stack</h3>
-                    <p>Docker, PostgreSQL multi-tenant y filosofía de "Doble Modo" de seguridad.</p>
+                    <h3><span>01.</span> Arquitectura y Datos</h3>
+                    <p>Estructura Multi-Tenant, Node.js y esquema de base de datos relacional.</p>
                 </div>
                 <div class="card">
                     <h3><span>02.</span> Fase Ofensiva</h3>
-                    <p>Uso de Sofia CLI, ataques SQLi, XSS, DoS y Phishing postMessage en vivo.</p>
+                    <p>Simulación de ataques en vivo: SQL Injections, Phishing y Denegaciones de Servicio.</p>
                 </div>
                 <div class="card">
-                    <h3><span>03.</span> Mitigación y Respuesta</h3>
-                    <p>Botón SOS, Middleware WAF, cabeceras web seguras e intercepción con Burp Suite.</p>
+                    <h3><span>03.</span> Fase Defensiva</h3>
+                    <p>WAF Activo, Rate Limiting y mitigación de amenazas en tiempo real.</p>
                 </div>
                 <div class="card">
                     <h3><span>04.</span> Observabilidad SOC</h3>
-                    <p>Métricas Prometheus, dashboard Grafana, flujos n8n y alerta Gmail.</p>
+                    <p>Visualización en Grafana, orquestación de alertas y panel global.</p>
                 </div>
             </div>
         </div>
-        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">02 / 18</span></div>
+        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">03 / 20</span></div>
     </div>
 
-    <!-- 03: BASE DE DATOS Y MULTITENANT (CON DIAGRAMA) -->
-    <div class="slide" id="slide-03">
+    <!-- 04: BASE DE DATOS Y MULTITENANT (DIAGRAMA ER COMPLETO) -->
+    <div class="slide" id="slide-04">
         <div class="slide-header">
             <div class="brand"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span>Sofia Solutions</span></div>
             <span class="tfg-meta">ARQUITECTURA DE DATOS</span>
         </div>
         <div class="slide-body">
-            <h2 class="slide-section-title">Base de Datos PostgreSQL (Multi-Cliente)</h2>
+            <h2 class="slide-section-title">Modelo Entidad-Relación (Multi-Cliente)</h2>
             <div class="content-split">
                 <div class="content-text">
-                    <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">Usamos <strong>PostgreSQL</strong> con <strong>Prisma ORM</strong>. Todo está separado por cliente para que los datos no se mezclen (Multi-Tenant).</p>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">Todo el sistema descansa sobre PostgreSQL manejado con Prisma ORM. La clave es que la información de cada empresa está aislada estrictamente.</p>
                     <ul class="bullet-list">
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> <strong>Customer:</strong> Identifica a empresas como Endesa.</li>
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> <strong>Aislamiento:</strong> Usuarios y alertas atados a su cliente.</li>
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> <strong>Alertas:</strong> Clasificadas por nivel de riesgo en la base.</li>
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> <strong>Aislamiento (Tenant):</strong> Todas las tablas clave dependen de un ID de Cliente.</li>
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> <strong>Trazabilidad:</strong> Guardamos todo el historial de incidentes y logs de auditoría.</li>
                     </ul>
                 </div>
                 <div class="content-image">
-                    <div class="er-diagram">
+                    <div class="er-diagram" style="flex-wrap: wrap; padding: 20px;">
                         <div class="er-table">
                             <div class="er-title">Customer</div>
                             <div class="er-row pk"><span>id</span><span>Int (PK)</span></div>
                             <div class="er-row"><span>name</span><span>String</span></div>
+                            <div class="er-row"><span>domain</span><span>String</span></div>
                         </div>
                         <div class="er-line"></div>
                         <div class="er-table">
@@ -465,352 +495,508 @@
                             <div class="er-row pk"><span>id</span><span>Int (PK)</span></div>
                             <div class="er-row fk"><span>customerId</span><span>Int (FK)</span></div>
                             <div class="er-row"><span>severity</span><span>Enum</span></div>
+                            <div class="er-row"><span>type</span><span>String</span></div>
+                        </div>
+                        <div class="er-table" style="margin-top: 15px;">
+                            <div class="er-title">User (Auth)</div>
+                            <div class="er-row pk"><span>id</span><span>Int (PK)</span></div>
+                            <div class="er-row fk"><span>customerId</span><span>Int (FK)</span></div>
+                            <div class="er-row"><span>password</span><span>Hash</span></div>
+                        </div>
+                        <div class="er-line"></div>
+                        <div class="er-table" style="margin-top: 15px;">
+                            <div class="er-title">AuditLog</div>
+                            <div class="er-row pk"><span>id</span><span>Int (PK)</span></div>
+                            <div class="er-row fk"><span>userId</span><span>Int (FK)</span></div>
+                            <div class="er-row"><span>action</span><span>String</span></div>
+                            <div class="er-row"><span>ip</span><span>String</span></div>
                         </div>
                     </div>
-                    <div class="visual-caption">Esquema Relacional Simplificado implementado vía Prisma ORM.</div>
+                    <div class="visual-caption">Modelo Relacional Ampliado. Cada elemento cuelga del Cliente para evitar cruces de datos.</div>
                 </div>
             </div>
         </div>
-        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">03 / 18</span></div>
+        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">04 / 20</span></div>
     </div>
 
-    <!-- 04: LOGIN DUAL Y MODOS -->
-    <div class="slide" id="slide-04">
+    <!-- 05: LOGIN DUAL Y MODOS -->
+    <div class="slide" id="slide-05">
         <div class="slide-header">
             <div class="brand"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span>Sofia Solutions</span></div>
             <span class="tfg-meta">FILOSOFÍA DUAL</span>
         </div>
         <div class="slide-body">
-            <h2 class="slide-section-title">Filosofía de Doble Modo: Seguro vs Inseguro</h2>
+            <h2 class="slide-section-title">El Interruptor de Seguridad: API Dual</h2>
             <div class="content-split">
                 <div class="content-text">
-                    <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">El proyecto tiene un "interruptor" para cambiar entre dos modos de la API en tiempo real y enseñar las vulnerabilidades.</p>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">Desarrollé un sistema que permite cambiar el nivel de seguridad de la aplicación con un solo clic. Ideal para hacer demostraciones de qué ocurre si no programamos con cuidado.</p>
                     <div class="card" style="padding: 10px 15px; margin-top:5px; border-color: rgba(239, 68, 68, 0.2);">
-                        <div class="badge badge-red" style="margin-bottom:4px;">Modo Inseguro</div>
-                        <p style="font-size:0.75rem;">Sin filtros. Usa cifrado débil, y permite inyecciones SQL.</p>
+                        <div class="badge badge-red" style="margin-bottom:4px;">Modo Vulnerable</div>
+                        <p style="font-size:0.75rem;">Sin controles. Acepta contraseñas débiles y peticiones maliciosas directamente a la base de datos.</p>
                     </div>
                     <div class="card" style="padding: 10px 15px; margin-top:10px; border-color: rgba(0, 255, 136, 0.2);">
                         <div class="badge badge-green" style="margin-bottom:4px;">Modo Seguro</div>
-                        <p style="font-size:0.75rem;">Bloquea los ataques. Usa contraseñas seguras y limita las peticiones por segundo.</p>
+                        <p style="font-size:0.75rem;">Filtra y bloquea. Aplica algoritmos fuertes (Bcrypt) y bloquea intentos repetidos.</p>
                     </div>
                 </div>
                 <div class="content-image">
                     <img src="assets/real_login.png" alt="Portal de Login">
-                    <div class="visual-caption">Portal de Login corporativo con advertencia del estado de seguridad actual.</div>
+                    <div class="visual-caption">Portal Corporativo, avisando visualmente del modo en el que se encuentra.</div>
                 </div>
             </div>
         </div>
-        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">04 / 18</span></div>
+        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">05 / 20</span></div>
     </div>
 
-    <!-- 05: CONSOLA MAESTRA -->
-    <div class="slide" id="slide-05">
-        <div class="slide-header">
-            <div class="brand"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span>Sofia Solutions</span></div>
-            <span class="tfg-meta">FASE OFENSIVA</span>
-        </div>
-        <div class="slide-body">
-            <h2 class="slide-section-title">Consola Maestra de Auditoría (/consola)</h2>
-            <div class="content-split">
-                <div class="content-text">
-                    <div class="badge badge-indigo">Simulador Web</div>
-                    <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-top:8px;">
-                        Aquí es donde probamos los ataques de forma visual. Podemos enviar código malicioso y ver enseguida qué responde el servidor web.
-                    </p>
-                    <ul class="bullet-list">
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> Inyección SQL directa desde la página.</li>
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> Nos muestra lo que conseguimos robar al instante.</li>
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> Hay un botón para activar/desactivar la seguridad.</li>
-                    </ul>
-                </div>
-                <div class="content-image">
-                    <img src="assets/real_consola.png" alt="Consola en Acción">
-                    <div class="visual-caption">Ejecución de SQL Injection con exfiltración de credenciales a la derecha.</div>
-                </div>
-            </div>
-        </div>
-        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">05 / 18</span></div>
-    </div>
-
-    <!-- 06: PHISHING -->
+    <!-- 06: CONSOLA MAESTRA (ATAQUE) -->
     <div class="slide" id="slide-06">
         <div class="slide-header">
             <div class="brand"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span>Sofia Solutions</span></div>
             <span class="tfg-meta">FASE OFENSIVA</span>
         </div>
         <div class="slide-body">
-            <h2 class="slide-section-title">Simulación de Phishing (Evasión MFA)</h2>
+            <h2 class="slide-section-title">Consola de Auditoría (El Simulador Web)</h2>
             <div class="content-split">
                 <div class="content-text">
-                    <div class="badge badge-red">Ingeniería Social</div>
+                    <div class="badge badge-indigo">Herramienta Didáctica</div>
                     <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-top:8px;">
-                        Usamos una página falsa que engaña al usuario. Robamos sus credenciales sin que se de cuenta aprovechando un fallo en la comunicación de ventanas emergentes.
+                        Construí esta interfaz especial para el tribunal. En lugar de usar herramientas externas complicadas, desde aquí podemos lanzar ataques reales contra nuestro propio servidor.
                     </p>
-                    <div class="mock-terminal">
-                        <div class="term-head"><div class="term-dot dot-red"></div><div class="term-dot dot-yellow"></div><div class="term-dot dot-green"></div></div>
-                        <div class="term-body" style="font-size: 0.65rem;">
-                            // Interceptando desde iframe malicioso<br>
-                            window.addEventListener("message", (evento) => {<br>
-                            &nbsp;&nbsp;if (evento.data.type === "CREDENTIALS") {<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;enviarAlAtacante(evento.data.payload);<br>
-                            &nbsp;&nbsp;}<br>
-                            });
-                        </div>
-                    </div>
+                    <ul class="bullet-list">
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> <strong>Inyección SQL:</strong> Escribimos el código malicioso y vemos cómo escupe las contraseñas.</li>
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> <strong>Respuesta Inmediata:</strong> Muestra exactamente lo que el servidor devuelve al atacante.</li>
+                    </ul>
                 </div>
                 <div class="content-image">
-                    <img src="assets/real_phishing.png" alt="Portal Phishing">
-                    <div class="visual-caption">Página fraudulenta idéntica que roba credenciales en segundo plano.</div>
+                    <img src="assets/real_consola.png" alt="Consola en Acción">
+                    <div class="visual-caption">Lanzando una inyección para extraer toda la lista de usuarios.</div>
                 </div>
             </div>
         </div>
-        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">06 / 18</span></div>
+        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">06 / 20</span></div>
     </div>
 
-    <!-- 07: SOFIA AUDIT CLI -->
+    <!-- 07: DEFENSA WAF -->
     <div class="slide" id="slide-07">
         <div class="slide-header">
             <div class="brand"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span>Sofia Solutions</span></div>
-            <span class="tfg-meta">FASE OFENSIVA</span>
+            <span class="tfg-meta">FASE DEFENSIVA</span>
         </div>
         <div class="slide-body">
-            <h2 class="slide-section-title">Sofia Audit CLI: Ataques a Nivel de Protocolo</h2>
+            <h2 class="slide-section-title">El Firewall de Aplicación (WAF)</h2>
             <div class="content-split">
                 <div class="content-text">
-                    <div class="badge badge-orange">Framework Python 3</div>
+                    <div class="badge badge-green">Filtro de Seguridad en Node.js</div>
                     <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-top:8px;">
-                        Script en Python que hice para atacar el servidor directamente desde la terminal. Nos sirve para lanzar inyecciones o probar fuerza bruta muy rápido.
+                        ¿Qué pasa cuando encendemos el "Modo Seguro"? Entra en juego nuestro Middleware WAF en el backend.
                     </p>
-                    <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
-                        También sirve para hacer ataques de saturación (DoS). Envía muchísimas peticiones seguidas hasta que el servidor se bloquea y la página se cae.
+                    <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">
+                        Todas las peticiones pasan por un filtro que busca patrones maliciosos (Expresiones Regulares). Si encuentra un "SELECT *" o un `<script>`, bloquea al atacante y registra el incidente en la base de datos automáticamente.
                     </p>
                 </div>
                 <div class="content-image">
                     <div class="mock-terminal" style="width: 100%;">
                         <div class="term-head" style="padding: 10px;"><div class="term-dot dot-red"></div><div class="term-dot dot-yellow"></div><div class="term-dot dot-green"></div></div>
                         <div class="term-body" style="font-size: 0.85rem; padding: 20px; line-height: 1.8;">
-                            $ python3 sofia-audit.py --attack dos --target /api/auth<br><br>
-                            <span style="color:var(--accent-cyan);">[*] Iniciando 150 hilos concurrentes...</span><br>
-                            <span style="color:#ef4444;">[!] Peticiones en curso: 42.000 (Ráfaga activa)</span><br>
-                            <span style="color:#ef4444;">[!] Bucle de Eventos Node.js Bloqueado: 99.8% CPU</span><br>
-                            <span style="color:#f97316;">[!] Server Response latency: timeout (15000ms)</span><br><br>
-                            <span style="color:var(--accent-red); font-weight:bold;">[!] ESTADO: Caída total de servicios web confirmada.</span>
+                            // WAF: Detección de Patrones <br>
+                            const sqliPattern = /(UNION|SELECT|INSERT|DROP|--)/i;<br><br>
+                            if (sqliPattern.test(req.body.payload)) {<br>
+                            &nbsp;&nbsp;<span style="color:#ef4444;">registrarIncidente('ALTO', 'Intento SQLi bloqueado');</span><br>
+                            &nbsp;&nbsp;<span style="color:var(--accent-cyan);">return res.status(403).json({ error: "Bloqueado por WAF" });</span><br>
+                            }
                         </div>
                     </div>
-                    <div class="visual-caption">Salida real del script Sofia Rootkit paralizando el backend web.</div>
+                    <div class="visual-caption">Lógica real de nuestro WAF en el servidor Node.js</div>
                 </div>
             </div>
         </div>
-        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">07 / 18</span></div>
+        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">07 / 20</span></div>
     </div>
 
-    <!-- 08: BOTON SOS -->
+    <!-- 08: PHISHING -->
     <div class="slide" id="slide-08">
+        <div class="slide-header">
+            <div class="brand"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span>Sofia Solutions</span></div>
+            <span class="tfg-meta">FASE OFENSIVA</span>
+        </div>
+        <div class="slide-body">
+            <h2 class="slide-section-title">Evasión de Contraseñas (Phishing)</h2>
+            <div class="content-split">
+                <div class="content-text">
+                    <div class="badge badge-red">Ingeniería Social</div>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-top:8px;">
+                        Muchas empresas sufren ataques porque sus empleados son engañados por páginas web falsas que son idénticas a las originales.
+                    </p>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">
+                        En esta demo, aprovecho un fallo de comunicación entre ventanas (`window.opener`) para robar las credenciales del usuario sin que se dé cuenta, saltándome la seguridad habitual.
+                    </p>
+                </div>
+                <div class="content-image">
+                    <img src="assets/real_phishing.png" alt="Portal Phishing">
+                    <div class="visual-caption">Interfaz falsa capturando los datos en segundo plano.</div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">08 / 20</span></div>
+    </div>
+
+    <!-- 09: SOFIA AUDIT CLI -->
+    <div class="slide" id="slide-09">
+        <div class="slide-header">
+            <div class="brand"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span>Sofia Solutions</span></div>
+            <span class="tfg-meta">FASE OFENSIVA</span>
+        </div>
+        <div class="slide-body">
+            <h2 class="slide-section-title">Ataques Puros: Sofia Audit Script</h2>
+            <div class="content-split">
+                <div class="content-text">
+                    <div class="badge badge-orange">Framework Python 3</div>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-top:8px;">
+                        Para demostrar que los ataques no solo vienen del navegador, desarrollé un script de Python que ataca directamente el corazón del servidor (la API).
+                    </p>
+                    <ul class="bullet-list">
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> <strong>Fuerza Bruta:</strong> Prueba cientos de contraseñas por segundo.</li>
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> <strong>Directo al grano:</strong> Sin interfaz, interactúa solo con código de red.</li>
+                    </ul>
+                </div>
+                <div class="content-image">
+                    <div class="mock-terminal" style="width: 100%;">
+                        <div class="term-head" style="padding: 10px;"><div class="term-dot dot-red"></div><div class="term-dot dot-yellow"></div><div class="term-dot dot-green"></div></div>
+                        <div class="term-body" style="font-size: 0.85rem; padding: 20px; line-height: 1.8;">
+                            $ python3 sofia-audit.py --attack bruteforce --target /api/login<br><br>
+                            <span style="color:var(--accent-cyan);">[*] Cargando diccionario de contraseñas (rockyou.txt)...</span><br>
+                            <span style="color:var(--text-muted);">[-] Probando: password123 -> Fallo</span><br>
+                            <span style="color:var(--text-muted);">[-] Probando: admin2026 -> Fallo</span><br>
+                            <span style="color:var(--accent-green); font-weight:bold;">[+] ÉXITO: admin : superadmin1</span><br>
+                            <span style="color:var(--accent-cyan);">[*] Token de sesión capturado.</span>
+                        </div>
+                    </div>
+                    <div class="visual-caption">Simulación de un ataque de fuerza bruta con Python.</div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">09 / 20</span></div>
+    </div>
+
+    <!-- 10: ATAQUE DOS Y DEFENSA -->
+    <div class="slide" id="slide-10">
+        <div class="slide-header">
+            <div class="brand"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span>Sofia Solutions</span></div>
+            <span class="tfg-meta">ATAQUE Y MITIGACIÓN</span>
+        </div>
+        <div class="slide-body">
+            <h2 class="slide-section-title">Caída de Servicio (DoS) y Rate Limiting</h2>
+            <div class="content-split">
+                <div class="content-text">
+                    <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-top:8px;">
+                        Otra función de mi script de Python es enviar miles de peticiones de golpe (Denegación de Servicio). En Modo Inseguro, esto sobrecarga a Node.js y tira la página entera.
+                    </p>
+                    <div class="badge badge-green" style="margin-top: 10px;">La Solución: Rate Limit</div>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-top:8px;">
+                        En el Modo Seguro, implementé un limitador de peticiones. Si una IP envía más de 10 peticiones por segundo, la bloqueamos automáticamente por 15 minutos, salvando el servidor.
+                    </p>
+                </div>
+                <div class="content-image">
+                    <div class="mock-terminal" style="width: 100%;">
+                        <div class="term-head" style="padding: 10px;"><div class="term-dot dot-red"></div><div class="term-dot dot-yellow"></div><div class="term-dot dot-green"></div></div>
+                        <div class="term-body" style="font-size: 0.85rem; padding: 20px; line-height: 1.8;">
+                            $ python3 sofia-audit.py --attack dos --target /api/data<br><br>
+                            <span style="color:#f97316;">[!] Ráfaga de 45.000 peticiones enviada.</span><br>
+                            <span style="color:#ef4444;">[!] Error: Connection Refused (Server Down) - MODO INSEGURO</span><br>
+                            <br>
+                            <span style="color:var(--accent-cyan);">--- Activando MODO SEGURO ---</span><br>
+                            <span style="color:#f97316;">[!] Ráfaga de 45.000 peticiones enviada.</span><br>
+                            <span style="color:var(--accent-green);">[+] Servidor responde: Error 429 "Demasiadas peticiones". Servidor estable.</span>
+                        </div>
+                    </div>
+                    <div class="visual-caption">Resultados del ataque de saturación.</div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">10 / 20</span></div>
+    </div>
+
+    <!-- 11: BOTON SOS -->
+    <div class="slide" id="slide-11">
         <div class="slide-header">
             <div class="brand"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span>Sofia Solutions</span></div>
             <span class="tfg-meta">MITIGACIÓN Y RESPUESTA</span>
         </div>
         <div class="slide-body">
-            <h2 class="slide-section-title">El Botón SOS: Canal de Emergencia Nivel 3</h2>
+            <h2 class="slide-section-title">El Botón SOS: Emergencia Máxima</h2>
             <div class="content-split">
                 <div class="content-text">
-                    <div class="badge badge-green">Respuesta Prioritaria</div>
+                    <div class="badge badge-red">Respuesta Inmediata</div>
                     <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-top:8px;">
-                        Un botón de emergencia que el cliente pulsa si detecta que lo están atacando, para avisarnos al instante.
+                        Le puse al cliente corporativo un "botón de pánico". Si sienten que su infraestructura falla, lo presionan.
                     </p>
                     <ul class="bullet-list">
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> Genera una alerta crítica muy urgente.</li>
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> Le aparece en pantalla roja al equipo de seguridad.</li>
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> Nos ayuda a actuar súper rápido.</li>
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> Envía una alerta clasificada como "CRÍTICA" (Nivel máximo).</li>
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> Esto desencadena avisos rojos en todas las consolas para que nuestro equipo actúe al segundo.</li>
                     </ul>
                 </div>
                 <div class="content-image" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%;">
                     <div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start;">
-                        <img src="assets/real_sos_modal.png" alt="SOS Modal" style="max-height: 55vh;">
+                        <img src="assets/real_sos_modal.png" alt="SOS Modal" style="max-height: 55vh; object-fit: contain;">
                         <div class="visual-caption">Alerta en la consola web</div>
                     </div>
                     <div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start;">
-                        <img src="assets/real_sos_email.png" alt="SOS Correo" style="max-height: 55vh;">
-                        <div class="visual-caption">Notificación por correo recibida</div>
+                        <img src="assets/real_sos_email.png" alt="SOS Correo" style="max-height: 55vh; object-fit: contain;">
+                        <div class="visual-caption">Notificación inmediata recibida</div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">08 / 18</span></div>
+        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">11 / 20</span></div>
     </div>
 
-    <!-- 09: TELEMETRIA GRAFANA -->
-    <div class="slide" id="slide-09">
+    <!-- 12: TELEMETRIA GRAFANA 1 -->
+    <div class="slide" id="slide-12">
         <div class="slide-header">
             <div class="brand"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span>Sofia Solutions</span></div>
             <span class="tfg-meta">OBSERVABILIDAD</span>
         </div>
         <div class="slide-body">
-            <h2 class="slide-section-title">Telemetría y Métricas SOC (Prometheus + Grafana)</h2>
+            <h2 class="slide-section-title">El Ojo del SOC: Prometheus y Grafana</h2>
             <div class="content-split">
                 <div class="content-text">
-                    <div class="badge badge-indigo">Panel Analítico</div>
+                    <div class="badge badge-indigo">Panel Analítico en Tiempo Real</div>
                     <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-top:8px;">
-                        Para vigilar qué está pasando usamos Grafana y Prometheus. Nos hace gráficas en tiempo real de todo el tráfico.
+                        Toda la actividad que ocurre en los servidores viaja en directo hacia Grafana gracias a Prometheus.
                     </p>
                     <ul class="bullet-list">
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> Vemos el nivel de riesgo de cada empresa.</li>
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> Muestra si nuestro servidor va muy lento o está caído.</li>
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> Historial de alertas y tipos de ataques que llegan.</li>
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> Podemos ver si el servidor se satura cuando atacamos con el script de Python.</li>
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> Clasifica visualmente los ataques más frecuentes.</li>
                     </ul>
                 </div>
                 <div class="content-image">
                     <img src="assets/real_grafana.png" alt="Panel Grafana">
-                    <div class="visual-caption">Dashboard de Ciberseguridad procesando ataques en tiempo real.</div>
+                    <div class="visual-caption">Gráficas monitorizando los picos de estrés durante nuestros ataques.</div>
                 </div>
             </div>
         </div>
-        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">09 / 18</span></div>
+        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">12 / 20</span></div>
     </div>
 
-    <!-- 10: N8N AUTOMATIZACION -->
-    <div class="slide" id="slide-10">
+    <!-- 13: GRAFANA METRICAS -->
+    <div class="slide" id="slide-13">
         <div class="slide-header">
             <div class="brand"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span>Sofia Solutions</span></div>
-            <span class="tfg-meta">OBSERVABILIDAD Y RESPUESTA</span>
+            <span class="tfg-meta">OBSERVABILIDAD</span>
         </div>
         <div class="slide-body">
-            <h2 class="slide-section-title">Orquestación de Alertas (n8n Webhooks)</h2>
+            <h2 class="slide-section-title">Medición del Riesgo de Clientes</h2>
             <div class="content-split">
                 <div class="content-text">
-                    <div class="badge badge-green">Automatización sin Código</div>
-                    <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-top:8px;">
-                        Cuando hay un ataque peligroso, el servidor avisa solo usando un flujo de n8n. No tenemos que enviar los correos a mano.
+                    <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">
+                        Grafana también nos sirve para asignar una "Nota de Peligro" a cada empresa que vigilamos.
                     </p>
                     <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">
-                        Recoge los datos importantes, como la IP de quien ataca, y manda un aviso automáticamente.
+                        Si Iberdrola empieza a recibir muchos intentos de Inyección SQL, su medidor de riesgo sube a rojo automáticamente.
                     </p>
                 </div>
                 <div class="content-image">
-                    <img src="assets/real_n8n.png" alt="Flujo n8n">
-                    <div class="visual-caption">Mapa lógico conectando la API con el webhook y notificador de correos.</div>
+                    <img src="assets/slide_grafana_1778931905455.png" alt="Métricas Detalle" style="max-height: 60vh;">
+                    <div class="visual-caption">Ejemplo de visualización detallada del riesgo de exposición por cliente.</div>
                 </div>
             </div>
         </div>
-        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">10 / 18</span></div>
+        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">13 / 20</span></div>
     </div>
 
-    <!-- 11: ALERTA GMAIL -->
-    <div class="slide" id="slide-11">
+    <!-- 14: N8N AUTOMATIZACION -->
+    <div class="slide" id="slide-14">
         <div class="slide-header">
             <div class="brand"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span>Sofia Solutions</span></div>
-            <span class="tfg-meta">OBSERVABILIDAD Y RESPUESTA</span>
+            <span class="tfg-meta">AUTOMATIZACIÓN</span>
         </div>
         <div class="slide-body">
-            <h2 class="slide-section-title">Recepción de Alertas en Gmail</h2>
+            <h2 class="slide-section-title">El Cerebro Automático: Flujos con n8n</h2>
             <div class="content-split">
                 <div class="content-text">
-                    <div class="badge badge-red">Alerta Activa</div>
+                    <div class="badge badge-green">Zero-Touch Automation</div>
                     <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-top:8px;">
-                        Y así es como le llega el correo al equipo para que puedan actuar lo antes posible.
+                        ¿Qué pasa cuando no hay nadie mirando las pantallas? Usé n8n para crear un orquestador que "toma decisiones" por nosotros.
                     </p>
                     <ul class="bullet-list">
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> IP del atacante para poder bloquearla.</li>
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> Qué tipo de ataque nos están haciendo.</li>
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> Recomendaciones de seguridad para solucionarlo.</li>
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> Lee los ataques en tiempo real mediante Webhooks.</li>
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> Analiza de qué IP proviene y cuán peligroso es.</li>
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> Decide si enviar un correo al equipo de guardia.</li>
+                    </ul>
+                </div>
+                <div class="content-image">
+                    <img src="assets/real_n8n.png" alt="Flujo n8n">
+                    <div class="visual-caption">Mapa del flujo automatizado: De la detección a la notificación por correo.</div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">14 / 20</span></div>
+    </div>
+
+    <!-- 15: ALERTA GMAIL -->
+    <div class="slide" id="slide-15">
+        <div class="slide-header">
+            <div class="brand"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span>Sofia Solutions</span></div>
+            <span class="tfg-meta">AUTOMATIZACIÓN</span>
+        </div>
+        <div class="slide-body">
+            <h2 class="slide-section-title">El Resultado: Alertas en nuestra Bandeja</h2>
+            <div class="content-split">
+                <div class="content-text">
+                    <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">
+                        Aquí vemos el correo real que n8n envía automáticamente a nuestro equipo de analistas de seguridad a través del protocolo SMTP.
+                    </p>
+                    <ul class="bullet-list">
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> Incluye la IP para bloquearla.</li>
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> Resalta el vector de ataque usado.</li>
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> Ahorra minutos vitales en reaccionar.</li>
                     </ul>
                 </div>
                 <div class="content-image">
                     <img src="assets/real_gmail_alert.png" alt="Alerta en Gmail">
-                    <div class="visual-caption">Captura del correo de incidente SOC real enviado vía SMTP.</div>
+                    <div class="visual-caption">Correo crítico con detalles estructurados para el analista.</div>
                 </div>
             </div>
         </div>
-        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">11 / 18</span></div>
+        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">15 / 20</span></div>
     </div>
 
-    <!-- 12: PORTAL CLIENTE -->
-    <div class="slide" id="slide-12">
+    <!-- 16: PORTAL CLIENTE -->
+    <div class="slide" id="slide-16">
         <div class="slide-header">
             <div class="brand"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span>Sofia Solutions</span></div>
-            <span class="tfg-meta">INTERFACES Y PLATAFORMA</span>
+            <span class="tfg-meta">INTERFACES Y PERFILES</span>
         </div>
         <div class="slide-body">
-            <h2 class="slide-section-title">Portal del Cliente: Control y Soporte Técnico</h2>
+            <h2 class="slide-section-title">Portal del Cliente: Transparencia</h2>
             <div class="content-split">
                 <div class="content-text">
-                    <div class="badge badge-indigo">Single Page Application (SPA)</div>
+                    <div class="badge badge-indigo">Desarrollo Frontend en PHP</div>
                     <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-top:8px;">
-                        Es la página que ven nuestros clientes (como las empresas) para comprobar que todo va bien y están protegidos.
+                        Es fundamental que las empresas confíen en nosotros. Por eso les creé una interfaz sencilla donde pueden comprobar cómo de seguro está su sistema en todo momento.
                     </p>
                     <ul class="bullet-list">
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> <strong>Estado:</strong> Ven si hay algún problema de conexión.</li>
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> <strong>Soporte:</strong> Pueden pedirnos ayuda desde ahí directamente.</li>
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> Muestra si hay cortes de servicio.</li>
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> Les permite enviarnos solicitudes directas.</li>
                     </ul>
                 </div>
                 <div class="content-image">
                     <img src="assets/real_client_panel.png" alt="Portal Cliente">
-                    <div class="visual-caption">Interfaz de operaciones con vista de latencia de red.</div>
+                    <div class="visual-caption">Vista del cliente comprobando la latencia de su red.</div>
                 </div>
             </div>
         </div>
-        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">12 / 18</span></div>
+        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">16 / 20</span></div>
     </div>
 
-    <!-- 13: PORTAL ADMIN -->
-    <div class="slide" id="slide-13">
+    <!-- 17: PORTAL ADMIN -->
+    <div class="slide" id="slide-17">
         <div class="slide-header">
             <div class="brand"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span>Sofia Solutions</span></div>
-            <span class="tfg-meta">INTERFACES Y PLATAFORMA</span>
+            <span class="tfg-meta">INTERFACES Y PERFILES</span>
         </div>
         <div class="slide-body">
-            <h2 class="slide-section-title">Portal del Administrador: Cuadro SOC Global</h2>
+            <h2 class="slide-section-title">Portal del Administrador (Visión Global SOC)</h2>
             <div class="content-split">
                 <div class="content-text">
-                    <div class="badge badge-indigo">Panel de Operaciones Multi-Tenant</div>
-                    <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-top:8px;">
-                        Este es el panel que usaríamos nosotros. Desde aquí controlamos la seguridad de todos nuestros clientes a la vez en una misma pantalla.
+                    <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">
+                        Esta es la gran pantalla que tendría nuestro equipo. Aquí agrupamos toda la información de todos los clientes a la vez.
                     </p>
                     <ul class="bullet-list">
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> <strong>Mapa:</strong> Vemos en el mapa de dónde vienen los ataques.</li>
-                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> <strong>Bloqueos:</strong> Podemos frenar los ataques directamente con un clic.</li>
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> <strong>Visión de Helicóptero:</strong> Un mapa interactivo muestra de dónde proceden geográficamente los ataques.</li>
+                        <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle></svg> <strong>Resolución:</strong> Desde aquí podemos gestionar y dar por cerradas las amenazas.</li>
                     </ul>
                 </div>
                 <div class="content-image">
                     <img src="assets/real_admin_panel.png" alt="Portal Administrador SOC">
-                    <div class="visual-caption">Consola global con mapa de incidentes y monitorización cruzada.</div>
+                    <div class="visual-caption">Consola global cruzando datos de todas las empresas.</div>
                 </div>
             </div>
         </div>
-        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">13 / 18</span></div>
+        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">17 / 20</span></div>
     </div>
 
-    <!-- 14: Q&A Y FIN -->
-    <div class="slide" id="slide-14">
+    <!-- 18: CONCLUSIONES -->
+    <div class="slide" id="slide-18">
+        <div class="slide-header">
+            <div class="brand"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span>Sofia Solutions</span></div>
+            <span class="tfg-meta">CONCLUSIÓN</span>
+        </div>
+        <div class="slide-body" style="justify-content: center; text-align: center;">
+            <h2 class="slide-section-title" style="align-self: center; border: none; padding: 0; margin-bottom: 30px;">Conclusiones del Trabajo</h2>
+            <div class="grid-2-equal" style="text-align: left; max-width: 1000px;">
+                <div class="card">
+                    <h3><span>🎓</span> Aprendizaje Práctico</h3>
+                    <p>He consolidado todos los conocimientos del ciclo ASIR, integrando redes, sistemas, bases de datos y desarrollo en un único ecosistema funcional.</p>
+                </div>
+                <div class="card">
+                    <h3><span>🚀</span> Escala y Producción</h3>
+                    <p>La arquitectura usando Docker y PostgreSQL permite escalar esto para ser usado de forma real en academias o empresas como entorno de pruebas.</p>
+                </div>
+                <div class="card">
+                    <h3><span>💡</span> Valor de la Observabilidad</h3>
+                    <p>He comprobado que de nada sirve tener mucha seguridad si no podemos ver e interpretar visualmente qué está pasando con herramientas como Grafana.</p>
+                </div>
+                <div class="card">
+                    <h3><span>🔮</span> Trabajo Futuro</h3>
+                    <p>El siguiente paso sería incorporar análisis de patrones con Inteligencia Artificial para bloquear ataques antes incluso de que lleguen al WAF.</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">18 / 20</span></div>
+    </div>
+
+    <!-- 19: REPOSITORIO Y CIERRE -->
+    <div class="slide" id="slide-19">
+        <div class="slide-header">
+            <div class="brand"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span>Sofia Solutions</span></div>
+            <span class="tfg-meta">ENTREGABLES</span>
+        </div>
+        <div class="slide-body" style="justify-content: center; text-align: center;">
+            <div class="badge badge-indigo" style="margin-bottom: 20px;">Código Abierto</div>
+            <h1 class="slide-title" style="font-size: clamp(2rem, 3.2vw, 3.2rem);">Todo el proyecto documentado</h1>
+            <p class="slide-lead" style="margin-top: 15px; max-width: 800px; font-size: 1.1rem;">
+                El código fuente, la infraestructura en contenedores, y los scripts de ataque han sido empaquetados y versionados profesionalmente.
+            </p>
+            <div class="card" style="margin-top: 30px; display: inline-flex; align-items: center; gap: 15px; padding: 15px 30px;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                <span style="font-family: 'Fira Code', monospace; font-size: 1.1rem; color: var(--primary);">github.com/ewsophie333-lgtm/sofia-solutions</span>
+            </div>
+        </div>
+        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">19 / 20</span></div>
+    </div>
+
+    <!-- 20: Q&A Y FIN -->
+    <div class="slide" id="slide-20">
         <div class="slide-header">
             <div class="brand"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg><span>Sofia Solutions</span></div>
             <span class="tfg-meta">PROYECTO DE FIN DE GRADO</span>
         </div>
         <div class="slide-body" style="text-align: center; justify-content: center;">
             <div class="badge badge-green" style="margin-bottom: 20px;">Fin de la Defensa</div>
-            <h1 class="slide-title" style="font-size: clamp(2.3rem, 3.8vw, 3.8rem); color: var(--text-main);">Demostración Práctica y Q&A</h1>
+            <h1 class="slide-title" style="font-size: clamp(2.3rem, 3.8vw, 3.8rem); color: var(--text-main);">Demostración Práctica y Preguntas</h1>
             <p class="slide-lead" style="margin-top: 15px; font-size:1.1rem; max-width: 750px;">
-                Toda la infraestructura local está activa en contenedores listos para iniciar simulaciones ofensivas/defensivas en caliente.
+                Si el jurado lo desea, podemos activar la infraestructura de Docker local y ejecutar cualquiera de los ataques en directo.
             </p>
             <div class="grid-2-equal" style="max-width: 900px; margin-top: 20px;">
-                <a href="http://localhost:8000" target="_blank" class="qa-link-btn">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                <a href="http://localhost:8000" target="_blank" class="qa-link-btn" style="display:flex; text-decoration:none; padding:15px; border:1px solid var(--border-light); border-radius:10px; align-items:center; gap:10px; color:inherit;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                     <div style="text-align:left;">
-                        <div style="font-size:0.9rem; font-weight:700;">Plataforma de Soporte</div>
-                        <div style="font-size:0.75rem; color:var(--text-muted);">Acceso multi-cliente y perfiles</div>
+                        <div style="font-size:0.9rem; font-weight:700;">Panel Web</div>
+                        <div style="font-size:0.75rem; color:var(--text-muted);">Ver aplicación operativa</div>
                     </div>
                 </a>
-                <a href="http://localhost:8000/consola" target="_blank" class="qa-link-btn">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                <a href="http://localhost:8000/consola" target="_blank" class="qa-link-btn" style="display:flex; text-decoration:none; padding:15px; border:1px solid var(--border-light); border-radius:10px; align-items:center; gap:10px; color:inherit;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
                     <div style="text-align:left;">
-                        <div style="font-size:0.9rem; font-weight:700;">Consola de Auditoría</div>
-                        <div style="font-size:0.75rem; color:var(--text-muted);">Disparar ataques y alternar modos</div>
+                        <div style="font-size:0.9rem; font-weight:700;">Simulador Ofensivo</div>
+                        <div style="font-size:0.75rem; color:var(--text-muted);">Lanzar inyecciones en vivo</div>
                     </div>
                 </a>
             </div>
-            <p style="margin-top:40px; font-size:1.15rem; font-weight:700; color:var(--accent-green); letter-spacing: 0.5px;">Muchas gracias por su atención.</p>
+            <p style="margin-top:40px; font-size:1.15rem; font-weight:700; color:var(--accent-green); letter-spacing: 0.5px;">¡Muchas gracias por su atención!</p>
         </div>
-        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">14 / 14</span></div>
+        <div class="slide-footer"><span>Autora: <span class="author-tag">Sofia Gomez</span></span><span class="page-number">20 / 20</span></div>
     </div>
 
     <!-- LOGICA -->
@@ -824,7 +1010,6 @@
             const percentage = ((currentSlideIndex + 1) / totalSlides) * 100;
             progressFill.style.width = percentage + '%';
             
-            // Fix page number counter dynamically if DOM changes
             const pageNum = slides[currentSlideIndex].querySelector('.page-number');
             if(pageNum) pageNum.textContent = String(currentSlideIndex + 1).padStart(2, '0') + ' / ' + totalSlides;
         }
