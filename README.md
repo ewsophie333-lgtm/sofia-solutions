@@ -10,8 +10,6 @@ Proyecto final orientado a **ASIX / Ciberseguridad**, centrado en la demostraci�
 
 | Módulo | Acceso Público | Puerto Local |
 |--------|----------------|--------------|
-| **Presentaci&oacute;n Ejecutiva** | [Ver Diapositivas](file:///c:/Users/shair/Desktop/sofia-solutions/sofia-solutions/PRESENTACION_EJECUTIVA_SOFIA.html) | Estilo Consultor&iacute;a |
-| **Presentaci&oacute;n SOC** | [Ver Diapositivas](file:///c:/Users/shair/Desktop/sofia-solutions/sofia-solutions/PRESENTACION_SOFIA.html) | Reveal.js Din&aacute;mico |
 | **Plataforma Corporativa** | [Acceder](https://sofia-solutions.serveousercontent.com) | `8000` |
 | **Consola de Auditoría** | [Acceder](https://sofia-solutions.serveousercontent.com/consola) | `/consola` |
 | **Panel SOC (Admin)** | [Acceder](https://sofia-solutions.serveousercontent.com/admin) | `/admin` |
@@ -53,16 +51,6 @@ Sofia Solutions está optimizado para ejecutarse en la nube de GitHub en segundo
 
 ### 2. Fase Defensiva (Modo Seguro)
 1. Activa el **Modo Seguro** con `scripts/ACTIVAR-MODO-SEGURO.bat`: Reactiva todas las capas de protección (Bcrypt, WAF, JWT stricts). Úsalo para demostrar la eficacia de las soluciones de Sofia Solutions frente a los mismos ataques realizados anteriormente.
-
-### 5. Post-Explotación: Sofia Kit Auditor
-Dentro de la carpeta `scripts/`, se encuentra el **Sofia Kit Auditor** (`sofia-audit-framework.py`). Esta herramienta permite:
-- **Persistencia**: Mantener el acceso al sistema tras el compromiso inicial.
-- **Exfiltración**: Automatizar la descarga de datos sensibles de la base de datos.
-- **Auditoría Silenciosa**: Ejecutar comandos en el backend sin disparar alertas inmediatas de nivel 1.
-- **Lanzador**: Puedes usar `lanzar-rootkit.bat` para iniciar el entorno de persistencia rápidamente.
-
----
-
 2. Repite los ataques anteriores. El **WAF Shield** bloqueará las inyecciones y el **Rate Limiting** cortará la conexión tras 3 intentos.
 3. Explica el uso de **Bcrypt (12 rondas)** y la validación estricta de **Tokens JWT**.
 
@@ -70,6 +58,14 @@ Dentro de la carpeta `scripts/`, se encuentra el **Sofia Kit Auditor** (`sofia-a
 1. **Rastreo Geográfico**: El panel `/admin` ahora visualiza la **IP de origen** y el **País (Zona)** de los atacantes en tiempo real dentro del feed de incidentes.
 2. **Alertas Inteligentes (n8n)**: Cada intrusión crítica activa un flujo de n8n que envía un correo al SOC enriquecido con los metadatos geográficos del atacante.
 3. **Validación de Identidad**: Muestra el uso de **Bcrypt (12 rondas)** y la monitorización de sesiones activas.
+
+### 4. Post-Explotación: Consola de Auditoría y Sofia Kit Auditor
+- **Consola de Auditoría (`/consola`)**: Interfaz web interactiva ofensiva del proyecto. Desde aquí se lanzan los ataques en vivo de SQL Injection (exfiltra credenciales e IBANs/CVVs de base de datos), XSS con simulador Burp Suite integrado, e inundación DoS (simulando caída y restauración de servicio perimetral reactiva en tiempo real).
+- **Sofia Kit Auditor (`scripts/sofia-audit-framework.py`)**: Herramienta CLI complementaria de post-explotación en Python. Permite:
+  * **Persistencia**: Mantener el acceso al sistema de forma silenciosa tras el compromiso inicial.
+  * **Exfiltración**: Automatizar la descarga de datos sensibles a la terminal de comandos.
+  * **Auditoría Silenciosa**: Ejecutar peticiones en el backend sin disparar alertas de primer nivel.
+  * **Lanzador**: Ejecutable rápido con `scripts/lanzar-rootkit.bat`.
 
 ---
 
