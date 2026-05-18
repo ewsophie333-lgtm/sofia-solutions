@@ -82,6 +82,7 @@ Sofia Solutions implementa una defensa en profundidad:
 A continuación se presenta el diseño relacional del modelo de datos de Sofia Solutions. Este mapa conceptual ilustra la arquitectura de la base de datos (PostgreSQL 15 gestionada con Prisma ORM) y el aislamiento multi-inquilino (*multi-tenant*) integrado en el backend para la monitorización de telemetría y seguridad del SOC:
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#f1f5f9', 'primaryTextColor': '#0f172a', 'primaryBorderColor': '#3b82f6', 'lineColor': '#64748b', 'secondaryColor': '#ffffff', 'tertiaryColor': '#ffffff', 'fontFamily': 'Inter, sans-serif'}}}%%
 erDiagram
     CLIENTE ||--o{ USUARIO : "tiene (1:N)"
     CLIENTE ||--o{ ACTIVO : "posee (1:N)"
