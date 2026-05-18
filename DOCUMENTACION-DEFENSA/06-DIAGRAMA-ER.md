@@ -13,133 +13,77 @@ Este documento contiene la representación formal de la base de datos relacional
 ```mermaid
 erDiagram
     %% --- RELACIONES ---
-    CUSTOMER ||--o{ USER : "contiene (1:N)"
-    CUSTOMER ||--o{ ASSET : "posee (1:N)"
-    CUSTOMER ||--o{ INCIDENT : "sufre (1:N)"
-    CUSTOMER }o--o| SERVICE : "suscribe (N:1)"
+    CLIENTE ||--o{ USUARIO : "tiene (1:N)"
+    CLIENTE ||--o{ ACTIVO : "posee (1:N)"
+    CLIENTE ||--o{ INCIDENTE : "sufre (1:N)"
+    CLIENTE }o--o| SERVICIO : "suscribe (N:1)"
     
-    USER ||--o{ TICKET : "crea (1:N)"
-    USER ||--o{ TICKET_MESSAGE : "envía (1:N)"
-    USER ||--o{ PAYMENT : "realiza (1:N)"
-    USER ||--o{ INCIDENT : "analiza (1:N)"
-    USER ||--o{ ALERT : "recibe (1:N)"
+    USUARIO ||--o{ TICKET : "crea (1:N)"
+    USUARIO ||--o{ MENSAJE_TICKET : "envía (1:N)"
+    USUARIO ||--o{ PAGO : "realiza (1:N)"
+    USUARIO ||--o{ INCIDENTE : "analiza (1:N)"
+    USUARIO ||--o{ ALERTA : "recibe (1:N)"
     
-    TICKET ||--o{ TICKET_MESSAGE : "contiene (1:N)"
-    TICKET_MESSAGE }o--|| USER : "remitido_por (N:1)"
+    TICKET ||--o{ MENSAJE_TICKET : "contiene (1:N)"
+    MENSAJE_TICKET }o--|| USUARIO : "remitido_por (N:1)"
     
-    ASSET ||--o{ INCIDENT : "afectado_en (1:N)"
+    ACTIVO ||--o{ INCIDENTE : "afectado_en (1:N)"
     
     %% --- ENTIDADES ---
-    USER {
+    CLIENTE {
+        int id PK
+        string nombre
+        string sector
+        int servicio_id FK
+    }
+    USUARIO {
         int id PK
         string email UK
-        string passwordHash
-        Role role
-        DateTime createdAt
-        int customerId FK "Null"
+        string rol
+        int cliente_id FK
     }
-
-    CUSTOMER {
+    SERVICIO {
         int id PK
-        string name
-        string industry
-        string region
-        string securityTier
-        DateTime createdAt
-        int primaryServiceId FK "Null"
+        string nombre UK
+        float precio
     }
-
-    SERVICE {
+    ACTIVO {
         int id PK
-        string name UK
-        string description
-        float price
-        boolean active
-        string category
-        string tier
-        int slaHours
-    }
-
-    ASSET {
-        int id PK
-        int customerId FK
         string hostname
-        string assetType
-        string environment
-        AssetCriticality criticality
-        string region
-        int exposureScore
-        DateTime createdAt
+        string criticidad
+        int cliente_id FK
     }
-
-    INCIDENT {
+    INCIDENTE {
         int id PK
-        int customerId FK
-        int assetId FK
-        int analystId FK "Null"
-        string title
-        string vector
-        IncidentSeverity severity
-        IncidentStatus status
-        string sourceIp
-        string sourceCountry
-        string attackSurface
-        int timelineSlot
-        DateTime createdAt
-        DateTime updatedAt
+        string titulo
+        string severidad
+        int cliente_id FK
+        int activo_id FK
+        int analista_id FK
     }
-
+    ALERTA {
+        int id PK
+        string titulo
+        string severidad
+        int usuario_id FK
+    }
+    PAGO {
+        int id PK
+        float importe
+        string estado
+        int usuario_id FK
+    }
     TICKET {
         int id PK
-        int userId FK
-        string subject
-        string status
-        string priority
-        DateTime createdAt
+        string asunto
+        string estado
+        int usuario_id FK
     }
-
-    TICKET_MESSAGE {
+    MENSAJE_TICKET {
         int id PK
-        int ticketId FK
-        int senderId FK
-        string content
-        DateTime createdAt
-    }
-
-    PAYMENT {
-        int id PK
-        int userId FK
-        float amount
-        string currency
-        string status
-        string last4
-        string brand
-        string transactionId UK
-        DateTime createdAt
-    }
-
-    ALERT {
-        int id PK
-        int userId FK "Null"
-        string title
-        string description
-        string severity
-        string status
-        DateTime notifiedAt
-        DateTime acknowledgedAt "Null"
-        int acknowledgedBy "Null"
-    }
-
-    SECURITY_EVENT {
-        int id PK
-        string type
-        string severity
-        string sourceIp
-        string endpoint
-        string payload
-        string action
-        DateTime timestamp
-        string metadata "Null"
+        string contenido
+        int ticket_id FK
+        int remitente_id FK
     }
 ```
 
