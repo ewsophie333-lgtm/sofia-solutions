@@ -77,6 +77,132 @@ Sofia Solutions implementa una defensa en profundidad:
 
 ---
 
+## 📊 Modelo de Datos (Diagrama E/R)
+
+Este diagrama interactivo representa la estructura relacional de la base de datos de Sofia Solutions (PostgreSQL + Prisma ORM) y la lógica multi-inquilino de las tablas del SOC:
+
+```mermaid
+erDiagram
+    CUSTOMER ||--o{ USER : "contiene (1:N)"
+    CUSTOMER ||--o{ ASSET : "posee (1:N)"
+    CUSTOMER ||--o{ INCIDENT : "sufre (1:N)"
+    CUSTOMER }o--o| SERVICE : "suscribe (N:1)"
+    
+    USER ||--o{ TICKET : "crea (1:N)"
+    USER ||--o{ TICKET_MESSAGE : "envía (1:N)"
+    USER ||--o{ PAYMENT : "realiza (1:N)"
+    USER ||--o{ INCIDENT : "analiza (1:N)"
+    USER ||--o{ ALERT : "recibe (1:N)"
+    
+    TICKET ||--o{ TICKET_MESSAGE : "contiene (1:N)"
+    TICKET_MESSAGE }o--|| USER : "remitido_por (N:1)"
+    
+    ASSET ||--o{ INCIDENT : "afectado_en (1:N)"
+    
+    USER {
+        int id PK
+        string email UK
+        string passwordHash
+        Role role
+        DateTime createdAt
+        int customerId FK
+    }
+
+    CUSTOMER {
+        int id PK
+        string name
+        string industry
+        string region
+        string securityTier
+        DateTime createdAt
+        int primaryServiceId FK
+    }
+
+    SERVICE {
+        int id PK
+        string name UK
+        string description
+        float price
+        boolean active
+        string category
+        string tier
+        int slaHours
+    }
+
+    ASSET {
+        int id PK
+        int customerId FK
+        string hostname
+        string assetType
+        string environment
+        AssetCriticality criticality
+        string region
+        int exposureScore
+        DateTime createdAt
+    }
+
+    INCIDENT {
+        int id PK
+        int customerId FK
+        int assetId FK
+        int analystId FK
+        string title
+        string vector
+        IncidentSeverity severity
+        IncidentStatus status
+        string sourceIp
+        string sourceCountry
+        string attackSurface
+        int timelineSlot
+        DateTime createdAt
+        DateTime updatedAt
+    }
+
+    TICKET {
+        int id PK
+        int userId FK
+        string subject
+        string status
+        string priority
+        DateTime createdAt
+    }
+
+    TICKET_MESSAGE {
+        int id PK
+        int ticketId FK
+        int senderId FK
+        string content
+        DateTime createdAt
+    }
+
+    PAYMENT {
+        int id PK
+        int userId FK
+        float amount
+        string currency
+        string status
+        string last4
+        string brand
+        string transactionId UK
+        DateTime createdAt
+    }
+
+    ALERT {
+        int id PK
+        int userId FK
+        string title
+        string description
+        string severity
+        string status
+        DateTime notifiedAt
+        DateTime acknowledgedAt
+        int acknowledgedBy
+    }
+```
+
+---
+
+
 ## 🏗️ Stack Tecnológico
 - **Frontend:** PHP 8.2 + Apache (Proxy Inverso).
 - **Backend:** Node.js v20 + Express + Prisma ORM.
